@@ -14,7 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      jd_vault: {
+        Row: {
+          created_at: string
+          id: string
+          raw_text: string
+          skills_json: Json
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          raw_text: string
+          skills_json?: Json
+          title?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          raw_text?: string
+          skills_json?: Json
+          title?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
