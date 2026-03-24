@@ -3,6 +3,7 @@ import type { Skill } from "@/types/jd";
 
 interface SkillProgressBarsProps {
   skills: Skill[];
+  priorityMode?: boolean;
 }
 
 const categoryColors: Record<string, string> = {
