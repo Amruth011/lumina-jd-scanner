@@ -3,6 +3,7 @@ import type { Skill } from "@/types/jd";
 
 interface SkillProgressBarsProps {
   skills: Skill[];
+  priorityMode?: boolean;
 }
 
 const categoryColors: Record<string, string> = {
@@ -18,7 +19,7 @@ const categoryColors: Record<string, string> = {
 const getGradient = (category: string) =>
   categoryColors[category] || categoryColors.Other;
 
-export const SkillProgressBars = ({ skills }: SkillProgressBarsProps) => {
+export const SkillProgressBars = ({ skills, priorityMode }: SkillProgressBarsProps) => {
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -41,7 +42,12 @@ export const SkillProgressBars = ({ skills }: SkillProgressBarsProps) => {
               <span className="text-sm font-medium text-foreground">
                 {skill.skill}
               </span>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-muted-foreground flex items-center gap-1.5">
+                {priorityMode && skill.importance > 80 && (
+                  <span className="text-[10px] font-semibold uppercase tracking-wide text-primary bg-primary/10 px-1.5 py-0.5 rounded">
+                    Critical for Interview
+                  </span>
+                )}
                 {skill.category} · {skill.importance}%
               </span>
             </div>
