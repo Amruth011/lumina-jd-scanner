@@ -19,7 +19,7 @@ const categoryColors: Record<string, string> = {
 const getGradient = (category: string) =>
   categoryColors[category] || categoryColors.Other;
 
-export const SkillProgressBars = ({ skills }: SkillProgressBarsProps) => {
+export const SkillProgressBars = ({ skills, priorityMode }: SkillProgressBarsProps) => {
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
