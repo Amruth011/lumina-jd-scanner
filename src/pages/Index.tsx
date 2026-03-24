@@ -14,6 +14,22 @@ const Index = () => {
   const [jdText, setJdText] = useState("");
   const [isScanning, setIsScanning] = useState(false);
   const [results, setResults] = useState<{ title: string; skills: Skill[] } | null>(null);
+  const [priorityFilter, setPriorityFilter] = useState(false);
+
+  const filteredSkills = results
+    ? priorityFilter
+      ? results.skills.filter((s) => s.importance > 80)
+      : results.skills
+    : [];
+
+  const getAiInsight = (skills: Skill[]) => {
+    const critical = skills
+      .filter((s) => s.importance > 80)
+      .slice(0, 3)
+      .map((s) => s.skill);
+    if (critical.length === 0) return "All skills have moderate importance — a well-rounded generalist role.";
+    return `Focus on ${critical.join(", ")} for this role; the rest are secondary infrastructure skills.`;
+  };
 
   const handleDecode = async () => {
     if (jdText.trim().length < 20) {
