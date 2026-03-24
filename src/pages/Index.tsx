@@ -125,14 +125,63 @@ const Index = () => {
               <motion.h3
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="font-display font-semibold text-2xl text-foreground text-center mb-8"
+                className="font-display font-semibold text-2xl text-foreground text-center mb-4"
               >
                 {results.title}
               </motion.h3>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <SkillRadarChart skills={results.skills} />
-                <SkillProgressBars skills={results.skills} />
+
+              {/* Priority Filter Toggle */}
+              <div className="flex justify-center mb-6">
+                <button
+                  onClick={() => setPriorityFilter(!priorityFilter)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 glass glow-border ${
+                    priorityFilter
+                      ? "bg-primary/20 text-primary border-primary/40"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Filter className="w-4 h-4" />
+                  Priority Filter
+                  <span
+                    className={`inline-block w-8 h-4 rounded-full relative transition-colors duration-300 ${
+                      priorityFilter ? "bg-primary/50" : "bg-muted/50"
+                    }`}
+                  >
+                    <span
+                      className={`absolute top-0.5 w-3 h-3 rounded-full transition-all duration-300 ${
+                        priorityFilter ? "left-4 bg-primary" : "left-0.5 bg-muted-foreground"
+                      }`}
+                    />
+                  </span>
+                </button>
               </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <SkillRadarChart skills={filteredSkills} />
+                <SkillProgressBars skills={filteredSkills} priorityMode={priorityFilter} />
+              </div>
+
+              {/* AI Insight Box */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="mt-6 glass-strong rounded-2xl p-5 glow-border max-w-3xl mx-auto"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <Brain className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h4 className="font-display font-semibold text-sm text-foreground mb-1">
+                      AI Insight
+                    </h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {getAiInsight(results.skills)}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>

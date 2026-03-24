@@ -42,7 +42,12 @@ export const SkillProgressBars = ({ skills, priorityMode }: SkillProgressBarsPro
               <span className="text-sm font-medium text-foreground">
                 {skill.skill}
               </span>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-muted-foreground flex items-center gap-1.5">
+                {priorityMode && skill.importance > 80 && (
+                  <span className="text-[10px] font-semibold uppercase tracking-wide text-primary bg-primary/10 px-1.5 py-0.5 rounded">
+                    Critical for Interview
+                  </span>
+                )}
                 {skill.category} · {skill.importance}%
               </span>
             </div>
