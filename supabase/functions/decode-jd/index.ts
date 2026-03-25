@@ -32,22 +32,14 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `You are an expert recruiter and JD analyst. Extract skills from job descriptions.`,
+            content: `You are an expert recruiter, JD analyst, and career strategist. Extract comprehensive information from job descriptions.`,
           },
           {
             role: "user",
-            content: `Analyze this job description and extract all required skills. For each skill, determine its category and importance (0-100).
-
-Return ONLY valid JSON in this exact format:
-{
-  "title": "Short job title",
-  "skills": [
-    {"category": "Languages", "skill": "Python", "importance": 85},
-    {"category": "Frameworks", "skill": "React", "importance": 75}
-  ]
-}
-
-Categories must be one of: Languages, Frameworks, Tools, Databases, Cloud, Soft Skills, Other.
+            content: `Analyze this job description thoroughly. Extract:
+1. All required skills with category and importance (0-100)
+2. Critical requirements: education, experience, soft skills, and any agreements/conditions
+3. A "Top 0.1% Winning Strategy" — 3 specific, actionable steps to stand out for THIS role
 
 Job Description:
 ${jdText}`,
@@ -57,8 +49,8 @@ ${jdText}`,
           {
             type: "function",
             function: {
-              name: "extract_jd_skills",
-              description: "Extract structured skills from a job description",
+              name: "extract_jd_full",
+              description: "Extract skills, requirements, and winning strategy from a job description",
               parameters: {
                 type: "object",
                 properties: {
@@ -75,13 +67,50 @@ ${jdText}`,
                       required: ["category", "skill", "importance"],
                     },
                   },
+                  requirements: {
+                    type: "object",
+                    properties: {
+                      education: {
+                        type: "array",
+                        items: { type: "string" },
+                        description: "Education requirements like B.Tech, Masters, PhD",
+                      },
+                      experience: {
+                        type: "string",
+                        description: "Experience requirement like '3+ years' or '5-8 years'",
+                      },
+                      soft_skills: {
+                        type: "array",
+                        items: { type: "string" },
+                        description: "Soft skills like Stakeholder Management, Agile, Leadership",
+                      },
+                      agreements: {
+                        type: "array",
+                        items: { type: "string" },
+                        description: "Any mentions of shifts, relocation, legal terms, NDAs, travel",
+                      },
+                    },
+                    required: ["education", "experience", "soft_skills", "agreements"],
+                  },
+                  winning_strategy: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        title: { type: "string", description: "Short strategy title" },
+                        description: { type: "string", description: "Detailed actionable step" },
+                      },
+                      required: ["title", "description"],
+                    },
+                    description: "Exactly 3 actionable steps to be a top 0.1% candidate",
+                  },
                 },
-                required: ["title", "skills"],
+                required: ["title", "skills", "requirements", "winning_strategy"],
               },
             },
           },
         ],
-        tool_choice: { type: "function", function: { name: "extract_jd_skills" } },
+        tool_choice: { type: "function", function: { name: "extract_jd_full" } },
       }),
     });
 
@@ -104,12 +133,11 @@ ${jdText}`,
 
     const aiData = await aiResponse.json();
     const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-    let parsed: { title: string; skills: any[] };
+    let parsed: any;
 
     if (toolCall?.function?.arguments) {
       parsed = JSON.parse(toolCall.function.arguments);
     } else {
-      // Fallback: try to parse content
       const content = aiData.choices?.[0]?.message?.content || "";
       const jsonMatch = content.match(/\{[\s\S]*\}/);
       if (!jsonMatch) throw new Error("Could not parse AI response");

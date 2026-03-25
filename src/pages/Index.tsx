@@ -8,12 +8,15 @@ import { GlassTextArea } from "@/components/GlassTextArea";
 import { DecodeButton } from "@/components/DecodeButton";
 import { SkillRadarChart } from "@/components/SkillRadarChart";
 import { SkillProgressBars } from "@/components/SkillProgressBars";
-import type { Skill } from "@/types/jd";
+import { CriticalRequirements } from "@/components/CriticalRequirements";
+import { WinningStrategy } from "@/components/WinningStrategy";
+import { ResumeGapAnalyzer } from "@/components/ResumeGapAnalyzer";
+import type { DecodeResult } from "@/types/jd";
 
 const Index = () => {
   const [jdText, setJdText] = useState("");
   const [isScanning, setIsScanning] = useState(false);
-  const [results, setResults] = useState<{ title: string; skills: Skill[] } | null>(null);
+  const [results, setResults] = useState<DecodeResult | null>(null);
   const [priorityFilter, setPriorityFilter] = useState(false);
 
   const filteredSkills = results
@@ -22,7 +25,7 @@ const Index = () => {
       : results.skills
     : [];
 
-  const getAiInsight = (skills: Skill[]) => {
+  const getAiInsight = (skills: DecodeResult["skills"]) => {
     const critical = skills
       .filter((s) => s.importance > 80)
       .slice(0, 3)
@@ -48,7 +51,12 @@ const Index = () => {
       if (error) throw error;
       if (data.error) throw new Error(data.error);
 
-      setResults({ title: data.title, skills: data.skills });
+      setResults({
+        title: data.title,
+        skills: data.skills,
+        requirements: data.requirements || { education: [], experience: "", soft_skills: [], agreements: [] },
+        winning_strategy: data.winning_strategy || [],
+      });
       toast.success(`Decoded: ${data.title}`);
     } catch (err: any) {
       console.error(err);
@@ -120,7 +128,7 @@ const Index = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
               transition={{ duration: 0.5 }}
-              className="mt-12 max-w-5xl mx-auto"
+              className="mt-12 max-w-6xl mx-auto"
             >
               <motion.h3
                 initial={{ opacity: 0 }}
@@ -156,6 +164,7 @@ const Index = () => {
                 </button>
               </div>
 
+              {/* Skills row */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <SkillRadarChart skills={filteredSkills} />
                 <SkillProgressBars skills={filteredSkills} priorityMode={priorityFilter} />
@@ -182,6 +191,17 @@ const Index = () => {
                   </div>
                 </div>
               </motion.div>
+
+              {/* Consultant Mode Section */}
+              <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <CriticalRequirements requirements={results.requirements} />
+                <WinningStrategy steps={results.winning_strategy} />
+              </div>
+
+              {/* Resume Gap Analyzer */}
+              <div className="mt-6">
+                <ResumeGapAnalyzer skills={results.skills} />
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
