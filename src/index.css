@@ -41,6 +41,12 @@
     --glass-shadow: 210 100% 52% / 0.08;
     --glow: 210 100% 60%;
 
+    --skill-critical: 190 100% 50%;
+    --skill-core: 160 64% 40%;
+    --skill-supporting: 258 90% 66%;
+    --skill-muted: 215 16% 47%;
+    --badge-gold: 43 96% 56%;
+
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
@@ -84,6 +90,12 @@
     --glass-border: 210 40% 30% / 0.3;
     --glass-shadow: 210 100% 55% / 0.15;
     --glow: 210 100% 60%;
+
+    --skill-critical: 190 100% 50%;
+    --skill-core: 160 64% 40%;
+    --skill-supporting: 258 90% 66%;
+    --skill-muted: 215 16% 47%;
+    --badge-gold: 43 96% 56%;
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
