@@ -1,15 +1,39 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, Loader2, ArrowRight, Upload, ChevronDown, ChevronUp } from "lucide-react";
+import { FileText, Loader2, ArrowRight, Upload, ChevronDown, ChevronUp, PlusCircle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { saveApplication, type TrackedApplication } from "@/components/ApplicationTracker";
 import type { Skill, ResumeGapResult } from "@/types/jd";
 
 interface ResumeGapAnalyzerProps {
   skills: Skill[];
+  jobTitle?: string;
 }
 
-export const ResumeGapAnalyzer = ({ skills }: ResumeGapAnalyzerProps) => {
+async function extractPdfText(file: File): Promise<string> {
+  const pdfjsLib = await import("pdfjs-dist");
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+  let fullText = "";
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    fullText += content.items.map((item: any) => item.str).join(" ") + "\n";
+  }
+  return fullText.trim();
+}
+
+async function extractDocxText(file: File): Promise<string> {
+  const mammoth = await import("mammoth");
+  const arrayBuffer = await file.arrayBuffer();
+  const result = await mammoth.extractRawText({ arrayBuffer });
+  return result.value;
+}
+
+export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [resumeText, setResumeText] = useState("");
   const [fileName, setFileName] = useState("");
@@ -17,6 +41,7 @@ export const ResumeGapAnalyzer = ({ skills }: ResumeGapAnalyzerProps) => {
   const [isParsing, setIsParsing] = useState(false);
   const [result, setResult] = useState<ResumeGapResult | null>(null);
   const [showDeductions, setShowDeductions] = useState(false);
+  const [addedToTracker, setAddedToTracker] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,45 +60,28 @@ export const ResumeGapAnalyzer = ({ skills }: ResumeGapAnalyzerProps) => {
     }
 
     setFileName(file.name);
-
-    if (ext === "txt") {
-      const text = await file.text();
-      setResumeText(text);
-      toast.success("Resume text loaded.");
-      return;
-    }
-
     setIsParsing(true);
+
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/parse-resume-file`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${anonKey}`,
-            apikey: anonKey,
-          },
-          body: formData,
-        }
-      );
-
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.error || "Failed to parse file.");
+      let text = "";
+      if (ext === "txt") {
+        text = await file.text();
+      } else if (ext === "pdf") {
+        text = await extractPdfText(file);
+      } else if (ext === "docx") {
+        text = await extractDocxText(file);
       }
 
-      const data = await response.json();
-      setResumeText(data.text);
-      toast.success("Resume parsed successfully.");
+      if (text.trim().length < 20) {
+        toast.error("Could not extract enough text from the file. Try pasting manually.");
+        setFileName("");
+      } else {
+        setResumeText(text);
+        toast.success("Resume parsed successfully.");
+      }
     } catch (err: any) {
       console.error(err);
-      toast.error(err.message || "Failed to parse resume file.");
+      toast.error("Failed to parse file. Try pasting text manually.");
       setFileName("");
     } finally {
       setIsParsing(false);
@@ -87,6 +95,7 @@ export const ResumeGapAnalyzer = ({ skills }: ResumeGapAnalyzerProps) => {
     }
     setIsAnalyzing(true);
     setResult(null);
+    setAddedToTracker(false);
     try {
       const { data, error } = await supabase.functions.invoke("compare-resume", {
         body: { resumeText, skills },
@@ -101,6 +110,27 @@ export const ResumeGapAnalyzer = ({ skills }: ResumeGapAnalyzerProps) => {
     } finally {
       setIsAnalyzing(false);
     }
+  };
+
+  const handleAddToTracker = () => {
+    if (!result) return;
+    const app: TrackedApplication = {
+      id: crypto.randomUUID(),
+      company: "",
+      role: jobTitle || "Unknown Role",
+      matchPercent: result.overall_match,
+      status: "Saved",
+      addedAt: new Date().toISOString(),
+    };
+
+    const company = prompt("Company name?");
+    if (!company) return;
+    app.company = company;
+
+    saveApplication(app);
+    setAddedToTracker(true);
+    window.dispatchEvent(new Event("tracker-updated"));
+    toast.success("Added to tracker!");
   };
 
   const getBarColor = (verdict: string) => {
@@ -176,17 +206,12 @@ export const ResumeGapAnalyzer = ({ skills }: ResumeGapAnalyzerProps) => {
               ) : (
                 <div className="flex flex-col items-center gap-2">
                   <Upload className="w-8 h-8 text-muted-foreground" />
-                  <span className="text-sm font-medium text-foreground">
-                    Upload Resume
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    PDF, DOCX, or TXT (max 10MB)
-                  </span>
+                  <span className="text-sm font-medium text-foreground">Upload Resume</span>
+                  <span className="text-xs text-muted-foreground">PDF, DOCX, or TXT (max 10MB)</span>
                 </div>
               )}
             </div>
 
-            {/* Or paste text */}
             <details className="mb-3">
               <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
                 Or paste resume text manually
@@ -225,10 +250,22 @@ export const ResumeGapAnalyzer = ({ skills }: ResumeGapAnalyzerProps) => {
             transition={{ duration: 0.4 }}
             className="mt-5"
           >
-            {/* Overall match + Why not 100% */}
+            {/* Overall match + Why not 100% + Add to Tracker */}
             <div className="mb-4 text-center">
               <span className="text-3xl font-display font-bold text-foreground">{result.overall_match}%</span>
               <span className="text-sm text-muted-foreground ml-2">Overall Match</span>
+
+              {/* Add to Tracker button */}
+              {!addedToTracker ? (
+                <button
+                  onClick={handleAddToTracker}
+                  className="ml-4 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
+                >
+                  <PlusCircle className="w-3.5 h-3.5" /> Add to Tracker
+                </button>
+              ) : (
+                <span className="ml-4 text-xs text-[hsl(var(--skill-core))] font-semibold">✓ Tracked</span>
+              )}
 
               {result.deductions && result.deductions.length > 0 && (
                 <div className="mt-2">
@@ -251,7 +288,7 @@ export const ResumeGapAnalyzer = ({ skills }: ResumeGapAnalyzerProps) => {
                         <ul className="space-y-1">
                           {result.deductions.map((d, i) => (
                             <li key={i} className="flex items-center gap-2 text-xs">
-                              <span className="text-destructive font-bold">-{d.percent}%</span>
+                              <span className="text-destructive font-bold whitespace-nowrap">-{d.percent}%</span>
                               <span className="text-muted-foreground">{d.reason}</span>
                             </li>
                           ))}

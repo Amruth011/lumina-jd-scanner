@@ -11,6 +11,7 @@ import { SkillProgressBars } from "@/components/SkillProgressBars";
 import { CriticalRequirements } from "@/components/CriticalRequirements";
 import { WinningStrategy } from "@/components/WinningStrategy";
 import { ResumeGapAnalyzer } from "@/components/ResumeGapAnalyzer";
+import { ApplicationTracker } from "@/components/ApplicationTracker";
 import type { DecodeResult } from "@/types/jd";
 
 const Index = () => {
@@ -200,11 +201,13 @@ const Index = () => {
 
               {/* Resume Gap Analyzer */}
               <div className="mt-6">
-                <ResumeGapAnalyzer skills={results.skills} />
+                <ResumeGapAnalyzer skills={results.skills} jobTitle={results.title} />
               </div>
             </motion.div>
           )}
         </AnimatePresence>
+        {/* Application Tracker */}
+        <ApplicationTracker />
       </main>
     </div>
   );
