@@ -23,9 +23,15 @@ export interface SkillMatch {
   note: string;
 }
 
+export interface Deduction {
+  reason: string;
+  percent: number;
+}
+
 export interface ResumeGapResult {
   overall_match: number;
   skill_matches: SkillMatch[];
+  deductions: Deduction[];
   summary: string;
 }
 
