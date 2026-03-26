@@ -206,6 +206,8 @@ const Index = () => {
             </motion.div>
           )}
         </AnimatePresence>
+        {/* Application Tracker */}
+        <ApplicationTracker />
       </main>
     </div>
   );

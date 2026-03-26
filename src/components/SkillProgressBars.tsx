@@ -7,7 +7,7 @@ interface SkillProgressBarsProps {
 }
 
 const getSemanticTier = (importance: number) => {
-  if (importance > 85) return { gradient: "from-[hsl(190,100%,50%)] to-[hsl(195,100%,65%)]", label: "Critical: Focus Here", labelClass: "text-[hsl(var(--skill-critical))] bg-[hsl(var(--skill-critical)/0.12)]", glow: "shadow-[0_0_12px_hsl(var(--skill-critical)/0.4)]" };
+  if (importance > 85) return { gradient: "from-[hsl(190,100%,50%)] to-[hsl(195,100%,65%)]", label: "Critical: Focus Here", labelClass: "text-[hsl(var(--skill-critical))] bg-[hsl(var(--skill-critical)/0.12)]", glow: "dark:shadow-[0_0_12px_hsl(var(--skill-critical)/0.4)]" };
   if (importance >= 70) return { gradient: "from-[hsl(160,64%,40%)] to-[hsl(155,60%,55%)]", label: "Core Requirement", labelClass: "text-[hsl(var(--skill-core))] bg-[hsl(var(--skill-core)/0.12)]", glow: "" };
   if (importance >= 50) return { gradient: "from-[hsl(258,90%,66%)] to-[hsl(265,80%,75%)]", label: "Supporting Skill", labelClass: "text-[hsl(var(--skill-supporting))] bg-[hsl(var(--skill-supporting)/0.12)]", glow: "" };
   return { gradient: "from-[hsl(215,16%,47%)] to-[hsl(215,12%,58%)]", label: "", labelClass: "", glow: "" };
