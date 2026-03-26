@@ -201,7 +201,7 @@ const Index = () => {
 
               {/* Resume Gap Analyzer */}
               <div className="mt-6">
-                <ResumeGapAnalyzer skills={results.skills} />
+                <ResumeGapAnalyzer skills={results.skills} jobTitle={results.title} />
               </div>
             </motion.div>
           )}
