@@ -193,7 +193,7 @@ const Index = () => {
               </motion.div>
 
               {/* Consultant Mode Section */}
-              <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="mt-8 space-y-6">
                 <CriticalRequirements requirements={results.requirements} />
                 <WinningStrategy steps={results.winning_strategy} />
               </div>

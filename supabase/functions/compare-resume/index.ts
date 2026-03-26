@@ -33,11 +33,11 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: "You are an expert resume analyzer. Compare a resume against required JD skills and estimate match percentage for each skill.",
+            content: "You are an expert resume analyzer. Compare a resume against required JD skills. Estimate match percentage for each skill AND provide specific deductions explaining why the overall match isn't 100%.",
           },
           {
             role: "user",
-            content: `Compare this resume against the required skills and estimate match percentage (0-100) for each.
+            content: `Compare this resume against the required skills. Estimate match percentage (0-100) for each skill. Also provide a list of specific deductions from 100%.
 
 Required Skills: ${skillNames}
 
@@ -68,9 +68,21 @@ ${resumeText}`,
                       required: ["skill", "match_percent", "verdict", "note"],
                     },
                   },
+                  deductions: {
+                    type: "array",
+                    description: "List of specific deductions from 100% match score",
+                    items: {
+                      type: "object",
+                      properties: {
+                        reason: { type: "string", description: "What's missing, e.g. 'Missing Deep Learning Frameworks'" },
+                        percent: { type: "number", description: "Points deducted, e.g. 10" },
+                      },
+                      required: ["reason", "percent"],
+                    },
+                  },
                   summary: { type: "string", description: "2-3 sentence gap analysis summary" },
                 },
-                required: ["overall_match", "skill_matches", "summary"],
+                required: ["overall_match", "skill_matches", "deductions", "summary"],
               },
             },
           },

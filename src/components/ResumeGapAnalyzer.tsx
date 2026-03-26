@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, Loader2, ArrowRight } from "lucide-react";
+import { FileText, Loader2, ArrowRight, Upload, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import type { Skill, ResumeGapResult } from "@/types/jd";
@@ -12,12 +12,77 @@ interface ResumeGapAnalyzerProps {
 export const ResumeGapAnalyzer = ({ skills }: ResumeGapAnalyzerProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [resumeText, setResumeText] = useState("");
+  const [fileName, setFileName] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isParsing, setIsParsing] = useState(false);
   const [result, setResult] = useState<ResumeGapResult | null>(null);
+  const [showDeductions, setShowDeductions] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const ext = file.name.toLowerCase().split(".").pop();
+    if (!["pdf", "docx", "txt"].includes(ext || "")) {
+      toast.error("Supported formats: PDF, DOCX, TXT");
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File too large (max 10MB).");
+      return;
+    }
+
+    setFileName(file.name);
+
+    if (ext === "txt") {
+      const text = await file.text();
+      setResumeText(text);
+      toast.success("Resume text loaded.");
+      return;
+    }
+
+    setIsParsing(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/parse-resume-file`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${anonKey}`,
+            apikey: anonKey,
+          },
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || "Failed to parse file.");
+      }
+
+      const data = await response.json();
+      setResumeText(data.text);
+      toast.success("Resume parsed successfully.");
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Failed to parse resume file.");
+      setFileName("");
+    } finally {
+      setIsParsing(false);
+    }
+  };
 
   const handleCompare = async () => {
     if (resumeText.trim().length < 20) {
-      toast.error("Please paste your resume (min 20 characters).");
+      toast.error("Please upload a resume or paste text (min 20 characters).");
       return;
     }
     setIsAnalyzing(true);
@@ -84,13 +149,57 @@ export const ResumeGapAnalyzer = ({ skills }: ResumeGapAnalyzerProps) => {
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <textarea
-              value={resumeText}
-              onChange={(e) => setResumeText(e.target.value)}
-              placeholder="Paste your resume text here..."
-              className="w-full h-40 bg-transparent rounded-xl p-4 text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-accent/30 font-sans text-sm leading-relaxed border border-border mb-3"
-              disabled={isAnalyzing}
-            />
+            {/* File Upload Area */}
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full border-2 border-dashed border-border rounded-xl p-8 mb-3 cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-all text-center"
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,.docx,.txt"
+                onChange={handleFileUpload}
+                className="hidden"
+                disabled={isParsing || isAnalyzing}
+              />
+              {isParsing ? (
+                <div className="flex flex-col items-center gap-2">
+                  <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                  <span className="text-sm text-muted-foreground">Parsing {fileName}...</span>
+                </div>
+              ) : fileName ? (
+                <div className="flex flex-col items-center gap-2">
+                  <FileText className="w-8 h-8 text-primary" />
+                  <span className="text-sm font-medium text-foreground">{fileName}</span>
+                  <span className="text-xs text-muted-foreground">Click to replace</span>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-2">
+                  <Upload className="w-8 h-8 text-muted-foreground" />
+                  <span className="text-sm font-medium text-foreground">
+                    Upload Resume
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    PDF, DOCX, or TXT (max 10MB)
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Or paste text */}
+            <details className="mb-3">
+              <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
+                Or paste resume text manually
+              </summary>
+              <textarea
+                value={resumeText}
+                onChange={(e) => setResumeText(e.target.value)}
+                placeholder="Paste your resume text here..."
+                className="w-full h-32 bg-transparent rounded-xl p-4 text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-accent/30 font-sans text-sm leading-relaxed border border-border mt-2"
+                disabled={isAnalyzing}
+              />
+            </details>
+
             <button
               onClick={handleCompare}
               disabled={isAnalyzing || resumeText.trim().length < 20}
@@ -116,10 +225,42 @@ export const ResumeGapAnalyzer = ({ skills }: ResumeGapAnalyzerProps) => {
             transition={{ duration: 0.4 }}
             className="mt-5"
           >
-            {/* Overall match */}
+            {/* Overall match + Why not 100% */}
             <div className="mb-4 text-center">
               <span className="text-3xl font-display font-bold text-foreground">{result.overall_match}%</span>
               <span className="text-sm text-muted-foreground ml-2">Overall Match</span>
+
+              {result.deductions && result.deductions.length > 0 && (
+                <div className="mt-2">
+                  <button
+                    onClick={() => setShowDeductions(!showDeductions)}
+                    className="inline-flex items-center gap-1 text-xs text-destructive/80 hover:text-destructive transition-colors font-medium"
+                  >
+                    Why not 100%?
+                    {showDeductions ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                  </button>
+                  <AnimatePresence>
+                    {showDeductions && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="mt-2 glass rounded-xl p-3 text-left max-w-md mx-auto"
+                      >
+                        <p className="text-xs font-semibold text-foreground mb-2">Deductions</p>
+                        <ul className="space-y-1">
+                          {result.deductions.map((d, i) => (
+                            <li key={i} className="flex items-center gap-2 text-xs">
+                              <span className="text-destructive font-bold">-{d.percent}%</span>
+                              <span className="text-muted-foreground">{d.reason}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
             </div>
 
             {/* Skill bars */}
