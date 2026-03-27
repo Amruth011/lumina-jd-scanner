@@ -20,7 +20,7 @@ export const DecodeButton = ({ onClick, isLoading, disabled }: DecodeButtonProps
         border border-primary/30 
         disabled:opacity-40 disabled:cursor-not-allowed
         transition-all duration-300
-        ${isLoading ? "animate-pulse-glow" : "dark:hover:shadow-[0_0_30px_hsl(210_100%_55%/0.4)]"}
+        ${isLoading ? "animate-pulse" : "hover:shadow-md"}
       `}
     >
       <span className="flex items-center gap-3">
