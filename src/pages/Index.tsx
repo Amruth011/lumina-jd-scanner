@@ -26,15 +26,6 @@ const Index = () => {
   const [results, setResults] = useState<DecodeResult | null>(null);
   const [priorityFilter, setPriorityFilter] = useState(false);
 
-  // Redirect to auth if not logged in
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-primary animate-spin" />
-      </div>
-    );
-  }
-
   useEffect(() => {
     if (!loading && !user) {
       navigate("/auth");
