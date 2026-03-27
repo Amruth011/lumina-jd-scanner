@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Briefcase, Trash2, Pencil, Check, X } from "lucide-react";
+import { Briefcase, Trash2, Pencil, Check, X, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 
 export interface TrackedApplication {
   id: string;
@@ -11,8 +14,6 @@ export interface TrackedApplication {
   status: string;
   addedAt: string;
 }
-
-const STORAGE_KEY = "lumina-jd-applications";
 
 const STATUS_OPTIONS = ["Saved", "Applied", "Interview", "Assessment", "Offer", "Rejected"];
 
@@ -27,52 +28,89 @@ const getStatusColor = (status: string) => {
   }
 };
 
-export const loadApplications = (): TrackedApplication[] => {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-  } catch {
-    return [];
+export const saveApplication = async (app: TrackedApplication) => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+
+  const { error } = await supabase.from("user_applications").insert({
+    user_id: user.id,
+    company: app.company,
+    role: app.role,
+    match_percent: app.matchPercent,
+    current_match_percent: app.currentMatchPercent ?? app.matchPercent,
+    status: app.status,
+  });
+
+  if (error) {
+    console.error("Save application error:", error);
+    throw error;
   }
 };
 
-export const saveApplication = (app: TrackedApplication) => {
-  const apps = loadApplications();
-  apps.unshift(app);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(apps));
-};
-
 export const ApplicationTracker = () => {
+  const { user } = useAuth();
   const [apps, setApps] = useState<TrackedApplication[]>([]);
+  const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<TrackedApplication>>({});
 
-  useEffect(() => {
-    setApps(loadApplications());
-    const handler = () => setApps(loadApplications());
-    window.addEventListener("storage", handler);
-    window.addEventListener("tracker-updated", handler);
-    return () => {
-      window.removeEventListener("storage", handler);
-      window.removeEventListener("tracker-updated", handler);
-    };
-  }, []);
+  const fetchApps = async () => {
+    if (!user) return;
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("user_applications")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-  const persist = (updated: TrackedApplication[]) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    setApps(updated);
+    if (error) {
+      console.error(error);
+      toast.error("Failed to load applications.");
+    } else {
+      setApps(
+        (data || []).map((row: any) => ({
+          id: row.id,
+          company: row.company,
+          role: row.role,
+          matchPercent: row.match_percent,
+          currentMatchPercent: row.current_match_percent,
+          status: row.status,
+          addedAt: row.created_at,
+        }))
+      );
+    }
+    setLoading(false);
   };
+
+  useEffect(() => {
+    fetchApps();
+    const handler = () => fetchApps();
+    window.addEventListener("tracker-updated", handler);
+    return () => window.removeEventListener("tracker-updated", handler);
+  }, [user]);
 
   const startEdit = (app: TrackedApplication) => {
     setEditingId(app.id);
     setEditForm({ company: app.company, role: app.role, status: app.status, currentMatchPercent: app.currentMatchPercent ?? app.matchPercent });
   };
 
-  const saveEdit = (id: string) => {
-    const updated = apps.map((a) =>
-      a.id === id ? { ...a, company: editForm.company ?? a.company, role: editForm.role ?? a.role, status: editForm.status ?? a.status, currentMatchPercent: editForm.currentMatchPercent ?? a.currentMatchPercent ?? a.matchPercent } : a
-    );
-    persist(updated);
-    setEditingId(null);
+  const saveEdit = async (id: string) => {
+    const { error } = await supabase
+      .from("user_applications")
+      .update({
+        company: editForm.company,
+        role: editForm.role,
+        status: editForm.status,
+        current_match_percent: editForm.currentMatchPercent,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id);
+
+    if (error) {
+      toast.error("Failed to update.");
+    } else {
+      setEditingId(null);
+      fetchApps();
+    }
   };
 
   const cancelEdit = () => {
@@ -80,12 +118,24 @@ export const ApplicationTracker = () => {
     setEditForm({});
   };
 
-  const updateStatus = (id: string, newStatus: string) => {
-    persist(apps.map((a) => (a.id === id ? { ...a, status: newStatus } : a)));
+  const updateStatus = async (id: string, newStatus: string) => {
+    const { error } = await supabase
+      .from("user_applications")
+      .update({ status: newStatus, updated_at: new Date().toISOString() })
+      .eq("id", id);
+
+    if (error) toast.error("Failed to update status.");
+    else fetchApps();
   };
 
-  const removeApp = (id: string) => {
-    persist(apps.filter((a) => a.id !== id));
+  const removeApp = async (id: string) => {
+    const { error } = await supabase
+      .from("user_applications")
+      .delete()
+      .eq("id", id);
+
+    if (error) toast.error("Failed to delete.");
+    else fetchApps();
   };
 
   return (
@@ -101,7 +151,11 @@ export const ApplicationTracker = () => {
           <span className="text-xs text-muted-foreground ml-auto">{apps.length} tracked</span>
         </div>
 
-        {apps.length === 0 ? (
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-6 h-6 text-primary animate-spin" />
+          </div>
+        ) : apps.length === 0 ? (
           <div className="text-center py-12">
             <Briefcase className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
             <p className="text-sm text-muted-foreground">No applications tracked yet.</p>
@@ -138,22 +192,14 @@ export const ApplicationTracker = () => {
                       >
                         <td className="py-2.5">
                           {isEditing ? (
-                            <input
-                              value={editForm.company || ""}
-                              onChange={(e) => setEditForm({ ...editForm, company: e.target.value })}
-                              className="w-full px-2 py-1 text-sm border border-border rounded-md bg-background text-foreground"
-                            />
+                            <input value={editForm.company || ""} onChange={(e) => setEditForm({ ...editForm, company: e.target.value })} className="w-full px-2 py-1 text-sm border border-border rounded-md bg-background text-foreground" />
                           ) : (
                             <span className="font-medium text-foreground">{app.company}</span>
                           )}
                         </td>
                         <td className="py-2.5">
                           {isEditing ? (
-                            <input
-                              value={editForm.role || ""}
-                              onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
-                              className="w-full px-2 py-1 text-sm border border-border rounded-md bg-background text-foreground"
-                            />
+                            <input value={editForm.role || ""} onChange={(e) => setEditForm({ ...editForm, role: e.target.value })} className="w-full px-2 py-1 text-sm border border-border rounded-md bg-background text-foreground" />
                           ) : (
                             <span className="text-muted-foreground">{app.role}</span>
                           )}
@@ -163,14 +209,7 @@ export const ApplicationTracker = () => {
                         </td>
                         <td className="py-2.5 text-center">
                           {isEditing ? (
-                            <input
-                              type="number"
-                              min={0}
-                              max={100}
-                              value={editForm.currentMatchPercent ?? currentMatch}
-                              onChange={(e) => setEditForm({ ...editForm, currentMatchPercent: Number(e.target.value) })}
-                              className="w-16 px-2 py-1 text-sm border border-border rounded-md bg-background text-foreground text-center"
-                            />
+                            <input type="number" min={0} max={100} value={editForm.currentMatchPercent ?? currentMatch} onChange={(e) => setEditForm({ ...editForm, currentMatchPercent: Number(e.target.value) })} className="w-16 px-2 py-1 text-sm border border-border rounded-md bg-background text-foreground text-center" />
                           ) : (
                             <span className={`font-semibold ${improved ? "text-[hsl(var(--skill-core))]" : "text-primary"}`}>
                               {currentMatch}%
@@ -180,24 +219,12 @@ export const ApplicationTracker = () => {
                         </td>
                         <td className="py-2.5">
                           {isEditing ? (
-                            <select
-                              value={editForm.status || app.status}
-                              onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
-                              className="text-xs font-semibold px-2 py-1 rounded-full border border-border bg-background text-foreground cursor-pointer"
-                            >
-                              {STATUS_OPTIONS.map((s) => (
-                                <option key={s} value={s}>{s}</option>
-                              ))}
+                            <select value={editForm.status || app.status} onChange={(e) => setEditForm({ ...editForm, status: e.target.value })} className="text-xs font-semibold px-2 py-1 rounded-full border border-border bg-background text-foreground cursor-pointer">
+                              {STATUS_OPTIONS.map((s) => (<option key={s} value={s}>{s}</option>))}
                             </select>
                           ) : (
-                            <select
-                              value={app.status}
-                              onChange={(e) => updateStatus(app.id, e.target.value)}
-                              className={`text-xs font-semibold px-2 py-1 rounded-full border-none cursor-pointer ${getStatusColor(app.status)}`}
-                            >
-                              {STATUS_OPTIONS.map((s) => (
-                                <option key={s} value={s}>{s}</option>
-                              ))}
+                            <select value={app.status} onChange={(e) => updateStatus(app.id, e.target.value)} className={`text-xs font-semibold px-2 py-1 rounded-full border-none cursor-pointer ${getStatusColor(app.status)}`}>
+                              {STATUS_OPTIONS.map((s) => (<option key={s} value={s}>{s}</option>))}
                             </select>
                           )}
                         </td>
@@ -208,21 +235,13 @@ export const ApplicationTracker = () => {
                           <div className="flex items-center gap-1 justify-center">
                             {isEditing ? (
                               <>
-                                <button onClick={() => saveEdit(app.id)} className="text-[hsl(var(--skill-core))] hover:opacity-70 transition-colors">
-                                  <Check className="w-4 h-4" />
-                                </button>
-                                <button onClick={cancelEdit} className="text-muted-foreground hover:text-foreground transition-colors">
-                                  <X className="w-4 h-4" />
-                                </button>
+                                <button onClick={() => saveEdit(app.id)} className="text-[hsl(var(--skill-core))] hover:opacity-70 transition-colors"><Check className="w-4 h-4" /></button>
+                                <button onClick={cancelEdit} className="text-muted-foreground hover:text-foreground transition-colors"><X className="w-4 h-4" /></button>
                               </>
                             ) : (
                               <>
-                                <button onClick={() => startEdit(app)} className="text-muted-foreground hover:text-primary transition-colors">
-                                  <Pencil className="w-3.5 h-3.5" />
-                                </button>
-                                <button onClick={() => removeApp(app.id)} className="text-muted-foreground hover:text-destructive transition-colors">
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </button>
+                                <button onClick={() => startEdit(app)} className="text-muted-foreground hover:text-primary transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+                                <button onClick={() => removeApp(app.id)} className="text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
                               </>
                             )}
                           </div>

@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Brain, Filter, LayoutDashboard, Search } from "lucide-react";
+import { Sparkles, Brain, Filter, LayoutDashboard, Search, LogOut, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { GlassTextArea } from "@/components/GlassTextArea";
 import { DecodeButton } from "@/components/DecodeButton";
 import { SkillRadarChart } from "@/components/SkillRadarChart";
@@ -16,11 +18,27 @@ import type { DecodeResult } from "@/types/jd";
 type Tab = "decode" | "applications";
 
 const Index = () => {
+  const { user, loading, signOut } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>("decode");
   const [jdText, setJdText] = useState("");
   const [isScanning, setIsScanning] = useState(false);
   const [results, setResults] = useState<DecodeResult | null>(null);
   const [priorityFilter, setPriorityFilter] = useState(false);
+
+  // Redirect to auth if not logged in
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    navigate("/auth");
+    return null;
+  }
 
   const filteredSkills = results
     ? priorityFilter
@@ -76,6 +94,8 @@ const Index = () => {
         : "text-muted-foreground hover:text-foreground hover:bg-secondary"
     }`;
 
+  const displayName = user.email || user.phone || "User";
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Ambient background */}
@@ -108,6 +128,20 @@ const Index = () => {
             Applications
           </button>
         </nav>
+
+        {/* User info + sign out */}
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-muted-foreground hidden md:inline truncate max-w-[150px]">
+            {displayName}
+          </span>
+          <button
+            onClick={signOut}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            Sign out
+          </button>
+        </div>
       </header>
 
       {/* Main Content */}
