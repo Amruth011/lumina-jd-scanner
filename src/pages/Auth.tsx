@@ -69,22 +69,13 @@ const Auth = () => {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      const { default: lovableModule } = await import("@/integrations/lovable/index");
-      const { error } = await lovableModule.auth.signInWithOAuth("google", {
+      const { lovable } = await import("@/integrations/lovable/index");
+      const result = await lovable.auth.signInWithOAuth("google", {
         redirect_uri: window.location.origin,
       });
-      if (error) throw error;
+      if (result?.error) throw result.error;
     } catch (err: any) {
-      // Fallback to supabase direct if lovable module not available
-      try {
-        const { error } = await supabase.auth.signInWithOAuth({
-          provider: "google",
-          options: { redirectTo: window.location.origin },
-        });
-        if (error) throw error;
-      } catch (fallbackErr: any) {
-        toast.error(fallbackErr.message || "Google sign-in failed.");
-      }
+      toast.error(err.message || "Google sign-in failed.");
     } finally {
       setLoading(false);
     }
