@@ -14,11 +14,8 @@ export const WinningStrategy = ({ steps }: WinningStrategyProps) => {
       transition={{ duration: 0.5, delay: 0.4 }}
       className="glass-strong rounded-2xl p-6 glow-border relative overflow-hidden"
     >
-      {/* Subtle ambient (dark-only glow handled via CSS) */}
-      <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-primary/5 dark:bg-primary/10 blur-[60px] pointer-events-none" />
-
       <div className="flex items-center gap-2 mb-5">
-        <div className="p-2 rounded-lg bg-primary/10 dark:shadow-[0_0_16px_hsl(var(--primary)/0.25)]">
+        <div className="p-2 rounded-lg bg-primary/10">
           <Trophy className="w-5 h-5 text-primary" />
         </div>
         <h3 className="font-display font-semibold text-lg text-foreground">

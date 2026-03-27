@@ -8,7 +8,7 @@ interface CriticalRequirementsProps {
 
 const Badge = ({ label, variant = "default" }: { label: string; variant?: "education" | "experience" | "soft" | "warning" | "default" }) => {
   const styles = {
-    education: "bg-[hsl(var(--badge-gold)/0.15)] text-[hsl(var(--badge-gold))] border-[hsl(var(--badge-gold)/0.35)] dark:shadow-[0_0_14px_hsl(var(--badge-gold)/0.25)]",
+    education: "bg-[hsl(var(--badge-gold)/0.15)] text-[hsl(var(--badge-gold))] border-[hsl(var(--badge-gold)/0.35)]",
     experience: "bg-accent/15 text-accent border-accent/30",
     soft: "bg-secondary text-secondary-foreground border-border",
     warning: "bg-destructive/15 text-destructive border-destructive/30",
@@ -25,30 +25,10 @@ const Badge = ({ label, variant = "default" }: { label: string; variant?: "educa
 
 export const CriticalRequirements = ({ requirements }: CriticalRequirementsProps) => {
   const sections = [
-    {
-      icon: GraduationCap,
-      title: "Education",
-      items: requirements.education,
-      variant: "education" as const,
-    },
-    {
-      icon: Clock,
-      title: "Experience",
-      items: requirements.experience ? [requirements.experience] : [],
-      variant: "experience" as const,
-    },
-    {
-      icon: Users,
-      title: "Soft Skills",
-      items: requirements.soft_skills,
-      variant: "soft" as const,
-    },
-    {
-      icon: FileWarning,
-      title: "Agreements & Conditions",
-      items: requirements.agreements,
-      variant: "warning" as const,
-    },
+    { icon: GraduationCap, title: "Education", items: requirements.education, variant: "education" as const },
+    { icon: Clock, title: "Experience", items: requirements.experience ? [requirements.experience] : [], variant: "experience" as const },
+    { icon: Users, title: "Soft Skills", items: requirements.soft_skills, variant: "soft" as const },
+    { icon: FileWarning, title: "Agreements & Conditions", items: requirements.agreements, variant: "warning" as const },
   ];
 
   return (

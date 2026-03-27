@@ -80,11 +80,12 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
         toast.success("Resume parsed successfully.");
       }
     } catch (err: any) {
-      console.error(err);
+      console.error("File parse error:", err);
       toast.error("Failed to parse file. Try pasting text manually.");
       setFileName("");
     } finally {
       setIsParsing(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -114,18 +115,18 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
 
   const handleAddToTracker = () => {
     if (!result) return;
+    const company = prompt("Company name?");
+    if (!company) return;
+
     const app: TrackedApplication = {
       id: crypto.randomUUID(),
-      company: "",
+      company,
       role: jobTitle || "Unknown Role",
       matchPercent: result.overall_match,
+      currentMatchPercent: result.overall_match,
       status: "Saved",
       addedAt: new Date().toISOString(),
     };
-
-    const company = prompt("Company name?");
-    if (!company) return;
-    app.company = company;
 
     saveApplication(app);
     setAddedToTracker(true);
@@ -134,7 +135,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
   };
 
   const getBarColor = (verdict: string) => {
-    if (verdict === "strong") return "from-emerald-500 to-green-400";
+    if (verdict === "strong") return "from-[hsl(160,64%,36%)] to-[hsl(155,55%,48%)]";
     if (verdict === "partial") return "from-amber-500 to-yellow-400";
     return "from-red-500 to-rose-400";
   };
@@ -220,7 +221,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
                 value={resumeText}
                 onChange={(e) => setResumeText(e.target.value)}
                 placeholder="Paste your resume text here..."
-                className="w-full h-32 bg-transparent rounded-xl p-4 text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-accent/30 font-sans text-sm leading-relaxed border border-border mt-2"
+                className="w-full h-32 bg-background rounded-xl p-4 text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-accent/30 font-sans text-sm leading-relaxed border border-border mt-2"
                 disabled={isAnalyzing}
               />
             </details>
@@ -255,7 +256,6 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
               <span className="text-3xl font-display font-bold text-foreground">{result.overall_match}%</span>
               <span className="text-sm text-muted-foreground ml-2">Overall Match</span>
 
-              {/* Add to Tracker button */}
               {!addedToTracker ? (
                 <button
                   onClick={handleAddToTracker}
@@ -314,17 +314,17 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
                     <span className="text-xs text-muted-foreground flex items-center gap-1.5">
                       <span className={`text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded ${
                         sm.verdict === "strong"
-                          ? "text-emerald-400 bg-emerald-500/10"
+                          ? "text-[hsl(var(--skill-core))] bg-[hsl(var(--skill-core)/0.12)]"
                           : sm.verdict === "partial"
-                          ? "text-amber-400 bg-amber-500/10"
-                          : "text-red-400 bg-red-500/10"
+                          ? "text-amber-600 bg-amber-500/10"
+                          : "text-destructive bg-destructive/10"
                       }`}>
                         {getVerdictLabel(sm.verdict)}
                       </span>
                       {sm.match_percent}%
                     </span>
                   </div>
-                  <div className="w-full h-2.5 rounded-full bg-muted/50 overflow-hidden glass">
+                  <div className="w-full h-2.5 rounded-full bg-muted/50 overflow-hidden">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${sm.match_percent}%` }}
