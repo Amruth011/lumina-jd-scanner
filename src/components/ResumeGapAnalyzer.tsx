@@ -113,7 +113,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
     }
   };
 
-  const handleAddToTracker = () => {
+  const handleAddToTracker = async () => {
     if (!result) return;
     const company = prompt("Company name?");
     if (!company) return;
@@ -128,10 +128,14 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
       addedAt: new Date().toISOString(),
     };
 
-    saveApplication(app);
-    setAddedToTracker(true);
-    window.dispatchEvent(new Event("tracker-updated"));
-    toast.success("Added to tracker!");
+    try {
+      await saveApplication(app);
+      setAddedToTracker(true);
+      window.dispatchEvent(new Event("tracker-updated"));
+      toast.success("Added to tracker!");
+    } catch {
+      toast.error("Failed to save. Please sign in first.");
+    }
   };
 
   const getBarColor = (verdict: string) => {
