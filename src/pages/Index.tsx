@@ -35,9 +35,18 @@ const Index = () => {
     );
   }
 
-  if (!user) {
-    navigate("/auth");
-    return null;
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/auth");
+    }
+  }, [loading, user, navigate]);
+
+  if (loading || !user) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+      </div>
+    );
   }
 
   const filteredSkills = results
