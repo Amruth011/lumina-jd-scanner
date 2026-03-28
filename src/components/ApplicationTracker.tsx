@@ -53,6 +53,8 @@ export const ApplicationTracker = () => {
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<TrackedApplication>>({});
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newApp, setNewApp] = useState({ company: "", role: "", matchPercent: 0, status: "Applied" });
 
   const fetchApps = async () => {
     if (!user) return;
