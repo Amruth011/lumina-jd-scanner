@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Briefcase, Trash2, Pencil, Check, X, Loader2 } from "lucide-react";
+import { Briefcase, Trash2, Pencil, Check, X, Loader2, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
@@ -53,6 +53,8 @@ export const ApplicationTracker = () => {
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<TrackedApplication>>({});
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newApp, setNewApp] = useState({ company: "", role: "", matchPercent: 0, status: "Applied" });
 
   const fetchApps = async () => {
     if (!user) return;
@@ -138,6 +140,30 @@ export const ApplicationTracker = () => {
     else fetchApps();
   };
 
+  const handleManualAdd = async () => {
+    if (!newApp.company.trim() || !newApp.role.trim()) {
+      toast.error("Company and Role are required.");
+      return;
+    }
+    try {
+      await saveApplication({
+        id: crypto.randomUUID(),
+        company: newApp.company,
+        role: newApp.role,
+        matchPercent: newApp.matchPercent,
+        currentMatchPercent: newApp.matchPercent,
+        status: newApp.status,
+        addedAt: new Date().toISOString(),
+      });
+      setNewApp({ company: "", role: "", matchPercent: 0, status: "Applied" });
+      setShowAddForm(false);
+      fetchApps();
+      toast.success("Application added!");
+    } catch {
+      toast.error("Failed to save. Please sign in first.");
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto">
       <div className="glass-strong rounded-2xl p-6 glow-border">
@@ -148,8 +174,73 @@ export const ApplicationTracker = () => {
           <h3 className="font-display font-semibold text-lg text-foreground">
             My Applications
           </h3>
-          <span className="text-xs text-muted-foreground ml-auto">{apps.length} tracked</span>
+          <div className="ml-auto flex items-center gap-3">
+            <span className="text-xs text-muted-foreground">{apps.length} tracked</span>
+            <button
+              onClick={() => setShowAddForm(!showAddForm)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-primary text-primary-foreground hover:opacity-90 transition-all"
+            >
+              <Plus className="w-3.5 h-3.5" /> Add Manually
+            </button>
+          </div>
         </div>
+
+        {/* Manual Add Form */}
+        <AnimatePresence>
+          {showAddForm && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="overflow-hidden"
+            >
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 mb-5 p-4 rounded-xl border border-border bg-muted/30">
+                <input
+                  placeholder="Company *"
+                  value={newApp.company}
+                  onChange={(e) => setNewApp({ ...newApp, company: e.target.value })}
+                  className="px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground"
+                />
+                <input
+                  placeholder="Role *"
+                  value={newApp.role}
+                  onChange={(e) => setNewApp({ ...newApp, role: e.target.value })}
+                  className="px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground"
+                />
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  placeholder="Match %"
+                  value={newApp.matchPercent || ""}
+                  onChange={(e) => setNewApp({ ...newApp, matchPercent: Number(e.target.value) })}
+                  className="px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground"
+                />
+                <select
+                  value={newApp.status}
+                  onChange={(e) => setNewApp({ ...newApp, status: e.target.value })}
+                  className="px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground"
+                >
+                  {STATUS_OPTIONS.map((s) => (<option key={s} value={s}>{s}</option>))}
+                </select>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleManualAdd}
+                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-semibold bg-accent text-accent-foreground hover:opacity-90 transition-all"
+                  >
+                    <Check className="w-3.5 h-3.5" /> Save
+                  </button>
+                  <button
+                    onClick={() => setShowAddForm(false)}
+                    className="px-3 py-2 rounded-lg text-xs text-muted-foreground hover:text-foreground border border-border transition-all"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {loading ? (
           <div className="flex items-center justify-center py-12">
