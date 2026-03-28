@@ -61,7 +61,7 @@ ${jdText}`,
               parameters: {
                 type: "object",
                 properties: {
-                  title: { type: "string", description: "Short job title" },
+                  title: { type: "string", description: "The EXACT job title from the JD. If company is mentioned, format as 'Company — Job Title'. Never rename or reinterpret the title based on skills." },
                   skills: {
                     type: "array",
                     items: {
