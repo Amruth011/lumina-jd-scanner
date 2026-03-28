@@ -41,7 +41,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isParsing, setIsParsing] = useState(false);
   const [result, setResult] = useState<ResumeGapResult | null>(null);
-  const [showDeductions, setShowDeductions] = useState(false);
+  
   const [addedToTracker, setAddedToTracker] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
