@@ -256,7 +256,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
             transition={{ duration: 0.4 }}
             className="mt-5"
           >
-            {/* Overall match + Why not 100% + Add to Tracker */}
+            {/* Overall match + Add to Tracker */}
             <div className="mb-4 text-center">
               <span className="text-3xl font-display font-bold text-foreground">{result.overall_match}%</span>
               <span className="text-sm text-muted-foreground ml-2">Overall Match</span>
@@ -271,39 +271,37 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
               ) : (
                 <span className="ml-4 text-xs text-[hsl(var(--skill-core))] font-semibold">✓ Tracked</span>
               )}
-
-              {result.deductions && result.deductions.length > 0 && (
-                <div className="mt-2">
-                  <button
-                    onClick={() => setShowDeductions(!showDeductions)}
-                    className="inline-flex items-center gap-1 text-xs text-destructive/80 hover:text-destructive transition-colors font-medium"
-                  >
-                    Why not 100%?
-                    {showDeductions ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                  </button>
-                  <AnimatePresence>
-                    {showDeductions && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="mt-2 glass rounded-xl p-3 text-left max-w-md mx-auto"
-                      >
-                        <p className="text-xs font-semibold text-foreground mb-2">Deductions</p>
-                        <ul className="space-y-1">
-                          {result.deductions.map((d, i) => (
-                            <li key={i} className="flex items-center gap-2 text-xs">
-                              <span className="text-destructive font-bold whitespace-nowrap">-{d.percent}%</span>
-                              <span className="text-muted-foreground">{d.reason}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              )}
             </div>
+
+            {/* Why Not 100% — Always Visible & Prominent */}
+            {result.deductions && result.deductions.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.1 }}
+                className="mb-5 rounded-xl border-2 border-destructive/30 bg-destructive/5 p-4"
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full bg-destructive/15">
+                    <span className="text-destructive text-xs font-bold">!</span>
+                  </div>
+                  <h4 className="text-sm font-bold text-destructive">
+                    Why Not 100%? — Fix These to Improve Your Score
+                  </h4>
+                </div>
+                <div className="space-y-2">
+                  {result.deductions.map((d, i) => (
+                    <div key={i} className="flex items-start gap-3 bg-background/60 rounded-lg px-3 py-2 border border-destructive/10">
+                      <span className="text-destructive font-extrabold text-sm whitespace-nowrap mt-0.5">-{d.percent}%</span>
+                      <span className="text-sm text-foreground leading-snug">{d.reason}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-3 text-xs text-muted-foreground italic">
+                  Address these gaps to push your match score closer to 100%.
+                </p>
+              </motion.div>
+            )}
 
             {/* Skill bars */}
             <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">

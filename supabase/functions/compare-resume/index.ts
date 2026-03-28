@@ -33,11 +33,21 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: "You are an expert resume analyzer. Compare a resume against required JD skills. Estimate match percentage for each skill AND provide specific deductions explaining why the overall match isn't 100%.",
+            content: `You are an expert resume analyzer. Compare a resume against required JD skills. Estimate match percentage for each skill AND provide specific deductions explaining why the overall match isn't 100%.
+
+CRITICAL RULE — ALTERNATIVE/OR SKILLS:
+When a JD lists alternatives separated by "or", "/", "and/or", or similar (e.g. "Python or R", "LangGraph or LangChain", "AWS or Azure or GCP", "React or Angular"), these are INTERCHANGEABLE options — having ANY ONE of them is a FULL MATCH (100% for that skill). Do NOT deduct points for not knowing the other alternatives.
+Instead, in the "note" field, acknowledge the match and suggest mentioning the other alternatives to stand out from the competition.
+This applies to programming languages, frameworks, libraries, cloud platforms, tools, certifications — ANY skill where the JD presents multiple options as alternatives.
+
+Examples:
+- JD says "Python or R" and resume has Python → 100% match, note: "Strong match with Python. Consider also mentioning R to stand out."
+- JD says "LangChain or LangGraph" and resume has LangChain → 100% match, note: "LangChain covers this requirement. Adding LangGraph would strengthen your profile."
+- JD says "AWS or Azure" and resume has neither → 0% match, verdict: missing.`,
           },
           {
             role: "user",
-            content: `Compare this resume against the required skills. Estimate match percentage (0-100) for each skill. Also provide a list of specific deductions from 100%.
+            content: `Compare this resume against the required skills. Estimate match percentage (0-100) for each skill. Remember: if the JD lists alternatives (connected by "or", "/", etc.), having ANY ONE is a full match — do NOT deduct for missing alternatives. Also provide a list of specific deductions from 100%.
 
 Required Skills: ${skillNames}
 
