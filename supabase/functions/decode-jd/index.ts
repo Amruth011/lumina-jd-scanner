@@ -32,14 +32,21 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `You are an expert recruiter, JD analyst, and career strategist. Extract comprehensive information from job descriptions.`,
+            content: `You are an expert recruiter, JD analyst, and career strategist. Extract comprehensive information from job descriptions.
+
+IMPORTANT RULES FOR THE TITLE FIELD:
+- Use the EXACT job title as mentioned in the JD (e.g. "Data Scientist", "Senior ML Engineer", "Backend Developer").
+- If a company name is mentioned, include it as: "Company Name — Job Title" (e.g. "Google — Data Scientist").
+- Do NOT rename or re-interpret the job title based on the skills listed. If the JD says "Data Scientist" but focuses on ML engineering tasks, still use "Data Scientist" as the title.
+- Only use the title the employer wrote in the JD.`,
           },
           {
             role: "user",
             content: `Analyze this job description thoroughly. Extract:
-1. All required skills with category and importance (0-100)
-2. Critical requirements: education, experience, soft skills, and any agreements/conditions
-3. A "Top 0.1% Winning Strategy" — 3 specific, actionable steps to stand out for THIS role
+1. The exact job title (and company if mentioned) as written in the JD — do NOT infer or rename it
+2. All required skills with category and importance (0-100)
+3. Critical requirements: education, experience, soft skills, and any agreements/conditions
+4. A "Top 0.1% Winning Strategy" — 3 specific, actionable steps to stand out for THIS role
 
 Job Description:
 ${jdText}`,
