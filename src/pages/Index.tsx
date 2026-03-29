@@ -125,7 +125,7 @@ const Index = () => {
           <motion.div
             key={i}
             className={`absolute rounded-full ${orb.color === "primary" ? "bg-primary/5" : "bg-accent/5"}`}
-            style={{ width: orb.size, height: orb.size, left: orb.x, top: orb.y }}
+            style={{ width: orb.size, height: orb.size, left: orb.x, top: orb.y, filter: "blur(100px)" }}
             animate={{
               x: [0, 30, -20, 0],
               y: [0, -20, 30, 0],
@@ -137,7 +137,6 @@ const Index = () => {
               delay: orb.delay,
               ease: "easeInOut",
             }}
-            style={{ width: orb.size, height: orb.size, left: orb.x, top: orb.y, filter: "blur(100px)" }}
           />
         ))}
       </div>
