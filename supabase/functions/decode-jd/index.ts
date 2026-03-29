@@ -64,7 +64,7 @@ ${jdText}`,
               parameters: {
                 type: "object",
                 properties: {
-                  title: { type: "string", description: "The EXACT job title from the JD. If company is mentioned, format as 'Company — Job Title'. Never rename or reinterpret the title based on skills." },
+                  title: { type: "string", description: "The EXACT job title from the JD. Format: 'Company — Job Title' if both exist, just 'Job Title' if no company, or 'This JD aligns with [Role] based on the requirements' if no explicit title. If skills align with a different role, add parenthetical note e.g. 'Data Scientist (skills align closely with ML Engineering)'." },
                   skills: {
                     type: "array",
                     items: {
