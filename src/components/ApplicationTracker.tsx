@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Briefcase, Trash2, Pencil, Check, X, Loader2, Plus } from "lucide-react";
+import { Briefcase, Trash2, Pencil, Check, X, Loader2, Plus, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
@@ -164,24 +164,64 @@ export const ApplicationTracker = () => {
     }
   };
 
+  // Stats
+  const totalApps = apps.length;
+  const interviewCount = apps.filter(a => a.status === "Interview" || a.status === "Assessment").length;
+  const offerCount = apps.filter(a => a.status === "Offer").length;
+
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="glass-strong rounded-2xl p-6 glow-border">
+      {/* Stats row */}
+      {totalApps > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="grid grid-cols-3 gap-4 mb-6"
+        >
+          {[
+            { label: "Total Applications", value: totalApps, color: "text-primary" },
+            { label: "In Pipeline", value: interviewCount, color: "text-[hsl(var(--skill-core))]" },
+            { label: "Offers", value: offerCount, color: "text-[hsl(var(--badge-gold))]" },
+          ].map((stat, i) => (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 * i }}
+              className="glass-strong rounded-xl p-4 text-center glow-border"
+            >
+              <span className={`text-2xl font-display font-bold ${stat.color}`}>{stat.value}</span>
+              <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
+
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="glass-strong rounded-2xl p-6 glow-border"
+      >
         <div className="flex items-center gap-2 mb-5">
-          <div className="p-2 rounded-lg bg-primary/10">
+          <motion.div
+            whileHover={{ rotate: 10 }}
+            className="p-2 rounded-lg bg-primary/10"
+          >
             <Briefcase className="w-5 h-5 text-primary" />
-          </div>
+          </motion.div>
           <h3 className="font-display font-semibold text-lg text-foreground">
             My Applications
           </h3>
           <div className="ml-auto flex items-center gap-3">
             <span className="text-xs text-muted-foreground">{apps.length} tracked</span>
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setShowAddForm(!showAddForm)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-primary text-primary-foreground hover:opacity-90 transition-all"
             >
               <Plus className="w-3.5 h-3.5" /> Add Manually
-            </button>
+            </motion.button>
           </div>
         </div>
 
@@ -192,6 +232,7 @@ export const ApplicationTracker = () => {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
               className="overflow-hidden"
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 mb-5 p-4 rounded-xl border border-border bg-muted/30">
@@ -199,13 +240,13 @@ export const ApplicationTracker = () => {
                   placeholder="Company *"
                   value={newApp.company}
                   onChange={(e) => setNewApp({ ...newApp, company: e.target.value })}
-                  className="px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground"
+                  className="px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all"
                 />
                 <input
                   placeholder="Role *"
                   value={newApp.role}
                   onChange={(e) => setNewApp({ ...newApp, role: e.target.value })}
-                  className="px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground"
+                  className="px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all"
                 />
                 <input
                   type="number"
@@ -214,22 +255,24 @@ export const ApplicationTracker = () => {
                   placeholder="Match %"
                   value={newApp.matchPercent || ""}
                   onChange={(e) => setNewApp({ ...newApp, matchPercent: Number(e.target.value) })}
-                  className="px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground"
+                  className="px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all"
                 />
                 <select
                   value={newApp.status}
                   onChange={(e) => setNewApp({ ...newApp, status: e.target.value })}
-                  className="px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground"
+                  className="px-3 py-2 text-sm border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all"
                 >
                   {STATUS_OPTIONS.map((s) => (<option key={s} value={s}>{s}</option>))}
                 </select>
                 <div className="flex gap-2">
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
                     onClick={handleManualAdd}
                     className="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-semibold bg-accent text-accent-foreground hover:opacity-90 transition-all"
                   >
                     <Check className="w-3.5 h-3.5" /> Save
-                  </button>
+                  </motion.button>
                   <button
                     onClick={() => setShowAddForm(false)}
                     className="px-3 py-2 rounded-lg text-xs text-muted-foreground hover:text-foreground border border-border transition-all"
@@ -247,11 +290,20 @@ export const ApplicationTracker = () => {
             <Loader2 className="w-6 h-6 text-primary animate-spin" />
           </div>
         ) : apps.length === 0 ? (
-          <div className="text-center py-12">
-            <Briefcase className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-12"
+          >
+            <motion.div
+              animate={{ y: [0, -5, 0] }}
+              transition={{ duration: 3, repeat: Infinity }}
+            >
+              <Briefcase className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
+            </motion.div>
             <p className="text-sm text-muted-foreground">No applications tracked yet.</p>
-            <p className="text-xs text-muted-foreground mt-1">Decode a JD and run a Gap Analysis, then click "Add to Tracker".</p>
-          </div>
+            <p className="text-xs text-muted-foreground mt-1">Decode a JD and run a Gap Analysis, then click "Add to Tracker" or use "Add Manually".</p>
+          </motion.div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -268,7 +320,7 @@ export const ApplicationTracker = () => {
               </thead>
               <tbody>
                 <AnimatePresence>
-                  {apps.map((app) => {
+                  {apps.map((app, appIndex) => {
                     const isEditing = editingId === app.id;
                     const currentMatch = app.currentMatchPercent ?? app.matchPercent;
                     const improved = currentMatch > app.matchPercent;
@@ -276,9 +328,10 @@ export const ApplicationTracker = () => {
                     return (
                       <motion.tr
                         key={app.id}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ delay: 0.03 * appIndex }}
                         className="border-b border-border/50 hover:bg-muted/30 transition-colors"
                       >
                         <td className="py-2.5">
@@ -304,7 +357,15 @@ export const ApplicationTracker = () => {
                           ) : (
                             <span className={`font-semibold ${improved ? "text-[hsl(var(--skill-core))]" : "text-primary"}`}>
                               {currentMatch}%
-                              {improved && <span className="text-[10px] ml-1">↑</span>}
+                              {improved && (
+                                <motion.span
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  className="inline-flex ml-1"
+                                >
+                                  <TrendingUp className="w-3 h-3" />
+                                </motion.span>
+                              )}
                             </span>
                           )}
                         </td>
@@ -326,13 +387,13 @@ export const ApplicationTracker = () => {
                           <div className="flex items-center gap-1 justify-center">
                             {isEditing ? (
                               <>
-                                <button onClick={() => saveEdit(app.id)} className="text-[hsl(var(--skill-core))] hover:opacity-70 transition-colors"><Check className="w-4 h-4" /></button>
-                                <button onClick={cancelEdit} className="text-muted-foreground hover:text-foreground transition-colors"><X className="w-4 h-4" /></button>
+                                <motion.button whileHover={{ scale: 1.2 }} onClick={() => saveEdit(app.id)} className="text-[hsl(var(--skill-core))] hover:opacity-70 transition-colors"><Check className="w-4 h-4" /></motion.button>
+                                <motion.button whileHover={{ scale: 1.2 }} onClick={cancelEdit} className="text-muted-foreground hover:text-foreground transition-colors"><X className="w-4 h-4" /></motion.button>
                               </>
                             ) : (
                               <>
-                                <button onClick={() => startEdit(app)} className="text-muted-foreground hover:text-primary transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
-                                <button onClick={() => removeApp(app.id)} className="text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                                <motion.button whileHover={{ scale: 1.2 }} onClick={() => startEdit(app)} className="text-muted-foreground hover:text-primary transition-colors"><Pencil className="w-3.5 h-3.5" /></motion.button>
+                                <motion.button whileHover={{ scale: 1.2 }} onClick={() => removeApp(app.id)} className="text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-3.5 h-3.5" /></motion.button>
                               </>
                             )}
                           </div>
@@ -345,7 +406,7 @@ export const ApplicationTracker = () => {
             </table>
           </div>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 };

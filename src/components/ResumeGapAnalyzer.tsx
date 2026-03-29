@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, Loader2, ArrowRight, Upload, PlusCircle } from "lucide-react";
+import { FileText, Loader2, ArrowRight, Upload, PlusCircle, AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { saveApplication, type TrackedApplication } from "@/components/ApplicationTracker";
@@ -41,7 +41,6 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isParsing, setIsParsing] = useState(false);
   const [result, setResult] = useState<ResumeGapResult | null>(null);
-  
   const [addedToTracker, setAddedToTracker] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -145,10 +144,22 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
     return "from-red-500 to-rose-400";
   };
 
+  const getVerdictIcon = (verdict: string) => {
+    if (verdict === "strong") return <CheckCircle2 className="w-3.5 h-3.5 text-[hsl(var(--skill-core))]" />;
+    if (verdict === "partial") return <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />;
+    return <XCircle className="w-3.5 h-3.5 text-destructive" />;
+  };
+
   const getVerdictLabel = (verdict: string) => {
     if (verdict === "strong") return "Strong Match";
     if (verdict === "partial") return "Partial";
     return "Gap";
+  };
+
+  const getMatchColor = (percent: number) => {
+    if (percent >= 80) return "text-[hsl(var(--skill-core))]";
+    if (percent >= 50) return "text-amber-500";
+    return "text-destructive";
   };
 
   return (
@@ -160,20 +171,25 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div className="p-2 rounded-lg bg-accent/10">
+          <motion.div
+            whileHover={{ rotate: 10 }}
+            className="p-2 rounded-lg bg-accent/10"
+          >
             <FileText className="w-5 h-5 text-accent" />
-          </div>
+          </motion.div>
           <h3 className="font-display font-semibold text-lg text-foreground">
             Resume Gap Analyzer
           </h3>
         </div>
         {!isOpen && (
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05, x: 3 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setIsOpen(true)}
             className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium bg-primary/15 text-primary border border-primary/30 hover:bg-primary/25 transition-all"
           >
             Compare Resume <ArrowRight className="w-3.5 h-3.5" />
-          </button>
+          </motion.button>
         )}
       </div>
 
@@ -183,12 +199,13 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
           >
             {/* File Upload Area */}
-            <div
+            <motion.div
+              whileHover={{ borderColor: "hsl(210 100% 52% / 0.4)", background: "hsl(210 100% 52% / 0.03)" }}
               onClick={() => fileInputRef.current?.click()}
-              className="w-full border-2 border-dashed border-border rounded-xl p-8 mb-3 cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-all text-center"
+              className="w-full border-2 border-dashed border-border rounded-xl p-8 mb-3 cursor-pointer transition-all text-center"
             >
               <input
                 ref={fileInputRef}
@@ -204,19 +221,28 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
                   <span className="text-sm text-muted-foreground">Parsing {fileName}...</span>
                 </div>
               ) : fileName ? (
-                <div className="flex flex-col items-center gap-2">
+                <motion.div
+                  initial={{ scale: 0.9 }}
+                  animate={{ scale: 1 }}
+                  className="flex flex-col items-center gap-2"
+                >
                   <FileText className="w-8 h-8 text-primary" />
                   <span className="text-sm font-medium text-foreground">{fileName}</span>
                   <span className="text-xs text-muted-foreground">Click to replace</span>
-                </div>
+                </motion.div>
               ) : (
                 <div className="flex flex-col items-center gap-2">
-                  <Upload className="w-8 h-8 text-muted-foreground" />
+                  <motion.div
+                    animate={{ y: [0, -5, 0] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    <Upload className="w-8 h-8 text-muted-foreground" />
+                  </motion.div>
                   <span className="text-sm font-medium text-foreground">Upload Resume</span>
                   <span className="text-xs text-muted-foreground">PDF, DOCX, or TXT (max 10MB)</span>
                 </div>
               )}
-            </div>
+            </motion.div>
 
             <details className="mb-3">
               <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
@@ -231,7 +257,9 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
               />
             </details>
 
-            <button
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               onClick={handleCompare}
               disabled={isAnalyzing || resumeText.trim().length < 20}
               className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold bg-accent text-accent-foreground hover:opacity-90 transition-all disabled:opacity-40"
@@ -243,7 +271,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
               ) : (
                 "Run Gap Analysis"
               )}
-            </button>
+            </motion.button>
           </motion.div>
         )}
       </AnimatePresence>
@@ -251,50 +279,82 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
       <AnimatePresence>
         {result && (
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
+            transition={{ duration: 0.5 }}
             className="mt-5"
           >
-            {/* Overall match + Add to Tracker */}
-            <div className="mb-4 text-center">
-              <span className="text-3xl font-display font-bold text-foreground">{result.overall_match}%</span>
-              <span className="text-sm text-muted-foreground ml-2">Overall Match</span>
+            {/* Overall match score - prominent */}
+            <motion.div
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 200 }}
+              className="mb-5 text-center py-6 glass rounded-xl relative overflow-hidden"
+            >
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5"
+                animate={{ opacity: [0.3, 0.6, 0.3] }}
+                transition={{ duration: 3, repeat: Infinity }}
+              />
+              <div className="relative z-10">
+                <span className={`text-5xl font-display font-bold ${getMatchColor(result.overall_match)}`}>
+                  {result.overall_match}%
+                </span>
+                <p className="text-sm text-muted-foreground mt-1">Overall Match Score</p>
 
-              {!addedToTracker ? (
-                <button
-                  onClick={handleAddToTracker}
-                  className="ml-4 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
-                >
-                  <PlusCircle className="w-3.5 h-3.5" /> Add to Tracker
-                </button>
-              ) : (
-                <span className="ml-4 text-xs text-[hsl(var(--skill-core))] font-semibold">✓ Tracked</span>
-              )}
-            </div>
+                {!addedToTracker ? (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleAddToTracker}
+                    className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold text-primary bg-primary/10 border border-primary/20 hover:bg-primary/20 transition-all"
+                  >
+                    <PlusCircle className="w-3.5 h-3.5" /> Add to Tracker
+                  </motion.button>
+                ) : (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="mt-3 inline-flex items-center gap-1 text-xs text-[hsl(var(--skill-core))] font-semibold"
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Tracked
+                  </motion.span>
+                )}
+              </div>
+            </motion.div>
 
-            {/* Why Not 100% — Always Visible & Prominent */}
+            {/* Why Not 100% — Prominent deductions panel */}
             {result.deductions && result.deductions.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.1 }}
-                className="mb-5 rounded-xl border-2 border-destructive/30 bg-destructive/5 p-4"
+                className="mb-5 rounded-xl border-2 border-destructive/30 bg-destructive/5 p-5"
               >
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="flex items-center justify-center w-6 h-6 rounded-full bg-destructive/15">
-                    <span className="text-destructive text-xs font-bold">!</span>
-                  </div>
+                  <motion.div
+                    animate={{ rotate: [0, -5, 5, 0] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="flex items-center justify-center w-7 h-7 rounded-full bg-destructive/15"
+                  >
+                    <AlertTriangle className="w-4 h-4 text-destructive" />
+                  </motion.div>
                   <h4 className="text-sm font-bold text-destructive">
                     Why Not 100%? — Fix These to Improve Your Score
                   </h4>
                 </div>
                 <div className="space-y-2">
                   {result.deductions.map((d, i) => (
-                    <div key={i} className="flex items-start gap-3 bg-background/60 rounded-lg px-3 py-2 border border-destructive/10">
-                      <span className="text-destructive font-extrabold text-sm whitespace-nowrap mt-0.5">-{d.percent}%</span>
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.05 * i }}
+                      className="flex items-start gap-3 bg-background/60 rounded-lg px-3 py-2.5 border border-destructive/10"
+                    >
+                      <span className="text-destructive font-extrabold text-sm whitespace-nowrap mt-0.5 min-w-[40px]">-{d.percent}%</span>
                       <span className="text-sm text-foreground leading-snug">{d.reason}</span>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
                 <p className="mt-3 text-xs text-muted-foreground italic">
@@ -313,7 +373,10 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
                   transition={{ delay: 0.05 * i, duration: 0.3 }}
                 >
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-sm font-medium text-foreground">{sm.skill}</span>
+                    <span className="text-sm font-medium text-foreground flex items-center gap-1.5">
+                      {getVerdictIcon(sm.verdict)}
+                      {sm.skill}
+                    </span>
                     <span className="text-xs text-muted-foreground flex items-center gap-1.5">
                       <span className={`text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded ${
                         sm.verdict === "strong"
@@ -341,9 +404,19 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
             </div>
 
             {/* Summary */}
-            <p className="mt-4 text-sm text-muted-foreground leading-relaxed glass rounded-xl p-3">
-              {result.summary}
-            </p>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="mt-4 glass rounded-xl p-4 relative overflow-hidden"
+            >
+              <motion.div
+                className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-accent rounded-full"
+              />
+              <p className="text-sm text-muted-foreground leading-relaxed pl-3">
+                {result.summary}
+              </p>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

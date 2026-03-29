@@ -35,10 +35,13 @@ serve(async (req) => {
             content: `You are an expert recruiter, JD analyst, and career strategist. Extract comprehensive information from job descriptions.
 
 IMPORTANT RULES FOR THE TITLE FIELD:
-- Use the EXACT job title as mentioned in the JD (e.g. "Data Scientist", "Senior ML Engineer", "Backend Developer").
-- If a company name is mentioned, include it as: "Company Name — Job Title" (e.g. "Google — Data Scientist").
+- FIRST, look for an explicit job title and company name in the JD text.
+- If BOTH company and job title are clearly stated, format as: "Company Name — Job Title" (e.g. "Google — Data Scientist").
+- If ONLY the job title is stated (no company), use just the title: "Data Scientist".
 - Do NOT rename or re-interpret the job title based on the skills listed. If the JD says "Data Scientist" but focuses on ML engineering tasks, still use "Data Scientist" as the title.
-- Only use the title the employer wrote in the JD.`,
+- If the skills heavily align with a different role, ADD a parenthetical note: e.g. "Data Scientist (skills align closely with ML Engineering)" — but KEEP the original title.
+- If NO explicit job title is found in the JD, infer the best-fit role and format as: "This JD aligns with [Inferred Role] based on the requirements" (e.g. "This JD aligns with ML Engineer based on the requirements").
+- If NO company name is found, do NOT fabricate one — omit it.`,
           },
           {
             role: "user",
@@ -61,7 +64,7 @@ ${jdText}`,
               parameters: {
                 type: "object",
                 properties: {
-                  title: { type: "string", description: "The EXACT job title from the JD. If company is mentioned, format as 'Company — Job Title'. Never rename or reinterpret the title based on skills." },
+                  title: { type: "string", description: "The EXACT job title from the JD. Format: 'Company — Job Title' if both exist, just 'Job Title' if no company, or 'This JD aligns with [Role] based on the requirements' if no explicit title. If skills align with a different role, add parenthetical note e.g. 'Data Scientist (skills align closely with ML Engineering)'." },
                   skills: {
                     type: "array",
                     items: {
