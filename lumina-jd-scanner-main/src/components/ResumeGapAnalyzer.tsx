@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, Loader2, ArrowRight, Upload, PlusCircle, AlertTriangle, CheckCircle2, XCircle, Sparkles, Copy } from "lucide-react";
+import { FileText, Loader2, ArrowRight, Upload, PlusCircle, AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { saveApplication, type TrackedApplication } from "@/components/ApplicationTracker";
@@ -43,28 +43,6 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
   const [result, setResult] = useState<ResumeGapResult | null>(null);
   const [addedToTracker, setAddedToTracker] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [generatingFor, setGeneratingFor] = useState<number | null>(null);
-  const [generatedBullets, setGeneratedBullets] = useState<Record<number, string>>({});
-
-  const handleGenerateBullet = (index: number, reason: string) => {
-    setGeneratingFor(index);
-    // Simulate AI generation delay
-    setTimeout(() => {
-      const keywords = reason.replace(/missing/i, "").trim();
-      const randomMetrics = ["25%", "30%", "over $1M", "10x", "40%", "200+ users"];
-      const metric = randomMetrics[Math.floor(Math.random() * randomMetrics.length)];
-      setGeneratedBullets(prev => ({
-        ...prev,
-        [index]: `Spearheaded the integration of ${keywords || "this skill"}, leading to a ${metric} improvement in overall project delivery efficiency.`
-      }));
-      setGeneratingFor(null);
-    }, 2000);
-  };
-
-  const handleCopyBullet = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success("Bullet point copied to clipboard!");
-  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -372,47 +350,10 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.05 * i }}
-                      className="flex flex-col bg-background/60 rounded-xl border border-destructive/20 overflow-hidden"
+                      className="flex items-start gap-3 bg-background/60 rounded-lg px-3 py-2.5 border border-destructive/10"
                     >
-                      <div className="flex items-start gap-3 px-4 py-3">
-                        <span className="text-destructive font-bold text-sm whitespace-nowrap mt-0.5 min-w-[35px] bg-destructive/10 px-1.5 py-0.5 rounded text-center">-{d.percent}%</span>
-                        <div className="flex-1">
-                           <span className="text-sm text-foreground leading-snug">{d.reason}</span>
-                        </div>
-                        <motion.button
-                           whileHover={{ scale: 1.05 }}
-                           whileTap={{ scale: 0.95 }}
-                           onClick={() => handleGenerateBullet(i, d.reason)}
-                           disabled={generatingFor === i || !!generatedBullets[i]}
-                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-all disabled:opacity-50"
-                        >
-                           {generatingFor === i ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-                           {generatingFor === i ? "Generating..." : generatedBullets[i] ? "Generated" : "Fix with AI"}
-                        </motion.button>
-                      </div>
-                      <AnimatePresence>
-                        {generatedBullets[i] && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            className="bg-primary/5 border-t border-primary/10 px-4 py-3 flex gap-3 items-start relative group"
-                          >
-                            <Sparkles className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-                            <p className="text-sm text-foreground/90 font-medium leading-relaxed flex-1">
-                              "{generatedBullets[i]}"
-                            </p>
-                            <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                              onClick={() => handleCopyBullet(generatedBullets[i])}
-                              className="p-1.5 rounded-md text-primary hover:bg-primary/10 transition-colors opacity-0 group-hover:opacity-100 absolute right-2 top-2"
-                              title="Copy to clipboard"
-                            >
-                              <Copy className="w-4 h-4" />
-                            </motion.button>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                      <span className="text-destructive font-extrabold text-sm whitespace-nowrap mt-0.5 min-w-[40px]">-{d.percent}%</span>
+                      <span className="text-sm text-foreground leading-snug">{d.reason}</span>
                     </motion.div>
                   ))}
                 </div>

@@ -124,8 +124,8 @@ const Index = () => {
         {floatingOrbs.map((orb, i) => (
           <motion.div
             key={i}
-            className={`absolute rounded-full mix-blend-screen ${orb.color === "primary" ? "bg-primary/15" : "bg-accent/15"}`}
-            style={{ width: orb.size, height: orb.size, left: orb.x, top: orb.y, filter: "blur(120px)" }}
+            className={`absolute rounded-full ${orb.color === "primary" ? "bg-primary/5" : "bg-accent/5"}`}
+            style={{ width: orb.size, height: orb.size, left: orb.x, top: orb.y, filter: "blur(100px)" }}
             animate={{
               x: [0, 30, -20, 0],
               y: [0, -20, 30, 0],
@@ -154,8 +154,8 @@ const Index = () => {
           >
             <Sparkles className="w-6 h-6 text-primary" />
           </motion.div>
-          <h1 className="font-display font-bold text-2xl text-foreground tracking-tight">
-            Lumina <span className="text-gradient-primary drop-shadow-sm">JD</span>
+          <h1 className="font-display font-bold text-xl text-foreground tracking-tight">
+            Lumina <span className="text-primary">JD</span>
           </h1>
         </motion.div>
 
@@ -224,7 +224,7 @@ const Index = () => {
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
                 >
-                  <h2 className="font-display font-bold text-4xl md:text-5xl text-foreground mb-4 tracking-tight glow-text">
+                  <h2 className="font-display font-bold text-3xl md:text-4xl text-foreground mb-3">
                     Decode Any Job Description
                   </h2>
                 </motion.div>
@@ -270,7 +270,7 @@ const Index = () => {
                       transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
                       className="text-center mb-6"
                     >
-                      <h3 className="font-display font-bold text-3xl md:text-4xl text-foreground text-gradient-primary mb-1">
+                      <h3 className="font-display font-bold text-2xl md:text-3xl text-foreground">
                         {results.title}
                       </h3>
                       <motion.div

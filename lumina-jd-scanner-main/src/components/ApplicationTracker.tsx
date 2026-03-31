@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Briefcase, Trash2, Pencil, Check, X, Loader2, Plus, TrendingUp, ArrowRight } from "lucide-react";
+import { Briefcase, Trash2, Pencil, Check, X, Loader2, Plus, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
@@ -305,101 +305,105 @@ export const ApplicationTracker = () => {
             <p className="text-xs text-muted-foreground mt-1">Decode a JD and run a Gap Analysis, then click "Add to Tracker" or use "Add Manually".</p>
           </motion.div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            <AnimatePresence>
-              {['Applied', 'Assessment', 'Interview', 'Offer', 'Saved', 'Rejected'].map((status) => {
-                const columnApps = apps.filter(a => a.status === status);
-                if (columnApps.length === 0) return null;
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border text-muted-foreground text-left">
+                  <th className="pb-2 font-medium">Company</th>
+                  <th className="pb-2 font-medium">Role</th>
+                  <th className="pb-2 font-medium text-center">Initial %</th>
+                  <th className="pb-2 font-medium text-center">Current %</th>
+                  <th className="pb-2 font-medium">Status</th>
+                  <th className="pb-2 font-medium text-center">Date</th>
+                  <th className="pb-2 w-20"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <AnimatePresence>
+                  {apps.map((app, appIndex) => {
+                    const isEditing = editingId === app.id;
+                    const currentMatch = app.currentMatchPercent ?? app.matchPercent;
+                    const improved = currentMatch > app.matchPercent;
 
-                return (
-                  <motion.div key={status} layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-3">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h4 className={`text-xs uppercase tracking-wider font-bold px-2.5 py-1 rounded-md ${getStatusColor(status)}`}>{status}</h4>
-                      <span className="text-xs font-semibold text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded-full">{columnApps.length}</span>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      <AnimatePresence>
-                        {columnApps.map((app, appIndex) => {
-                          const isEditing = editingId === app.id;
-                          const currentMatch = app.currentMatchPercent ?? app.matchPercent;
-                          const improved = currentMatch > app.matchPercent;
-
-                          return (
-                            <motion.div
-                              key={app.id}
-                              layout
-                              initial={{ opacity: 0, scale: 0.95 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              exit={{ opacity: 0, scale: 0.9 }}
-                              className="bg-background/40 border border-border/80 hover:border-primary/40 rounded-xl p-4 shadow-sm backdrop-blur-sm transition-all group relative"
-                            >
-                              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-background/80 backdrop-blur-sm p-1 rounded-lg">
-                                {isEditing ? (
-                                  <>
-                                    <motion.button whileHover={{ scale: 1.1 }} onClick={() => saveEdit(app.id)} className="p-1 text-[hsl(var(--skill-core))] hover:bg-muted rounded"><Check className="w-4 h-4" /></motion.button>
-                                    <motion.button whileHover={{ scale: 1.1 }} onClick={cancelEdit} className="p-1 text-muted-foreground hover:bg-muted rounded"><X className="w-4 h-4" /></motion.button>
-                                  </>
-                                ) : (
-                                  <>
-                                    <motion.button whileHover={{ scale: 1.1 }} onClick={() => startEdit(app)} className="p-1 text-muted-foreground hover:text-primary hover:bg-muted rounded"><Pencil className="w-3.5 h-3.5" /></motion.button>
-                                    <motion.button whileHover={{ scale: 1.1 }} onClick={() => removeApp(app.id)} className="p-1 text-muted-foreground hover:text-destructive hover:bg-muted rounded"><Trash2 className="w-3.5 h-3.5" /></motion.button>
-                                  </>
-                                )}
-                              </div>
-
-                              <div className="mb-3 pr-16">
-                                {isEditing ? (
-                                  <input value={editForm.company || ""} onChange={(e) => setEditForm({ ...editForm, company: e.target.value })} className="w-full px-2 py-1 text-sm border border-border rounded-md bg-background text-foreground font-semibold mb-1" />
-                                ) : (
-                                  <h5 className="font-semibold text-foreground truncate text-base mb-0.5">{app.company}</h5>
-                                )}
-                                {isEditing ? (
-                                  <input value={editForm.role || ""} onChange={(e) => setEditForm({ ...editForm, role: e.target.value })} className="w-full px-2 py-1 text-xs border border-border rounded-md bg-background text-muted-foreground" />
-                                ) : (
-                                  <p className="text-xs text-muted-foreground truncate">{app.role}</p>
-                                )}
-                              </div>
-
-                              <div className="flex items-center justify-between mt-4">
-                                <div className="flex flex-col">
-                                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-0.5">Match</span>
-                                  <div className="flex items-center gap-1.5">
-                                    <span className="text-sm font-semibold">{app.matchPercent}%</span>
-                                    {isEditing ? (
-                                      <input type="number" min={0} max={100} value={editForm.currentMatchPercent ?? currentMatch} onChange={(e) => setEditForm({ ...editForm, currentMatchPercent: Number(e.target.value) })} className="w-14 px-1 py-0.5 text-xs border border-border rounded bg-background text-center" />
-                                    ) : (
-                                      currentMatch !== app.matchPercent && (
-                                        <>
-                                          <ArrowRight className="w-3 h-3 text-muted-foreground" />
-                                          <span className={`text-sm font-bold flex items-center ${improved ? "text-[hsl(var(--skill-core))]" : "text-primary"}`}>
-                                            {currentMatch}%
-                                            {improved && <TrendingUp className="w-3 h-3 ml-0.5" />}
-                                          </span>
-                                        </>
-                                      )
-                                    )}
-                                  </div>
-                                </div>
-                                
-                                <div className="flex flex-col items-end">
-                                  <span className="text-[10px] tracking-wider text-muted-foreground/60 mb-1">{new Date(app.addedAt).toLocaleDateString()}</span>
-                                  {isEditing && (
-                                    <select value={editForm.status || app.status} onChange={(e) => setEditForm({ ...editForm, status: e.target.value })} className="text-xs font-semibold px-2 py-1 rounded-md border border-border bg-background cursor-pointer mt-1">
-                                      {STATUS_OPTIONS.map((s) => (<option key={s} value={s}>{s}</option>))}
-                                    </select>
-                                  )}
-                                </div>
-                              </div>
-                            </motion.div>
-                          );
-                        })}
-                      </AnimatePresence>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
+                    return (
+                      <motion.tr
+                        key={app.id}
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ delay: 0.03 * appIndex }}
+                        className="border-b border-border/50 hover:bg-muted/30 transition-colors"
+                      >
+                        <td className="py-2.5">
+                          {isEditing ? (
+                            <input value={editForm.company || ""} onChange={(e) => setEditForm({ ...editForm, company: e.target.value })} className="w-full px-2 py-1 text-sm border border-border rounded-md bg-background text-foreground" />
+                          ) : (
+                            <span className="font-medium text-foreground">{app.company}</span>
+                          )}
+                        </td>
+                        <td className="py-2.5">
+                          {isEditing ? (
+                            <input value={editForm.role || ""} onChange={(e) => setEditForm({ ...editForm, role: e.target.value })} className="w-full px-2 py-1 text-sm border border-border rounded-md bg-background text-foreground" />
+                          ) : (
+                            <span className="text-muted-foreground">{app.role}</span>
+                          )}
+                        </td>
+                        <td className="py-2.5 text-center">
+                          <span className="text-muted-foreground font-medium">{app.matchPercent}%</span>
+                        </td>
+                        <td className="py-2.5 text-center">
+                          {isEditing ? (
+                            <input type="number" min={0} max={100} value={editForm.currentMatchPercent ?? currentMatch} onChange={(e) => setEditForm({ ...editForm, currentMatchPercent: Number(e.target.value) })} className="w-16 px-2 py-1 text-sm border border-border rounded-md bg-background text-foreground text-center" />
+                          ) : (
+                            <span className={`font-semibold ${improved ? "text-[hsl(var(--skill-core))]" : "text-primary"}`}>
+                              {currentMatch}%
+                              {improved && (
+                                <motion.span
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  className="inline-flex ml-1"
+                                >
+                                  <TrendingUp className="w-3 h-3" />
+                                </motion.span>
+                              )}
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-2.5">
+                          {isEditing ? (
+                            <select value={editForm.status || app.status} onChange={(e) => setEditForm({ ...editForm, status: e.target.value })} className="text-xs font-semibold px-2 py-1 rounded-full border border-border bg-background text-foreground cursor-pointer">
+                              {STATUS_OPTIONS.map((s) => (<option key={s} value={s}>{s}</option>))}
+                            </select>
+                          ) : (
+                            <select value={app.status} onChange={(e) => updateStatus(app.id, e.target.value)} className={`text-xs font-semibold px-2 py-1 rounded-full border-none cursor-pointer ${getStatusColor(app.status)}`}>
+                              {STATUS_OPTIONS.map((s) => (<option key={s} value={s}>{s}</option>))}
+                            </select>
+                          )}
+                        </td>
+                        <td className="py-2.5 text-center text-xs text-muted-foreground">
+                          {new Date(app.addedAt).toLocaleDateString()}
+                        </td>
+                        <td className="py-2.5 text-center">
+                          <div className="flex items-center gap-1 justify-center">
+                            {isEditing ? (
+                              <>
+                                <motion.button whileHover={{ scale: 1.2 }} onClick={() => saveEdit(app.id)} className="text-[hsl(var(--skill-core))] hover:opacity-70 transition-colors"><Check className="w-4 h-4" /></motion.button>
+                                <motion.button whileHover={{ scale: 1.2 }} onClick={cancelEdit} className="text-muted-foreground hover:text-foreground transition-colors"><X className="w-4 h-4" /></motion.button>
+                              </>
+                            ) : (
+                              <>
+                                <motion.button whileHover={{ scale: 1.2 }} onClick={() => startEdit(app)} className="text-muted-foreground hover:text-primary transition-colors"><Pencil className="w-3.5 h-3.5" /></motion.button>
+                                <motion.button whileHover={{ scale: 1.2 }} onClick={() => removeApp(app.id)} className="text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-3.5 h-3.5" /></motion.button>
+                              </>
+                            )}
+                          </div>
+                        </td>
+                      </motion.tr>
+                    );
+                  })}
+                </AnimatePresence>
+              </tbody>
+            </table>
           </div>
         )}
       </motion.div>
