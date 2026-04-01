@@ -14,12 +14,9 @@ export const GlassTextArea = ({ value, onChange, isScanning }: GlassTextAreaProp
       transition={{ duration: 0.6, ease: "easeOut" }}
       className="relative w-full max-w-3xl mx-auto group"
     >
-      {/* Glow effect on focus */}
-      <motion.div
-        className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 opacity-0 group-focus-within:opacity-100 transition-opacity duration-500 blur-xl"
-      />
+
       
-      <div className="relative glass-strong rounded-2xl p-1 glow-border overflow-hidden transition-all duration-300 group-focus-within:border-primary/30">
+      <div className="relative glass rounded-2xl p-1 overflow-hidden transition-all duration-300 group-focus-within:border-foreground/30 shadow-lg">
         {isScanning && (
           <>
             <motion.div

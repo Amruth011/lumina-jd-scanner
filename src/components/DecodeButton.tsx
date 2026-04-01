@@ -10,16 +10,15 @@ interface DecodeButtonProps {
 export const DecodeButton = ({ onClick, isLoading, disabled }: DecodeButtonProps) => {
   return (
     <motion.button
-      whileHover={{ scale: 1.02, boxShadow: "0 8px 20px hsl(var(--foreground) / 0.08)" }}
+      whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
       disabled={disabled || isLoading}
       className={`
         relative rounded-2xl px-10 py-4 font-display font-semibold text-lg
-        text-primary-foreground bg-primary
+        text-foreground glass-strong hover:scale-105 hover:bg-foreground/5 transition-all
         disabled:opacity-40 disabled:cursor-not-allowed
-        transition-all duration-300 overflow-hidden
-        ${isLoading ? "" : "hover:shadow-xl"}
+        overflow-hidden shadow-sm
       `}
     >
       {/* Shimmer effect */}
