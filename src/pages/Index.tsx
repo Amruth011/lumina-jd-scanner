@@ -180,7 +180,7 @@ const Index = () => {
             { key: "decode" as Tab, icon: Search, label: "Decoder" },
             { key: "applications" as Tab, icon: LayoutDashboard, label: "Applications" },
           ].map((tab) => (
-            <button key={tab.key} onClick={() => setActiveTab(tab.key)} className={tabClass(tab.key)}>
+            <button key={tab.key} onClick={() => handleTabSwitch(tab.key)} className={tabClass(tab.key)}>
               {activeTab === tab.key && (
                 <motion.div
                   layoutId="activeTab"
