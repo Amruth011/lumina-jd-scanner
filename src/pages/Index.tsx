@@ -26,6 +26,7 @@ const floatingOrbs = [
 
 const Index = () => {
   const { user, loading, signOut } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>("decode");
   const [jdText, setJdText] = useState("");
