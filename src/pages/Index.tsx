@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Brain, Filter, LayoutDashboard, Search, LogOut, Loader2, Moon, Sun } from "lucide-react";
+import { Sparkles, Brain, Filter, LayoutDashboard, Search, LogOut, LogIn, Loader2, Moon, Sun, Save, BookmarkCheck } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
