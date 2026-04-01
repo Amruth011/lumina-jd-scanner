@@ -36,32 +36,45 @@ const Index = () => {
   const [savingJd, setSavingJd] = useState(false);
   const [savedJdId, setSavedJdId] = useState<string | null>(null);
 
+  // Reset saved state when new decode happens
   useEffect(() => {
-    if (!loading && !user) {
-      navigate("/auth");
-    }
-  }, [loading, user, navigate]);
+    setSavedJdId(null);
+  }, [results]);
 
-  if (loading || !user) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="flex flex-col items-center gap-4"
-        >
-          <div className="relative">
-            <Loader2 className="w-10 h-10 text-primary animate-spin" />
-            <motion.div
-              className="absolute inset-0 rounded-full bg-primary/20"
-              animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-          </div>
-          <span className="text-sm text-muted-foreground font-medium">Loading Lumina JD...</span>
-        </motion.div>
-      </div>
+  const handleSaveJd = async () => {
+    if (!user) {
+      toast.info("Sign in to save your decoded JDs.");
+      navigate("/auth");
+      return;
+    }
+    if (!results) return;
+    setSavingJd(true);
+    try {
+      const { data, error } = await supabase.from("jd_vault").insert({
+        user_id: user.id,
+        title: results.title,
+        raw_text: jdText,
+        skills_json: results.skills as any,
+      }).select("id").single();
+      if (error) throw error;
+      setSavedJdId(data.id);
+      toast.success("JD saved to your history!");
+    } catch (err: any) {
+      console.error(err);
+      toast.error("Failed to save JD.");
+    } finally {
+      setSavingJd(false);
+    }
+  };
+
+  const handleTabSwitch = (tab: Tab) => {
+    if (tab === "applications" && !user) {
+      toast.info("Sign in to access your application tracker.");
+      navigate("/auth");
+      return;
+    }
+    setActiveTab(tab);
+  };
     );
   }
 
