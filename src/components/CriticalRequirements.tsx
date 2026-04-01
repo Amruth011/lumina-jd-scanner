@@ -9,7 +9,7 @@ interface CriticalRequirementsProps {
 const Badge = ({ label, variant = "default", index = 0 }: { label: string; variant?: "education" | "experience" | "soft" | "warning" | "default"; index?: number }) => {
   const styles = {
     education: "bg-[hsl(var(--badge-gold)/0.15)] text-[hsl(var(--badge-gold))] border-[hsl(var(--badge-gold)/0.35)]",
-    experience: "bg-accent/15 text-accent border-accent/30",
+    experience: "bg-primary/10 text-foreground border-primary/20",
     soft: "bg-secondary text-secondary-foreground border-border",
     warning: "bg-destructive/15 text-destructive border-destructive/30",
     default: "bg-muted text-muted-foreground border-border",

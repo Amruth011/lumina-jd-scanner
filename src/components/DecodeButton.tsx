@@ -10,8 +10,8 @@ interface DecodeButtonProps {
 export const DecodeButton = ({ onClick, isLoading, disabled }: DecodeButtonProps) => {
   return (
     <motion.button
-      whileHover={{ scale: 1.05, boxShadow: "0 8px 30px hsl(210 100% 52% / 0.3)" }}
-      whileTap={{ scale: 0.95 }}
+      whileHover={{ scale: 1.02, boxShadow: "0 8px 20px hsl(var(--foreground) / 0.08)" }}
+      whileTap={{ scale: 0.98 }}
       onClick={onClick}
       disabled={disabled || isLoading}
       className={`
