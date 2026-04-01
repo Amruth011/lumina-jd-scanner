@@ -33,6 +33,8 @@ const Index = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [results, setResults] = useState<DecodeResult | null>(null);
   const [priorityFilter, setPriorityFilter] = useState(false);
+  const [savingJd, setSavingJd] = useState(false);
+  const [savedJdId, setSavedJdId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
