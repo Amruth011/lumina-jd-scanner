@@ -75,8 +75,6 @@ const Index = () => {
     }
     setActiveTab(tab);
   };
-    );
-  }
 
   const filteredSkills = results
     ? priorityFilter
