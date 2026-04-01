@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Brain, Filter, LayoutDashboard, Search, LogOut, Loader2, Moon, Sun } from "lucide-react";
+import { Sparkles, Brain, Filter, LayoutDashboard, Search, LogOut, LogIn, Loader2, Moon, Sun, Save, BookmarkCheck } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -33,35 +33,48 @@ const Index = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [results, setResults] = useState<DecodeResult | null>(null);
   const [priorityFilter, setPriorityFilter] = useState(false);
+  const [savingJd, setSavingJd] = useState(false);
+  const [savedJdId, setSavedJdId] = useState<string | null>(null);
 
+  // Reset saved state when new decode happens
   useEffect(() => {
-    if (!loading && !user) {
-      navigate("/auth");
-    }
-  }, [loading, user, navigate]);
+    setSavedJdId(null);
+  }, [results]);
 
-  if (loading || !user) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="flex flex-col items-center gap-4"
-        >
-          <div className="relative">
-            <Loader2 className="w-10 h-10 text-primary animate-spin" />
-            <motion.div
-              className="absolute inset-0 rounded-full bg-primary/20"
-              animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-          </div>
-          <span className="text-sm text-muted-foreground font-medium">Loading Lumina JD...</span>
-        </motion.div>
-      </div>
-    );
-  }
+  const handleSaveJd = async () => {
+    if (!user) {
+      toast.info("Sign in to save your decoded JDs.");
+      navigate("/auth");
+      return;
+    }
+    if (!results) return;
+    setSavingJd(true);
+    try {
+      const { data, error } = await supabase.from("jd_vault").insert({
+        user_id: user.id,
+        title: results.title,
+        raw_text: jdText,
+        skills_json: results.skills as any,
+      }).select("id").single();
+      if (error) throw error;
+      setSavedJdId(data.id);
+      toast.success("JD saved to your history!");
+    } catch (err: any) {
+      console.error(err);
+      toast.error("Failed to save JD.");
+    } finally {
+      setSavingJd(false);
+    }
+  };
+
+  const handleTabSwitch = (tab: Tab) => {
+    if (tab === "applications" && !user) {
+      toast.info("Sign in to access your application tracker.");
+      navigate("/auth");
+      return;
+    }
+    setActiveTab(tab);
+  };
 
   const filteredSkills = results
     ? priorityFilter
@@ -117,7 +130,7 @@ const Index = () => {
         : "text-muted-foreground hover:text-foreground hover:bg-secondary"
     }`;
 
-  const displayName = user.email || user.phone || "User";
+  const displayName = user?.email || user?.phone || "User";
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -167,7 +180,7 @@ const Index = () => {
             { key: "decode" as Tab, icon: Search, label: "Decoder" },
             { key: "applications" as Tab, icon: LayoutDashboard, label: "Applications" },
           ].map((tab) => (
-            <button key={tab.key} onClick={() => setActiveTab(tab.key)} className={tabClass(tab.key)}>
+            <button key={tab.key} onClick={() => handleTabSwitch(tab.key)} className={tabClass(tab.key)}>
               {activeTab === tab.key && (
                 <motion.div
                   layoutId="activeTab"
@@ -183,15 +196,12 @@ const Index = () => {
           ))}
         </nav>
 
-        {/* User info + sign out */}
+        {/* User info + actions */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="flex items-center gap-3"
+          className="flex items-center gap-2"
         >
-          <span className="text-xs text-muted-foreground hidden md:inline truncate max-w-[150px]">
-            {displayName}
-          </span>
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
@@ -211,15 +221,32 @@ const Index = () => {
               </motion.div>
             </AnimatePresence>
           </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={signOut}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            Sign out
-          </motion.button>
+          {user ? (
+            <>
+              <span className="text-xs text-muted-foreground hidden md:inline truncate max-w-[120px]">
+                {displayName}
+              </span>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={signOut}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                Sign out
+              </motion.button>
+            </>
+          ) : (
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate("/auth")}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-primary text-primary-foreground hover:opacity-90 transition-all"
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              Sign in
+            </motion.button>
+          )}
         </motion.div>
       </header>
 
@@ -300,6 +327,30 @@ const Index = () => {
                         transition={{ delay: 0.4, duration: 0.5 }}
                         className="h-1 bg-gradient-to-r from-primary to-accent rounded-full mx-auto mt-3"
                       />
+                      {/* Save JD Button */}
+                      <motion.button
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.5 }}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={handleSaveJd}
+                        disabled={savingJd || !!savedJdId}
+                        className={`mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
+                          savedJdId
+                            ? "bg-[hsl(var(--skill-core))]/15 text-[hsl(var(--skill-core))] border border-[hsl(var(--skill-core))]/30"
+                            : "bg-primary text-primary-foreground hover:opacity-90"
+                        } disabled:opacity-60`}
+                      >
+                        {savingJd ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : savedJdId ? (
+                          <BookmarkCheck className="w-4 h-4" />
+                        ) : (
+                          <Save className="w-4 h-4" />
+                        )}
+                        {savedJdId ? "Saved to History" : "Save This Analysis"}
+                      </motion.button>
                     </motion.div>
 
                     {/* Priority Filter Toggle */}
