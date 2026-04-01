@@ -193,6 +193,25 @@ const Index = () => {
             {displayName}
           </span>
           <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={toggleTheme}
+            className="p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+            title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={isDark ? "moon" : "sun"}
+                initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
+                animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                exit={{ rotate: 90, opacity: 0, scale: 0.5 }}
+                transition={{ duration: 0.2 }}
+              >
+                {isDark ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+              </motion.div>
+            </AnimatePresence>
+          </motion.button>
+          <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={signOut}
