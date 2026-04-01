@@ -7,86 +7,97 @@
 
 @layer base {
   :root {
-    /* Executive Light Mode */
-    --background: 210 25% 97%;
-    --foreground: 215 30% 12%;
+    /* OpenAI Minimalism - Paper Light Mode */
+    --background: 34 100% 98%;    /* #FFFCF8 - Warm Paper */
+    --foreground: 240 5% 10%;     /* #18181B - Deep Zinc */
 
-    --card: 0 0% 100%;
-    --card-foreground: 215 30% 12%;
+    --card: 0 0% 100%;            /* Pure White */
+    --card-foreground: 240 5% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 30% 12%;
+    --popover-foreground: 240 5% 10%;
 
-    --primary: 250 100% 65%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 240 5% 16%;        /* #27272A */
+    --primary-foreground: 34 100% 98%;
 
-    --accent: 180 100% 45%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 240 5% 96%;         /* #F4F4F5 */
+    --accent-foreground: 240 5% 10%;
 
-    --secondary: 240 10% 93%;
-    --secondary-foreground: 215 30% 12%;
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 240 5% 10%;
 
-    --muted: 210 15% 93%;
-    --muted-foreground: 215 12% 45%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 5% 46%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 250 100% 65%;
+    --border: 240 5% 90%;         /* #E4E4E7 */
+    --input: 240 5% 90%;
+    --ring: 240 5% 10%;
 
-    --radius: 1rem;
+    --radius: 0.5rem;             /* Sharper corners for brutalism */
 
-    --skill-critical: 280 100% 65%;
-    --skill-core: 180 100% 45%;
-    --skill-supporting: 220 100% 65%;
-    --skill-muted: 215 16% 47%;
+    --skill-critical: 10 80% 50%;
+    --skill-core: 200 80% 40%;
+    --skill-supporting: 150 60% 40%;
+    --skill-muted: 240 5% 46%;
     --badge-gold: 45 100% 55%;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 250 100% 65%;
+    --sidebar-background: 34 100% 98%;
+    --sidebar-foreground: 240 5% 10%;
+    --sidebar-primary: 240 5% 16%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 250 100% 65%;
+    --sidebar-accent: 240 5% 96%;
+    --sidebar-accent-foreground: 240 5% 10%;
+    --sidebar-border: 240 5% 90%;
+    --sidebar-ring: 240 5% 10%;
   }
 
   .dark {
-    --background: 0 0% 2%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 5%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 5%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 250 100% 65%;
-    --primary-foreground: 0 0% 100%;
-    --accent: 180 100% 45%;
-    --accent-foreground: 0 0% 10%;
-    --secondary: 240 10% 15%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 5% 15%;
+    /* OpenAI Minimalism - Warm Zinc Dark Mode */
+    --background: 240 5% 10%;     /* #18181B */
+    --foreground: 240 5% 96%;     /* #F4F4F5 - Warm Pearl */
+
+    --card: 240 5% 14%;           /* #242427 */
+    --card-foreground: 240 5% 96%;
+
+    --popover: 240 5% 14%;
+    --popover-foreground: 240 5% 96%;
+
+    --primary: 240 5% 94%;        /* Off-white buttons */
+    --primary-foreground: 240 5% 10%; 
+
+    --accent: 240 5% 20%;         /* #333338 */
+    --accent-foreground: 240 5% 96%;
+
+    --secondary: 240 5% 20%;
+    --secondary-foreground: 240 5% 96%;
+
+    --muted: 240 5% 20%;
     --muted-foreground: 240 5% 65%;
-    --destructive: 0 85% 60%;
+
+    --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 240 5% 20%;
-    --input: 240 5% 20%;
-    --ring: 250 100% 65%;
-    --skill-critical: 280 100% 65%;
-    --skill-core: 180 100% 45%;
-    --skill-supporting: 220 100% 65%;
-    --skill-muted: 240 5% 45%;
+
+    --border: 240 5% 26%;         /* #42424A */
+    --input: 240 5% 26%;
+    --ring: 240 5% 94%;
+
+    --skill-critical: 10 70% 60%;
+    --skill-core: 200 70% 60%;
+    --skill-supporting: 150 50% 50%;
+    --skill-muted: 240 5% 65%;
     --badge-gold: 45 100% 55%;
-    --sidebar-background: 0 0% 4%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 250 100% 65%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 5% 15%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 240 5% 20%;
-    --sidebar-ring: 250 100% 65%;
+
+    --sidebar-background: 240 5% 10%;
+    --sidebar-foreground: 240 5% 96%;
+    --sidebar-primary: 240 5% 94%;
+    --sidebar-primary-foreground: 240 5% 10%;
+    --sidebar-accent: 240 5% 20%;
+    --sidebar-accent-foreground: 240 5% 96%;
+    --sidebar-border: 240 5% 26%;
+    --sidebar-ring: 240 5% 94%;
   }
 }
 
@@ -96,84 +107,50 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased selection:bg-primary/30 selection:text-white;
+    @apply bg-background text-foreground font-sans antialiased selection:bg-foreground/20 selection:text-foreground;
     font-family: 'Inter', sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Outfit', 'Space Grotesk', sans-serif;
     letter-spacing: -0.02em;
+    font-weight: 500;
   }
 }
 
 @layer components {
-  /* Premium Glassmorphism */
-  .glass {
-    background: hsl(var(--card) / 0.7);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+  /* Brutalist Flat Cards (Replaces Glassmorphism) */
+  .glass, .glass-strong {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border) / 0.8);
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05);
+    border-radius: var(--radius);
+  }
+
+  .dark .glass, .dark .glass-strong {
+    box-shadow: none; /* In dark mode, pure flat cards with thin borders look most premium */
     border: 1px solid hsl(var(--border));
-    box-shadow: 0 8px 32px 0 hsl(var(--border) / 0.3);
   }
 
-  .dark .glass {
-    background: linear-gradient(145deg, hsl(0 0% 12% / 0.4), hsl(0 0% 5% / 0.8));
-    border: 1px solid hsl(0 0% 100% / 0.08);
-    box-shadow: 0 8px 32px 0 hsl(0 0% 0% / 0.5), inset 0 1px 0 0 hsl(0 0% 100% / 0.05);
-  }
-
-  .glass-strong {
-    background: hsl(var(--card) / 0.85);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid hsl(var(--border));
-    box-shadow: 0 2px 8px hsl(var(--border) / 0.35);
-  }
-
-  .dark .glass-strong {
-    background: linear-gradient(135deg, hsl(250 50% 15% / 0.3), hsl(0 0% 5% / 0.9));
-    border: 1px solid hsl(250 100% 65% / 0.2);
-    box-shadow: 0 12px 40px 0 hsl(0 0% 0% / 0.7), inset 0 1px 0 0 hsl(0 0% 100% / 0.1);
-  }
-
-  /* Text Gradients */
+  /* Minimalist Text Overrides (Overrides Glows) */
   .text-gradient-primary {
-    background: linear-gradient(to right, hsl(250 100% 75%), hsl(180 100% 55%));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: hsl(var(--foreground));
+    background: none;
+    -webkit-text-fill-color: initial;
+    text-shadow: none;
   }
 
   .glow-text {
-    text-shadow: 0 0 20px hsl(var(--primary) / 0.5);
+    text-shadow: none;
   }
 
-  .glow-border {
-    position: relative;
-  }
-  
   .glow-border::before {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(45deg, transparent, hsl(var(--primary) / 0.3), transparent);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
+    display: none;
   }
 
-  /* Scanner Effect */
+  /* Minimalist Scanner Effect */
   .scan-line {
-    background: linear-gradient(
-      180deg,
-      transparent 0%,
-      hsl(var(--primary) / 0.8) 50%,
-      hsl(var(--primary)) 50%,
-      transparent 100%
-    );
-    box-shadow: 0 0 20px 2px hsl(var(--primary) / 0.5);
+    background: hsl(var(--border));
+    box-shadow: none;
   }
 }
