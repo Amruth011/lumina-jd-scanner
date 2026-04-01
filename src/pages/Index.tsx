@@ -196,15 +196,12 @@ const Index = () => {
           ))}
         </nav>
 
-        {/* User info + sign out */}
+        {/* User info + actions */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="flex items-center gap-3"
+          className="flex items-center gap-2"
         >
-          <span className="text-xs text-muted-foreground hidden md:inline truncate max-w-[150px]">
-            {displayName}
-          </span>
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
@@ -224,15 +221,32 @@ const Index = () => {
               </motion.div>
             </AnimatePresence>
           </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={signOut}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            Sign out
-          </motion.button>
+          {user ? (
+            <>
+              <span className="text-xs text-muted-foreground hidden md:inline truncate max-w-[120px]">
+                {displayName}
+              </span>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={signOut}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                Sign out
+              </motion.button>
+            </>
+          ) : (
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate("/auth")}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-primary text-primary-foreground hover:opacity-90 transition-all"
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              Sign in
+            </motion.button>
+          )}
         </motion.div>
       </header>
 
