@@ -11,6 +11,7 @@ type AuthStep = "input" | "otp";
 
 const Auth = () => {
   const navigate = useNavigate();
+  const { isDark, toggleTheme } = useTheme();
   const [mode, setMode] = useState<AuthMode>("select");
   const [step, setStep] = useState<AuthStep>("input");
   const [email, setEmail] = useState("");
