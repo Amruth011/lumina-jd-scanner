@@ -14,7 +14,7 @@ import { WinningStrategy } from "@/components/WinningStrategy";
 import { ResumeGapAnalyzer } from "@/components/ResumeGapAnalyzer";
 import { ApplicationTracker } from "@/components/ApplicationTracker";
 import type { DecodeResult } from "@/types/jd";
-import { useTheme } from "@/hooks/useTheme";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 type Tab = "decode" | "applications";
 
@@ -26,7 +26,6 @@ const floatingOrbs = [
 
 const Index = () => {
   const { user, loading, signOut } = useAuth();
-  const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>("decode");
   const [jdText, setJdText] = useState("");
@@ -202,25 +201,7 @@ const Index = () => {
           animate={{ opacity: 1, x: 0 }}
           className="flex items-center gap-2"
         >
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={toggleTheme}
-            className="p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
-            title={isDark ? "Switch to light mode" : "Switch to dark mode"}
-          >
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={isDark ? "moon" : "sun"}
-                initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
-                animate={{ rotate: 0, opacity: 1, scale: 1 }}
-                exit={{ rotate: 90, opacity: 0, scale: 0.5 }}
-                transition={{ duration: 0.2 }}
-              >
-                {isDark ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-              </motion.div>
-            </AnimatePresence>
-          </motion.button>
+          <ThemeToggle />
           {user ? (
             <>
               <span className="text-xs text-muted-foreground hidden md:inline truncate max-w-[120px]">
