@@ -7,59 +7,54 @@
 
 @layer base {
   :root {
-    /* Deep Obsidian Dark Mode */
-    --background: 0 0% 2%;     /* #050505 */
-    --foreground: 0 0% 98%;    /* almost white */
+    /* Executive Light Mode */
+    --background: 210 25% 97%;
+    --foreground: 215 30% 12%;
 
-    --card: 0 0% 5%;           /* slightly lighter than background */
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 30% 12%;
 
-    --popover: 0 0% 5%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 30% 12%;
 
-    /* Neon Primary (Blue/Purple hue) */
-    --primary: 250 100% 65%;   /* Vibrant purple/blue */
+    --primary: 250 100% 65%;
     --primary-foreground: 0 0% 100%;
 
-    /* Emerald/Cyan accent */
-    --accent: 180 100% 45%;    /* Bright Cyan */
-    --accent-foreground: 0 0% 10%;
+    --accent: 180 100% 45%;
+    --accent-foreground: 0 0% 100%;
 
-    --secondary: 240 10% 15%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 240 10% 93%;
+    --secondary-foreground: 215 30% 12%;
 
-    --muted: 240 5% 15%;
-    --muted-foreground: 240 5% 65%;
+    --muted: 210 15% 93%;
+    --muted-foreground: 215 12% 45%;
 
-    --destructive: 0 85% 60%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 240 5% 20%;
-    --input: 240 5% 20%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
     --ring: 250 100% 65%;
 
     --radius: 1rem;
 
-    --skill-critical: 280 100% 65%; /* Bright magenta */
-    --skill-core: 180 100% 45%;     /* Bright cyan */
-    --skill-supporting: 220 100% 65%; /* Bright blue */
-    --skill-muted: 240 5% 45%;
+    --skill-critical: 280 100% 65%;
+    --skill-core: 180 100% 45%;
+    --skill-supporting: 220 100% 65%;
+    --skill-muted: 215 16% 47%;
     --badge-gold: 45 100% 55%;
 
-    --sidebar-background: 0 0% 4%;
-    --sidebar-foreground: 0 0% 98%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 250 100% 65%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 5% 15%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 240 5% 20%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
     --sidebar-ring: 250 100% 65%;
   }
 
-  /* Optional: Force dark mode default if you want to explicitly support toggling later,
-     but here we just override root to be dark always for the luxury feel. */
   .dark {
-    /* Identical to :root to ensure compatibility with explicitly toggled dark components */
     --background: 0 0% 2%;
     --foreground: 0 0% 98%;
     --card: 0 0% 5%;
@@ -68,17 +63,30 @@
     --popover-foreground: 0 0% 98%;
     --primary: 250 100% 65%;
     --primary-foreground: 0 0% 100%;
+    --accent: 180 100% 45%;
+    --accent-foreground: 0 0% 10%;
     --secondary: 240 10% 15%;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 5% 15%;
     --muted-foreground: 240 5% 65%;
-    --accent: 180 100% 45%;
-    --accent-foreground: 0 0% 10%;
     --destructive: 0 85% 60%;
     --destructive-foreground: 0 0% 100%;
     --border: 240 5% 20%;
     --input: 240 5% 20%;
     --ring: 250 100% 65%;
+    --skill-critical: 280 100% 65%;
+    --skill-core: 180 100% 45%;
+    --skill-supporting: 220 100% 65%;
+    --skill-muted: 240 5% 45%;
+    --badge-gold: 45 100% 55%;
+    --sidebar-background: 0 0% 4%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 250 100% 65%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 5% 15%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 5% 20%;
+    --sidebar-ring: 250 100% 65%;
   }
 }
 
@@ -101,17 +109,29 @@
 @layer components {
   /* Premium Glassmorphism */
   .glass {
-    background: linear-gradient(145deg, hsl(0 0% 12% / 0.4), hsl(0 0% 5% / 0.8));
+    background: hsl(var(--card) / 0.7);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 8px 32px 0 hsl(var(--border) / 0.3);
+  }
+
+  .dark .glass {
+    background: linear-gradient(145deg, hsl(0 0% 12% / 0.4), hsl(0 0% 5% / 0.8));
     border: 1px solid hsl(0 0% 100% / 0.08);
     box-shadow: 0 8px 32px 0 hsl(0 0% 0% / 0.5), inset 0 1px 0 0 hsl(0 0% 100% / 0.05);
   }
 
   .glass-strong {
-    background: linear-gradient(135deg, hsl(250 50% 15% / 0.3), hsl(0 0% 5% / 0.9));
+    background: hsl(var(--card) / 0.85);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 2px 8px hsl(var(--border) / 0.35);
+  }
+
+  .dark .glass-strong {
+    background: linear-gradient(135deg, hsl(250 50% 15% / 0.3), hsl(0 0% 5% / 0.9));
     border: 1px solid hsl(250 100% 65% / 0.2);
     box-shadow: 0 12px 40px 0 hsl(0 0% 0% / 0.7), inset 0 1px 0 0 hsl(0 0% 100% / 0.1);
   }
