@@ -14,6 +14,7 @@ import { WinningStrategy } from "@/components/WinningStrategy";
 import { ResumeGapAnalyzer } from "@/components/ResumeGapAnalyzer";
 import { ApplicationTracker } from "@/components/ApplicationTracker";
 import type { DecodeResult } from "@/types/jd";
+import { useTheme } from "@/hooks/useTheme";
 
 type Tab = "decode" | "applications";
 
