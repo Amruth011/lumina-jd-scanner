@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
-type AuthMode = "select" | "email" | "phone";
+type AuthMode = "select" | "email";
 type AuthStep = "input" | "otp";
 
 const Auth = () => {
@@ -13,7 +13,6 @@ const Auth = () => {
   const [mode, setMode] = useState<AuthMode>("select");
   const [step, setStep] = useState<AuthStep>("input");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -32,28 +31,12 @@ const Auth = () => {
     }
   };
 
-  const handlePhoneOtp = async () => {
-    if (!phone.trim()) return toast.error("Enter your phone number.");
-    setLoading(true);
-    try {
-      const { error } = await supabase.auth.signInWithOtp({ phone: phone.trim() });
-      if (error) throw error;
-      setStep("otp");
-      toast.success("Check your phone for the verification code.");
-    } catch (err: any) {
-      toast.error(err.message || "Failed to send OTP.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleVerifyOtp = async () => {
     if (otp.length < 6) return toast.error("Enter the 6-digit code.");
     setLoading(true);
     try {
-      const params = mode === "email"
-        ? { email: email.trim(), token: otp.trim(), type: "email" as const }
-        : { phone: phone.trim(), token: otp.trim(), type: "sms" as const };
+      const params = { email: email.trim(), token: otp.trim(), type: "email" as const };
 
       const { error } = await supabase.auth.verifyOtp(params);
       if (error) throw error;
@@ -108,7 +91,7 @@ const Auth = () => {
           </h2>
           <p className="text-sm text-muted-foreground text-center mb-6">
             {step === "otp"
-              ? `We sent a code to ${mode === "email" ? email : phone}`
+              ? `We sent a code to ${email}`
               : "Track your applications and save your analyses"}
           </p>
 
@@ -131,13 +114,6 @@ const Auth = () => {
               >
                 <Mail className="w-5 h-5 text-primary" />
                 Continue with Email
-              </button>
-              <button
-                onClick={() => setMode("phone")}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-border bg-background hover:bg-muted/50 transition-all text-sm font-medium text-foreground"
-              >
-                <Phone className="w-5 h-5 text-primary" />
-                Continue with Phone
               </button>
 
               <div className="relative my-4">
@@ -192,29 +168,6 @@ const Auth = () => {
             </div>
           )}
 
-          {/* Phone input */}
-          {mode === "phone" && step === "input" && (
-            <div className="space-y-4">
-              <input
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="+1234567890"
-                className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-                autoFocus
-                onKeyDown={(e) => e.key === "Enter" && handlePhoneOtp()}
-              />
-              <p className="text-xs text-muted-foreground">Include country code (e.g. +1 for US)</p>
-              <button
-                onClick={handlePhoneOtp}
-                disabled={loading}
-                className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2"
-              >
-                {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-                Send Verification Code
-              </button>
-            </div>
-          )}
 
           {/* OTP input */}
           {step === "otp" && (
@@ -238,7 +191,7 @@ const Auth = () => {
                 Verify & Sign In
               </button>
               <button
-                onClick={() => mode === "email" ? handleEmailOtp() : handlePhoneOtp()}
+                onClick={() => handleEmailOtp()}
                 disabled={loading}
                 className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
