@@ -101,17 +101,29 @@
 @layer components {
   /* Premium Glassmorphism */
   .glass {
-    background: linear-gradient(145deg, hsl(0 0% 12% / 0.4), hsl(0 0% 5% / 0.8));
+    background: hsl(var(--card) / 0.7);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 8px 32px 0 hsl(var(--border) / 0.3);
+  }
+
+  .dark .glass {
+    background: linear-gradient(145deg, hsl(0 0% 12% / 0.4), hsl(0 0% 5% / 0.8));
     border: 1px solid hsl(0 0% 100% / 0.08);
     box-shadow: 0 8px 32px 0 hsl(0 0% 0% / 0.5), inset 0 1px 0 0 hsl(0 0% 100% / 0.05);
   }
 
   .glass-strong {
-    background: linear-gradient(135deg, hsl(250 50% 15% / 0.3), hsl(0 0% 5% / 0.9));
+    background: hsl(var(--card) / 0.85);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 2px 8px hsl(var(--border) / 0.35);
+  }
+
+  .dark .glass-strong {
+    background: linear-gradient(135deg, hsl(250 50% 15% / 0.3), hsl(0 0% 5% / 0.9));
     border: 1px solid hsl(250 100% 65% / 0.2);
     box-shadow: 0 12px 40px 0 hsl(0 0% 0% / 0.7), inset 0 1px 0 0 hsl(0 0% 100% / 0.1);
   }
