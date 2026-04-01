@@ -130,7 +130,7 @@ const Index = () => {
         : "text-muted-foreground hover:text-foreground hover:bg-secondary"
     }`;
 
-  const displayName = user.email || user.phone || "User";
+  const displayName = user?.email || user?.phone || "User";
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
