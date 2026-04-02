@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, Loader2, ArrowRight, Upload, PlusCircle, AlertTriangle, CheckCircle2, XCircle, Sparkles, Copy } from "lucide-react";
+import { FileText, Loader2, ArrowRight, Upload, PlusCircle as PlusCircleIcon, AlertTriangle, CheckCircle2, XCircle, Sparkles, Copy, ShieldCheck, Edit3, Trash2, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { saveApplication, type TrackedApplication } from "@/hooks/useApplications";
@@ -45,19 +45,32 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
   const [result, setResult] = useState<ResumeGapResult | null>(null);
   const [addedToTracker, setAddedToTracker] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const resultRef = useRef<HTMLDivElement>(null);
+  const page1Ref = useRef<HTMLDivElement>(null);
+  const page2Ref = useRef<HTMLDivElement>(null);
   const [generatingFor, setGeneratingFor] = useState<number | null>(null);
   const [generatedBullets, setGeneratedBullets] = useState<Record<number, string>>({});
+  const [isAutoRunEnabled, setIsAutoRunEnabled] = useState(true);
+  const [lastAnalyzedText, setLastAnalyzedText] = useState("");
 
   const handleExportPDF = async () => {
-    if (!resultRef.current) return;
+    if (!page1Ref.current) return;
     try {
-      const canvas = await html2canvas(resultRef.current, { scale: 2 });
-      const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("p", "mm", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+
+      // Page 1
+      const canvas1 = await html2canvas(page1Ref.current, { scale: 2 });
+      const img1Height = (canvas1.height * pdfWidth) / canvas1.width;
+      pdf.addImage(canvas1.toDataURL("image/png"), "PNG", 0, 0, pdfWidth, img1Height);
+
+      // Page 2
+      if (page2Ref.current) {
+        pdf.addPage();
+        const canvas2 = await html2canvas(page2Ref.current, { scale: 2 });
+        const img2Height = (canvas2.height * pdfWidth) / canvas2.width;
+        pdf.addImage(canvas2.toDataURL("image/png"), "PNG", 0, 0, pdfWidth, img2Height);
+      }
+
       pdf.save("Lumina-Gap-Analysis.pdf");
       toast.success("PDF Downloaded successfully!");
     } catch (error) {
@@ -146,6 +159,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
       if (error) throw error;
       if (data.error) throw new Error(data.error);
       setResult(data);
+      setLastAnalyzedText(resumeText);
       toast.success(`Resume match: ${data.overall_match}%`);
     } catch (err: any) {
       console.error(err);
@@ -154,6 +168,10 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
       setIsAnalyzing(false);
     }
   };
+
+  if (isAutoRunEnabled && resumeText.trim().length > 20 && resumeText !== lastAnalyzedText && !isAnalyzing && !isParsing) {
+     handleCompare();
+  }
 
   const handleAddToTracker = async () => {
     if (!result) return;
@@ -243,6 +261,21 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
           >
+            {/* Trust and Auto-run header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3 bg-secondary/30 p-3 rounded-lg border border-border">
+               <div className="flex items-center gap-3">
+                 <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600 bg-emerald-500/10 px-2.5 py-1 rounded-full"><ShieldCheck className="w-3.5 h-3.5" /> 100% Secure & Private</span>
+                 <span className="flex items-center gap-1.5 text-xs font-semibold text-blue-600 bg-blue-500/10 px-2.5 py-1 rounded-full"><CheckCircle2 className="w-3.5 h-3.5" /> ATS-Optimized</span>
+               </div>
+               
+               <label className="flex items-center gap-2 cursor-pointer bg-background px-3 py-1.5 rounded-md border border-border shadow-sm">
+                 <span className="text-xs font-semibold whitespace-nowrap">Auto-Run Analysis</span>
+                 <div className={`w-8 h-4 rounded-full transition-colors relative ${isAutoRunEnabled ? 'bg-primary' : 'bg-muted-foreground/30'}`}>
+                    <div className={`absolute w-3 h-3 bg-white rounded-full top-0.5 transition-transform ${isAutoRunEnabled ? 'translate-x-[18px]' : 'translate-x-0.5'}`} />
+                 </div>
+               </label>
+            </div>
+
             {/* File Upload Area */}
             <motion.div
               whileHover={{ borderColor: "hsl(210 100% 52% / 0.4)", background: "hsl(210 100% 52% / 0.03)" }}
@@ -324,9 +357,9 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="mt-5 bg-background p-5 sm:p-8 rounded-2xl border border-border mt-8"
-            ref={resultRef}
+            className="mt-8 border border-border rounded-2xl overflow-hidden"
           >
+           <div ref={page1Ref} className="bg-background p-5 sm:p-8">
             {/* Overall match score - prominent */}
             <motion.div
               initial={{ scale: 0.8 }}
@@ -352,7 +385,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
                     onClick={handleAddToTracker}
                     className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold text-primary bg-primary/10 border border-primary/20 hover:bg-primary/20 transition-all"
                   >
-                    <PlusCircle className="w-3.5 h-3.5" /> Add to Tracker
+                    <PlusCircleIcon className="w-3.5 h-3.5" /> Add to Tracker
                   </motion.button>
                 ) : (
                   <motion.span
@@ -363,15 +396,6 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
                     <CheckCircle2 className="w-3.5 h-3.5" /> Tracked
                   </motion.span>
                 )}
-                
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleExportPDF}
-                  className="mt-3 ml-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-accent text-accent-foreground hover:opacity-90 transition-all border border-accent/30"
-                >
-                  Download PDF Report
-                </motion.button>
               </div>
             </motion.div>
 
@@ -492,27 +516,63 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
               ))}
             </div>
 
-            {/* Summary */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="mt-4 glass rounded-xl p-4 relative overflow-hidden"
-            >
-              <motion.div
-                className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-accent rounded-full"
-              />
-              <p className="text-sm text-muted-foreground leading-relaxed pl-3">
-                {result.summary}
-              </p>
-            </motion.div>
+             {/* Summary */}
+             <motion.div
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 1 }}
+               transition={{ delay: 0.3 }}
+               className="mt-4 glass rounded-xl p-4 relative overflow-hidden"
+             >
+               <motion.div
+                 className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-accent rounded-full"
+               />
+               <p className="text-sm text-muted-foreground leading-relaxed pl-3">
+                 {result.summary}
+               </p>
+             </motion.div>
+           </div>{/* END PAGE 1 */}
+           
+           <div ref={page2Ref} className="bg-background/50 border-t border-border p-5 sm:p-8">
+             {/* Actionable Directives */}
+             {result.actionable_directives && (
+               <motion.div
+                 initial={{ opacity: 0 }}
+                 animate={{ opacity: 1 }}
+                 className="mt-0"
+               >
+                 <div className="flex items-center gap-2 mb-4">
+                    <Edit3 className="w-5 h-5 text-primary" />
+                    <h4 className="font-display font-semibold text-lg text-primary">Required Resume Changes</h4>
+                 </div>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                   {result.actionable_directives.map((dir, idx) => {
+                     let Icon = Edit3;
+                     let color = "text-amber-500 bg-amber-500/10 border-amber-500/20";
+                     if (dir.action === "add") { Icon = Plus; color = "text-[hsl(var(--skill-core))] bg-[hsl(var(--skill-core))/0.1] border-[hsl(var(--skill-core))/0.2]"; }
+                     if (dir.action === "delete") { Icon = Trash2; color = "text-destructive bg-destructive/10 border-destructive/20"; }
+                     if (dir.action === "replace") { Icon = Sparkles; color = "text-purple-500 bg-purple-500/10 border-purple-500/20"; }
+
+                     return (
+                       <div key={idx} className={`p-4 rounded-xl border ${color} relative`}>
+                         <div className="flex items-center gap-2 mb-2">
+                            <Icon className="w-4 h-4" />
+                            <span className="text-xs font-bold uppercase tracking-widest">{dir.action}</span>
+                         </div>
+                         <p className="text-sm font-semibold text-foreground/90 mb-1">{dir.description}</p>
+                         <p className="text-xs text-muted-foreground/80">{dir.reasoning}</p>
+                       </div>
+                     )
+                   })}
+                 </div>
+               </motion.div>
+             )}
 
             {/* Tailored Resume Snippets */}
             {result.tailored_resume_snippets && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="mt-6 border border-primary/20 bg-primary/5 rounded-xl p-5"
+                className="mt-8 border border-primary/20 bg-primary/5 rounded-xl p-5"
               >
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="font-display font-semibold text-primary flex items-center gap-2">
@@ -545,6 +605,20 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
                 </div>
               </motion.div>
             )}
+           </div>{/* END PAGE 2 */}
+            
+           {/* Bottom Download Button */}
+           <div className="p-5 sm:p-8 bg-card border-t border-border flex justify-end">
+             <motion.button
+               whileHover={{ scale: 1.05 }}
+               whileTap={{ scale: 0.95 }}
+               onClick={handleExportPDF}
+               className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-all shadow-md"
+             >
+               <FileText className="w-4 h-4" /> Download 2-Page PDF Report
+             </motion.button>
+           </div>
+
           </motion.div>
         )}
       </AnimatePresence>

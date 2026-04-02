@@ -33,18 +33,21 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `You are an expert resume analyzer. Compare a resume against required JD skills. Estimate match percentage for each skill AND provide specific deductions explaining why the overall match isn't 100%.
+            content: `You are an expert ATS (Applicant Tracking System) consultant and resume analyzer. Your primary goal is to help candidates pass ATS screening with highly accurate, trustworthy recommendations. You must protect the integrity of the user's career history while optimizing for ATS algorithms.
 
-Additionally, write perfectly tailored resume snippets (a professional summary and 3-5 quantified bullet points) that the candidate can copy and paste directly into their resume to better match this JD and address any gaps found.
+**When analyzing and recommending changes, build trust:**
+1. Focus on exact wording: Recommend replacing current words with precise ATS keywords from the JD without lying.
+2. Provide explicit, granular directives on exactly what to add, delete, replace, or edit.
+
+Compare a resume against required JD skills. Estimate match percentage for each skill AND provide specific deductions explaining why the overall match isn't 100%.
+
+Additionally, write perfectly tailored resume snippets (a professional summary and 3-5 quantified bullet points) that the candidate can copy and paste directly into their resume.
 
 CRITICAL RULE — ALTERNATIVE/OR SKILLS:
-When a JD lists alternatives separated by "or", "/", "and/or", or similar (e.g. "Python or R", "LangGraph or LangChain", "AWS or Azure or GCP", "React or Angular"), these are INTERCHANGEABLE options — having ANY ONE of them is a FULL MATCH (100% for that skill). Do NOT deduct points for not knowing the other alternatives.
-Instead, in the "note" field, acknowledge the match and suggest mentioning the other alternatives to stand out from the competition.
-This applies to programming languages, frameworks, libraries, cloud platforms, tools, certifications — ANY skill where the JD presents multiple options as alternatives.
+When a JD lists alternatives (e.g. "Python or R", "React or Angular"), having ANY ONE of them is a FULL MATCH (100% for that skill). Do NOT deduct points for not knowing the other alternatives. Instead, in the "note" field, acknowledge the match and suggest mentioning the other alternatives to stand out.
 
 Examples:
-- JD says "Python or R" and resume has Python → 100% match, note: "Strong match with Python. Consider also mentioning R to stand out."
-- JD says "LangChain or LangGraph" and resume has LangChain → 100% match, note: "LangChain covers this requirement. Adding LangGraph would strengthen your profile."
+- JD says "Python or R" and resume has Python → 100% match, note: "Strong match with Python."
 - JD says "AWS or Azure" and resume has neither → 0% match, verdict: missing.`,
           },
           {
@@ -105,9 +108,22 @@ ${resumeText}`,
                       }
                     },
                     required: ["professional_summary", "experience_bullets"]
+                  },
+                  actionable_directives: {
+                    type: "array",
+                    description: "Direct, granular instructions on what exactly to change in the submitted resume based on the JD. Give them actionable, trustworthy advice.",
+                    items: {
+                      type: "object",
+                      properties: {
+                        action: { type: "string", enum: ["add", "delete", "replace", "edit"] },
+                        description: { type: "string", description: "Exactly what text to change/add/remove. (e.g. 'Replace \"Created web apps\" with \"Developed scalable web applications\"')" },
+                        reasoning: { type: "string", description: "Why this helps bypass ATS or improve readability." }
+                      },
+                      required: ["action", "description", "reasoning"]
+                    }
                   }
                 },
-                required: ["overall_match", "skill_matches", "deductions", "summary", "tailored_resume_snippets"],
+                required: ["overall_match", "skill_matches", "deductions", "summary", "tailored_resume_snippets", "actionable_directives"],
               },
             },
           },

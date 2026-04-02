@@ -33,12 +33,19 @@ export interface TailoredSnippet {
   experience_bullets: string[];
 }
 
+export interface ActionableDirective {
+  action: "add" | "delete" | "replace" | "edit";
+  description: string;
+  reasoning: string;
+}
+
 export interface ResumeGapResult {
   overall_match: number;
   skill_matches: SkillMatch[];
   deductions: Deduction[];
   summary: string;
   tailored_resume_snippets?: TailoredSnippet;
+  actionable_directives?: ActionableDirective[];
 }
 
 export interface DecodeResult {
