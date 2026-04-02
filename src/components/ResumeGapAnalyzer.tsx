@@ -64,7 +64,8 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
       pdf.addImage(canvas1.toDataURL("image/png"), "PNG", 0, 0, pdfWidth, img1Height);
 
       // Page 2
-      if (page2Ref.current) {
+      const hasPage2Content = result.actionable_directives?.length || result.tailored_resume_snippets;
+      if (page2Ref.current && hasPage2Content) {
         pdf.addPage();
         const canvas2 = await html2canvas(page2Ref.current, { scale: 2 });
         const img2Height = (canvas2.height * pdfWidth) / canvas2.width;
@@ -534,7 +535,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
            
            <div ref={page2Ref} className="bg-background/50 border-t border-border p-5 sm:p-8">
              {/* Actionable Directives */}
-             {result.actionable_directives && (
+             {(result.actionable_directives && result.actionable_directives.length > 0) ? (
                <motion.div
                  initial={{ opacity: 0 }}
                  animate={{ opacity: 1 }}
@@ -564,6 +565,11 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
                      )
                    })}
                  </div>
+               </motion.div>
+             ) : (
+               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-0 p-6 rounded-xl border border-dashed border-border bg-background/50 text-center">
+                 <p className="text-sm font-bold text-muted-foreground">Actionable Directives AI Syncing...</p>
+                 <p className="text-xs text-muted-foreground/70 mt-1">If this didn't generate, run the gap analysis again to fetch exact changes.</p>
                </motion.div>
              )}
 

@@ -1,7 +1,7 @@
 import { useState, useEffect, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Brain, Filter, LayoutDashboard, Search, LogOut, LogIn, Loader2, Moon, Sun, Save, BookmarkCheck } from "lucide-react";
+import { Sparkles, Brain, Filter, LayoutDashboard, Search, LogOut, LogIn, Loader2, Moon, Sun, Save, BookmarkCheck, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -192,25 +192,37 @@ const Index = () => {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1, duration: 0.5 }}
-                className="text-center mb-10 mt-8"
+                className="text-center mb-10 mt-12 md:mt-24"
               >
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold mb-6 uppercase tracking-widest shine-effect">
+                  <Sparkles className="w-3.5 h-3.5" /> 
+                  The #1 ATS Optimization Engine
+                </div>
+                
                 <motion.div
                   initial={{ scale: 0.9 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
                 >
-                  <h2 className="font-display font-bold text-4xl md:text-5xl text-foreground mb-4 tracking-tight glow-text">
-                    Decode Any Job Description
+                  <h2 className="font-display font-black text-5xl md:text-7xl text-foreground mb-6 tracking-tight leading-tight">
+                    Beat the ATS.<br/>
+                    <span className="text-gradient-primary drop-shadow-sm glow-text">Land the Interview.</span>
                   </h2>
                 </motion.div>
                 <motion.p
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="text-muted-foreground text-base max-w-lg mx-auto"
+                  className="text-muted-foreground text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed mb-8"
                 >
-                  Paste a JD below and let AI extract, categorize, and score every skill requirement.
+                  Over 95% of Fortune 500 companies use an ATS. Paste a job description below and let our AI algorithm instantly detect exactly what skills, keywords, and metrics you need to rank first. 
                 </motion.p>
+                
+                <div className="flex flex-wrap justify-center items-center gap-6 text-sm font-semibold text-foreground/80 mb-12">
+                   <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> 100% Free & Private</span>
+                   <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Instant Gap Analysis</span>
+                   <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> AI Resume Snippets</span>
+                </div>
               </motion.div>
 
               <GlassTextArea value={jdText} onChange={setJdText} isScanning={isScanning} />
@@ -307,7 +319,7 @@ const Index = () => {
                           <motion.span
                             animate={{ x: priorityFilter ? 22 : 2 }}
                             transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                            className={`w-4 h-4 rounded-full bg-background shadow-sm`}
+                            className={`w-4 h-4 rounded-full bg-zinc-800 dark:bg-white shadow-sm ring-1 ring-black/10 dark:ring-white/10`}
                           />
                         </span>
                       </motion.button>
