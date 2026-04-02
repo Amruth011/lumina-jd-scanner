@@ -16,9 +16,10 @@ export const DecodeButton = ({ onClick, isLoading, disabled }: DecodeButtonProps
       disabled={disabled || isLoading}
       className={`
         relative rounded-2xl px-10 py-4 font-display font-semibold text-lg
-        text-foreground glass-strong hover:scale-105 hover:bg-foreground/5 transition-all
-        disabled:opacity-40 disabled:cursor-not-allowed
-        overflow-hidden shadow-sm
+        bg-zinc-900 text-white shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:bg-zinc-800
+        dark:bg-transparent dark:text-foreground dark:glass-strong dark:shadow-sm dark:hover:bg-foreground/5
+        transition-all disabled:opacity-40 disabled:cursor-not-allowed
+        overflow-hidden
       `}
     >
       {/* Shimmer effect */}
