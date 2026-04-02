@@ -28,11 +28,17 @@ export interface Deduction {
   percent: number;
 }
 
+export interface TailoredSnippet {
+  professional_summary: string;
+  experience_bullets: string[];
+}
+
 export interface ResumeGapResult {
   overall_match: number;
   skill_matches: SkillMatch[];
   deductions: Deduction[];
   summary: string;
+  tailored_resume_snippets?: TailoredSnippet;
 }
 
 export interface DecodeResult {

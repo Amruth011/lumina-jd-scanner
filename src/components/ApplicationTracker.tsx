@@ -1,19 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Briefcase, Trash2, Pencil, Check, X, Loader2, Plus, TrendingUp, ArrowRight } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useAuth } from "@/hooks/useAuth";
-
-export interface TrackedApplication {
-  id: string;
-  company: string;
-  role: string;
-  matchPercent: number;
-  currentMatchPercent?: number;
-  status: string;
-  addedAt: string;
-}
+import { useApplications, type TrackedApplication } from "@/hooks/useApplications";
 
 const STATUS_OPTIONS = ["Saved", "Applied", "Interview", "Assessment", "Offer", "Rejected"];
 
@@ -28,67 +17,13 @@ const getStatusColor = (status: string) => {
   }
 };
 
-export const saveApplication = async (app: TrackedApplication) => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return;
-
-  const { error } = await supabase.from("user_applications").insert({
-    user_id: user.id,
-    company: app.company,
-    role: app.role,
-    match_percent: app.matchPercent,
-    current_match_percent: app.currentMatchPercent ?? app.matchPercent,
-    status: app.status,
-  });
-
-  if (error) {
-    console.error("Save application error:", error);
-    throw error;
-  }
-};
-
 export const ApplicationTracker = () => {
-  const { user } = useAuth();
-  const [apps, setApps] = useState<TrackedApplication[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { apps, loading, saveApp, updateApp, removeApp, refresh } = useApplications();
+  
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<TrackedApplication>>({});
   const [showAddForm, setShowAddForm] = useState(false);
   const [newApp, setNewApp] = useState({ company: "", role: "", matchPercent: 0, status: "Applied" });
-
-  const fetchApps = async () => {
-    if (!user) return;
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("user_applications")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error(error);
-      toast.error("Failed to load applications.");
-    } else {
-      setApps(
-        (data || []).map((row: any) => ({
-          id: row.id,
-          company: row.company,
-          role: row.role,
-          matchPercent: row.match_percent,
-          currentMatchPercent: row.current_match_percent,
-          status: row.status,
-          addedAt: row.created_at,
-        }))
-      );
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchApps();
-    const handler = () => fetchApps();
-    window.addEventListener("tracker-updated", handler);
-    return () => window.removeEventListener("tracker-updated", handler);
-  }, [user]);
 
   const startEdit = (app: TrackedApplication) => {
     setEditingId(app.id);
@@ -96,22 +31,17 @@ export const ApplicationTracker = () => {
   };
 
   const saveEdit = async (id: string) => {
-    const { error } = await supabase
-      .from("user_applications")
-      .update({
+    try {
+      await updateApp(id, {
         company: editForm.company,
         role: editForm.role,
         status: editForm.status,
-        current_match_percent: editForm.currentMatchPercent,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", id);
-
-    if (error) {
-      toast.error("Failed to update.");
-    } else {
+        currentMatchPercent: editForm.currentMatchPercent,
+      });
       setEditingId(null);
-      fetchApps();
+      refresh();
+    } catch {
+      toast.error("Failed to update.");
     }
   };
 
@@ -120,24 +50,13 @@ export const ApplicationTracker = () => {
     setEditForm({});
   };
 
-  const updateStatus = async (id: string, newStatus: string) => {
-    const { error } = await supabase
-      .from("user_applications")
-      .update({ status: newStatus, updated_at: new Date().toISOString() })
-      .eq("id", id);
-
-    if (error) toast.error("Failed to update status.");
-    else fetchApps();
-  };
-
-  const removeApp = async (id: string) => {
-    const { error } = await supabase
-      .from("user_applications")
-      .delete()
-      .eq("id", id);
-
-    if (error) toast.error("Failed to delete.");
-    else fetchApps();
+  const handleRemove = async (id: string) => {
+    try {
+      await removeApp(id);
+      refresh();
+    } catch {
+      toast.error("Failed to delete.");
+    }
   };
 
   const handleManualAdd = async () => {
@@ -146,7 +65,7 @@ export const ApplicationTracker = () => {
       return;
     }
     try {
-      await saveApplication({
+      await saveApp({
         id: crypto.randomUUID(),
         company: newApp.company,
         role: newApp.role,
@@ -157,7 +76,7 @@ export const ApplicationTracker = () => {
       });
       setNewApp({ company: "", role: "", matchPercent: 0, status: "Applied" });
       setShowAddForm(false);
-      fetchApps();
+      refresh();
       toast.success("Application added!");
     } catch {
       toast.error("Failed to save. Please sign in first.");
@@ -285,7 +204,7 @@ export const ApplicationTracker = () => {
           )}
         </AnimatePresence>
 
-        {loading ? (
+        {loading && apps.length === 0 ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-6 h-6 text-primary animate-spin" />
           </div>
@@ -320,13 +239,13 @@ export const ApplicationTracker = () => {
                     
                     <div className="space-y-3">
                       <AnimatePresence>
-                        {columnApps.map((app, appIndex) => {
+                        {columnApps.map((app) => {
                           const isEditing = editingId === app.id;
                           const currentMatch = app.currentMatchPercent ?? app.matchPercent;
                           const improved = currentMatch > app.matchPercent;
 
                           return (
-                            <motion.div
+                             <motion.div
                               key={app.id}
                               layout
                               initial={{ opacity: 0, scale: 0.95 }}
@@ -334,7 +253,7 @@ export const ApplicationTracker = () => {
                               exit={{ opacity: 0, scale: 0.9 }}
                               className="bg-background/40 border border-border/80 hover:border-primary/40 rounded-xl p-4 shadow-sm backdrop-blur-sm transition-all group relative"
                             >
-                              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-background/80 backdrop-blur-sm p-1 rounded-lg">
+                              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-background/80 backdrop-blur-sm p-1 rounded-lg z-10">
                                 {isEditing ? (
                                   <>
                                     <motion.button whileHover={{ scale: 1.1 }} onClick={() => saveEdit(app.id)} className="p-1 text-[hsl(var(--skill-core))] hover:bg-muted rounded"><Check className="w-4 h-4" /></motion.button>
@@ -343,12 +262,12 @@ export const ApplicationTracker = () => {
                                 ) : (
                                   <>
                                     <motion.button whileHover={{ scale: 1.1 }} onClick={() => startEdit(app)} className="p-1 text-muted-foreground hover:text-primary hover:bg-muted rounded"><Pencil className="w-3.5 h-3.5" /></motion.button>
-                                    <motion.button whileHover={{ scale: 1.1 }} onClick={() => removeApp(app.id)} className="p-1 text-muted-foreground hover:text-destructive hover:bg-muted rounded"><Trash2 className="w-3.5 h-3.5" /></motion.button>
+                                    <motion.button whileHover={{ scale: 1.1 }} onClick={() => handleRemove(app.id)} className="p-1 text-muted-foreground hover:text-destructive hover:bg-muted rounded"><Trash2 className="w-3.5 h-3.5" /></motion.button>
                                   </>
                                 )}
                               </div>
 
-                              <div className="mb-3 pr-16">
+                              <div className="mb-3 pr-16 relative">
                                 {isEditing ? (
                                   <input value={editForm.company || ""} onChange={(e) => setEditForm({ ...editForm, company: e.target.value })} className="w-full px-2 py-1 text-sm border border-border rounded-md bg-background text-foreground font-semibold mb-1" />
                                 ) : (
@@ -385,7 +304,7 @@ export const ApplicationTracker = () => {
                                 <div className="flex flex-col items-end">
                                   <span className="text-[10px] tracking-wider text-muted-foreground/60 mb-1">{new Date(app.addedAt).toLocaleDateString()}</span>
                                   {isEditing && (
-                                    <select value={editForm.status || app.status} onChange={(e) => setEditForm({ ...editForm, status: e.target.value })} className="text-xs font-semibold px-2 py-1 rounded-md border border-border bg-background cursor-pointer mt-1">
+                                    <select value={editForm.status || app.status} onChange={(e) => setEditForm({ ...editForm, status: e.target.value })} className="text-xs font-semibold px-2 py-1 rounded-md border border-border bg-background cursor-pointer mt-1 relative z-20">
                                       {STATUS_OPTIONS.map((s) => (<option key={s} value={s}>{s}</option>))}
                                     </select>
                                   )}

@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Brain, Filter, LayoutDashboard, Search, LogOut, LogIn, Loader2, Moon, Sun, Save, BookmarkCheck } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useDecodeJD } from "@/hooks/useDecodeJD";
 import { GlassTextArea } from "@/components/GlassTextArea";
 import { DecodeButton } from "@/components/DecodeButton";
 import { SkillRadarChart } from "@/components/SkillRadarChart";
@@ -12,9 +13,10 @@ import { SkillProgressBars } from "@/components/SkillProgressBars";
 import { CriticalRequirements } from "@/components/CriticalRequirements";
 import { WinningStrategy } from "@/components/WinningStrategy";
 import { ResumeGapAnalyzer } from "@/components/ResumeGapAnalyzer";
-import { ApplicationTracker } from "@/components/ApplicationTracker";
 import type { DecodeResult } from "@/types/jd";
 import { ThemeToggle } from "@/components/ThemeToggle";
+
+const ApplicationTracker = lazy(() => import("@/components/ApplicationTracker").then(module => ({ default: module.ApplicationTracker })));
 
 type Tab = "decode" | "applications";
 
@@ -22,10 +24,9 @@ type Tab = "decode" | "applications";
 const Index = () => {
   const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
+  const { isScanning, results, decodeJD } = useDecodeJD();
   const [activeTab, setActiveTab] = useState<Tab>("decode");
   const [jdText, setJdText] = useState("");
-  const [isScanning, setIsScanning] = useState(false);
-  const [results, setResults] = useState<DecodeResult | null>(null);
   const [priorityFilter, setPriorityFilter] = useState(false);
   const [savingJd, setSavingJd] = useState(false);
   const [savedJdId, setSavedJdId] = useState<string | null>(null);
@@ -86,35 +87,7 @@ const Index = () => {
   };
 
   const handleDecode = async () => {
-    if (jdText.trim().length < 20) {
-      toast.error("Please paste a job description (min 20 characters).");
-      return;
-    }
-
-    setIsScanning(true);
-    setResults(null);
-
-    try {
-      const { data, error } = await supabase.functions.invoke("decode-jd", {
-        body: { jdText },
-      });
-
-      if (error) throw error;
-      if (data.error) throw new Error(data.error);
-
-      setResults({
-        title: data.title,
-        skills: data.skills,
-        requirements: data.requirements || { education: [], experience: "", soft_skills: [], agreements: [] },
-        winning_strategy: data.winning_strategy || [],
-      });
-      toast.success(`Decoded: ${data.title}`, { duration: 4000 });
-    } catch (err: any) {
-      console.error(err);
-      toast.error(err.message || "Failed to decode JD. Please try again.");
-    } finally {
-      setIsScanning(false);
-    }
+    await decodeJD(jdText);
   };
 
   const tabClass = (tab: Tab) =>
@@ -400,7 +373,9 @@ const Index = () => {
               transition={{ duration: 0.35, ease: "easeOut" }}
               className="mt-8"
             >
-              <ApplicationTracker />
+              <Suspense fallback={<div className="flex justify-center p-12"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>
+                <ApplicationTracker />
+              </Suspense>
             </motion.div>
           )}
         </AnimatePresence>

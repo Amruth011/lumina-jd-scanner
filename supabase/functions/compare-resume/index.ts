@@ -35,6 +35,8 @@ serve(async (req) => {
             role: "system",
             content: `You are an expert resume analyzer. Compare a resume against required JD skills. Estimate match percentage for each skill AND provide specific deductions explaining why the overall match isn't 100%.
 
+Additionally, write perfectly tailored resume snippets (a professional summary and 3-5 quantified bullet points) that the candidate can copy and paste directly into their resume to better match this JD and address any gaps found.
+
 CRITICAL RULE — ALTERNATIVE/OR SKILLS:
 When a JD lists alternatives separated by "or", "/", "and/or", or similar (e.g. "Python or R", "LangGraph or LangChain", "AWS or Azure or GCP", "React or Angular"), these are INTERCHANGEABLE options — having ANY ONE of them is a FULL MATCH (100% for that skill). Do NOT deduct points for not knowing the other alternatives.
 Instead, in the "note" field, acknowledge the match and suggest mentioning the other alternatives to stand out from the competition.
@@ -91,8 +93,21 @@ ${resumeText}`,
                     },
                   },
                   summary: { type: "string", description: "2-3 sentence gap analysis summary" },
+                  tailored_resume_snippets: {
+                    type: "object",
+                    description: "Tailored resume statements the user can copy/paste directly into their resume to address gaps and highlight matches",
+                    properties: {
+                      professional_summary: { type: "string", description: "A tailored 2-3 sentence professional summary focusing heavily on the exact JD requirement keywords" },
+                      experience_bullets: {
+                        type: "array",
+                        items: { type: "string" },
+                        description: "3 to 5 highly professional, quantified bullet points that the user can copy into their Work Experience section to directly hit the JD requirements and fix the reported gaps. Make them sound extremely impressive and action-oriented."
+                      }
+                    },
+                    required: ["professional_summary", "experience_bullets"]
+                  }
                 },
-                required: ["overall_match", "skill_matches", "deductions", "summary"],
+                required: ["overall_match", "skill_matches", "deductions", "summary", "tailored_resume_snippets"],
               },
             },
           },

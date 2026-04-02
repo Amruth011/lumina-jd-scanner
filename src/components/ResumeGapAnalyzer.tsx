@@ -3,8 +3,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FileText, Loader2, ArrowRight, Upload, PlusCircle, AlertTriangle, CheckCircle2, XCircle, Sparkles, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { saveApplication, type TrackedApplication } from "@/components/ApplicationTracker";
+import { saveApplication, type TrackedApplication } from "@/hooks/useApplications";
 import type { Skill, ResumeGapResult } from "@/types/jd";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 interface ResumeGapAnalyzerProps {
   skills: Skill[];
@@ -43,8 +45,26 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
   const [result, setResult] = useState<ResumeGapResult | null>(null);
   const [addedToTracker, setAddedToTracker] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
   const [generatingFor, setGeneratingFor] = useState<number | null>(null);
   const [generatedBullets, setGeneratedBullets] = useState<Record<number, string>>({});
+
+  const handleExportPDF = async () => {
+    if (!resultRef.current) return;
+    try {
+      const canvas = await html2canvas(resultRef.current, { scale: 2 });
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save("Lumina-Gap-Analysis.pdf");
+      toast.success("PDF Downloaded successfully!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to generate PDF.");
+    }
+  };
 
   const handleGenerateBullet = (index: number, reason: string) => {
     setGeneratingFor(index);
@@ -304,7 +324,8 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="mt-5"
+            className="mt-5 bg-background p-5 sm:p-8 rounded-2xl border border-border mt-8"
+            ref={resultRef}
           >
             {/* Overall match score - prominent */}
             <motion.div
@@ -342,6 +363,15 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
                     <CheckCircle2 className="w-3.5 h-3.5" /> Tracked
                   </motion.span>
                 )}
+                
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleExportPDF}
+                  className="mt-3 ml-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-accent text-accent-foreground hover:opacity-90 transition-all border border-accent/30"
+                >
+                  Download PDF Report
+                </motion.button>
               </div>
             </motion.div>
 
@@ -476,6 +506,45 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
                 {result.summary}
               </p>
             </motion.div>
+
+            {/* Tailored Resume Snippets */}
+            {result.tailored_resume_snippets && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="mt-6 border border-primary/20 bg-primary/5 rounded-xl p-5"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="font-display font-semibold text-primary flex items-center gap-2">
+                    <Sparkles className="w-4 h-4" /> Tailored For Your Resume
+                  </h4>
+                  <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Copy & Paste</span>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="relative group bg-background/60 p-4 rounded-lg border border-border shadow-sm">
+                    <h5 className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground mb-2">Professional Summary</h5>
+                    <p className="text-sm text-foreground/90 leading-relaxed font-medium">{result.tailored_resume_snippets.professional_summary}</p>
+                    <button onClick={() => handleCopyBullet(result.tailored_resume_snippets!.professional_summary)} className="absolute right-2 top-2 p-1.5 opacity-0 group-hover:opacity-100 bg-background rounded-md shadow-sm border border-border text-muted-foreground hover:text-foreground transition-all">
+                      <Copy className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h5 className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground ml-1">Experience Bullet Points</h5>
+                    {result.tailored_resume_snippets.experience_bullets.map((bullet, idx) => (
+                      <div key={idx} className="relative group bg-background/60 p-3.5 rounded-lg border border-border shadow-sm pl-8">
+                        <span className="absolute left-3.5 top-5 w-1.5 h-1.5 rounded-full bg-primary" />
+                        <p className="text-sm text-foreground/90 leading-relaxed font-medium">{bullet}</p>
+                        <button onClick={() => handleCopyBullet(bullet)} className="absolute right-2 top-2 p-1.5 opacity-0 group-hover:opacity-100 bg-background rounded-md shadow-sm border border-border text-muted-foreground hover:text-foreground transition-all">
+                          <Copy className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
