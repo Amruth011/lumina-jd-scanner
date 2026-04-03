@@ -92,11 +92,11 @@ const Auth = () => {
           </div>
 
           <h2 className="font-display font-semibold text-xl text-foreground text-center mb-1">
-            {step === "otp" ? "Enter Verification Code" : "Sign in to continue"}
+            {step === "otp" ? "Check Your Email" : "Sign in to continue"}
           </h2>
           <p className="text-sm text-muted-foreground text-center mb-6">
             {step === "otp"
-              ? `We sent a code to ${email}`
+              ? `We sent a magic link and code to ${email}`
               : "Track your applications and save your analyses"}
           </p>
 
@@ -174,16 +174,20 @@ const Auth = () => {
           )}
 
 
-          {/* OTP input */}
+          {/* OTP / Magic Link Help text */}
           {step === "otp" && (
             <div className="space-y-4">
+              <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-xl text-center mb-2">
+                 <p className="text-sm font-semibold text-emerald-600 mb-1">Click the Magic Link in your email</p>
+                 <p className="text-xs text-muted-foreground">Or if you received a 6-digit code, enter it below:</p>
+              </div>
               <input
                 type="text"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                placeholder="000000"
+                placeholder="000000 (Optional)"
                 maxLength={6}
-                className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-sm text-center tracking-[0.3em] font-mono text-lg placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-sm text-center tracking-[0.2em] font-mono text-lg placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                 autoFocus
                 onKeyDown={(e) => e.key === "Enter" && handleVerifyOtp()}
               />

@@ -29,7 +29,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "google/gemini-1.5-pro",
         messages: [
           {
             role: "system",
@@ -37,7 +37,7 @@ serve(async (req) => {
 
 **When analyzing and recommending changes, build trust:**
 1. Focus on exact wording: Recommend replacing current words with precise ATS keywords from the JD without lying.
-2. Provide explicit, granular directives on exactly what to add, delete, replace, or edit. YOU MUST ALWAYS PROVIDE "actionable_directives". IT IS CRITICAL AND MANDATORY. DO NOT OMIT IT.
+2. Provide explicit, granular directives on exactly what to add, delete, replace, or edit. YOU MUST ALWAYS PROVIDE "actionable_directives" IN YOUR JSON RESPONSE. IT IS CRITICAL AND MANDATORY. DO NOT OMIT IT. If you omit it, the system will fail.
 
 Compare a resume against required JD skills. Estimate match percentage for each skill AND provide specific deductions explaining why the overall match isn't 100%.
 

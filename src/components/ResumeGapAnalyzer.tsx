@@ -53,23 +53,72 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
   const [lastAnalyzedText, setLastAnalyzedText] = useState("");
 
   const handleExportPDF = async () => {
-    if (!page1Ref.current) return;
+    if (!result) return;
     try {
       const pdf = new jsPDF("p", "mm", "a4");
-      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const margin = 20;
+      let y = margin;
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const wrapText = (text: string, maxWidth: number) => pdf.splitTextToSize(text, maxWidth);
 
-      // Page 1
-      const canvas1 = await html2canvas(page1Ref.current, { scale: 2 });
-      const img1Height = (canvas1.height * pdfWidth) / canvas1.width;
-      pdf.addImage(canvas1.toDataURL("image/png"), "PNG", 0, 0, pdfWidth, img1Height);
+      const addText = (text: string, size: number, isBold: boolean = false, color: number[] = [0,0,0]) => {
+        pdf.setFont("helvetica", isBold ? "bold" : "normal");
+        pdf.setFontSize(size);
+        pdf.setTextColor(color[0], color[1], color[2]);
+        const lines = wrapText(text, pageWidth - margin * 2);
+        
+        lines.forEach((line: string) => {
+          if (y > pageHeight - margin) {
+            pdf.addPage();
+            y = margin;
+          }
+          pdf.text(line, margin, y);
+          y += size * 0.4; // roughly line height
+        });
+        y += size * 0.2; // paragraph spacing
+      };
 
-      // Page 2
-      const hasPage2Content = result.actionable_directives?.length || result.tailored_resume_snippets;
-      if (page2Ref.current && hasPage2Content) {
-        pdf.addPage();
-        const canvas2 = await html2canvas(page2Ref.current, { scale: 2 });
-        const img2Height = (canvas2.height * pdfWidth) / canvas2.width;
-        pdf.addImage(canvas2.toDataURL("image/png"), "PNG", 0, 0, pdfWidth, img2Height);
+      // Title
+      addText("Lumina JD - Strategy to Reach 100% Match", 18, true, [48, 86, 211]);
+      y += 10;
+      
+      addText(`Current Match Score: ${result.overall_match}%`, 14, true);
+      addText(`Target Score: 100%`, 14, true, [16, 185, 129]);
+      y += 5;
+
+      addText("Critical Gaps to Fix", 14, true, [220, 38, 38]);
+      if (result.deductions?.length) {
+        result.deductions.forEach(d => {
+          addText(`- (-${d.percent}%) ${d.reason}`, 12);
+        });
+      } else {
+        addText("No major gaps found.", 12);
+      }
+      y += 5;
+
+      addText("Step-by-step Action Plan", 14, true, [16, 185, 129]);
+      if (result.actionable_directives?.length) {
+        result.actionable_directives.forEach(d => {
+          addText(`Action: ${d.action.toUpperCase()} - ${d.description}`, 12, true);
+          addText(d.reasoning, 12);
+          y += 2;
+        });
+      } else {
+        addText("Review your skills and ensure they are prominent.", 12);
+      }
+      y += 5;
+
+      if (result.tailored_resume_snippets) {
+        addText("Ready-to-Use Resume Snippets", 14, true, [147, 51, 234]);
+        addText("Professional Summary:", 12, true);
+        addText(result.tailored_resume_snippets.professional_summary, 12);
+        
+        y += 3;
+        addText("Experience Bullets to Add/Replace:", 12, true);
+        result.tailored_resume_snippets.experience_bullets.forEach((b: string) => {
+          addText(`• ${b}`, 12);
+        });
       }
 
       pdf.save("Lumina-Gap-Analysis.pdf");
@@ -270,9 +319,15 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
                </div>
                
                <label className="flex items-center gap-2 cursor-pointer bg-background px-3 py-1.5 rounded-md border border-border shadow-sm">
-                 <span className="text-xs font-semibold whitespace-nowrap">Auto-Run Analysis</span>
-                 <div className={`w-8 h-4 rounded-full transition-colors relative ${isAutoRunEnabled ? 'bg-primary' : 'bg-muted-foreground/30'}`}>
-                    <div className={`absolute w-3 h-3 bg-white rounded-full top-0.5 transition-transform ${isAutoRunEnabled ? 'translate-x-[18px]' : 'translate-x-0.5'}`} />
+                 <input 
+                   type="checkbox" 
+                   className="hidden" 
+                   checked={isAutoRunEnabled} 
+                   onChange={(e) => setIsAutoRunEnabled(e.target.checked)} 
+                 />
+                 <span className="text-xs font-semibold whitespace-nowrap text-foreground">Auto-Run Analysis</span>
+                 <div className={`w-8 h-4 rounded-full transition-colors relative ${isAutoRunEnabled ? 'bg-primary' : 'bg-zinc-300 dark:bg-zinc-700'}`}>
+                    <div className={`absolute w-3 h-3 bg-white shadow-sm rounded-full top-0.5 transition-transform ${isAutoRunEnabled ? 'translate-x-[18px]' : 'translate-x-0.5'}`} />
                  </div>
                </label>
             </div>
@@ -379,24 +434,35 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
                 </span>
                 <p className="text-sm text-muted-foreground mt-1">Overall Match Score</p>
 
-                {!addedToTracker ? (
+                <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+                  {!addedToTracker ? (
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleAddToTracker}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold text-primary bg-primary/10 border border-primary/20 hover:bg-primary/20 transition-all"
+                    >
+                      <PlusCircleIcon className="w-3.5 h-3.5" /> Add to Tracker
+                    </motion.button>
+                  ) : (
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="inline-flex items-center gap-1 text-xs text-[hsl(var(--skill-core))] font-semibold"
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5" /> Tracked
+                    </motion.span>
+                  )}
+                  
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={handleAddToTracker}
-                    className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold text-primary bg-primary/10 border border-primary/20 hover:bg-primary/20 transition-all"
+                    onClick={handleExportPDF}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold text-accent-foreground bg-accent hover:opacity-90 transition-all border border-accent/20 shadow-sm"
                   >
-                    <PlusCircleIcon className="w-3.5 h-3.5" /> Add to Tracker
+                    <FileText className="w-3.5 h-3.5" /> Action Plan
                   </motion.button>
-                ) : (
-                  <motion.span
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="mt-3 inline-flex items-center gap-1 text-xs text-[hsl(var(--skill-core))] font-semibold"
-                  >
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Tracked
-                  </motion.span>
-                )}
+                </div>
               </div>
             </motion.div>
 
@@ -613,17 +679,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
             )}
            </div>{/* END PAGE 2 */}
             
-           {/* Bottom Download Button */}
-           <div className="p-5 sm:p-8 bg-card border-t border-border flex justify-end">
-             <motion.button
-               whileHover={{ scale: 1.05 }}
-               whileTap={{ scale: 0.95 }}
-               onClick={handleExportPDF}
-               className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-all shadow-md"
-             >
-               <FileText className="w-4 h-4" /> Download 2-Page PDF Report
-             </motion.button>
-           </div>
+
 
           </motion.div>
         )}

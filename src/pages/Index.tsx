@@ -303,23 +303,23 @@ const Index = () => {
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
                         onClick={() => setPriorityFilter(!priorityFilter)}
-                        className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
+                        className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 border ${
                           priorityFilter
-                            ? "bg-zinc-900 text-white shadow-md dark:bg-primary/20 dark:text-primary dark:border-primary/40 dark:glass"
-                            : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700 dark:bg-transparent dark:text-muted-foreground dark:hover:text-foreground dark:glass"
+                            ? "bg-foreground text-background border-transparent shadow-md dark:bg-primary/20 dark:text-primary dark:border-primary/40 dark:glass"
+                            : "bg-background text-foreground border-border hover:bg-muted dark:bg-transparent dark:text-muted-foreground dark:hover:text-foreground dark:glass"
                         }`}
                       >
                         <Filter className="w-4 h-4" />
                         Priority Filter
                         <span
                           className={`inline-flex items-center w-11 h-6 rounded-full relative transition-colors duration-300 ${
-                            priorityFilter ? "bg-primary" : "bg-muted"
+                            priorityFilter ? "bg-primary" : "bg-zinc-300 dark:bg-zinc-700"
                           }`}
                         >
                           <motion.span
                             animate={{ x: priorityFilter ? 22 : 2 }}
                             transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                            className={`w-4 h-4 rounded-full bg-zinc-800 dark:bg-white shadow-sm ring-1 ring-black/10 dark:ring-white/10`}
+                            className={`w-5 h-5 rounded-full bg-white shadow-md`}
                           />
                         </span>
                       </motion.button>
