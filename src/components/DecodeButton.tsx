@@ -1,13 +1,14 @@
 import { motion } from "framer-motion";
-import { Scan, Loader2, Zap } from "lucide-react";
+import { Loader2, Zap, CheckCircle2 } from "lucide-react";
 
 interface DecodeButtonProps {
   onClick: () => void;
   isLoading: boolean;
   disabled: boolean;
+  isDecoded?: boolean;
 }
 
-export const DecodeButton = ({ onClick, isLoading, disabled }: DecodeButtonProps) => {
+export const DecodeButton = ({ onClick, isLoading, disabled, isDecoded }: DecodeButtonProps) => {
   return (
     <motion.button
       whileHover={{ scale: 1.02 }}
@@ -16,14 +17,16 @@ export const DecodeButton = ({ onClick, isLoading, disabled }: DecodeButtonProps
       disabled={disabled || isLoading}
       className={`
         relative rounded-2xl px-10 py-4 font-display font-semibold text-lg
-        bg-zinc-900 text-white shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:bg-zinc-800
-        dark:bg-transparent dark:text-foreground dark:glass-strong dark:shadow-sm dark:hover:bg-foreground/5
+        ${isDecoded
+          ? "bg-emerald-600 text-white shadow-[0_8px_30px_rgb(16,185,129,0.3)] hover:bg-emerald-700 dark:bg-emerald-600 dark:text-white dark:hover:bg-emerald-700"
+          : "bg-zinc-900 text-white shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:bg-zinc-800 dark:bg-transparent dark:text-foreground dark:glass-strong dark:shadow-sm dark:hover:bg-foreground/5"
+        }
         transition-all disabled:opacity-40 disabled:cursor-not-allowed
         overflow-hidden
       `}
     >
       {/* Shimmer effect */}
-      {!disabled && !isLoading && (
+      {!disabled && !isLoading && !isDecoded && (
         <motion.div
           className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
           animate={{ x: ["-100%", "200%"] }}
@@ -43,6 +46,14 @@ export const DecodeButton = ({ onClick, isLoading, disabled }: DecodeButtonProps
       <span className="relative z-10 flex items-center gap-3">
         {isLoading ? (
           <Loader2 className="w-5 h-5 animate-spin" />
+        ) : isDecoded ? (
+          <motion.span
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 400 }}
+          >
+            <CheckCircle2 className="w-5 h-5" />
+          </motion.span>
         ) : (
           <motion.span
             animate={{ rotate: [0, -10, 10, 0] }}
@@ -51,7 +62,7 @@ export const DecodeButton = ({ onClick, isLoading, disabled }: DecodeButtonProps
             <Zap className="w-5 h-5" />
           </motion.span>
         )}
-        {isLoading ? "Decoding..." : "Decode JD"}
+        {isLoading ? "Decoding..." : isDecoded ? "Decoded ✓" : "Decode JD"}
       </span>
     </motion.button>
   );

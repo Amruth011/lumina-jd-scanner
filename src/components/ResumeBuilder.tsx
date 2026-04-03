@@ -2,7 +2,6 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Download, Sparkles, Copy, X } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import type { Skill, Deduction, GeneratedResume, ResumeGapResult } from "@/types/jd";
 import jsPDF from "jspdf";
 
@@ -19,78 +18,162 @@ export const ResumeBuilder = ({ resumeText, skills, deductions, jobTitle, gapRes
   const [resume, setResume] = useState<GeneratedResume | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
-  const buildFromExistingData = (): GeneratedResume => {
-    // Build resume from existing gap analysis data — no extra API call needed
+  const buildFromResumeData = (): GeneratedResume => {
     const snippets = gapResult?.tailored_resume_snippets;
-    const directives = gapResult?.actionable_directives || [];
+    const lines = resumeText.split("\n").map(l => l.trim()).filter(l => l.length > 0);
 
-    // Professional summary from snippets or generate from skills
-    const professional_summary = snippets?.professional_summary ||
-      `Results-driven ${jobTitle || "professional"} with expertise in ${skills.slice(0, 5).map(s => s.skill).join(", ")}. Proven track record of delivering high-impact solutions leveraging ${skills.slice(0, 3).map(s => s.skill).join(" and ")}. Passionate about driving innovation and measurable business outcomes.`;
+    // ── 1. Professional Summary: Use AI snippet if available, otherwise extract from resume ──
+    let professional_summary = snippets?.professional_summary || "";
+    if (!professional_summary) {
+      // Try to extract existing summary from resume
+      let inSummary = false;
+      const summaryLines: string[] = [];
+      for (const line of lines) {
+        if (/^(professional\s+summary|summary|objective|profile)/i.test(line)) {
+          inSummary = true;
+          continue;
+        }
+        if (inSummary && /^(experience|education|skills|technical|projects|certifications)/i.test(line)) break;
+        if (inSummary && line.length > 10) summaryLines.push(line);
+      }
+      if (summaryLines.length > 0) {
+        professional_summary = summaryLines.join(" ");
+      } else {
+        // Fallback: build from skills
+        const topSkills = skills.slice(0, 5).map(s => s.skill).join(", ");
+        professional_summary = `Experienced ${jobTitle || "professional"} with demonstrated expertise in ${topSkills}. Proven ability to deliver impactful results in fast-paced environments.`;
+      }
+    }
 
-    // Skills organized by category
+    // ── 2. Skills: Reorganize by JD priority, preserving original ──
     const skillsByCategory: Record<string, string[]> = {};
     skills.forEach(s => {
       if (!skillsByCategory[s.category]) skillsByCategory[s.category] = [];
       skillsByCategory[s.category].push(s.skill);
     });
+    
+    // Also extract original skills from resume
+    let inSkills = false;
+    const originalSkillLines: string[] = [];
+    for (const line of lines) {
+      if (/^(technical\s+skills|skills|core\s+competencies)/i.test(line)) {
+        inSkills = true;
+        continue;
+      }
+      if (inSkills && /^(experience|education|projects|certifications|professional)/i.test(line)) break;
+      if (inSkills && line.length > 3) originalSkillLines.push(line);
+    }
+
+    // Merge: JD-prioritized categories + original resume skills
     const skills_section = Object.entries(skillsByCategory).map(
       ([cat, items]) => `${cat}: ${items.join(", ")}`
     );
+    // Add any original skill lines not already covered
+    originalSkillLines.forEach(sl => {
+      const alreadyCovered = skills_section.some(s => s.toLowerCase().includes(sl.toLowerCase().split(":")[0]));
+      if (!alreadyCovered && sl.includes(":")) skills_section.push(sl);
+    });
 
-    // Experience bullets from snippets
-    const experience_bullets = snippets?.experience_bullets || [];
-    
-    // Add directive-based bullets
-    const addBullets = directives
-      .filter(d => d.action === "add" || d.action === "replace")
-      .map(d => d.description);
-
-    const allBullets = [...experience_bullets, ...addBullets].slice(0, 8);
-
-    // Try to extract experience sections from resume text
+    // ── 3. Experience: PRESERVE ORIGINAL — do NOT fabricate ──
     const experienceSections: GeneratedResume["experience"] = [];
-    
-    // Simple heuristic: split by common resume section headers
-    const lines = resumeText.split("\n").map(l => l.trim()).filter(l => l.length > 0);
+    let inExperience = false;
     let currentHeading = "";
+    let currentContent = "";
     let currentBullets: string[] = [];
-    
+
     for (const line of lines) {
-      // Check if it looks like a job title line (contains dates like 2020-2023 or has company patterns)
-      if (line.match(/\d{4}\s*[-–—]\s*(present|\d{4})/i) || line.match(/^[A-Z].*(?:Inc|Ltd|LLC|Corp|Company|Technologies)/)) {
-        if (currentHeading && currentBullets.length > 0) {
-          experienceSections.push({
-            heading: currentHeading,
-            content: "",
-            bullets: currentBullets
-          });
+      if (/^(experience|work\s+experience|employment)/i.test(line)) {
+        inExperience = true;
+        continue;
+      }
+      if (inExperience && /^(education|projects|certifications|technical|skills)/i.test(line)) {
+        // Save last entry
+        if (currentHeading) {
+          experienceSections.push({ heading: currentHeading, content: currentContent, bullets: currentBullets });
+        }
+        inExperience = false;
+        continue;
+      }
+      if (!inExperience) continue;
+
+      // Detect job title lines (usually have dates)
+      if (line.match(/\d{4}/) && !line.startsWith("•") && !line.startsWith("-") && !line.startsWith("*") && line.length > 10) {
+        if (currentHeading) {
+          experienceSections.push({ heading: currentHeading, content: currentContent, bullets: currentBullets });
         }
         currentHeading = line;
+        currentContent = "";
         currentBullets = [];
-      } else if (line.startsWith("•") || line.startsWith("-") || line.startsWith("*")) {
-        currentBullets.push(line.replace(/^[•\-*]\s*/, ""));
+      } else if (line.startsWith("•") || line.startsWith("-") || line.startsWith("*") || line.startsWith("·")) {
+        currentBullets.push(line.replace(/^[•\-*·]\s*/, ""));
+      } else if (currentHeading && !currentContent && line.length > 10) {
+        currentContent = line;
       }
     }
-    if (currentHeading && currentBullets.length > 0) {
-      experienceSections.push({ heading: currentHeading, content: "", bullets: currentBullets });
+    if (currentHeading) {
+      experienceSections.push({ heading: currentHeading, content: currentContent, bullets: currentBullets });
     }
 
-    // If we couldn't parse experience, create one section with all bullets
-    if (experienceSections.length === 0 && allBullets.length > 0) {
-      experienceSections.push({
-        heading: jobTitle || "Professional Experience",
-        content: "ATS-optimized bullet points targeting this role",
-        bullets: allBullets,
-      });
+    // If we couldn't parse, show the raw experience section
+    if (experienceSections.length === 0) {
+      let rawExp = "";
+      let capture = false;
+      for (const line of lines) {
+        if (/^(experience|work\s+experience)/i.test(line)) { capture = true; continue; }
+        if (capture && /^(education|projects|certifications|skills)/i.test(line)) break;
+        if (capture) rawExp += line + "\n";
+      }
+      if (rawExp.trim()) {
+        experienceSections.push({ heading: "Experience (from your resume)", content: rawExp.trim(), bullets: [] });
+      }
     }
+
+    // ── 4. Education: PRESERVE ORIGINAL ──
+    const educationEntries: string[] = [];
+    let inEducation = false;
+    for (const line of lines) {
+      if (/^(education)/i.test(line)) { inEducation = true; continue; }
+      if (inEducation && /^(experience|projects|certifications|skills|technical)/i.test(line)) break;
+      if (inEducation && line.length > 5) educationEntries.push(line);
+    }
+
+    // ── 5. Certifications: PRESERVE ORIGINAL ──
+    const certEntries: string[] = [];
+    let inCerts = false;
+    for (const line of lines) {
+      if (/^(certifications?|licenses?)/i.test(line)) { inCerts = true; continue; }
+      if (inCerts && /^(education|experience|projects|skills|technical)/i.test(line)) break;
+      if (inCerts && line.length > 5) certEntries.push(line.replace(/^[✓✔☑]\s*/, ""));
+    }
+
+    // ── 6. Projects: Treat as experience if they exist ──
+    let inProjects = false;
+    let projHeading = "";
+    let projBullets: string[] = [];
+    for (const line of lines) {
+      if (/^(projects)/i.test(line)) { inProjects = true; continue; }
+      if (inProjects && /^(education|experience|certifications|skills|technical)/i.test(line)) {
+        if (projHeading) experienceSections.push({ heading: projHeading, content: "", bullets: projBullets });
+        inProjects = false;
+        continue;
+      }
+      if (!inProjects) continue;
+      if (!line.startsWith("•") && !line.startsWith("-") && !line.startsWith("*") && !line.startsWith("·") && line.length > 10) {
+        if (projHeading) experienceSections.push({ heading: projHeading, content: "", bullets: projBullets });
+        projHeading = line;
+        projBullets = [];
+      } else if (line.startsWith("•") || line.startsWith("-") || line.startsWith("*") || line.startsWith("·")) {
+        projBullets.push(line.replace(/^[•\-*·]\s*/, ""));
+      }
+    }
+    if (projHeading) experienceSections.push({ heading: projHeading, content: "", bullets: projBullets });
 
     return {
       professional_summary,
       skills_section,
       experience: experienceSections,
-      education: ["(Education preserved from your original resume)"],
-      certifications: [],
+      education: educationEntries.length > 0 ? educationEntries : ["(Preserved from your original resume)"],
+      certifications: certEntries.length > 0 ? certEntries : undefined,
     };
   };
 
@@ -100,26 +183,15 @@ export const ResumeBuilder = ({ resumeText, skills, deductions, jobTitle, gapRes
       return;
     }
     setIsGenerating(true);
-    try {
-      // First try the edge function
-      const { data, error } = await supabase.functions.invoke("generate-resume", {
-        body: { resumeText, skills, deductions, jobTitle },
-      });
-      if (error) throw error;
-      if (data.error) throw new Error(data.error);
-      setResume(data);
-      setIsOpen(true);
-      toast.success("ATS Resume generated with AI!");
-    } catch {
-      // Fallback: build from existing gap analysis data
-      console.log("Edge function unavailable, building from gap analysis data...");
-      const fallbackResume = buildFromExistingData();
-      setResume(fallbackResume);
-      setIsOpen(true);
-      toast.success("ATS Resume generated from your analysis data!");
-    } finally {
-      setIsGenerating(false);
-    }
+    
+    // Build directly from the resume + gap analysis data
+    // This preserves original content and only enhances summary/skills
+    await new Promise(r => setTimeout(r, 500)); // Small delay for UX
+    const generatedResume = buildFromResumeData();
+    setResume(generatedResume);
+    setIsOpen(true);
+    toast.success("ATS Resume generated from your analysis data!");
+    setIsGenerating(false);
   };
 
   const handleCopy = (text: string) => {
@@ -143,10 +215,7 @@ export const ResumeBuilder = ({ resumeText, skills, deductions, jobTitle, gapRes
         pdf.setTextColor(color[0], color[1], color[2]);
         const lines = pdf.splitTextToSize(text, contentWidth);
         lines.forEach((line: string) => {
-          if (y > pageHeight - margin) {
-            pdf.addPage();
-            y = margin;
-          }
+          if (y > pageHeight - margin) { pdf.addPage(); y = margin; }
           pdf.text(line, margin, y);
           y += size * 0.45;
         });
@@ -155,37 +224,44 @@ export const ResumeBuilder = ({ resumeText, skills, deductions, jobTitle, gapRes
 
       const addLine = () => {
         if (y > pageHeight - margin) { pdf.addPage(); y = margin; }
-        pdf.setDrawColor(200, 200, 200);
+        pdf.setDrawColor(180, 180, 180);
         pdf.line(margin, y, pageWidth - margin, y);
         y += 4;
       };
 
-      addText("PROFESSIONAL SUMMARY", 12, true, [40, 40, 40]);
+      // Professional Summary
+      addText("PROFESSIONAL SUMMARY", 12, true, [30, 30, 30]);
       addLine();
       addText(resume.professional_summary, 10);
-      y += 4;
+      y += 3;
 
-      addText("SKILLS", 12, true, [40, 40, 40]);
+      // Skills
+      addText("TECHNICAL SKILLS", 12, true, [30, 30, 30]);
       addLine();
       resume.skills_section.forEach(skill => { addText(skill, 10); });
-      y += 4;
+      y += 3;
 
-      addText("EXPERIENCE", 12, true, [40, 40, 40]);
+      // Experience & Projects
+      addText("EXPERIENCE & PROJECTS", 12, true, [30, 30, 30]);
       addLine();
       resume.experience.forEach(exp => {
-        addText(exp.heading, 11, true);
-        if (exp.content) addText(exp.content, 10, false, [80, 80, 80]);
-        exp.bullets?.forEach(bullet => { addText(`•  ${bullet}`, 10); });
-        y += 3;
+        addText(exp.heading, 10.5, true);
+        if (exp.content) addText(exp.content, 9.5, false, [70, 70, 70]);
+        exp.bullets?.forEach(bullet => { addText(`•  ${bullet}`, 9.5); });
+        y += 2;
       });
 
-      addText("EDUCATION", 12, true, [40, 40, 40]);
-      addLine();
-      resume.education.forEach(edu => { addText(edu, 10); });
+      // Education
+      if (resume.education.length > 0) {
+        addText("EDUCATION", 12, true, [30, 30, 30]);
+        addLine();
+        resume.education.forEach(edu => { addText(edu, 10); });
+      }
 
+      // Certifications
       if (resume.certifications?.length) {
-        y += 4;
-        addText("CERTIFICATIONS", 12, true, [40, 40, 40]);
+        y += 3;
+        addText("CERTIFICATIONS", 12, true, [30, 30, 30]);
         addLine();
         resume.certifications.forEach(cert => { addText(cert, 10); });
       }
@@ -200,9 +276,10 @@ export const ResumeBuilder = ({ resumeText, skills, deductions, jobTitle, gapRes
 
   const copyFullResume = () => {
     if (!resume) return;
-    let full = `PROFESSIONAL SUMMARY\n${resume.professional_summary}\n\nSKILLS\n${resume.skills_section.join("\n")}\n\nEXPERIENCE\n`;
+    let full = `PROFESSIONAL SUMMARY\n${resume.professional_summary}\n\nTECHNICAL SKILLS\n${resume.skills_section.join("\n")}\n\nEXPERIENCE & PROJECTS\n`;
     resume.experience.forEach(exp => {
-      full += `${exp.heading}\n${exp.content}\n`;
+      full += `${exp.heading}\n`;
+      if (exp.content) full += `${exp.content}\n`;
       exp.bullets?.forEach(b => { full += `• ${b}\n`; });
       full += "\n";
     });
@@ -227,10 +304,8 @@ export const ResumeBuilder = ({ resumeText, skills, deductions, jobTitle, gapRes
             <Sparkles className="w-5 h-5 text-emerald-500" />
           </motion.div>
           <div>
-            <h3 className="font-display font-semibold text-lg text-foreground">
-              ATS Resume Generator
-            </h3>
-            <p className="text-xs text-muted-foreground">AI rewrites your resume with exact JD keywords</p>
+            <h3 className="font-display font-semibold text-lg text-foreground">ATS Resume Generator</h3>
+            <p className="text-xs text-muted-foreground">Reorganizes your resume with JD keywords — preserves your real experience</p>
           </div>
         </div>
 
@@ -258,9 +333,8 @@ export const ResumeBuilder = ({ resumeText, skills, deductions, jobTitle, gapRes
             transition={{ duration: 0.4 }}
             className="mt-6"
           >
-            {/* Action bar */}
             <div className="flex items-center justify-between mb-4 pb-3 border-b border-border">
-              <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Generated Resume Preview</span>
+              <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Your Resume — ATS Optimized</span>
               <div className="flex items-center gap-2">
                 <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={copyFullResume}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-all">
@@ -276,7 +350,6 @@ export const ResumeBuilder = ({ resumeText, skills, deductions, jobTitle, gapRes
               </div>
             </div>
 
-            {/* Resume Preview */}
             <div className="bg-white dark:bg-zinc-900 border border-border rounded-xl p-6 sm:p-8 space-y-5 shadow-inner max-h-[600px] overflow-y-auto">
               <div className="group relative">
                 <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 border-b border-border pb-1">Professional Summary</h4>
@@ -287,7 +360,7 @@ export const ResumeBuilder = ({ resumeText, skills, deductions, jobTitle, gapRes
               </div>
 
               <div>
-                <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 border-b border-border pb-1">Skills</h4>
+                <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 border-b border-border pb-1">Technical Skills</h4>
                 <div className="space-y-1">
                   {resume.skills_section.map((skill, i) => (
                     <p key={i} className="text-sm text-foreground">{skill}</p>
@@ -296,7 +369,7 @@ export const ResumeBuilder = ({ resumeText, skills, deductions, jobTitle, gapRes
               </div>
 
               <div>
-                <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 border-b border-border pb-1">Experience</h4>
+                <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 border-b border-border pb-1">Experience & Projects</h4>
                 <div className="space-y-4">
                   {resume.experience.map((exp, i) => (
                     <div key={i}>

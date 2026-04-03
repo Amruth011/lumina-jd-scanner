@@ -242,6 +242,7 @@ const Index = () => {
                   onClick={handleDecode}
                   isLoading={isScanning}
                   disabled={jdText.trim().length < 20}
+                  isDecoded={!!results}
                 />
               </motion.div>
 

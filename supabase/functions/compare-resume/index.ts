@@ -38,7 +38,8 @@ serve(async (req) => {
 **When analyzing and recommending changes, build trust:**
 1. Focus on exact wording: Recommend replacing current words with precise ATS keywords from the JD without lying.
 2. Provide explicit, granular directives on exactly what to add, delete, replace, or edit. Your directives must explicitly state what to replace: e.g., "this: <old text> replace with this: <new text>". YOU MUST ALWAYS PROVIDE "actionable_directives" IN YOUR JSON RESPONSE. IT IS CRITICAL AND MANDATORY.
-3. Keep your deductions highly accurate.
+3. Keep your deductions highly accurate and DETERMINISTIC — the same resume and JD must ALWAYS produce the same score.
+4. For EVERY deduction, you MUST also provide a "fix_snippet" — a ready-to-paste resume bullet point or phrase that the user can add to their resume to eliminate that specific gap. This snippet should use the user's actual experience context, not fabricated content.
 
 CRITICAL RULE — ALTERNATIVE/OR/SLASH SKILLS:
 When a JD lists alternatives (e.g. "Python or R", "React or Angular", "Python/TypeScript", "AWS/GCP"), having ANY ONE of them is a FULL MATCH (100% for that skill).
@@ -84,14 +85,15 @@ ${resumeText}`,
                   },
                   deductions: {
                     type: "array",
-                    description: "List of specific deductions from 100% match score",
+                    description: "List of specific deductions from 100% match score. Each MUST include a fix_snippet.",
                     items: {
                       type: "object",
                       properties: {
                         reason: { type: "string", description: "What's missing, e.g. 'Missing Deep Learning Frameworks'" },
                         percent: { type: "number", description: "Points deducted, e.g. 10" },
+                        fix_snippet: { type: "string", description: "A ready-to-paste resume bullet or phrase the user can add to fix this gap. Use their ACTUAL experience context, not fabricated content. Example: 'Add to Skills: TypeScript | Add bullet: Built type-safe REST APIs using TypeScript and Express.js'" },
                       },
-                      required: ["reason", "percent"],
+                      required: ["reason", "percent", "fix_snippet"],
                     },
                   },
                   summary: { type: "string", description: "2-3 sentence gap analysis summary" },
@@ -128,6 +130,7 @@ ${resumeText}`,
           },
         ],
         tool_choice: { type: "function", function: { name: "analyze_resume_gap" } },
+        temperature: 0,
       }),
     });
 

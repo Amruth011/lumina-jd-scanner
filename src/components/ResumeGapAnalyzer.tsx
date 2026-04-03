@@ -526,6 +526,26 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResu
                            {generatingFor === i ? "Generating..." : generatedBullets[i] ? "Generated" : "Fix with AI"}
                         </motion.button>
                       </div>
+
+                      {/* Fix Snippet — ready-to-paste suggestion from gap analysis */}
+                      {d.fix_snippet && (
+                        <div className="bg-emerald-500/5 border-t border-emerald-500/15 px-4 py-2.5 flex gap-2 items-start group relative">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 mt-0.5 shrink-0" />
+                          <p className="text-xs text-emerald-700 dark:text-emerald-400 font-medium leading-relaxed flex-1">
+                            <span className="font-bold">Fix:</span> {d.fix_snippet}
+                          </p>
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => handleCopyBullet(d.fix_snippet!)}
+                            className="p-1 rounded text-emerald-500 hover:bg-emerald-500/10 transition-colors opacity-0 group-hover:opacity-100"
+                            title="Copy fix snippet"
+                          >
+                            <Copy className="w-3 h-3" />
+                          </motion.button>
+                        </div>
+                      )}
+
                       <AnimatePresence>
                         {generatedBullets[i] && (
                           <motion.div

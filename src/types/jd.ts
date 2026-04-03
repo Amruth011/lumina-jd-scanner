@@ -26,6 +26,7 @@ export interface SkillMatch {
 export interface Deduction {
   reason: string;
   percent: number;
+  fix_snippet?: string;
 }
 
 export interface TailoredSnippet {
