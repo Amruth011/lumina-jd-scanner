@@ -403,6 +403,7 @@ const Index = () => {
                           skills={results.skills}
                           deductions={gapResult.deductions}
                           jobTitle={results.title}
+                          gapResult={gapResult}
                         />
                       </div>
                     )}
