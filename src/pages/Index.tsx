@@ -313,7 +313,7 @@ const Index = () => {
                         Priority Filter
                         <span
                           className={`inline-flex items-center w-11 h-6 rounded-full relative transition-colors duration-300 ${
-                            priorityFilter ? "bg-primary" : "bg-zinc-300 dark:bg-zinc-700"
+                            priorityFilter ? "bg-primary" : "bg-black dark:bg-zinc-800"
                           }`}
                         >
                           <motion.span

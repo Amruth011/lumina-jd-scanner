@@ -109,6 +109,8 @@
   body {
     @apply bg-background text-foreground font-sans antialiased selection:bg-foreground/20 selection:text-foreground;
     font-family: 'Inter', sans-serif;
+    background-image: radial-gradient(circle at 50% 0%, hsl(var(--muted-foreground) / 0.1) 0%, hsl(var(--background)) 50%);
+    background-attachment: fixed;
   }
 
   h1, h2, h3, h4, h5, h6 {

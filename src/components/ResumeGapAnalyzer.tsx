@@ -601,7 +601,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
            
            <div ref={page2Ref} className="bg-background/50 border-t border-border p-5 sm:p-8">
              {/* Actionable Directives */}
-             {(result.actionable_directives && result.actionable_directives.length > 0) ? (
+             {(result.actionable_directives && result.actionable_directives.length > 0) && (
                <motion.div
                  initial={{ opacity: 0 }}
                  animate={{ opacity: 1 }}
@@ -631,11 +631,6 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
                      )
                    })}
                  </div>
-               </motion.div>
-             ) : (
-               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-0 p-6 rounded-xl border border-dashed border-border bg-background/50 text-center">
-                 <p className="text-sm font-bold text-muted-foreground">Actionable Directives AI Syncing...</p>
-                 <p className="text-xs text-muted-foreground/70 mt-1">If this didn't generate, run the gap analysis again to fetch exact changes.</p>
                </motion.div>
              )}
 
