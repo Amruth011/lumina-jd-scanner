@@ -885,5 +885,6 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResu
         )}
       </AnimatePresence>
     </motion.div>
+    </>
   );
 };
