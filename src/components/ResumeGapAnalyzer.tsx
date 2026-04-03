@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, Loader2, ArrowRight, Upload, PlusCircle as PlusCircleIcon, AlertTriangle, CheckCircle2, XCircle, Sparkles, Copy, ShieldCheck, Edit3, Trash2, Plus } from "lucide-react";
+import { FileText, Loader2, ArrowRight, Upload, PlusCircle as PlusCircleIcon, AlertTriangle, CheckCircle2, XCircle, Sparkles, Copy, ShieldCheck, Edit3, Trash2, Plus, Download } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { saveApplication, type TrackedApplication } from "@/hooks/useApplications";
@@ -54,6 +54,8 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResu
   const [generatedBullets, setGeneratedBullets] = useState<Record<number, string>>({});
   const [isAutoRunEnabled, setIsAutoRunEnabled] = useState(true);
   const [lastAnalyzedText, setLastAnalyzedText] = useState("");
+  const [showReplaceDialog, setShowReplaceDialog] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
 
   const handleExportPDF = async () => {
     if (!result) return;
@@ -163,21 +165,8 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResu
     toast.success("Bullet point copied to clipboard!");
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const processFile = async (file: File) => {
     const ext = file.name.toLowerCase().split(".").pop();
-    if (!["pdf", "docx", "txt"].includes(ext || "")) {
-      toast.error("Supported formats: PDF, DOCX, TXT");
-      return;
-    }
-
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("File too large (max 10MB).");
-      return;
-    }
-
     setFileName(file.name);
     setIsParsing(true);
 
@@ -195,9 +184,16 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResu
         toast.error("Could not extract enough text from the file. Try pasting manually.");
         setFileName("");
       } else {
+        // Clear previous results
+        setResult(null);
+        onResultChange?.(null);
+        setGeneratedBullets({});
+        setLastAnalyzedText("");
+        setAddedToTracker(false);
+
         setResumeText(text);
         onResumeTextChange?.(text);
-        toast.success("Resume parsed successfully.");
+        toast.success("Resume parsed successfully — previous results cleared.");
       }
     } catch (err: any) {
       console.error("File parse error:", err);
@@ -207,6 +203,55 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResu
       setIsParsing(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const ext = file.name.toLowerCase().split(".").pop();
+    if (!["pdf", "docx", "txt"].includes(ext || "")) {
+      toast.error("Supported formats: PDF, DOCX, TXT");
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File too large (max 10MB).");
+      return;
+    }
+
+    // If results already exist, ask user before replacing
+    if (result) {
+      setPendingFile(file);
+      setShowReplaceDialog(true);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
+    await processFile(file);
+  };
+
+  const handleReplaceSave = async () => {
+    // Export PDF first, then replace
+    await handleExportPDF();
+    setShowReplaceDialog(false);
+    if (pendingFile) {
+      await processFile(pendingFile);
+      setPendingFile(null);
+    }
+  };
+
+  const handleReplaceDiscard = async () => {
+    setShowReplaceDialog(false);
+    if (pendingFile) {
+      await processFile(pendingFile);
+      setPendingFile(null);
+    }
+  };
+
+  const handleReplaceCancel = () => {
+    setShowReplaceDialog(false);
+    setPendingFile(null);
   };
 
   const handleCompare = async () => {
@@ -343,6 +388,64 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResu
   };
 
   return (
+    <>
+      {/* Replace Resume Confirmation Dialog */}
+      <AnimatePresence>
+        {showReplaceDialog && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            onClick={handleReplaceCancel}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-background border border-border rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 rounded-full bg-amber-500/10">
+                  <AlertTriangle className="w-5 h-5 text-amber-500" />
+                </div>
+                <h3 className="font-display font-semibold text-lg text-foreground">Replace Current Resume?</h3>
+              </div>
+              <p className="text-sm text-muted-foreground mb-6">
+                You have existing analysis results. Uploading a new resume will erase them. Would you like to save the current results first?
+              </p>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleReplaceSave}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-all"
+                >
+                  <Download className="w-4 h-4" /> Save PDF & Replace
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleReplaceDiscard}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-destructive/10 text-destructive border border-destructive/20 hover:bg-destructive/20 transition-all"
+                >
+                  <Trash2 className="w-4 h-4" /> Discard & Replace
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleReplaceCancel}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-all"
+                >
+                  Cancel
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -782,5 +885,6 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResu
         )}
       </AnimatePresence>
     </motion.div>
+    </>
   );
 };
