@@ -1,12 +1,12 @@
 /**
- * Deterministic Resume Scorer v2
+ * Deterministic Resume Scorer v3
  * ===============================
- * Pure client-side scoring engine — 100% consistent, 100% honest.
- * Same resume + same JD skills = EXACT same score, every single time.
- *
- * v2 fixes: Strict word-boundary matching to prevent false positives.
- * Short terms like "R", "Go", "AI", "ML" are matched with word boundaries
- * to avoid matching inside unrelated words.
+ * Fixes:
+ * - Handles parenthetical skill names: "RAG (Retrieval Augmented Generation)"
+ * - Handles comma-separated alternatives in parens: "LLMs (OpenAI, Anthropic, Llama)"
+ * - Handles hyphenated terms: "LLM-driven" matches "LLM"
+ * - Strict word-boundary matching to prevent false positives
+ * - 100% deterministic: same input = same output, every time
  */
 
 import type { Skill } from "@/types/jd";
@@ -27,9 +27,7 @@ export interface DeterministicScoreResult {
 }
 
 // ── Synonym / Alias Dictionary ──
-// ONLY exact synonyms. No fuzzy matching.
 const SYNONYM_MAP: Record<string, string[]> = {
-  // Languages
   "javascript": ["js", "ecmascript", "es6"],
   "typescript": ["ts"],
   "python": ["python3"],
@@ -37,99 +35,80 @@ const SYNONYM_MAP: Record<string, string[]> = {
   "c#": ["csharp", "c sharp", ".net", "dotnet", "asp.net"],
   "c++": ["cpp", "cplusplus"],
   "golang": ["go lang"],
-  "ruby": [],
-  "rust": ["rustlang"],
-  "swift": ["swiftui"],
-  "kotlin": [],
-  "php": [],
-  "scala": [],
   "sql": ["tsql", "t-sql", "plsql", "pl/sql"],
-
-  // Frontend Frameworks
   "react": ["reactjs", "react.js"],
   "angular": ["angularjs", "angular.js"],
-  "vue": ["vuejs", "vue.js", "vue js"],
-  "svelte": ["sveltekit"],
-  "next.js": ["nextjs", "next js"],
-  "jquery": [],
-
-  // Backend Frameworks
-  "node.js": ["nodejs", "node js"],
+  "vue": ["vuejs", "vue.js"],
+  "next.js": ["nextjs"],
+  "node.js": ["nodejs"],
   "express": ["expressjs", "express.js"],
   "django": ["django rest framework", "drf"],
-  "flask": [],
   "spring boot": ["springboot"],
-  "spring": ["spring boot", "springboot", "spring framework", "spring mvc"],
+  "spring": ["spring boot", "springboot", "spring framework"],
   "fastapi": ["fast api"],
   "ruby on rails": ["rails", "ror"],
-
-  // Databases
   "postgresql": ["postgres", "psql"],
   "mysql": ["mariadb"],
   "mongodb": ["mongo", "mongoose"],
-  "redis": [],
   "elasticsearch": ["elastic search", "elk"],
-  "cassandra": [],
   "dynamodb": ["dynamo db"],
-  "sqlite": [],
-  "oracle": ["oracle db"],
-  "sql server": ["mssql", "ms sql", "microsoft sql"],
+  "sql server": ["mssql", "ms sql"],
   "firebase": ["firestore"],
-  "supabase": [],
-
-  // Cloud / DevOps
   "aws": ["amazon web services"],
   "azure": ["microsoft azure", "azure devops"],
   "gcp": ["google cloud", "google cloud platform"],
   "docker": ["dockerfile", "docker compose", "docker-compose", "containerization"],
   "kubernetes": ["k8s", "kubectl", "helm"],
   "terraform": ["terragrunt"],
-  "ansible": [],
-  "jenkins": ["jenkinsfile"],
   "ci/cd": ["cicd", "continuous integration", "continuous deployment", "continuous delivery", "github actions", "gitlab ci"],
   "linux": ["ubuntu", "centos", "rhel", "debian", "fedora"],
   "git": ["github", "gitlab", "bitbucket"],
-  "nginx": [],
   "bash": ["shell scripting", "shell script"],
-
-  // Data / ML / AI
   "machine learning": ["ml"],
   "deep learning": ["dl"],
   "artificial intelligence": ["ai"],
   "tensorflow": ["keras"],
   "pytorch": ["torch"],
   "scikit-learn": ["sklearn", "scikit learn"],
-  "pandas": [],
-  "numpy": [],
   "nlp": ["natural language processing", "spacy", "nltk", "hugging face", "huggingface"],
-  "computer vision": ["opencv", "open cv", "yolo", "image recognition", "object detection"],
+  "computer vision": ["opencv", "open cv", "yolo", "image recognition"],
   "data science": ["data analysis", "data analytics"],
   "power bi": ["powerbi"],
-  "tableau": [],
   "apache spark": ["spark", "pyspark"],
   "hadoop": ["hdfs", "mapreduce", "hive"],
   "etl": ["data pipeline", "data pipelines", "airflow"],
-  "llm": ["large language model", "large language models", "langchain"],
-
-  // Tools / Practices
+  "llm": ["llms", "large language model", "large language models"],
+  "rag": ["retrieval augmented generation"],
   "agile": ["scrum", "kanban"],
-  "rest api": ["restful", "restful api", "restful apis", "rest apis"],
+  "rest api": ["restful", "restful api", "rest apis"],
   "graphql": ["apollo graphql"],
-  "microservices": ["micro services", "microservice architecture"],
+  "microservices": ["micro services"],
   "unit testing": ["jest", "pytest", "junit", "mocha"],
   "e2e testing": ["cypress", "selenium", "playwright"],
   "figma": ["sketch", "adobe xd"],
-  "oauth": ["oauth2", "openid connect", "saml"],
+  "oauth": ["oauth2", "openid connect"],
   "jwt": ["json web token"],
-  "websocket": ["websockets", "socket.io", "socketio"],
-  "rabbitmq": ["message queue", "message broker", "amqp"],
-  "kafka": ["apache kafka", "event streaming"],
+  "websocket": ["websockets", "socket.io"],
+  "kafka": ["apache kafka"],
   "grpc": ["protocol buffers", "protobuf"],
-  "jira": [],
-  "confluence": [],
+  "langchain": ["lang chain"],
+  "langgraph": ["lang graph"],
+  "openai": ["openai api", "gpt", "chatgpt"],
+  "anthropic": ["claude"],
+  "pinecone": [],
+  "weaviate": [],
+  "faiss": [],
+  "pgvector": [],
+  "chromadb": ["chroma db", "chroma"],
+  "embeddings": ["embedding"],
+  "vector database": ["vector databases", "vector db", "vector dbs"],
+  "prompt engineering": ["prompt design"],
+  "crewai": ["crew ai"],
+  "mastra": [],
+  "cybersecurity": ["cyber security", "infosec", "information security", "pentest", "penetration testing"],
 };
 
-// Build reverse-lookup: synonym → canonical skill
+// Build reverse-lookup
 const REVERSE_SYNONYMS: Record<string, string> = {};
 for (const [canonical, synonyms] of Object.entries(SYNONYM_MAP)) {
   for (const syn of synonyms) {
@@ -144,137 +123,198 @@ function normalizeText(text: string): string {
     .replace(/['']/g, "'")
     .replace(/[""]/g, '"')
     .replace(/[\r\n]+/g, " ")
+    .replace(/[()[\]{}]/g, " ")  // strip brackets/parens
+    .replace(/[,;:!?•·]/g, " ")  // strip punctuation (keep hyphens, dots, slashes, #, +)
     .replace(/\s+/g, " ")
     .trim();
 }
 
 /**
- * Word-boundary match: checks if `term` appears as a standalone word/phrase
- * in `text`, NOT as a substring of a larger word.
- *
- * Examples:
- *   wordBoundaryMatch("ai", "i work with ai tools") → true
- *   wordBoundaryMatch("ai", "email domain") → false
- *   wordBoundaryMatch("r", "i use r for statistics") → true
- *   wordBoundaryMatch("r", "programmer with experience") → false
+ * Word-boundary match: checks if `term` appears as a standalone word/phrase.
+ * "ai" matches in "work with ai tools" but NOT in "email" or "plain".
+ * "llm" matches in "llm-driven" (hyphens act as word boundaries).
+ * "rag" matches in "rag architecture" but NOT in "storage".
  */
 function wordBoundaryMatch(term: string, text: string): boolean {
-  // Escape regex special chars in the term
   const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  // Use word boundary for alphanumeric terms, lookaround for special chars
-  const pattern = new RegExp(`(?:^|[\\s,;:!?()\\[\\]{}\\/|•·\\-])${escaped}(?:$|[\\s,;:!?()\\[\\]{}\\/|•·\\-])`, "i");
-  // Also check start/end of string
-  const patternExact = new RegExp(`^${escaped}$`, "i");
-  return pattern.test(` ${text} `) || patternExact.test(text.trim());
+  // Word boundaries: start/end of string, whitespace, hyphens, slashes, dots, commas
+  const boundary = `(?:^|[\\s\\-/.,;:!?()\\[\\]{}|•·])`;
+  const boundaryEnd = `(?:$|[\\s\\-/.,;:!?()\\[\\]{}|•·])`;
+  const pattern = new RegExp(`${boundary}${escaped}${boundaryEnd}`, "i");
+  // Pad text with spaces so boundaries work at start/end
+  return pattern.test(` ${text} `);
 }
 
 /**
- * Check if a term exists as a standalone token or phrase in the resume.
- * For short terms (≤3 chars), uses strict word-boundary matching.
- * For longer terms, also allows phrase containment with boundary checks.
+ * Check if a term exists in the resume with word-boundary matching.
  */
 function termExistsInResume(term: string, resumeNormalized: string): boolean {
   const termLower = term.toLowerCase().trim();
   if (termLower.length === 0) return false;
-
-  // Always use word-boundary matching — prevents false positives
   return wordBoundaryMatch(termLower, resumeNormalized);
 }
 
-// ── Skill Matching Logic ──
+/**
+ * Parse skill names with parenthetical content:
+ * "RAG (Retrieval Augmented Generation)" → primary: "RAG", alternatives: ["Retrieval Augmented Generation"]
+ * "LLMs (OpenAI, Anthropic, Llama, Mistral)" → primary: "LLMs", alternatives: ["OpenAI", "Anthropic", "Llama", "Mistral"]
+ * "Vector Databases (FAISS, PGVector)" → primary: "Vector Databases", alternatives: ["FAISS", "PGVector"]
+ * "Python" → primary: "Python", alternatives: []
+ */
+function parseSkillName(skillName: string): { primary: string; alternatives: string[] } {
+  const parenMatch = skillName.match(/^(.+?)\s*\((.+)\)\s*$/);
+  if (parenMatch) {
+    const primary = parenMatch[1].trim();
+    const inside = parenMatch[2].trim();
+    // Check if inside contains commas (list of alternatives)
+    if (inside.includes(",")) {
+      const alternatives = inside.split(",").map(s => s.trim()).filter(s => s.length > 0);
+      return { primary, alternatives };
+    }
+    // Single item in parens = expanded name (e.g., "RAG (Retrieval Augmented Generation)")
+    return { primary, alternatives: [inside] };
+  }
+  return { primary: skillName.trim(), alternatives: [] };
+}
+
+// ── Core Skill Matching ──
 function matchSkillInResume(
   skillName: string,
   resumeNormalized: string
 ): { matched: boolean; partial: boolean; matchedTerms: string[] } {
-  const matchedTerms: string[] = [];
 
-  // Handle OR skills: "Python OR R OR Julia"
+  // 1. Handle OR-separated skills: "Python OR R"
   const orParts = skillName.split(/\s+OR\s+/i);
   if (orParts.length > 1) {
     for (const part of orParts) {
-      const result = matchSingleSkill(part.trim(), resumeNormalized);
-      if (result.matched) {
-        return { matched: true, partial: false, matchedTerms: result.matchedTerms };
-      }
-      if (result.partial) matchedTerms.push(...result.matchedTerms);
-    }
-    if (matchedTerms.length > 0) {
-      return { matched: true, partial: false, matchedTerms };
+      const result = matchSingleSkillWithParens(part.trim(), resumeNormalized);
+      if (result.matched) return { matched: true, partial: false, matchedTerms: result.matchedTerms };
     }
     return { matched: false, partial: false, matchedTerms: [] };
   }
 
-  // Handle slash-separated skills: "Python/TypeScript"
-  const slashParts = skillName.split(/\//);
-  if (slashParts.length > 1 && slashParts.every(p => p.trim().length > 1)) {
-    for (const part of slashParts) {
-      const result = matchSingleSkill(part.trim(), resumeNormalized);
-      if (result.matched) {
-        return { matched: true, partial: false, matchedTerms: result.matchedTerms };
+  // 2. Handle slash-separated skills: "AWS / GCP" or "Python/TypeScript"
+  //    But skip if it looks like "CI/CD" (known compound term)
+  const knownSlashTerms = ["ci/cd", "ui/ux", "n/a"];
+  if (!knownSlashTerms.includes(skillName.toLowerCase().trim())) {
+    const slashParts = skillName.split(/\s*\/\s*/);
+    if (slashParts.length > 1 && slashParts.every(p => p.trim().length > 1)) {
+      for (const part of slashParts) {
+        const result = matchSingleSkillWithParens(part.trim(), resumeNormalized);
+        if (result.matched) return { matched: true, partial: false, matchedTerms: result.matchedTerms };
       }
-      if (result.partial) matchedTerms.push(...result.matchedTerms);
+      // Check if ANY match via synonyms for the whole thing
+      const wholeResult = matchSingleSkillWithParens(skillName, resumeNormalized);
+      if (wholeResult.matched || wholeResult.partial) return wholeResult;
+      return { matched: false, partial: false, matchedTerms: [] };
     }
-    if (matchedTerms.length > 0) {
-      return { matched: true, partial: false, matchedTerms };
-    }
-    return { matched: false, partial: false, matchedTerms: [] };
   }
 
-  return matchSingleSkill(skillName, resumeNormalized);
+  return matchSingleSkillWithParens(skillName, resumeNormalized);
 }
 
-function matchSingleSkill(
+/**
+ * Match a single skill, handling parenthetical content.
+ * Checks primary term first, then alternatives in parens.
+ */
+function matchSingleSkillWithParens(
   skill: string,
   resumeNormalized: string
 ): { matched: boolean; partial: boolean; matchedTerms: string[] } {
-  const skillLower = normalizeText(skill);
+  const { primary, alternatives } = parseSkillName(skill);
 
-  // 1. Direct word-boundary match of the skill in resume
-  if (termExistsInResume(skillLower, resumeNormalized)) {
-    return { matched: true, partial: false, matchedTerms: [skill] };
+  // Check the primary term
+  const primaryResult = matchTerm(primary, resumeNormalized);
+  if (primaryResult.matched) {
+    return { matched: true, partial: false, matchedTerms: primaryResult.matchedTerms };
   }
 
-  // 2. Check EXACT synonyms only (no fuzzy synonym expansion)
-  const synonymsToCheck: string[] = [];
-
-  // If this skill is a canonical key in SYNONYM_MAP
-  if (SYNONYM_MAP[skillLower]) {
-    synonymsToCheck.push(...SYNONYM_MAP[skillLower]);
-  }
-
-  // If this skill is itself a known synonym, get canonical + siblings
-  if (REVERSE_SYNONYMS[skillLower]) {
-    const canonical = REVERSE_SYNONYMS[skillLower];
-    synonymsToCheck.push(canonical);
-    if (SYNONYM_MAP[canonical]) {
-      synonymsToCheck.push(...SYNONYM_MAP[canonical]);
+  // Check each alternative (items inside parentheses)
+  for (const alt of alternatives) {
+    const altResult = matchTerm(alt, resumeNormalized);
+    if (altResult.matched) {
+      return { matched: true, partial: false, matchedTerms: altResult.matchedTerms };
     }
   }
 
-  // Check each synonym with word-boundary matching
-  const uniqueSynonyms = [...new Set(synonymsToCheck.map(s => s.toLowerCase()))];
-  for (const syn of uniqueSynonyms) {
+  // If primary had a partial match, return that
+  if (primaryResult.partial) {
+    return { matched: false, partial: true, matchedTerms: primaryResult.matchedTerms };
+  }
+
+  // Check if any alternative had a partial match
+  for (const alt of alternatives) {
+    const altResult = matchTerm(alt, resumeNormalized);
+    if (altResult.partial) {
+      return { matched: false, partial: true, matchedTerms: altResult.matchedTerms };
+    }
+  }
+
+  return { matched: false, partial: false, matchedTerms: [] };
+}
+
+/**
+ * Match a single term (no parens) against the resume.
+ * Uses: direct match → synonym match → partial word match
+ */
+function matchTerm(
+  term: string,
+  resumeNormalized: string
+): { matched: boolean; partial: boolean; matchedTerms: string[] } {
+  const termNormalized = normalizeText(term);
+  if (termNormalized.length === 0) return { matched: false, partial: false, matchedTerms: [] };
+
+  // 1. Direct word-boundary match
+  if (termExistsInResume(termNormalized, resumeNormalized)) {
+    return { matched: true, partial: false, matchedTerms: [term] };
+  }
+
+  // 2. Check synonyms (exact lookup only — no fuzzy matching)
+  const synonymsToCheck = getSynonyms(termNormalized);
+  for (const syn of synonymsToCheck) {
     if (termExistsInResume(syn, resumeNormalized)) {
       return { matched: true, partial: false, matchedTerms: [syn] };
     }
   }
 
-  // 3. Partial match: For multi-word skills, check if significant words appear
-  const skillWords = skillLower.split(/\s+/).filter(w => w.length > 2);
-  if (skillWords.length > 1) {
-    const partialMatches: string[] = [];
-    for (const word of skillWords) {
+  // 3. Partial match: for multi-word terms, check if significant words appear
+  const termWords = termNormalized.split(/\s+/).filter(w => w.length > 2);
+  if (termWords.length > 1) {
+    const matched: string[] = [];
+    for (const word of termWords) {
       if (termExistsInResume(word, resumeNormalized)) {
-        partialMatches.push(word);
+        matched.push(word);
       }
     }
-    // Need majority of words to match for partial credit
-    if (partialMatches.length > 0 && partialMatches.length >= Math.ceil(skillWords.length * 0.5)) {
-      return { matched: false, partial: true, matchedTerms: partialMatches };
+    if (matched.length > 0 && matched.length >= Math.ceil(termWords.length * 0.5)) {
+      return { matched: false, partial: true, matchedTerms: matched };
     }
   }
 
   return { matched: false, partial: false, matchedTerms: [] };
+}
+
+/**
+ * Get all synonyms for a term (exact lookup only).
+ */
+function getSynonyms(termLower: string): string[] {
+  const result: string[] = [];
+
+  // Check if term is a canonical key
+  if (SYNONYM_MAP[termLower]) {
+    result.push(...SYNONYM_MAP[termLower]);
+  }
+
+  // Check if term is a known synonym → get canonical + siblings
+  if (REVERSE_SYNONYMS[termLower]) {
+    const canonical = REVERSE_SYNONYMS[termLower];
+    result.push(canonical);
+    if (SYNONYM_MAP[canonical]) {
+      result.push(...SYNONYM_MAP[canonical]);
+    }
+  }
+
+  return [...new Set(result.map(s => s.toLowerCase()))];
 }
 
 // ── Main Scoring Function ──
@@ -326,34 +366,25 @@ export function computeDeterministicScore(
     });
   }
 
-  // Compute overall weighted score
   const overallMatch = totalWeight > 0 ? Math.round((weightedSum / totalWeight) * 100) : 0;
 
-  // Generate deductions from missing/partial skills
+  // Generate deductions
   const deductions: { reason: string; percent: number }[] = [];
 
   for (const sm of skillMatches.filter(s => s.verdict === "missing")) {
-    const skillDef = skills.find(s => s.skill === sm.skill);
-    const importance = skillDef?.importance || 50;
-    const deductionPercent = totalWeight > 0 ? Math.round((importance / totalWeight) * 100) : 0;
-    if (deductionPercent > 0) {
-      deductions.push({ reason: `Missing: ${sm.skill}`, percent: deductionPercent });
-    }
+    const importance = skills.find(s => s.skill === sm.skill)?.importance || 50;
+    const dp = totalWeight > 0 ? Math.round((importance / totalWeight) * 100) : 0;
+    if (dp > 0) deductions.push({ reason: `Missing: ${sm.skill}`, percent: dp });
   }
 
   for (const sm of skillMatches.filter(s => s.verdict === "partial")) {
-    const skillDef = skills.find(s => s.skill === sm.skill);
-    const importance = skillDef?.importance || 50;
-    const deductionPercent = totalWeight > 0 ? Math.round(((importance * 0.5) / totalWeight) * 100) : 0;
-    if (deductionPercent > 0) {
-      deductions.push({ reason: `Partial match: ${sm.skill} — add explicit mention`, percent: deductionPercent });
-    }
+    const importance = skills.find(s => s.skill === sm.skill)?.importance || 50;
+    const dp = totalWeight > 0 ? Math.round(((importance * 0.5) / totalWeight) * 100) : 0;
+    if (dp > 0) deductions.push({ reason: `Partial match: ${sm.skill} — add explicit mention`, percent: dp });
   }
 
-  // Sort deductions by severity
   deductions.sort((a, b) => b.percent - a.percent);
 
-  // Normalize deductions to sum exactly to (100 - overallMatch)
   const targetDeduction = 100 - overallMatch;
   const rawTotal = deductions.reduce((sum, d) => sum + d.percent, 0);
   if (rawTotal > 0 && targetDeduction > 0) {
@@ -363,9 +394,5 @@ export function computeDeterministicScore(
     }
   }
 
-  return {
-    overall_match: overallMatch,
-    skill_matches: skillMatches,
-    deductions,
-  };
+  return { overall_match: overallMatch, skill_matches: skillMatches, deductions };
 }
