@@ -41,7 +41,12 @@ IMPORTANT RULES FOR THE TITLE FIELD:
 - Do NOT rename or re-interpret the job title based on the skills listed. If the JD says "Data Scientist" but focuses on ML engineering tasks, still use "Data Scientist" as the title.
 - If the skills heavily align with a different role, ADD a parenthetical note: e.g. "Data Scientist (skills align closely with ML Engineering)" — but KEEP the original title.
 - If NO explicit job title is found in the JD, infer the best-fit role and format as: "This JD aligns with [Inferred Role] based on the requirements" (e.g. "This JD aligns with ML Engineer based on the requirements").
-- If NO company name is found, do NOT fabricate one — omit it.`,
+- If NO company name is found, do NOT fabricate one — omit it.
+
+CRITICAL RULE FOR SKILLS:
+- If a JD lists alternatives (e.g. "React or Angular", "AWS/GCP/Azure", or "Requires either Python, Java, or C++"), DO NOT extract them as separate, mandatory skills. 
+- You MUST extract them as a SINGLE composite skill item using " OR ". E.g., extract exactly as: "React OR Angular", "AWS OR GCP OR Azure", "Python OR Java OR C++".
+- This is incredibly important to ensure the candidate isn't unfairly judged for missing an alternative they weren't required to have.`,
           },
           {
             role: "user",
