@@ -62,3 +62,29 @@ export interface JdVaultEntry {
   raw_text: string;
   created_at: string;
 }
+
+// ── NEW: ATS Resume Generator types ──
+export interface GeneratedResumeSection {
+  heading: string;
+  content: string;
+  bullets?: string[];
+}
+
+export interface GeneratedResume {
+  professional_summary: string;
+  skills_section: string[];
+  experience: GeneratedResumeSection[];
+  education: string[];
+  certifications?: string[];
+}
+
+// ── NEW: ATS Score Simulator types ──
+export interface ATSVerdict {
+  pass: boolean;
+  score: number;
+  keyword_match_rate: number;
+  section_completeness: number;
+  formatting_score: number;
+  reasons: string[];
+  tips: string[];
+}

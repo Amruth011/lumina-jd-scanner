@@ -11,6 +11,8 @@ import html2canvas from "html2canvas";
 interface ResumeGapAnalyzerProps {
   skills: Skill[];
   jobTitle?: string;
+  onResumeTextChange?: (text: string) => void;
+  onResultChange?: (result: ResumeGapResult | null) => void;
 }
 
 async function extractPdfText(file: File): Promise<string> {
@@ -36,7 +38,7 @@ async function extractDocxText(file: File): Promise<string> {
   return result.value;
 }
 
-export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) => {
+export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResultChange }: ResumeGapAnalyzerProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [resumeText, setResumeText] = useState("");
   const [fileName, setFileName] = useState("");
@@ -129,19 +131,30 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
     }
   };
 
-  const handleGenerateBullet = (index: number, reason: string) => {
+  const handleGenerateBullet = async (index: number, reason: string) => {
     setGeneratingFor(index);
-    // Simulate AI generation delay
-    setTimeout(() => {
-      const keywords = reason.replace(/missing/i, "").trim();
-      const randomMetrics = ["25%", "30%", "over $1M", "10x", "40%", "200+ users"];
-      const metric = randomMetrics[Math.floor(Math.random() * randomMetrics.length)];
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-bullet", {
+        body: { gapReason: reason, resumeContext: resumeText, jobTitle },
+      });
+      if (error) throw error;
+      if (data.error) throw new Error(data.error);
       setGeneratedBullets(prev => ({
         ...prev,
-        [index]: `Spearheaded the integration of ${keywords || "this skill"}, leading to a ${metric} improvement in overall project delivery efficiency.`
+        [index]: data.bullet || `Spearheaded initiatives addressing ${reason}, driving measurable improvements in project delivery.`
       }));
+    } catch (err: any) {
+      console.error("Bullet generation error:", err);
+      // Graceful fallback if the edge function isn't deployed yet
+      const keywords = reason.replace(/missing/i, "").trim();
+      setGeneratedBullets(prev => ({
+        ...prev,
+        [index]: `Led cross-functional initiatives in ${keywords || "this domain"}, resulting in measurable efficiency gains and stakeholder alignment.`
+      }));
+      toast.error("Using fallback — deploy generate-bullet function for real AI bullets.");
+    } finally {
       setGeneratingFor(null);
-    }, 2000);
+    }
   };
 
   const handleCopyBullet = (text: string) => {
@@ -182,6 +195,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
         setFileName("");
       } else {
         setResumeText(text);
+        onResumeTextChange?.(text);
         toast.success("Resume parsed successfully.");
       }
     } catch (err: any) {
@@ -209,6 +223,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
       if (error) throw error;
       if (data.error) throw new Error(data.error);
       setResult(data);
+      onResultChange?.(data);
       setLastAnalyzedText(resumeText);
       toast.success(`Resume match: ${data.overall_match}%`);
     } catch (err: any) {

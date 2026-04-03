@@ -13,7 +13,10 @@ import { SkillProgressBars } from "@/components/SkillProgressBars";
 import { CriticalRequirements } from "@/components/CriticalRequirements";
 import { WinningStrategy } from "@/components/WinningStrategy";
 import { ResumeGapAnalyzer } from "@/components/ResumeGapAnalyzer";
-import type { DecodeResult } from "@/types/jd";
+import { ATSKeywordScanner } from "@/components/ATSKeywordScanner";
+import { ATSScoreSimulator } from "@/components/ATSScoreSimulator";
+import { ResumeBuilder } from "@/components/ResumeBuilder";
+import type { DecodeResult, ResumeGapResult } from "@/types/jd";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const ApplicationTracker = lazy(() => import("@/components/ApplicationTracker").then(module => ({ default: module.ApplicationTracker })));
@@ -30,6 +33,8 @@ const Index = () => {
   const [priorityFilter, setPriorityFilter] = useState(false);
   const [savingJd, setSavingJd] = useState(false);
   const [savedJdId, setSavedJdId] = useState<string | null>(null);
+  const [userResumeText, setUserResumeText] = useState("");
+  const [gapResult, setGapResult] = useState<ResumeGapResult | null>(null);
 
   // Reset saved state when new decode happens
   useEffect(() => {
@@ -362,6 +367,11 @@ const Index = () => {
                       </div>
                     </motion.div>
 
+                    {/* ATS Keyword Scanner */}
+                    <div className="mt-6">
+                      <ATSKeywordScanner skills={filteredSkills} />
+                    </div>
+
                     {/* Consultant Mode Section */}
                     <div className="mt-8 space-y-6">
                       <CriticalRequirements requirements={results.requirements} />
@@ -370,8 +380,32 @@ const Index = () => {
 
                     {/* Resume Gap Analyzer */}
                     <div className="mt-6">
-                      <ResumeGapAnalyzer skills={results.skills} jobTitle={results.title} />
+                      <ResumeGapAnalyzer
+                        skills={results.skills}
+                        jobTitle={results.title}
+                        onResumeTextChange={setUserResumeText}
+                        onResultChange={setGapResult}
+                      />
                     </div>
+
+                    {/* ATS Score Simulator — shown after gap analysis */}
+                    {gapResult && (
+                      <div className="mt-6">
+                        <ATSScoreSimulator result={gapResult} />
+                      </div>
+                    )}
+
+                    {/* ATS Resume Generator — shown after gap analysis */}
+                    {gapResult && (
+                      <div className="mt-6">
+                        <ResumeBuilder
+                          resumeText={userResumeText}
+                          skills={results.skills}
+                          deductions={gapResult.deductions}
+                          jobTitle={results.title}
+                        />
+                      </div>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
