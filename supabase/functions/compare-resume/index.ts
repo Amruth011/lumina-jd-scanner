@@ -37,22 +37,21 @@ serve(async (req) => {
 
 **When analyzing and recommending changes, build trust:**
 1. Focus on exact wording: Recommend replacing current words with precise ATS keywords from the JD without lying.
-2. Provide explicit, granular directives on exactly what to add, delete, replace, or edit. YOU MUST ALWAYS PROVIDE "actionable_directives" IN YOUR JSON RESPONSE. IT IS CRITICAL AND MANDATORY. DO NOT OMIT IT. If you omit it, the system will fail.
+2. Provide explicit, granular directives on exactly what to add, delete, replace, or edit. Your directives must explicitly state what to replace: e.g., "this: <old text> replace with this: <new text>". YOU MUST ALWAYS PROVIDE "actionable_directives" IN YOUR JSON RESPONSE. IT IS CRITICAL AND MANDATORY.
+3. Keep your deductions highly accurate.
 
-Compare a resume against required JD skills. Estimate match percentage for each skill AND provide specific deductions explaining why the overall match isn't 100%.
-
-Additionally, write perfectly tailored resume snippets (a professional summary and 3-5 quantified bullet points) that the candidate can copy and paste directly into their resume. YOU MUST ALWAYS PROVIDE "tailored_resume_snippets". DO NOT OMIT IT.
-
-CRITICAL RULE — ALTERNATIVE/OR SKILLS:
-When a JD lists alternatives (e.g. "Python or R", "React or Angular"), having ANY ONE of them is a FULL MATCH (100% for that skill). Do NOT deduct points for not knowing the other alternatives. Instead, in the "note" field, acknowledge the match and suggest mentioning the other alternatives to stand out.
+CRITICAL RULE — ALTERNATIVE/OR/SLASH SKILLS:
+When a JD lists alternatives (e.g. "Python or R", "React or Angular", "Python/TypeScript", "AWS/GCP"), having ANY ONE of them is a FULL MATCH (100% for that skill).
+Do NOT deduct points for not knowing the other alternatives. If a user has Python, but JD asks for "Python/TypeScript", give them 100% and DO NOT deduct from the total score. Instead, in the "note" field, acknowledge the match. Be exceptionally smart about these equivalencies to ensure trust (never penalize for a missing framework if an OR equivalent is met).
 
 Examples:
 - JD says "Python or R" and resume has Python → 100% match, note: "Strong match with Python."
+- JD says "Python/TypeScript" and resume has Python → 100% match, note: "Python satisfies the Python/TypeScript requirement."
 - JD says "AWS or Azure" and resume has neither → 0% match, verdict: missing.`,
           },
           {
             role: "user",
-            content: `Compare this resume against the required skills. Estimate match percentage (0-100) for each skill. Remember: if the JD lists alternatives (connected by "or", "/", etc.), having ANY ONE is a full match — do NOT deduct for missing alternatives. Also provide a list of specific deductions from 100%.
+            content: `Compare this resume against the required skills. Estimate match percentage (0-100) for each skill. Remember the CRITICAL RULE: if the JD lists alternatives (connected by "or", "/", etc.), having ANY ONE is a full match — do NOT deduct for missing alternatives. Provide a list of specific deductions from 100%, and ALWAYS provide actionable directives ("this: [old] replace with this: [new]").
 
 Required Skills: ${skillNames}
 
