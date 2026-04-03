@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { saveApplication, type TrackedApplication } from "@/hooks/useApplications";
 import type { Skill, ResumeGapResult } from "@/types/jd";
+import { computeDeterministicScore } from "@/lib/deterministicScorer";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
@@ -217,15 +218,58 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResu
     setResult(null);
     setAddedToTracker(false);
     try {
-      const { data, error } = await supabase.functions.invoke("compare-resume", {
-        body: { resumeText, skills },
+      // ── STEP 1: DETERMINISTIC SCORE (client-side, 100% consistent) ──
+      // This NEVER varies. Same resume + same skills = exact same score every time.
+      const deterministicResult = computeDeterministicScore(resumeText, skills);
+
+      // ── STEP 2: AI QUALITATIVE INSIGHTS (for actionable advice only) ──
+      // The AI provides: summary, actionable_directives, tailored_resume_snippets, fix_snippets
+      // The AI does NOT determine the score — only enriches the result with advice.
+      let aiInsights: any = {};
+      try {
+        const { data, error } = await supabase.functions.invoke("compare-resume", {
+          body: { resumeText, skills },
+        });
+        if (!error && !data?.error) {
+          aiInsights = data;
+        }
+      } catch (aiErr) {
+        console.warn("AI insights call failed, using deterministic-only results:", aiErr);
+      }
+
+      // ── STEP 3: MERGE — Deterministic score + AI insights ──
+      // Score, skill_matches, deductions come from deterministic scorer.
+      // summary, actionable_directives, tailored_resume_snippets come from AI.
+      const mergedDeductions = deterministicResult.deductions.map(dd => {
+        // Try to find a matching AI deduction to get its fix_snippet
+        const aiDeduction = aiInsights.deductions?.find((ad: any) =>
+          ad.reason?.toLowerCase().includes(dd.reason.replace("Missing: ", "").replace("Partial match: ", "").split("—")[0].trim().toLowerCase())
+        );
+        return {
+          reason: dd.reason,
+          percent: dd.percent,
+          fix_snippet: aiDeduction?.fix_snippet || undefined,
+        };
       });
-      if (error) throw error;
-      if (data.error) throw new Error(data.error);
-      setResult(data);
-      onResultChange?.(data);
+
+      const finalResult: ResumeGapResult = {
+        overall_match: deterministicResult.overall_match,
+        skill_matches: deterministicResult.skill_matches.map(sm => ({
+          skill: sm.skill,
+          match_percent: sm.match_percent,
+          verdict: sm.verdict,
+          note: sm.note,
+        })),
+        deductions: mergedDeductions,
+        summary: aiInsights.summary || `Your resume matches ${deterministicResult.overall_match}% of the required skills. ${deterministicResult.skill_matches.filter(s => s.verdict === "missing").length} skills are missing and ${deterministicResult.skill_matches.filter(s => s.verdict === "partial").length} need stronger evidence.`,
+        tailored_resume_snippets: aiInsights.tailored_resume_snippets || undefined,
+        actionable_directives: aiInsights.actionable_directives || undefined,
+      };
+
+      setResult(finalResult);
+      onResultChange?.(finalResult);
       setLastAnalyzedText(resumeText);
-      toast.success(`Resume match: ${data.overall_match}%`);
+      toast.success(`Resume match: ${finalResult.overall_match}%`);
     } catch (err: any) {
       console.error(err);
       toast.error(err.message || "Failed to analyze resume.");
