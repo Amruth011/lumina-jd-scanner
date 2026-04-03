@@ -1,6 +1,6 @@
-# Lumina JD | AI-Powered Skill Decoder & Career Strategist
+# Lumina JD | AI-Powered ATS Optimization Engine & Career Strategist
 
-**Lumina JD** is a high-end career intelligence platform designed to move job seekers from "average applicant" to the **top 0.1%**. Built with a pristine **OpenAI Minimalist** aesthetic and Apple iOS Glassmorphism, it incorporates a Dual-Theme Engine (Light, Dark, and System Match) and uses Gemini 2.0 Flash to deconstruct complex Job Descriptions into actionable data.
+**Lumina JD** is a comprehensive resume screening weapon designed to move job seekers from "average applicant" to **ATS-certified, interview-ready**. Built with a pristine **OpenAI Minimalist** aesthetic and Apple iOS Glassmorphism, it uses Gemini AI to deconstruct complex Job Descriptions into actionable data and automatically generate ATS-optimized resumes.
 
 ---
 
@@ -21,12 +21,26 @@ Experience the production deployment on Vercel:
 Paste any Job Description and let the AI extract, categorize, and score every requirement.
 * **Skill Radar:** Visualizes expertise across core requirements.
 * **Semantic Tagging:** High-priority skills are intelligently highlighted for immediate readability.
-* **Critical Requirements:** Instantly flags Education constraints, Experience levels, and shift agreements.
+* **OR-Logic Detection:** If a JD lists alternatives (Python/TypeScript), they're grouped as one requirement — never penalizing you unfairly.
+
+### 🔑 ATS Keyword Scanner *(NEW)*
+Interactive keyword chips extracted directly from the JD. Toggle which ones you already have in your resume and see a live **Keyword Coverage %** — the exact metric ATS systems use to filter candidates.
 
 ### 📊 Resume Gap Analyzer
 See exactly how you stack up against the market requirements.
 * **Match Justification:** Detailed point-based deductions (e.g., -10% for missing specific toolstacks).
+* **Real AI Bullet Generator:** Click "Fix with AI" on any gap and get a real, AI-written bullet point targeting that exact deficiency.
 * **Step-by-Step Fixes:** Get specific keywords and project ideas to bridge technical gaps.
+
+### 🛡️ ATS Score Simulator *(NEW)*
+A simulated **PASS/FAIL verdict** that mimics how real ATS systems (Workday, Greenhouse, Lever) would score your resume. Shows keyword match rate, section completeness, and formatting scores with actionable tips to flip from FAIL → PASS.
+
+### 📝 ATS Resume Generator *(NEW)*
+One-click AI-powered resume rewriting. Upload your resume, run gap analysis, then hit **"Generate ATS Resume"** — the AI rewrites your entire resume with:
+* ATS-optimized professional summary using exact JD keywords
+* Experience bullets rewritten with quantified achievements
+* Skills reorganized by JD priority
+* Clean, single-column PDF download — no gimmicks, no photos, no extra colors
 
 ### 📋 Application Kanban Tracker
 A dedicated dashboard to manage and monitor your career journey.
@@ -39,8 +53,8 @@ A dedicated dashboard to manage and monitor your career journey.
 
 * **Frontend:** React, TypeScript, Tailwind CSS
 * **Design System:** Shadcn UI, Framer Motion, iOS Glass UI
-* **AI Engine:** Gemini 2.0 Flash capabilities
-* **Backend:** Supabase (PostgreSQL, Auth)
+* **AI Engine:** Gemini 2.0 Flash & Gemini 1.5 Pro
+* **Backend:** Supabase (PostgreSQL, Auth, Edge Functions)
 * **Deployment:** Vercel (CI/CD Pipeline)
 
 ---
