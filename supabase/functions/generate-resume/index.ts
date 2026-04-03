@@ -9,7 +9,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { resumeText, skills, deductions, jobTitle } = await req.json();
+    const { resumeText, skills, deductions, jobTitle, gapSummary } = await req.json();
     if (!resumeText || !skills?.length) {
       return new Response(JSON.stringify({ error: "Resume text and skills are required." }), {
         status: 400,
@@ -20,8 +20,8 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const skillNames = skills.map((s: any) => s.skill).join(", ");
-    const gaps = (deductions || []).map((d: any) => d.reason).join("; ");
+    const skillNames = skills.map((s: any) => `${s.skill} (${s.importance}%)`).join(", ");
+    const gaps = (deductions || []).map((d: any) => `${d.reason}${d.fix_snippet ? ' → Fix: ' + d.fix_snippet : ''}`).join("\n");
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -30,28 +30,33 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-1.5-pro",
+        model: "google/gemini-2.5-flash",
         messages: [
           {
             role: "system",
-            content: `You are an elite resume writer and ATS optimization expert. Your job is to rewrite a candidate's resume to perfectly match a specific job description.
+            content: `You are an elite ATS resume optimizer. Your job is to rewrite a candidate's resume to maximize ATS score for a specific job.
 
-RULES:
-1. PRESERVE all truthful information — company names, dates, education, certifications
-2. REWRITE bullet points using exact keywords from the JD requirements
-3. ADD a new professional summary that directly targets this specific role
-4. REORGANIZE skills section to lead with the most important JD skills
-5. Use strong action verbs and quantified achievements
-6. Every bullet must pass ATS keyword scanning
-7. Keep the resume professional, single-column, clean — no gimmicks
-8. Output must be structured JSON`,
+CRITICAL RULES:
+1. PRESERVE all truthful information — company names, dates, education, certifications. NEVER fabricate experience.
+2. REWRITE bullet points using exact keywords from the JD requirements while preserving the truthful content.
+3. CREATE a powerful professional summary that directly targets this role with JD keywords.
+4. REORGANIZE the skills section to lead with the highest-priority JD skills the candidate actually has.
+5. For skills the candidate is MISSING, do NOT add them to the skills section. Instead, weave related experience into bullet points where truthful.
+6. Use strong action verbs (Spearheaded, Architected, Optimized, Engineered, Automated) and quantified achievements.
+7. Every bullet must pass ATS keyword scanning — use the EXACT phrasing from the JD where possible.
+8. Keep the resume professional, single-column, ATS-friendly — no tables, graphics, or complex formatting.
+9. Output must be structured JSON matching the tool schema exactly.`,
           },
           {
             role: "user",
-            content: `Rewrite this resume to perfectly target the role: "${jobTitle || 'this position'}"
+            content: `Rewrite this resume to maximize ATS score for: "${jobTitle || 'this position'}"
 
-Required JD Skills: ${skillNames}
-Identified Gaps: ${gaps}
+Required JD Skills (with importance): ${skillNames}
+
+Identified Gaps & Fixes:
+${gaps || "No specific gaps provided."}
+
+${gapSummary ? `Gap Analysis Summary: ${gapSummary}` : ''}
 
 Original Resume:
 ${resumeText}`,
@@ -68,24 +73,24 @@ ${resumeText}`,
                 properties: {
                   professional_summary: {
                     type: "string",
-                    description: "A 3-4 sentence professional summary targeting the exact JD requirements and keywords",
+                    description: "3-4 sentence professional summary densely packed with JD keywords, highlighting the candidate's strongest matching qualifications",
                   },
                   skills_section: {
                     type: "array",
                     items: { type: "string" },
-                    description: "Skills organized by JD priority. Group as: 'Category: skill1, skill2, skill3'",
+                    description: "Skills organized by JD priority. Format: 'Category: skill1, skill2, skill3'. Lead with the most important JD skills the candidate has.",
                   },
                   experience: {
                     type: "array",
                     items: {
                       type: "object",
                       properties: {
-                        heading: { type: "string", description: "Job title — Company Name (Start Date – End Date)" },
-                        content: { type: "string", description: "Brief role description" },
+                        heading: { type: "string", description: "Job Title — Company Name (Start Date – End Date)" },
+                        content: { type: "string", description: "Brief role description using JD keywords" },
                         bullets: {
                           type: "array",
                           items: { type: "string" },
-                          description: "3-5 ATS-optimized bullet points with quantified results",
+                          description: "4-6 ATS-optimized bullet points with quantified results. Start with strong action verbs. Include JD keywords naturally.",
                         },
                       },
                       required: ["heading", "content", "bullets"],
