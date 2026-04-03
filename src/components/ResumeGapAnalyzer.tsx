@@ -165,21 +165,8 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResu
     toast.success("Bullet point copied to clipboard!");
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const processFile = async (file: File) => {
     const ext = file.name.toLowerCase().split(".").pop();
-    if (!["pdf", "docx", "txt"].includes(ext || "")) {
-      toast.error("Supported formats: PDF, DOCX, TXT");
-      return;
-    }
-
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("File too large (max 10MB).");
-      return;
-    }
-
     setFileName(file.name);
     setIsParsing(true);
 
@@ -197,9 +184,16 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResu
         toast.error("Could not extract enough text from the file. Try pasting manually.");
         setFileName("");
       } else {
+        // Clear previous results
+        setResult(null);
+        onResultChange?.(null);
+        setGeneratedBullets({});
+        setLastAnalyzedText("");
+        setAddedToTracker(false);
+
         setResumeText(text);
         onResumeTextChange?.(text);
-        toast.success("Resume parsed successfully.");
+        toast.success("Resume parsed successfully — previous results cleared.");
       }
     } catch (err: any) {
       console.error("File parse error:", err);
@@ -209,6 +203,55 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResu
       setIsParsing(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const ext = file.name.toLowerCase().split(".").pop();
+    if (!["pdf", "docx", "txt"].includes(ext || "")) {
+      toast.error("Supported formats: PDF, DOCX, TXT");
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File too large (max 10MB).");
+      return;
+    }
+
+    // If results already exist, ask user before replacing
+    if (result) {
+      setPendingFile(file);
+      setShowReplaceDialog(true);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
+    await processFile(file);
+  };
+
+  const handleReplaceSave = async () => {
+    // Export PDF first, then replace
+    await handleExportPDF();
+    setShowReplaceDialog(false);
+    if (pendingFile) {
+      await processFile(pendingFile);
+      setPendingFile(null);
+    }
+  };
+
+  const handleReplaceDiscard = async () => {
+    setShowReplaceDialog(false);
+    if (pendingFile) {
+      await processFile(pendingFile);
+      setPendingFile(null);
+    }
+  };
+
+  const handleReplaceCancel = () => {
+    setShowReplaceDialog(false);
+    setPendingFile(null);
   };
 
   const handleCompare = async () => {
