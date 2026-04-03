@@ -326,8 +326,8 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle }: ResumeGapAnalyzerProps) 
                    onChange={(e) => setIsAutoRunEnabled(e.target.checked)} 
                  />
                  <span className="text-xs font-semibold whitespace-nowrap text-foreground">Auto-Run Analysis</span>
-                 <div className={`w-8 h-4 rounded-full transition-colors relative ${isAutoRunEnabled ? 'bg-primary' : 'bg-zinc-300 dark:bg-zinc-700'}`}>
-                    <div className={`absolute w-3 h-3 bg-white shadow-sm rounded-full top-0.5 transition-transform ${isAutoRunEnabled ? 'translate-x-[18px]' : 'translate-x-0.5'}`} />
+                 <div className={`w-8 h-4 rounded-full transition-colors relative border ${isAutoRunEnabled ? 'bg-emerald-500 border-emerald-500' : 'bg-black/20 dark:bg-black/50 border-border'}`}>
+                    <div className={`absolute w-3 h-3 shadow-sm rounded-full top-0.5 transition-transform ${isAutoRunEnabled ? 'translate-x-[18px] bg-white' : 'translate-x-0.5 bg-white dark:bg-zinc-400'}`} />
                  </div>
                </label>
             </div>

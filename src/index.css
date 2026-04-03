@@ -124,17 +124,19 @@
   /* iOS Glassmorphism Panels */
   .glass, .glass-strong {
     background: hsl(var(--card) / 0.6);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(32px);
+    -webkit-backdrop-filter: blur(32px);
     border: 1px solid hsl(var(--border) / 0.5);
-    box-shadow: 0 4px 24px -1px rgb(0 0 0 / 0.06);
+    border-top: 1px solid hsl(var(--border) / 0.8);
+    box-shadow: 0 8px 32px -4px rgb(0 0 0 / 0.08), inset 0 1px 0 0 hsl(0 0% 100% / 0.4);
     border-radius: var(--radius);
   }
 
   .dark .glass, .dark .glass-strong {
     background: hsl(var(--card) / 0.4);
     border: 1px solid hsl(0 0% 100% / 0.08); /* crisp 1px iOS line */
-    box-shadow: 0 8px 32px rgb(0 0 0 / 0.4);
+    border-top: 1px solid hsl(0 0% 100% / 0.15); 
+    box-shadow: 0 12px 48px rgb(0 0 0 / 0.5), inset 0 1px 0 0 hsl(0 0% 100% / 0.05);
   }
 
   /* Minimalist Text Overrides (Overrides Glows) */

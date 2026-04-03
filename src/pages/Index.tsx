@@ -312,14 +312,14 @@ const Index = () => {
                         <Filter className="w-4 h-4" />
                         Priority Filter
                         <span
-                          className={`inline-flex items-center w-11 h-6 rounded-full relative transition-colors duration-300 ${
-                            priorityFilter ? "bg-primary" : "bg-black dark:bg-zinc-800"
+                          className={`inline-flex items-center w-11 h-6 rounded-full p-0.5 relative transition-colors duration-300 ${
+                            priorityFilter ? "bg-emerald-500 dark:bg-emerald-500" : "bg-black/20 dark:bg-black/50 border border-border"
                           }`}
                         >
                           <motion.span
-                            animate={{ x: priorityFilter ? 22 : 2 }}
+                            animate={{ x: priorityFilter ? 20 : 0 }}
                             transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                            className={`w-5 h-5 rounded-full bg-white shadow-md`}
+                            className={`w-5 h-5 rounded-full ${priorityFilter ? "bg-white" : "bg-white dark:bg-zinc-400"} shadow-md`}
                           />
                         </span>
                       </motion.button>
