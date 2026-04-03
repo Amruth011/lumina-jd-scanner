@@ -54,6 +54,8 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResu
   const [generatedBullets, setGeneratedBullets] = useState<Record<number, string>>({});
   const [isAutoRunEnabled, setIsAutoRunEnabled] = useState(true);
   const [lastAnalyzedText, setLastAnalyzedText] = useState("");
+  const [showReplaceDialog, setShowReplaceDialog] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
 
   const handleExportPDF = async () => {
     if (!result) return;
