@@ -351,16 +351,25 @@ export const ResumeBuilder = ({ resumeText, skills, deductions, jobTitle, gapRes
             </div>
 
             <div className="bg-white dark:bg-zinc-900 border border-border rounded-xl p-6 sm:p-8 space-y-5 shadow-inner max-h-[600px] overflow-y-auto">
-              <div className="group relative">
-                <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 border-b border-border pb-1">Professional Summary</h4>
+              {/* Professional Summary */}
+              <div className="relative">
+                <div className="flex items-center justify-between mb-2 border-b border-border pb-1">
+                  <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Professional Summary</h4>
+                  <button onClick={() => handleCopy(resume.professional_summary)} className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-primary hover:bg-primary/10 transition-colors border border-primary/20">
+                    <Copy className="w-3 h-3" /> Copy
+                  </button>
+                </div>
                 <p className="text-sm text-foreground leading-relaxed">{resume.professional_summary}</p>
-                <button onClick={() => handleCopy(resume.professional_summary)} className="absolute right-0 top-0 p-1 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground">
-                  <Copy className="w-3.5 h-3.5" />
-                </button>
               </div>
 
+              {/* Technical Skills */}
               <div>
-                <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 border-b border-border pb-1">Technical Skills</h4>
+                <div className="flex items-center justify-between mb-2 border-b border-border pb-1">
+                  <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Technical Skills</h4>
+                  <button onClick={() => handleCopy(resume.skills_section.join("\n"))} className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-primary hover:bg-primary/10 transition-colors border border-primary/20">
+                    <Copy className="w-3 h-3" /> Copy
+                  </button>
+                </div>
                 <div className="space-y-1">
                   {resume.skills_section.map((skill, i) => (
                     <p key={i} className="text-sm text-foreground">{skill}</p>
@@ -368,8 +377,23 @@ export const ResumeBuilder = ({ resumeText, skills, deductions, jobTitle, gapRes
                 </div>
               </div>
 
+              {/* Experience & Projects */}
               <div>
-                <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 border-b border-border pb-1">Experience & Projects</h4>
+                <div className="flex items-center justify-between mb-2 border-b border-border pb-1">
+                  <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Experience & Projects</h4>
+                  <button onClick={() => {
+                    let expText = "";
+                    resume.experience.forEach(exp => {
+                      expText += `${exp.heading}\n`;
+                      if (exp.content) expText += `${exp.content}\n`;
+                      exp.bullets?.forEach(b => { expText += `• ${b}\n`; });
+                      expText += "\n";
+                    });
+                    handleCopy(expText);
+                  }} className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-primary hover:bg-primary/10 transition-colors border border-primary/20">
+                    <Copy className="w-3 h-3" /> Copy
+                  </button>
+                </div>
                 <div className="space-y-4">
                   {resume.experience.map((exp, i) => (
                     <div key={i}>
@@ -387,16 +411,28 @@ export const ResumeBuilder = ({ resumeText, skills, deductions, jobTitle, gapRes
                 </div>
               </div>
 
+              {/* Education */}
               <div>
-                <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 border-b border-border pb-1">Education</h4>
+                <div className="flex items-center justify-between mb-2 border-b border-border pb-1">
+                  <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Education</h4>
+                  <button onClick={() => handleCopy(resume.education.join("\n"))} className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-primary hover:bg-primary/10 transition-colors border border-primary/20">
+                    <Copy className="w-3 h-3" /> Copy
+                  </button>
+                </div>
                 {resume.education.map((edu, i) => (
                   <p key={i} className="text-sm text-foreground">{edu}</p>
                 ))}
               </div>
 
+              {/* Certifications */}
               {resume.certifications && resume.certifications.length > 0 && (
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 border-b border-border pb-1">Certifications</h4>
+                  <div className="flex items-center justify-between mb-2 border-b border-border pb-1">
+                    <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Certifications</h4>
+                    <button onClick={() => handleCopy(resume.certifications!.join("\n"))} className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-primary hover:bg-primary/10 transition-colors border border-primary/20">
+                      <Copy className="w-3 h-3" /> Copy
+                    </button>
+                  </div>
                   {resume.certifications.map((cert, i) => (
                     <p key={i} className="text-sm text-foreground">{cert}</p>
                   ))}

@@ -338,39 +338,9 @@ const Index = () => {
                     </div>
 
                     {/* AI Insight Box */}
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.5 }}
-                      className="mt-6 glass-strong rounded-2xl p-5 glow-border max-w-3xl mx-auto relative overflow-hidden"
-                    >
-                      <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5"
-                        animate={{ opacity: [0.3, 0.6, 0.3] }}
-                        transition={{ duration: 3, repeat: Infinity }}
-                      />
-                      <div className="flex items-start gap-3 relative z-10">
-                        <motion.div
-                          animate={{ rotate: [0, 5, -5, 0] }}
-                          transition={{ duration: 3, repeat: Infinity }}
-                          className="p-2 rounded-lg bg-primary/10"
-                        >
-                          <Brain className="w-5 h-5 text-primary" />
-                        </motion.div>
-                        <div>
-                          <h4 className="font-display font-semibold text-sm text-foreground mb-1">
-                            AI Insight
-                          </h4>
-                          <p className="text-sm text-muted-foreground leading-relaxed">
-                            {getAiInsight(results.skills)}
-                          </p>
-                        </div>
-                      </div>
-                    </motion.div>
-
-                    {/* ATS Keyword Scanner */}
+                    {/* ATS Keyword Scanner + AI Insight (merged) */}
                     <div className="mt-6">
-                      <ATSKeywordScanner skills={filteredSkills} />
+                      <ATSKeywordScanner skills={filteredSkills} aiInsight={getAiInsight(results.skills)} />
                     </div>
 
                     {/* Consultant Mode Section */}

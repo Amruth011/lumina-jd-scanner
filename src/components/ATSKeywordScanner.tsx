@@ -1,13 +1,14 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Search, CheckCircle2, XCircle, Zap } from "lucide-react";
+import { Search, CheckCircle2, XCircle, Zap, Brain } from "lucide-react";
 import type { Skill } from "@/types/jd";
 
 interface ATSKeywordScannerProps {
   skills: Skill[];
+  aiInsight?: string;
 }
 
-export const ATSKeywordScanner = ({ skills }: ATSKeywordScannerProps) => {
+export const ATSKeywordScanner = ({ skills, aiInsight }: ATSKeywordScannerProps) => {
   const [checkedKeywords, setCheckedKeywords] = useState<Set<string>>(new Set());
 
   const keywords = useMemo(() => {
@@ -44,6 +45,23 @@ export const ATSKeywordScanner = ({ skills }: ATSKeywordScannerProps) => {
       transition={{ duration: 0.5, delay: 0.25 }}
       className="glass-strong rounded-2xl p-6 glow-border"
     >
+      {/* AI Insight — merged at top */}
+      {aiInsight && (
+        <div className="flex items-start gap-3 mb-5 pb-4 border-b border-border relative overflow-hidden rounded-lg bg-gradient-to-r from-primary/5 to-accent/5 p-4 -mx-1 -mt-1">
+          <motion.div
+            animate={{ rotate: [0, 5, -5, 0] }}
+            transition={{ duration: 3, repeat: Infinity }}
+            className="p-2 rounded-lg bg-primary/10 shrink-0"
+          >
+            <Brain className="w-4 h-4 text-primary" />
+          </motion.div>
+          <div>
+            <h4 className="font-display font-semibold text-xs uppercase tracking-wider text-primary mb-0.5">AI Insight</h4>
+            <p className="text-sm text-foreground/80 leading-relaxed">{aiInsight}</p>
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
           <motion.div

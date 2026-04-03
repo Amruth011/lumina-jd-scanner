@@ -164,6 +164,38 @@ ${resumeText}`,
       parsed = JSON.parse(jsonMatch[0]);
     }
 
+    // ── DETERMINISTIC SCORING ──
+    // Override AI's overall_match with a weighted calculation from skill_matches.
+    // This ensures the SAME resume + JD ALWAYS produces the EXACT same score.
+    if (parsed.skill_matches?.length > 0) {
+      let totalWeight = 0;
+      let weightedSum = 0;
+      for (const sm of parsed.skill_matches) {
+        const importance = skills.find((s: any) => s.skill === sm.skill)?.importance || 50;
+        totalWeight += importance;
+        weightedSum += (sm.match_percent / 100) * importance;
+      }
+      if (totalWeight > 0) {
+        parsed.overall_match = Math.round((weightedSum / totalWeight) * 100);
+      }
+    }
+
+    // Recalculate deductions from skill matches for consistency
+    if (parsed.skill_matches?.length > 0 && parsed.deductions?.length > 0) {
+      let deductionTotal = 0;
+      for (const d of parsed.deductions) {
+        deductionTotal += d.percent;
+      }
+      // Normalize deductions so they sum to exactly (100 - overall_match)
+      const targetDeduction = 100 - parsed.overall_match;
+      if (deductionTotal > 0 && targetDeduction > 0) {
+        const scale = targetDeduction / deductionTotal;
+        for (const d of parsed.deductions) {
+          d.percent = Math.round(d.percent * scale);
+        }
+      }
+    }
+
     return new Response(JSON.stringify(parsed), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

@@ -347,10 +347,22 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResu
                </label>
             </div>
 
-            {/* File Upload Area */}
+            {/* File Upload Area — Drag & Drop + Click */}
             <motion.div
               whileHover={{ borderColor: "hsl(210 100% 52% / 0.4)", background: "hsl(210 100% 52% / 0.03)" }}
               onClick={() => fileInputRef.current?.click()}
+              onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); e.currentTarget.classList.add("border-primary", "bg-primary/5"); }}
+              onDragLeave={(e) => { e.preventDefault(); e.currentTarget.classList.remove("border-primary", "bg-primary/5"); }}
+              onDrop={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                e.currentTarget.classList.remove("border-primary", "bg-primary/5");
+                const file = e.dataTransfer.files[0];
+                if (file) {
+                  const fakeEvent = { target: { files: [file] } } as unknown as React.ChangeEvent<HTMLInputElement>;
+                  handleFileUpload(fakeEvent);
+                }
+              }}
               className="w-full border-2 border-dashed border-border rounded-xl p-8 mb-3 cursor-pointer transition-all text-center"
             >
               <input
@@ -374,7 +386,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResu
                 >
                   <FileText className="w-8 h-8 text-primary" />
                   <span className="text-sm font-medium text-foreground">{fileName}</span>
-                  <span className="text-xs text-muted-foreground">Click to replace</span>
+                  <span className="text-xs text-muted-foreground">Click or drag to replace</span>
                 </motion.div>
               ) : (
                 <div className="flex flex-col items-center gap-2">
@@ -384,7 +396,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResu
                   >
                     <Upload className="w-8 h-8 text-muted-foreground" />
                   </motion.div>
-                  <span className="text-sm font-medium text-foreground">Upload Resume</span>
+                  <span className="text-sm font-medium text-foreground">Drag & Drop or Click to Upload</span>
                   <span className="text-xs text-muted-foreground">PDF, DOCX, or TXT (max 10MB)</span>
                 </div>
               )}
