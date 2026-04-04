@@ -203,4 +203,23 @@
   ::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--muted-foreground) / 0.4);
   }
+
+  /* Sound wave gradient bars */
+  .sound-wave-bar {
+    background: linear-gradient(
+      180deg,
+      hsl(var(--foreground) / 0.06) 0%,
+      hsl(var(--foreground) / 0.18) 40%,
+      hsl(var(--foreground) / 0.10) 100%
+    );
+  }
+
+  .dark .sound-wave-bar {
+    background: linear-gradient(
+      180deg,
+      hsl(var(--foreground) / 0.04) 0%,
+      hsl(var(--foreground) / 0.15) 40%,
+      hsl(var(--foreground) / 0.06) 100%
+    );
+  }
 }
