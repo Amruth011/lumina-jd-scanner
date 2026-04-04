@@ -263,12 +263,12 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResu
     setResult(null);
     setAddedToTracker(false);
     try {
-      // ── STEP 1: DETERMINISTIC SCORE (client-side fallback) ──
+      // ── STEP 1: DETERMINISTIC SCORE (always used for percentages) ──
+      // Same JD + same resume = same score every single time, guaranteed.
       const deterministicResult = computeDeterministicScore(resumeText, skills);
 
-      // ── STEP 2: AI CONTEXTUAL ANALYSIS (primary scorer) ──
-      // AI provides contextually accurate scoring — understands implied skills,
-      // project descriptions, and technology ecosystems beyond simple keyword matching.
+      // ── STEP 2: AI CONTEXTUAL ANALYSIS (qualitative insights only) ──
+      // AI provides summaries, fix snippets, actionable directives — but NOT scores.
       let aiResult: any = null;
       try {
         const { data, error } = await supabase.functions.invoke("compare-resume", {
@@ -278,48 +278,48 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResu
           aiResult = data;
         }
       } catch (aiErr) {
-        console.warn("AI analysis failed, falling back to deterministic scoring:", aiErr);
+        console.warn("AI analysis failed, using deterministic scoring only:", aiErr);
       }
 
-      // ── STEP 3: USE AI SCORE AS PRIMARY (more accurate contextual matching) ──
-      // Fall back to deterministic if AI fails.
+      // ── STEP 3: MERGE — deterministic scores + AI qualitative insights ──
       let finalResult: ResumeGapResult;
 
-      if (aiResult?.skill_matches?.length > 0) {
-        // AI succeeded — use its contextual scoring
+      const baseResult: ResumeGapResult = {
+        overall_match: deterministicResult.overall_match,
+        skill_matches: deterministicResult.skill_matches.map(sm => ({
+          skill: sm.skill,
+          match_percent: sm.match_percent,
+          verdict: sm.verdict,
+          note: sm.note,
+        })),
+        deductions: deterministicResult.deductions.map(d => ({
+          reason: d.reason,
+          percent: d.percent,
+        })),
+        summary: `Your resume matches ${deterministicResult.overall_match}% of the required skills. ${deterministicResult.skill_matches.filter(s => s.verdict === "missing").length} skills are missing and ${deterministicResult.skill_matches.filter(s => s.verdict === "partial").length} need stronger evidence.`,
+      };
+
+      if (aiResult) {
+        // Enrich with AI qualitative data while keeping deterministic scores
         finalResult = {
-          overall_match: aiResult.overall_match,
-          skill_matches: aiResult.skill_matches.map((sm: any) => ({
-            skill: sm.skill,
-            match_percent: sm.match_percent,
-            verdict: sm.verdict,
-            note: sm.note,
-          })),
-          deductions: (aiResult.deductions || []).map((d: any) => ({
-            reason: d.reason,
-            percent: d.percent,
-            fix_snippet: d.fix_snippet,
-          })),
-          summary: aiResult.summary || `Your resume matches ${aiResult.overall_match}% of the required skills.`,
+          ...baseResult,
+          summary: aiResult.summary || baseResult.summary,
+          deductions: baseResult.deductions.map(d => {
+            const keyword = d.reason.replace("Missing: ", "").replace("Partial match: ", "").split(" —")[0].toLowerCase();
+            const aiDed = aiResult.deductions?.find((ad: any) =>
+              ad.reason?.toLowerCase().includes(keyword)
+            );
+            return aiDed?.fix_snippet ? { ...d, fix_snippet: aiDed.fix_snippet } : d;
+          }),
           tailored_resume_snippets: aiResult.tailored_resume_snippets || undefined,
           actionable_directives: aiResult.actionable_directives || undefined,
+          skill_matches: baseResult.skill_matches.map(sm => {
+            const aiSm = aiResult.skill_matches?.find((a: any) => a.skill === sm.skill);
+            return aiSm?.note ? { ...sm, note: aiSm.note } : sm;
+          }),
         };
       } else {
-        // Fallback to deterministic
-        finalResult = {
-          overall_match: deterministicResult.overall_match,
-          skill_matches: deterministicResult.skill_matches.map(sm => ({
-            skill: sm.skill,
-            match_percent: sm.match_percent,
-            verdict: sm.verdict,
-            note: sm.note,
-          })),
-          deductions: deterministicResult.deductions.map(d => ({
-            reason: d.reason,
-            percent: d.percent,
-          })),
-          summary: `Your resume matches ${deterministicResult.overall_match}% of the required skills. ${deterministicResult.skill_matches.filter(s => s.verdict === "missing").length} skills are missing and ${deterministicResult.skill_matches.filter(s => s.verdict === "partial").length} need stronger evidence.`,
-        };
+        finalResult = baseResult;
       }
 
       setResult(finalResult);
