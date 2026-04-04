@@ -1,7 +1,7 @@
 import { useState, useEffect, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Brain, Filter, LayoutDashboard, Search, LogOut, LogIn, Loader2, Moon, Sun, Save, BookmarkCheck, CheckCircle2 } from "lucide-react";
+import { Sparkles, Brain, Filter, LayoutDashboard, Search, LogOut, LogIn, Loader2, Moon, Sun, Save, BookmarkCheck, CheckCircle2, RefreshCw, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -28,7 +28,7 @@ type Tab = "decode" | "applications";
 const Index = () => {
   const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
-  const { isScanning, results, decodeJD } = useDecodeJD();
+  const { isScanning, results, decodeJD, wasCached } = useDecodeJD();
   const [activeTab, setActiveTab] = useState<Tab>("decode");
   const [jdText, setJdText] = useState("");
   const [priorityFilter, setPriorityFilter] = useState(false);
@@ -94,6 +94,10 @@ const Index = () => {
 
   const handleDecode = async () => {
     await decodeJD(jdText);
+  };
+
+  const handleForceRedecode = async () => {
+    await decodeJD(jdText, true);
   };
 
   const tabClass = (tab: Tab) =>
@@ -275,6 +279,24 @@ const Index = () => {
                         transition={{ delay: 0.4, duration: 0.5 }}
                         className="h-1 bg-gradient-to-r from-primary to-accent rounded-full mx-auto mt-3"
                       />
+                      {/* Cache indicator + Re-decode */}
+                      <div className="mt-3 flex items-center justify-center gap-3">
+                        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 bg-emerald-500/10 px-2.5 py-1 rounded-full">
+                          <Lock className="w-3 h-3" />
+                          {wasCached ? "Locked Score (Cached)" : "Score Locked"}
+                        </span>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={handleForceRedecode}
+                          disabled={isScanning}
+                          className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground bg-muted/50 hover:bg-muted px-3 py-1 rounded-full border border-border transition-all disabled:opacity-40"
+                          title="Re-analyze with fresh AI decode (will update the cached skills)"
+                        >
+                          <RefreshCw className={`w-3 h-3 ${isScanning ? 'animate-spin' : ''}`} />
+                          Re-decode (Fresh)
+                        </motion.button>
+                      </div>
                       {/* Save JD Button */}
                       <motion.button
                         initial={{ opacity: 0, scale: 0.9 }}

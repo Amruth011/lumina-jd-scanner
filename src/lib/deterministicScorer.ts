@@ -91,6 +91,10 @@ const SYNONYM_MAP: Record<string, string[]> = {
   "websocket": ["websockets", "socket.io"],
   "kafka": ["apache kafka"],
   "grpc": ["protocol buffers", "protobuf"],
+  "prompt engineering": ["prompt design", "prompt optimization", "prompt engineering"],
+  "agentic ai": ["ai agents", "ai agent", "agentic workflows", "agentic systems", "agentic"],
+  "multi-step": ["multi step", "multi-step tasks"],
+  "semantic search": ["vector search", "similarity search"],
   "langchain": ["lang chain"],
   "langgraph": ["lang graph"],
   "openai": ["openai api", "gpt", "chatgpt"],
@@ -162,17 +166,35 @@ function termExistsInResume(term: string, resumeNormalized: string): boolean {
  * "Python" → primary: "Python", alternatives: []
  */
 function parseSkillName(skillName: string): { primary: string; alternatives: string[] } {
-  const parenMatch = skillName.match(/^(.+?)\s*\((.+)\)\s*$/);
+  // Match patterns like: "RAG (Retrieval Augmented Generation) Systems"
+  // or "LLMs (OpenAI, Anthropic, Llama, Mistral)"
+  const parenMatch = skillName.match(/^(.+?)\s*\((.+)\)(.*)$/);
   if (parenMatch) {
-    const primary = parenMatch[1].trim();
+    const beforeParen = parenMatch[1].trim();
     const inside = parenMatch[2].trim();
-    // Check if inside contains commas (list of alternatives)
-    if (inside.includes(",")) {
-      const alternatives = inside.split(",").map(s => s.trim()).filter(s => s.length > 0);
-      return { primary, alternatives };
+    const afterParen = parenMatch[3].trim();
+    
+    // Primary is the text before parens (+ any text after parens)
+    // e.g., "RAG" + "Systems" → check "RAG", "RAG Systems"
+    const alternatives: string[] = [];
+    
+    // Add the primary WITHOUT the suffix
+    const primary = beforeParen;
+    
+    // Add primary WITH suffix as an alternative if suffix exists
+    if (afterParen.length > 0) {
+      alternatives.push(`${beforeParen} ${afterParen}`);
     }
-    // Single item in parens = expanded name (e.g., "RAG (Retrieval Augmented Generation)")
-    return { primary, alternatives: [inside] };
+    
+    // Add items inside parens
+    if (inside.includes(",")) {
+      const items = inside.split(",").map(s => s.trim()).filter(s => s.length > 0);
+      alternatives.push(...items);
+    } else {
+      alternatives.push(inside);
+    }
+    
+    return { primary, alternatives };
   }
   return { primary: skillName.trim(), alternatives: [] };
 }
@@ -194,19 +216,36 @@ function matchSkillInResume(
   }
 
   // 2. Handle slash-separated skills: "AWS / GCP" or "Python/TypeScript"
-  //    But skip if it looks like "CI/CD" (known compound term)
+  //    But skip known compound terms like "CI/CD", "UI/UX"
   const knownSlashTerms = ["ci/cd", "ui/ux", "n/a"];
-  if (!knownSlashTerms.includes(skillName.toLowerCase().trim())) {
+  const skillLowerTrimmed = skillName.toLowerCase().trim();
+  if (!knownSlashTerms.includes(skillLowerTrimmed)) {
     const slashParts = skillName.split(/\s*\/\s*/);
     if (slashParts.length > 1 && slashParts.every(p => p.trim().length > 1)) {
+      // Check each part individually
       for (const part of slashParts) {
         const result = matchSingleSkillWithParens(part.trim(), resumeNormalized);
         if (result.matched) return { matched: true, partial: false, matchedTerms: result.matchedTerms };
       }
-      // Check if ANY match via synonyms for the whole thing
+      // Also try the whole thing and each part via synonym
       const wholeResult = matchSingleSkillWithParens(skillName, resumeNormalized);
       if (wholeResult.matched || wholeResult.partial) return wholeResult;
       return { matched: false, partial: false, matchedTerms: [] };
+    }
+  }
+
+  // 3. Special handling for CI/CD - also check synonym directly
+  if (skillLowerTrimmed === "ci/cd") {
+    // Check "ci/cd" as-is, "cicd", and synonyms
+    if (termExistsInResume("ci/cd", resumeNormalized) ||
+        termExistsInResume("cicd", resumeNormalized) ||
+        termExistsInResume("ci cd", resumeNormalized) ||
+        termExistsInResume("continuous integration", resumeNormalized) ||
+        termExistsInResume("continuous deployment", resumeNormalized) ||
+        termExistsInResume("continuous delivery", resumeNormalized) ||
+        termExistsInResume("github actions", resumeNormalized) ||
+        termExistsInResume("gitlab ci", resumeNormalized)) {
+      return { matched: true, partial: false, matchedTerms: ["CI/CD"] };
     }
   }
 
