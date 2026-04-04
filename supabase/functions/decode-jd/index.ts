@@ -28,6 +28,8 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        temperature: 0,
+        seed: 42,
         model: "google/gemini-3-flash-preview",
         messages: [
           {
