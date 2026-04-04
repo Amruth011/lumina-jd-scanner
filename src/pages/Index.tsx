@@ -18,6 +18,7 @@ import { ATSScoreSimulator } from "@/components/ATSScoreSimulator";
 import { ResumeBuilder } from "@/components/ResumeBuilder";
 import type { DecodeResult, ResumeGapResult } from "@/types/jd";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import SoundWave from "@/components/SoundWave";
 
 const ApplicationTracker = lazy(() => import("@/components/ApplicationTracker").then(module => ({ default: module.ApplicationTracker })));
 
