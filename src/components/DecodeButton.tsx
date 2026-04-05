@@ -11,34 +11,34 @@ interface DecodeButtonProps {
 export const DecodeButton = ({ onClick, isLoading, disabled, isDecoded }: DecodeButtonProps) => {
   return (
     <motion.button
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.97 }}
       onClick={onClick}
       disabled={disabled || isLoading}
       className={`
         relative rounded-2xl px-10 py-4 font-display font-semibold text-lg
         ${isDecoded
-          ? "bg-emerald-600 text-white shadow-[0_8px_30px_rgb(16,185,129,0.3)] hover:bg-emerald-700 dark:bg-emerald-600 dark:text-white dark:hover:bg-emerald-700"
-          : "bg-zinc-900 text-white shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:bg-zinc-800 dark:bg-transparent dark:text-foreground dark:glass-strong dark:shadow-sm dark:hover:bg-foreground/5"
+          ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40"
+          : "bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/25 hover:shadow-primary/40"
         }
-        transition-all disabled:opacity-40 disabled:cursor-not-allowed
+        transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none
         overflow-hidden
       `}
     >
       {/* Shimmer effect */}
       {!disabled && !isLoading && !isDecoded && (
         <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent"
           animate={{ x: ["-100%", "200%"] }}
-          transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+          transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 3 }}
         />
       )}
       
       {/* Pulse ring when loading */}
       {isLoading && (
         <motion.div
-          className="absolute inset-0 rounded-2xl border-2 border-primary-foreground/30"
-          animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0, 0.5] }}
+          className="absolute inset-0 rounded-2xl border-2 border-white/30"
+          animate={{ scale: [1, 1.08, 1], opacity: [0.5, 0, 0.5] }}
           transition={{ duration: 1.5, repeat: Infinity }}
         />
       )}
