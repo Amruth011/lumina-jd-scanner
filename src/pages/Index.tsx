@@ -238,7 +238,7 @@ const Index = () => {
                   95% of Fortune 500 companies use ATS filters. Paste any job description and let AI instantly extract the exact keywords, skills, and metrics you need to rank #1.
                 </motion.p>
 
-                <SoundWave />
+                
                 
                 <motion.div 
                   initial={{ opacity: 0, y: 10 }}
