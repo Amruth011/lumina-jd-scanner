@@ -18,7 +18,7 @@ import { ATSScoreSimulator } from "@/components/ATSScoreSimulator";
 import { ResumeBuilder } from "@/components/ResumeBuilder";
 import type { DecodeResult, ResumeGapResult } from "@/types/jd";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import SoundWave from "@/components/SoundWave";
+
 
 const ApplicationTracker = lazy(() => import("@/components/ApplicationTracker").then(module => ({ default: module.ApplicationTracker })));
 
@@ -228,7 +228,7 @@ const Index = () => {
                   Over 95% of Fortune 500 companies use an ATS. Paste a job description below and let our AI algorithm instantly detect exactly what skills, keywords, and metrics you need to rank first. 
                 </motion.p>
 
-                <SoundWave />
+                
                 
                 <div className="flex flex-wrap justify-center items-center gap-6 text-sm font-semibold text-foreground/80 mb-12">
                    <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> 100% Free & Private</span>
