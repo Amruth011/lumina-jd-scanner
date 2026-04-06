@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FileText, Loader2, ArrowRight, Upload, PlusCircle as PlusCircleIcon, AlertTriangle, CheckCircle2, XCircle, Sparkles, Copy, ShieldCheck, Edit3, Trash2, Plus, Download } from "lucide-react";
 import { toast } from "sonner";
@@ -6,273 +6,37 @@ import { supabase } from "@/integrations/supabase/client";
 import { saveApplication, type TrackedApplication } from "@/hooks/useApplications";
 import type { Skill, ResumeGapResult } from "@/types/jd";
 import { computeDeterministicScore } from "@/lib/deterministicScorer";
+import { getCachedResumeAnalysis, setCachedResumeAnalysis } from "@/lib/resumeAnalysisCache";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-
-interface ResumeGapAnalyzerProps {
-  skills: Skill[];
-  jobTitle?: string;
-  onResumeTextChange?: (text: string) => void;
-  onResultChange?: (result: ResumeGapResult | null) => void;
-}
-
-async function extractPdfText(file: File): Promise<string> {
-  const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
-  const workerSrc = await import("pdfjs-dist/legacy/build/pdf.worker.mjs?url");
-  pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc.default;
-
-  const arrayBuffer = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
-  let fullText = "";
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
-    const content = await page.getTextContent();
-    fullText += content.items.map((item: any) => item.str).join(" ") + "\n";
-  }
-  return fullText.trim();
-}
-
-async function extractDocxText(file: File): Promise<string> {
-  const mammoth = await import("mammoth");
-  const arrayBuffer = await file.arrayBuffer();
-  const result = await mammoth.extractRawText({ arrayBuffer });
-  return result.value;
-}
-
-export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResultChange }: ResumeGapAnalyzerProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [resumeText, setResumeText] = useState("");
-  const [fileName, setFileName] = useState("");
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [isParsing, setIsParsing] = useState(false);
-  const [result, setResult] = useState<ResumeGapResult | null>(null);
-  const [addedToTracker, setAddedToTracker] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const page1Ref = useRef<HTMLDivElement>(null);
-  const page2Ref = useRef<HTMLDivElement>(null);
-  const [generatingFor, setGeneratingFor] = useState<number | null>(null);
-  const [generatedBullets, setGeneratedBullets] = useState<Record<number, string>>({});
-  const [isAutoRunEnabled, setIsAutoRunEnabled] = useState(true);
-  const [lastAnalyzedText, setLastAnalyzedText] = useState("");
-  const [showReplaceDialog, setShowReplaceDialog] = useState(false);
-  const [pendingFile, setPendingFile] = useState<File | null>(null);
-
-  const handleExportPDF = async () => {
-    if (!result) return;
-    try {
-      const pdf = new jsPDF("p", "mm", "a4");
-      const margin = 20;
-      let y = margin;
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const wrapText = (text: string, maxWidth: number) => pdf.splitTextToSize(text, maxWidth);
-
-      const addText = (text: string, size: number, isBold: boolean = false, color: number[] = [0,0,0]) => {
-        pdf.setFont("helvetica", isBold ? "bold" : "normal");
-        pdf.setFontSize(size);
-        pdf.setTextColor(color[0], color[1], color[2]);
-        const lines = wrapText(text, pageWidth - margin * 2);
-        
-        lines.forEach((line: string) => {
-          if (y > pageHeight - margin) {
-            pdf.addPage();
-            y = margin;
-          }
-          pdf.text(line, margin, y);
-          y += size * 0.4; // roughly line height
-        });
-        y += size * 0.2; // paragraph spacing
-      };
-
-      // Title
-      addText("Lumina JD - Strategy to Reach 100% Match", 18, true, [48, 86, 211]);
-      y += 10;
-      
-      addText(`Current Match Score: ${result.overall_match}%`, 14, true);
-      addText(`Target Score: 100%`, 14, true, [16, 185, 129]);
-      y += 5;
-
-      addText("Critical Gaps to Fix", 14, true, [220, 38, 38]);
-      if (result.deductions?.length) {
-        result.deductions.forEach(d => {
-          addText(`- (-${d.percent}%) ${d.reason}`, 12);
-        });
-      } else {
-        addText("No major gaps found.", 12);
-      }
-      y += 5;
-
-      addText("Step-by-step Action Plan", 14, true, [16, 185, 129]);
-      if (result.actionable_directives?.length) {
-        result.actionable_directives.forEach(d => {
-          addText(`Action: ${d.action.toUpperCase()} - ${d.description}`, 12, true);
-          addText(d.reasoning, 12);
-          y += 2;
-        });
-      } else {
-        addText("Review your skills and ensure they are prominent.", 12);
-      }
-      y += 5;
-
-      if (result.tailored_resume_snippets) {
-        addText("Ready-to-Use Resume Snippets", 14, true, [147, 51, 234]);
-        addText("Professional Summary:", 12, true);
-        addText(result.tailored_resume_snippets.professional_summary, 12);
-        
-        y += 3;
-        addText("Experience Bullets to Add/Replace:", 12, true);
-        result.tailored_resume_snippets.experience_bullets.forEach((b: string) => {
-          addText(`• ${b}`, 12);
-        });
-      }
-
-      pdf.save("Lumina-Gap-Analysis.pdf");
-      toast.success("PDF Downloaded successfully!");
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to generate PDF.");
-    }
-  };
-
-  const handleGenerateBullet = async (index: number, reason: string) => {
-    setGeneratingFor(index);
-    try {
-      const { data, error } = await supabase.functions.invoke("generate-bullet", {
-        body: { gapReason: reason, resumeContext: resumeText, jobTitle },
-      });
-      if (error) throw error;
-      if (data.error) throw new Error(data.error);
-      setGeneratedBullets(prev => ({
-        ...prev,
-        [index]: data.bullet || `Spearheaded initiatives addressing ${reason}, driving measurable improvements in project delivery.`
-      }));
-    } catch (err: any) {
-      console.error("Bullet generation error:", err);
-      // Graceful fallback if the edge function isn't deployed yet
-      const keywords = reason.replace(/missing/i, "").trim();
-      setGeneratedBullets(prev => ({
-        ...prev,
-        [index]: `Led cross-functional initiatives in ${keywords || "this domain"}, resulting in measurable efficiency gains and stakeholder alignment.`
-      }));
-      toast.error("Using fallback — deploy generate-bullet function for real AI bullets.");
-    } finally {
-      setGeneratingFor(null);
-    }
-  };
-
-  const handleCopyBullet = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success("Bullet point copied to clipboard!");
-  };
-
-  const processFile = async (file: File) => {
-    const ext = file.name.toLowerCase().split(".").pop();
-    setFileName(file.name);
-    setIsParsing(true);
-
-    try {
-      let text = "";
-      if (ext === "txt") {
-        text = await file.text();
-      } else if (ext === "pdf") {
-        text = await extractPdfText(file);
-      } else if (ext === "docx") {
-        text = await extractDocxText(file);
-      }
-
-      if (text.trim().length < 20) {
-        toast.error("Could not extract enough text from the file. Try pasting manually.");
-        setFileName("");
-      } else {
-        // Clear previous results
-        setResult(null);
-        onResultChange?.(null);
-        setGeneratedBullets({});
-        setLastAnalyzedText("");
-        setAddedToTracker(false);
-
-        setResumeText(text);
-        onResumeTextChange?.(text);
-        toast.success("Resume parsed successfully — previous results cleared.");
-      }
-    } catch (err: any) {
-      console.error("File parse error:", err);
-      toast.error("Failed to parse file. Try pasting text manually.");
-      setFileName("");
-    } finally {
-      setIsParsing(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
-  };
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const ext = file.name.toLowerCase().split(".").pop();
-    if (!["pdf", "docx", "txt"].includes(ext || "")) {
-      toast.error("Supported formats: PDF, DOCX, TXT");
-      return;
-    }
-
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("File too large (max 10MB).");
-      return;
-    }
-
-    // If results already exist, ask user before replacing
-    if (result) {
-      setPendingFile(file);
-      setShowReplaceDialog(true);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-      return;
-    }
-
-    await processFile(file);
-  };
-
-  const handleReplaceSave = async () => {
-    // Export PDF first, then replace
-    await handleExportPDF();
-    setShowReplaceDialog(false);
-    if (pendingFile) {
-      await processFile(pendingFile);
-      setPendingFile(null);
-    }
-  };
-
-  const handleReplaceDiscard = async () => {
-    setShowReplaceDialog(false);
-    if (pendingFile) {
-      await processFile(pendingFile);
-      setPendingFile(null);
-    }
-  };
-
-  const handleReplaceCancel = () => {
-    setShowReplaceDialog(false);
-    setPendingFile(null);
-  };
-
+...
   const handleCompare = async () => {
-    if (resumeText.trim().length < 20) {
+    const trimmedResume = resumeText.trim();
+    if (trimmedResume.length < 20) {
       toast.error("Please upload a resume or paste text (min 20 characters).");
       return;
     }
+
     setIsAnalyzing(true);
     setResult(null);
     setAddedToTracker(false);
-    try {
-      // ── STEP 1: DETERMINISTIC SCORE (always used for percentages) ──
-      // Same JD + same resume = same score every single time, guaranteed.
-      const deterministicResult = computeDeterministicScore(resumeText, skills);
 
-      // ── STEP 2: AI CONTEXTUAL ANALYSIS (qualitative insights only) ──
-      // AI provides summaries, fix snippets, actionable directives — but NOT scores.
+    try {
+      const cachedResult = await getCachedResumeAnalysis(trimmedResume, skills);
+      if (cachedResult) {
+        setResult(cachedResult);
+        onResultChange?.(cachedResult);
+        setLastAnalyzedText(trimmedResume);
+        toast.success(`Resume match: ${cachedResult.overall_match}% (locked)`);
+        return;
+      }
+
+      const deterministicResult = computeDeterministicScore(trimmedResume, skills);
+
       let aiResult: any = null;
       try {
         const { data, error } = await supabase.functions.invoke("compare-resume", {
-          body: { resumeText, skills },
+          body: { resumeText: trimmedResume, skills },
         });
         if (!error && !data?.error) {
           aiResult = data;
@@ -281,50 +45,43 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResu
         console.warn("AI analysis failed, using deterministic scoring only:", aiErr);
       }
 
-      // ── STEP 3: MERGE — deterministic scores + AI qualitative insights ──
-      let finalResult: ResumeGapResult;
-
       const baseResult: ResumeGapResult = {
         overall_match: deterministicResult.overall_match,
-        skill_matches: deterministicResult.skill_matches.map(sm => ({
+        skill_matches: deterministicResult.skill_matches.map((sm) => ({
           skill: sm.skill,
           match_percent: sm.match_percent,
           verdict: sm.verdict,
           note: sm.note,
         })),
-        deductions: deterministicResult.deductions.map(d => ({
+        deductions: deterministicResult.deductions.map((d) => ({
           reason: d.reason,
           percent: d.percent,
         })),
-        summary: `Your resume matches ${deterministicResult.overall_match}% of the required skills. ${deterministicResult.skill_matches.filter(s => s.verdict === "missing").length} skills are missing and ${deterministicResult.skill_matches.filter(s => s.verdict === "partial").length} need stronger evidence.`,
+        summary: `Your resume matches ${deterministicResult.overall_match}% of the required skills. ${deterministicResult.skill_matches.filter((s) => s.verdict === "missing").length} skills are missing and ${deterministicResult.skill_matches.filter((s) => s.verdict === "partial").length} need stronger evidence.`,
       };
 
-      if (aiResult) {
-        // Enrich with AI qualitative data while keeping deterministic scores
-        finalResult = {
-          ...baseResult,
-          summary: aiResult.summary || baseResult.summary,
-          deductions: baseResult.deductions.map(d => {
-            const keyword = d.reason.replace("Missing: ", "").replace("Partial match: ", "").split(" —")[0].toLowerCase();
-            const aiDed = aiResult.deductions?.find((ad: any) =>
-              ad.reason?.toLowerCase().includes(keyword)
-            );
-            return aiDed?.fix_snippet ? { ...d, fix_snippet: aiDed.fix_snippet } : d;
-          }),
-          tailored_resume_snippets: aiResult.tailored_resume_snippets || undefined,
-          actionable_directives: aiResult.actionable_directives || undefined,
-          skill_matches: baseResult.skill_matches.map(sm => {
-            const aiSm = aiResult.skill_matches?.find((a: any) => a.skill === sm.skill);
-            return aiSm?.note ? { ...sm, note: aiSm.note } : sm;
-          }),
-        };
-      } else {
-        finalResult = baseResult;
-      }
+      const finalResult: ResumeGapResult = aiResult
+        ? {
+            ...baseResult,
+            summary: aiResult.summary || baseResult.summary,
+            deductions: baseResult.deductions.map((d) => {
+              const keyword = d.reason.replace("Missing: ", "").replace("Partial match: ", "").split(" —")[0].toLowerCase();
+              const aiDed = aiResult.deductions?.find((ad: any) => ad.reason?.toLowerCase().includes(keyword));
+              return aiDed?.fix_snippet ? { ...d, fix_snippet: aiDed.fix_snippet } : d;
+            }),
+            tailored_resume_snippets: aiResult.tailored_resume_snippets || undefined,
+            actionable_directives: aiResult.actionable_directives || undefined,
+            skill_matches: baseResult.skill_matches.map((sm) => {
+              const aiSm = aiResult.skill_matches?.find((a: any) => a.skill === sm.skill);
+              return aiSm?.note ? { ...sm, note: aiSm.note } : sm;
+            }),
+          }
+        : baseResult;
 
+      await setCachedResumeAnalysis(trimmedResume, skills, finalResult);
       setResult(finalResult);
       onResultChange?.(finalResult);
-      setLastAnalyzedText(resumeText);
+      setLastAnalyzedText(trimmedResume);
       toast.success(`Resume match: ${finalResult.overall_match}%`);
     } catch (err: any) {
       console.error(err);
@@ -334,9 +91,12 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResu
     }
   };
 
-  if (isAutoRunEnabled && resumeText.trim().length > 20 && resumeText !== lastAnalyzedText && !isAnalyzing && !isParsing) {
-     handleCompare();
-  }
+  useEffect(() => {
+    if (!isAutoRunEnabled) return;
+    const trimmedResume = resumeText.trim();
+    if (trimmedResume.length <= 20 || trimmedResume === lastAnalyzedText || isAnalyzing || isParsing) return;
+    void handleCompare();
+  }, [isAutoRunEnabled, resumeText, lastAnalyzedText, isAnalyzing, isParsing, skills]);
 
   const handleAddToTracker = async () => {
     if (!result) return;
