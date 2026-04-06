@@ -106,7 +106,7 @@ const SYNONYM_MAP: Record<string, string[]> = {
   "chromadb": ["chroma db", "chroma"],
   "embeddings": ["embedding"],
   "vector database": ["vector databases", "vector db", "vector dbs"],
-  "prompt engineering": ["prompt design"],
+  
   "crewai": ["crew ai"],
   "mastra": [],
   "cybersecurity": ["cyber security", "infosec", "information security", "pentest", "penetration testing"],
