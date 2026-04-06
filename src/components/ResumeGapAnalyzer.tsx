@@ -380,54 +380,6 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResu
     if (percent >= 50) return "text-amber-500";
     return "text-destructive";
   };
-  const handleAddToTracker = async () => {
-    if (!result) return;
-    const company = prompt("Company name?");
-    if (!company) return;
-
-    const app: TrackedApplication = {
-      id: crypto.randomUUID(),
-      company,
-      role: jobTitle || "Unknown Role",
-      matchPercent: result.overall_match,
-      currentMatchPercent: result.overall_match,
-      status: "Saved",
-      addedAt: new Date().toISOString(),
-    };
-
-    try {
-      await saveApplication(app);
-      setAddedToTracker(true);
-      window.dispatchEvent(new Event("tracker-updated"));
-      toast.success("Added to tracker!");
-    } catch {
-      toast.error("Failed to save. Please sign in first.");
-    }
-  };
-
-  const getBarColor = (verdict: string) => {
-    if (verdict === "strong") return "from-[hsl(160,64%,36%)] to-[hsl(155,55%,48%)]";
-    if (verdict === "partial") return "from-amber-500 to-yellow-400";
-    return "from-red-500 to-rose-400";
-  };
-
-  const getVerdictIcon = (verdict: string) => {
-    if (verdict === "strong") return <CheckCircle2 className="w-3.5 h-3.5 text-[hsl(var(--skill-core))]" />;
-    if (verdict === "partial") return <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />;
-    return <XCircle className="w-3.5 h-3.5 text-destructive" />;
-  };
-
-  const getVerdictLabel = (verdict: string) => {
-    if (verdict === "strong") return "Strong Match";
-    if (verdict === "partial") return "Partial";
-    return "Gap";
-  };
-
-  const getMatchColor = (percent: number) => {
-    if (percent >= 80) return "text-[hsl(var(--skill-core))]";
-    if (percent >= 50) return "text-amber-500";
-    return "text-destructive";
-  };
 
   return (
     <>
