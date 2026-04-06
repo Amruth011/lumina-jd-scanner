@@ -18,7 +18,7 @@ import { ATSScoreSimulator } from "@/components/ATSScoreSimulator";
 import { ResumeBuilder } from "@/components/ResumeBuilder";
 import type { DecodeResult, ResumeGapResult } from "@/types/jd";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import SoundWave from "@/components/SoundWave";
+
 
 const ApplicationTracker = lazy(() => import("@/components/ApplicationTracker").then(module => ({ default: module.ApplicationTracker })));
 
@@ -238,7 +238,7 @@ const Index = () => {
                   95% of Fortune 500 companies use ATS filters. Paste any job description and let AI instantly extract the exact keywords, skills, and metrics you need to rank #1.
                 </motion.p>
 
-                <SoundWave />
+                
                 
                 <motion.div 
                   initial={{ opacity: 0, y: 10 }}
