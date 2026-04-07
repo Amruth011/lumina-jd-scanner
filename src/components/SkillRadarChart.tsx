@@ -18,33 +18,36 @@ export const SkillRadarChart = ({ skills }: SkillRadarChartProps) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
+      initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, delay: 0.2 }}
-      className="glass-strong rounded-2xl p-6 glow-border"
+      className="premium-card rounded-2xl p-6"
     >
-      <h3 className="font-display font-semibold text-lg text-foreground mb-4">
-        Skill Radar
-      </h3>
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="font-display font-semibold text-sm uppercase tracking-wider text-muted-foreground">
+          Skill Radar
+        </h3>
+        <span className="text-[10px] font-mono text-muted-foreground/50">{topSkills.length} skills</span>
+      </div>
       <ResponsiveContainer width="100%" height={320}>
         <RadarChart data={topSkills}>
-          <PolarGrid stroke="hsl(210 20% 40% / 0.2)" />
+          <PolarGrid stroke="hsl(var(--border))" strokeDasharray="3 3" />
           <PolarAngleAxis
             dataKey="skill"
-            tick={{ fill: "hsl(210 20% 60%)", fontSize: 11 }}
+            tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10, fontFamily: "Inter" }}
           />
           <PolarRadiusAxis
             angle={30}
             domain={[0, 100]}
-            tick={{ fill: "hsl(210 20% 50%)", fontSize: 10 }}
+            tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }}
           />
           <Radar
             name="Importance"
             dataKey="importance"
-            stroke="hsl(210, 100%, 55%)"
-            fill="hsl(210, 100%, 55%)"
-            fillOpacity={0.25}
-            strokeWidth={2}
+            stroke="hsl(var(--foreground))"
+            fill="hsl(var(--foreground))"
+            fillOpacity={0.08}
+            strokeWidth={1.5}
           />
         </RadarChart>
       </ResponsiveContainer>
