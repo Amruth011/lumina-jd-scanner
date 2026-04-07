@@ -14,7 +14,7 @@ export const GlassTextArea = ({ value, onChange, isScanning }: GlassTextAreaProp
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       className="relative w-full max-w-3xl mx-auto group"
     >
-      <div className="relative premium-card rounded-2xl p-[1px] overflow-hidden">
+      <div className="relative premium-card liquid-glass rounded-2xl p-[1px] overflow-hidden">
         {/* Scanning indicator */}
         {isScanning && (
           <motion.div

@@ -88,7 +88,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden grain-overlay dot-grid-bg">
       {/* ── Header ── */}
-      <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-3.5 md:px-12 border-b border-border/50 backdrop-blur-xl bg-background/70">
+      <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-3.5 md:px-12 border-b border-border/50 liquid-glass backdrop-blur-none bg-transparent">
         <motion.div
           initial={{ opacity: 0, x: -12 }}
           animate={{ opacity: 1, x: 0 }}

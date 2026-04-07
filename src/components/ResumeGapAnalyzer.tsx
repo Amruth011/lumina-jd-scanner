@@ -615,7 +615,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="mt-8 border border-border rounded-2xl overflow-hidden"
+            className="mt-8 border border-border/50 rounded-2xl overflow-hidden liquid-glass backdrop-blur-none bg-transparent"
           >
            <div ref={page1Ref} className="bg-background p-5 sm:p-8">
             {/* Overall match score - prominent */}
@@ -623,7 +623,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 200 }}
-              className="mb-5 text-center py-6 glass rounded-xl relative overflow-hidden"
+              className="mb-5 text-center py-6 glass liquid-glass rounded-xl relative overflow-hidden"
             >
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5"

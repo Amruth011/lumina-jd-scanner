@@ -58,7 +58,7 @@ export const ATSScoreSimulator = ({ result }: ATSScoreSimulatorProps) => {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.2 }}
-      className={`rounded-xl border-2 p-5 ${
+      className={`rounded-xl border-2 p-5 liquid-glass backdrop-blur-none ${
         verdict.pass
           ? "border-emerald-500/30 bg-emerald-500/5"
           : "border-red-500/30 bg-red-500/5"

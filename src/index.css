@@ -166,69 +166,92 @@
       radial-gradient(circle at 1px 1px, hsl(var(--foreground) / 0.03) 1px, transparent 0);
   }
 
-  /* ── iOS-grade Glassmorphism ── */
-  .glass, .glass-strong {
+  /* ── iOS-grade Luxury Liquid Glassmorphism ── */
+  .glass, .glass-strong, .liquid-glass {
     background: hsl(var(--card) / 0.65);
-    backdrop-filter: blur(40px) saturate(1.8);
-    -webkit-backdrop-filter: blur(40px) saturate(1.8);
-    border: 1px solid hsl(var(--border) / 0.4);
+    backdrop-filter: blur(48px) saturate(2.4);
+    -webkit-backdrop-filter: blur(48px) saturate(2.4);
+    border: 0.5px solid hsl(var(--border) / 0.6);
     box-shadow:
-      0 0 0 0.5px hsl(var(--border) / 0.1),
+      0 0 0 0.5px hsl(var(--border) / 0.15),
       0 1px 2px hsl(0 0% 0% / 0.04),
-      0 8px 32px -8px hsl(0 0% 0% / 0.08);
+      0 8px 32px -8px hsl(0 0% 0% / 0.1),
+      inset 0 1px 1px hsl(0 0% 100% / 0.05); /* Refraction highlight */
     border-radius: var(--radius);
-    transition: box-shadow 0.4s cubic-bezier(0.4,0,0.2,1), border-color 0.3s ease;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
   }
 
   .glass-strong {
     background: hsl(var(--card) / 0.78);
-    backdrop-filter: blur(48px) saturate(2);
-    -webkit-backdrop-filter: blur(48px) saturate(2);
+    backdrop-filter: blur(54px) saturate(2.6);
+    -webkit-backdrop-filter: blur(54px) saturate(2.6);
     box-shadow:
-      0 0 0 0.5px hsl(var(--border) / 0.15),
+      0 0 0 0.5px hsl(var(--border) / 0.2),
       0 1px 3px hsl(0 0% 0% / 0.04),
-      0 12px 40px -8px hsl(0 0% 0% / 0.1);
+      0 20px 48px -12px hsl(0 0% 0% / 0.12),
+      inset 0 0.5px 0.5px hsl(0 0% 100% / 0.08); /* Inner specular edge */
   }
 
-  .dark .glass, .dark .glass-strong {
-    background: hsl(var(--card) / 0.4);
-    border: 1px solid hsl(0 0% 100% / 0.06);
+  .dark .glass, .dark .glass-strong, .dark .liquid-glass {
+    background: hsl(var(--card) / 0.45);
+    border: 0.5px solid hsl(0 0% 100% / 0.08);
     box-shadow:
-      0 0 0 0.5px hsl(0 0% 100% / 0.04),
-      0 1px 2px hsl(0 0% 0% / 0.2),
-      0 16px 48px -8px hsl(0 0% 0% / 0.5),
-      inset 0 1px 0 0 hsl(0 0% 100% / 0.04);
+      0 0 0 0.5px hsl(0 0% 100% / 0.05),
+      0 1px 2px hsl(0 0% 0% / 0.3),
+      0 24px 64px -12px hsl(0 0% 0% / 0.6),
+      inset 0 1px 1px hsl(0 0% 100% / 0.03); /* Subtle dark mode refraction */
   }
 
   .dark .glass-strong {
-    background: hsl(var(--card) / 0.55);
+    background: hsl(var(--card) / 0.58);
     box-shadow:
-      0 0 0 0.5px hsl(0 0% 100% / 0.06),
-      0 1px 3px hsl(0 0% 0% / 0.3),
-      0 20px 60px -8px hsl(0 0% 0% / 0.6),
+      0 0 0 0.5px hsl(0 0% 100% / 0.08),
+      0 1px 3px hsl(0 0% 0% / 0.4),
+      0 32px 72px -16px hsl(0 0% 0% / 0.7),
       inset 0 1px 0 0 hsl(0 0% 100% / 0.06);
+  }
+
+  /* ── Liquid Movement Effect ── */
+  .liquid-glass::before {
+    content: '';
+    position: absolute;
+    inset: -50%;
+    background: radial-gradient(circle at 50% 50%, hsl(var(--primary) / 0.03) 0%, transparent 60%);
+    opacity: 0.5;
+    animation: liquid-glass-motion 12s ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes liquid-glass-motion {
+    0% { transform: translate(5%, 5%) rotate(0deg) scale(1); }
+    50% { transform: translate(-5%, 2%) rotate(3deg) scale(1.05); }
+    100% { transform: translate(2%, -5%) rotate(-2deg) scale(1); }
   }
 
   /* ── Premium card with hover lift ── */
   .premium-card {
-    @apply glass-strong;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    @apply liquid-glass;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .premium-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-4px) scale(1.005);
     box-shadow:
-      0 0 0 0.5px hsl(var(--border) / 0.2),
-      0 4px 12px hsl(0 0% 0% / 0.06),
-      0 20px 48px -12px hsl(0 0% 0% / 0.12);
+      0 0 0 0.5px hsl(var(--border) / 0.3),
+      0 12px 32px -8px hsl(0 0% 0% / 0.12),
+      0 32px 64px -16px hsl(0 0% 0% / 0.15),
+      inset 0 1px 2px hsl(0 0% 100% / 0.1);
   }
 
   .dark .premium-card:hover {
     box-shadow:
-      0 0 0 0.5px hsl(0 0% 100% / 0.08),
-      0 4px 16px hsl(0 0% 0% / 0.4),
-      0 24px 56px -12px hsl(0 0% 0% / 0.7),
-      inset 0 1px 0 0 hsl(0 0% 100% / 0.08);
+      0 0 0 0.5px hsl(0 0% 100% / 0.12),
+      0 16px 40px -12px hsl(0 0% 0% / 0.5),
+      0 40px 80px -20px hsl(0 0% 0% / 0.7),
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.1);
   }
 
   /* Executive High Contrast Mode Override */
