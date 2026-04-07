@@ -21,7 +21,12 @@ const Auth = () => {
     if (!email.trim()) return toast.error("Enter your email.");
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOtp({ email: email.trim() });
+      const { error } = await supabase.auth.signInWithOtp({ 
+        email: email.trim(),
+        options: {
+          emailRedirectTo: window.location.origin,
+        },
+      });
       if (error) throw error;
       setStep("otp");
       toast.success("Check your email for the verification code.");
