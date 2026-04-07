@@ -32,7 +32,7 @@ serve(async (req) => {
       if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
       // Convert to base64 for the AI
-      const base64 = base64Encode(bytes);
+      const base64 = base64Encode(bytes.buffer as ArrayBuffer);
 
       const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
@@ -79,7 +79,7 @@ serve(async (req) => {
       const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
       if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-      const base64 = base64Encode(bytes);
+      const base64 = base64Encode(bytes.buffer as ArrayBuffer);
 
       const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",

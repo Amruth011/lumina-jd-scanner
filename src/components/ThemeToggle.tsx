@@ -5,11 +5,13 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "./ThemeProvider";
+import { Shield } from "lucide-react";
 
 export function ThemeToggle() {
-  const { setTheme } = useTheme();
+  const { setTheme, isHighContrast, setIsHighContrast } = useTheme();
 
   return (
     <DropdownMenu>
@@ -32,6 +34,24 @@ export function ThemeToggle() {
         <DropdownMenuItem onClick={() => setTheme("system")} className="cursor-pointer hover:bg-white/5 flex items-center gap-2">
           <Laptop className="h-4 w-4" />
           System Match
+        </DropdownMenuItem>
+        
+        <DropdownMenuSeparator className="opacity-20" />
+        
+        <DropdownMenuItem 
+          onClick={(e) => {
+            e.preventDefault();
+            setIsHighContrast(!isHighContrast);
+          }} 
+          className="cursor-pointer hover:bg-white/5 flex items-center justify-between gap-4"
+        >
+          <div className="flex items-center gap-2">
+            <Shield className="h-4 w-4 text-primary" />
+            <span className="font-semibold">Executive Contrast</span>
+          </div>
+          <div className={`w-8 h-4 rounded-full transition-colors relative border ${isHighContrast ? 'bg-emerald-500 border-emerald-500' : 'bg-zinc-400 border-zinc-500'}`}>
+            <div className={`absolute w-2.5 h-2.5 shadow-sm rounded-full top-0.5 transition-transform ${isHighContrast ? 'translate-x-[18px] bg-white' : 'translate-x-0.5 bg-white'}`} />
+          </div>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

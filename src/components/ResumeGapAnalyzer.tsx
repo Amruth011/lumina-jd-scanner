@@ -12,6 +12,7 @@ import jsPDF from "jspdf";
 interface ResumeGapAnalyzerProps {
   skills: Skill[];
   jobTitle?: string;
+  jdText?: string;
   onResumeTextChange?: (text: string) => void;
   onResultChange?: (result: ResumeGapResult | null) => void;
 }
@@ -39,7 +40,7 @@ async function extractDocxText(file: File): Promise<string> {
   return result.value;
 }
 
-export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResultChange }: ResumeGapAnalyzerProps) => {
+export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange, onResultChange }: ResumeGapAnalyzerProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [resumeText, setResumeText] = useState("");
   const [fileName, setFileName] = useState("");
@@ -254,8 +255,30 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, onResumeTextChange, onResu
     setIsAnalyzing(true);
     setResult(null);
     setAddedToTracker(false);
-
     try {
+      // ── DETERMINISTIC IDENTITY CHECK (Hotfix) ──
+      if (jdText?.trim() === resumeText.trim()) {
+        const identityResult: ResumeGapResult = {
+          overall_match: 100,
+          skill_matches: skills.map(s => ({
+            skill: s.skill,
+            match_percent: 100,
+            verdict: "strong",
+            note: "Identity Match: This resume is identical to the job description."
+          })),
+          deductions: [],
+          summary: "100% Perfect Match - Identity Detected. Your resume is identical to the job description.",
+        };
+        setResult(identityResult);
+        onResultChange?.(identityResult);
+        setLastAnalyzedText(resumeText);
+        toast.success("Identity match: 100%!", { 
+          icon: "🔥",
+          duration: 5000
+        });
+        return;
+      }
+
       const cachedResult = await getCachedResumeAnalysis(trimmedResume, skills);
       if (cachedResult) {
         setResult(cachedResult);

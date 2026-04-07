@@ -29,7 +29,6 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        temperature: 0,
         seed: 42,
         model: "google/gemini-2.5-flash",
         messages: [
@@ -56,7 +55,24 @@ serve(async (req) => {
 
 5. For EVERY deduction, provide a "fix_snippet" — a ready-to-paste resume bullet using the user's ACTUAL experience context.
 
-6. Provide actionable_directives with specific "this: <old> replace with this: <new>" instructions.`,
+6. Provide actionable_directives with specific "this: <old> replace with this: <new>" instructions.
+
+**FEW-SHOT EXAMPLES FOR SCORING CALIBRATION:**
+
+### Example 1: 100% Match (Contextual & Direct)
+- **JD Skills**: React (100%), TypeScript (90%), AWS (70%)
+- **Resume**: "Lead Engineer with 6 years experience building React apps. Migrated legacy systems to TypeScript. Architected serverless backends on AWS Lambda."
+- **Analysis**: 100% match. All core and supporting skills are explicitly mentioned with high-level responsibility.
+
+### Example 2: 80% Match (Minor Gap)
+- **JD Skills**: Python (100%), PostgreSQL (80%), Kubernetes (40%)
+- **Resume**: "Python Developer specialized in Django and PostgreSQL. Optimized complex SQL queries. No experience with K8s."
+- **Analysis**: ~82% match. Core skills (Python/SQL) are 100%, but Kubernetes (importance 40%) is missing. The weighted deduction results in ~80-85%.
+
+### Example 3: 50% Match (Partial/Junior)
+- **JD Skills**: Project Management (100%), Stakeholder Mapping (80%)
+- **Resume**: "Administrative assistant who coordinated team calendars and sat in on leadership meetings."
+- **Analysis**: ~45% match. While there is exposure to "coordination," there is no evidence of managing full project lifecycles or mapping stakeholders. Deductions are significant.`,
           },
           {
             role: "user",

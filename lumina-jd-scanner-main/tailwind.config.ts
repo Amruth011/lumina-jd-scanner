@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 export default {
-  // Light mode only — dark mode disabled
+  darkMode: "class",
   content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
   prefix: "",
   theme: {
@@ -15,7 +15,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ["Inter", "sans-serif"],
-        display: ["Space Grotesk", "sans-serif"],
+        display: ["Outfit", "Space Grotesk", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",

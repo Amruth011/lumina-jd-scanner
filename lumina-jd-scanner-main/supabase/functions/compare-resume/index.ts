@@ -20,7 +20,7 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const skillNames = skills.map((s: any) => `${s.skill} (${s.importance}%)`).join(", ");
+    const skillNames = skills.map((s: any) => `${s.skill} (importance: ${s.importance}%)`).join(", ");
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -29,27 +29,40 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        temperature: 0,
+        seed: 42,
+        model: "google/gemini-2.5-flash",
         messages: [
           {
             role: "system",
-            content: `You are an expert resume analyzer. Compare a resume against required JD skills. Estimate match percentage for each skill AND provide specific deductions explaining why the overall match isn't 100%.
+            content: `You are an expert ATS (Applicant Tracking System) consultant and resume analyzer. Your primary goal is to help candidates pass ATS screening with highly accurate, trustworthy recommendations.
 
-CRITICAL RULE — ALTERNATIVE/OR SKILLS:
-When a JD lists alternatives separated by "or", "/", "and/or", or similar (e.g. "Python or R", "LangGraph or LangChain", "AWS or Azure or GCP", "React or Angular"), these are INTERCHANGEABLE options — having ANY ONE of them is a FULL MATCH (100% for that skill). Do NOT deduct points for not knowing the other alternatives.
-Instead, in the "note" field, acknowledge the match and suggest mentioning the other alternatives to stand out from the competition.
-This applies to programming languages, frameworks, libraries, cloud platforms, tools, certifications — ANY skill where the JD presents multiple options as alternatives.
+**SCORING RULES — READ CAREFULLY:**
+1. For each skill, evaluate the resume CONTEXTUALLY — not just keyword matching. Look for:
+   - Direct mentions of the skill
+   - Synonyms and equivalent technologies (e.g., "Postgres" = "PostgreSQL", "K8s" = "Kubernetes")
+   - Demonstrated usage in project descriptions, even without explicit mention
+   - Related experience that implies the skill (e.g., "deployed containerized microservices" implies Docker knowledge)
 
-Examples:
-- JD says "Python or R" and resume has Python → 100% match, note: "Strong match with Python. Consider also mentioning R to stand out."
-- JD says "LangChain or LangGraph" and resume has LangChain → 100% match, note: "LangChain covers this requirement. Adding LangGraph would strengthen your profile."
-- JD says "AWS or Azure" and resume has neither → 0% match, verdict: missing.`,
+2. Match percentages per skill:
+   - 100 = Explicit mention OR clear demonstrated expertise
+   - 70-90 = Strong implicit evidence or synonym match
+   - 40-60 = Partial/tangential evidence
+   - 0-20 = No evidence found
+
+3. ALTERNATIVE/OR/SLASH SKILLS: "Python or R", "React/Angular", "AWS or GCP" — having ANY ONE = 100% match. Do NOT deduct for missing alternatives.
+
+4. Overall score must be a WEIGHTED AVERAGE of individual skill scores using the importance weights.
+
+5. For EVERY deduction, provide a "fix_snippet" — a ready-to-paste resume bullet using the user's ACTUAL experience context.
+
+6. Provide actionable_directives with specific "this: <old> replace with this: <new>" instructions.`,
           },
           {
             role: "user",
-            content: `Compare this resume against the required skills. Estimate match percentage (0-100) for each skill. Remember: if the JD lists alternatives (connected by "or", "/", etc.), having ANY ONE is a full match — do NOT deduct for missing alternatives. Also provide a list of specific deductions from 100%.
+            content: `Analyze this resume against required skills. Be CONTEXTUALLY ACCURATE — don't just do keyword matching. Consider project descriptions, implied skills, and technology ecosystems.
 
-Required Skills: ${skillNames}
+Required Skills (with importance weights): ${skillNames}
 
 Resume:
 ${resumeText}`,
@@ -64,7 +77,7 @@ ${resumeText}`,
               parameters: {
                 type: "object",
                 properties: {
-                  overall_match: { type: "number", description: "Overall match percentage 0-100" },
+                  overall_match: { type: "number", description: "Overall weighted match percentage 0-100" },
                   skill_matches: {
                     type: "array",
                     items: {
@@ -73,7 +86,7 @@ ${resumeText}`,
                         skill: { type: "string" },
                         match_percent: { type: "number", description: "How well the resume matches this skill 0-100" },
                         verdict: { type: "string", enum: ["strong", "partial", "missing"] },
-                        note: { type: "string", description: "Brief note on the match" },
+                        note: { type: "string", description: "Brief explanation of why this score was given" },
                       },
                       required: ["skill", "match_percent", "verdict", "note"],
                     },
@@ -84,20 +97,46 @@ ${resumeText}`,
                     items: {
                       type: "object",
                       properties: {
-                        reason: { type: "string", description: "What's missing, e.g. 'Missing Deep Learning Frameworks'" },
-                        percent: { type: "number", description: "Points deducted, e.g. 10" },
+                        reason: { type: "string" },
+                        percent: { type: "number" },
+                        fix_snippet: { type: "string", description: "Ready-to-paste resume bullet to fix this gap, using user's actual experience context" },
                       },
-                      required: ["reason", "percent"],
+                      required: ["reason", "percent", "fix_snippet"],
                     },
                   },
                   summary: { type: "string", description: "2-3 sentence gap analysis summary" },
+                  tailored_resume_snippets: {
+                    type: "object",
+                    properties: {
+                      professional_summary: { type: "string", description: "Tailored 2-3 sentence professional summary using JD keywords" },
+                      experience_bullets: {
+                        type: "array",
+                        items: { type: "string" },
+                        description: "3-5 quantified, action-oriented bullet points targeting JD gaps"
+                      }
+                    },
+                    required: ["professional_summary", "experience_bullets"]
+                  },
+                  actionable_directives: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        action: { type: "string", enum: ["add", "delete", "replace", "edit"] },
+                        description: { type: "string", description: "Exactly what to change, e.g. 'Replace \"Created web apps\" with \"Developed scalable web applications using React and TypeScript\"'" },
+                        reasoning: { type: "string" }
+                      },
+                      required: ["action", "description", "reasoning"]
+                    }
+                  }
                 },
-                required: ["overall_match", "skill_matches", "deductions", "summary"],
+                required: ["overall_match", "skill_matches", "deductions", "summary", "tailored_resume_snippets", "actionable_directives"],
               },
             },
           },
         ],
         tool_choice: { type: "function", function: { name: "analyze_resume_gap" } },
+        temperature: 0,
       }),
     });
 
@@ -129,6 +168,32 @@ ${resumeText}`,
       const jsonMatch = content.match(/\{[\s\S]*\}/);
       if (!jsonMatch) throw new Error("Could not parse AI response");
       parsed = JSON.parse(jsonMatch[0]);
+    }
+
+    // Recalculate overall_match as weighted average from skill_matches for consistency
+    if (parsed.skill_matches?.length > 0) {
+      let totalWeight = 0;
+      let weightedSum = 0;
+      for (const sm of parsed.skill_matches) {
+        const importance = skills.find((s: any) => s.skill === sm.skill)?.importance || 50;
+        totalWeight += importance;
+        weightedSum += (sm.match_percent / 100) * importance;
+      }
+      if (totalWeight > 0) {
+        parsed.overall_match = Math.round((weightedSum / totalWeight) * 100);
+      }
+    }
+
+    // Normalize deductions to sum to (100 - overall_match)
+    if (parsed.deductions?.length > 0) {
+      const targetDeduction = 100 - parsed.overall_match;
+      const rawTotal = parsed.deductions.reduce((sum: number, d: any) => sum + d.percent, 0);
+      if (rawTotal > 0 && targetDeduction > 0) {
+        const scale = targetDeduction / rawTotal;
+        for (const d of parsed.deductions) {
+          d.percent = Math.max(1, Math.round(d.percent * scale));
+        }
+      }
     }
 
     return new Response(JSON.stringify(parsed), {

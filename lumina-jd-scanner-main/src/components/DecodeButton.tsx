@@ -1,57 +1,62 @@
 import { motion } from "framer-motion";
-import { Scan, Loader2, Zap } from "lucide-react";
+import { Loader2, Zap, CheckCircle2, ArrowRight } from "lucide-react";
 
 interface DecodeButtonProps {
   onClick: () => void;
   isLoading: boolean;
   disabled: boolean;
+  isDecoded?: boolean;
 }
 
-export const DecodeButton = ({ onClick, isLoading, disabled }: DecodeButtonProps) => {
+export const DecodeButton = ({ onClick, isLoading, disabled, isDecoded }: DecodeButtonProps) => {
   return (
     <motion.button
-      whileHover={{ scale: 1.05, boxShadow: "0 8px 30px hsl(210 100% 52% / 0.3)" }}
-      whileTap={{ scale: 0.95 }}
+      whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.98 }}
       onClick={onClick}
       disabled={disabled || isLoading}
       className={`
-        relative rounded-2xl px-10 py-4 font-display font-semibold text-lg
-        text-primary-foreground bg-primary
-        disabled:opacity-40 disabled:cursor-not-allowed
-        transition-all duration-300 overflow-hidden
-        ${isLoading ? "" : "hover:shadow-xl"}
+        relative group rounded-full px-8 py-3.5 font-display font-semibold text-base
+        ${isDecoded
+          ? "bg-emerald-600 text-white dark:bg-emerald-600 dark:text-white"
+          : "bg-foreground text-background dark:bg-primary dark:text-primary-foreground"
+        }
+        transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed
+        overflow-hidden
       `}
     >
-      {/* Shimmer effect */}
-      {!disabled && !isLoading && (
+      {/* Subtle shimmer */}
+      {!disabled && !isLoading && !isDecoded && (
         <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-          animate={{ x: ["-100%", "200%"] }}
-          transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+          className="absolute inset-0 bg-gradient-to-r from-transparent via-background/10 to-transparent"
+          animate={{ x: ["-200%", "200%"] }}
+          transition={{ duration: 3, repeat: Infinity, repeatDelay: 4 }}
         />
       )}
-      
-      {/* Pulse ring when loading */}
+
+      {/* Loading ring */}
       {isLoading && (
         <motion.div
-          className="absolute inset-0 rounded-2xl border-2 border-primary-foreground/30"
-          animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0, 0.5] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
+          className="absolute inset-0 rounded-full border border-background/20"
+          animate={{ scale: [1, 1.06, 1], opacity: [0.4, 0, 0.4] }}
+          transition={{ duration: 2, repeat: Infinity }}
         />
       )}
-      
-      <span className="relative z-10 flex items-center gap-3">
+
+      <span className="relative z-10 flex items-center gap-2.5">
         {isLoading ? (
-          <Loader2 className="w-5 h-5 animate-spin" />
-        ) : (
-          <motion.span
-            animate={{ rotate: [0, -10, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-          >
-            <Zap className="w-5 h-5" />
+          <Loader2 className="w-4 h-4 animate-spin" />
+        ) : isDecoded ? (
+          <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 400 }}>
+            <CheckCircle2 className="w-4 h-4" />
           </motion.span>
+        ) : (
+          <Zap className="w-4 h-4" />
         )}
-        {isLoading ? "Decoding..." : "Decode JD"}
+        {isLoading ? "Analyzing..." : isDecoded ? "Decoded" : "Decode JD"}
+        {!isLoading && !isDecoded && (
+          <ArrowRight className="w-3.5 h-3.5 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
+        )}
       </span>
     </motion.button>
   );

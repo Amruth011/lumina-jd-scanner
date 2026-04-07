@@ -231,7 +231,32 @@
       inset 0 1px 0 0 hsl(0 0% 100% / 0.08);
   }
 
-  /* ── Minimalist Text Overrides ── */
+  /* Executive High Contrast Mode Override */
+  .high-contrast .glass, 
+  .high-contrast .glass-strong,
+  .high-contrast .glow-border {
+    background: hsl(var(--card)) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    border: 1px solid hsl(var(--border) / 1) !important;
+  }
+
+  /* Specific border color for professional Light mode (Slate-200) */
+  :root.high-contrast .glass,
+  :root.high-contrast .glass-strong,
+  :root.high-contrast .glow-border {
+    border-color: #E2E8F0 !important; /* Slate-200 */
+  }
+
+  /* Specific border for Dark Mode contrast (Zinc-700) */
+  .dark.high-contrast .glass,
+  .dark.high-contrast .glass-strong,
+  .dark.high-contrast .glow-border {
+    border-color: #3F3F46 !important; /* Zinc-700 */
+  }
+
+  /* ── Minimalist Text Overrides (Overrides Glows) ── */
   .text-gradient-primary {
     color: hsl(var(--foreground));
     background: none;

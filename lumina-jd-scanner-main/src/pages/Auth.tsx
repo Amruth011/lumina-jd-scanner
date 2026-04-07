@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Sparkles, Mail, Phone, Loader2, ArrowLeft } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Sparkles, Mail, Phone, Loader2, ArrowLeft, Moon, Sun } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
-type AuthMode = "select" | "email" | "phone";
+type AuthMode = "select" | "email";
 type AuthStep = "input" | "otp";
 
 const Auth = () => {
@@ -13,7 +14,6 @@ const Auth = () => {
   const [mode, setMode] = useState<AuthMode>("select");
   const [step, setStep] = useState<AuthStep>("input");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -32,28 +32,12 @@ const Auth = () => {
     }
   };
 
-  const handlePhoneOtp = async () => {
-    if (!phone.trim()) return toast.error("Enter your phone number.");
-    setLoading(true);
-    try {
-      const { error } = await supabase.auth.signInWithOtp({ phone: phone.trim() });
-      if (error) throw error;
-      setStep("otp");
-      toast.success("Check your phone for the verification code.");
-    } catch (err: any) {
-      toast.error(err.message || "Failed to send OTP.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleVerifyOtp = async () => {
     if (otp.length < 6) return toast.error("Enter the 6-digit code.");
     setLoading(true);
     try {
-      const params = mode === "email"
-        ? { email: email.trim(), token: otp.trim(), type: "email" as const }
-        : { phone: phone.trim(), token: otp.trim(), type: "sms" as const };
+      const params = { email: email.trim(), token: otp.trim(), type: "email" as const };
 
       const { error } = await supabase.auth.verifyOtp(params);
       if (error) throw error;
@@ -88,7 +72,11 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 relative">
+      {/* Theme toggle */}
+      <div className="absolute top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -104,11 +92,11 @@ const Auth = () => {
           </div>
 
           <h2 className="font-display font-semibold text-xl text-foreground text-center mb-1">
-            {step === "otp" ? "Enter Verification Code" : "Sign in to continue"}
+            {step === "otp" ? "Check Your Email" : "Sign in to continue"}
           </h2>
           <p className="text-sm text-muted-foreground text-center mb-6">
             {step === "otp"
-              ? `We sent a code to ${mode === "email" ? email : phone}`
+              ? `We sent a magic link and code to ${email}`
               : "Track your applications and save your analyses"}
           </p>
 
@@ -131,13 +119,6 @@ const Auth = () => {
               >
                 <Mail className="w-5 h-5 text-primary" />
                 Continue with Email
-              </button>
-              <button
-                onClick={() => setMode("phone")}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-border bg-background hover:bg-muted/50 transition-all text-sm font-medium text-foreground"
-              >
-                <Phone className="w-5 h-5 text-primary" />
-                Continue with Phone
               </button>
 
               <div className="relative my-4">
@@ -192,40 +173,21 @@ const Auth = () => {
             </div>
           )}
 
-          {/* Phone input */}
-          {mode === "phone" && step === "input" && (
-            <div className="space-y-4">
-              <input
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="+1234567890"
-                className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-                autoFocus
-                onKeyDown={(e) => e.key === "Enter" && handlePhoneOtp()}
-              />
-              <p className="text-xs text-muted-foreground">Include country code (e.g. +1 for US)</p>
-              <button
-                onClick={handlePhoneOtp}
-                disabled={loading}
-                className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2"
-              >
-                {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-                Send Verification Code
-              </button>
-            </div>
-          )}
 
-          {/* OTP input */}
+          {/* OTP / Magic Link Help text */}
           {step === "otp" && (
             <div className="space-y-4">
+              <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-xl text-center mb-2">
+                 <p className="text-sm font-semibold text-emerald-600 mb-1">Click the Magic Link in your email</p>
+                 <p className="text-xs text-muted-foreground">Or if you received a 6-digit code, enter it below:</p>
+              </div>
               <input
                 type="text"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                placeholder="000000"
+                placeholder="000000 (Optional)"
                 maxLength={6}
-                className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-sm text-center tracking-[0.3em] font-mono text-lg placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-sm text-center tracking-[0.2em] font-mono text-lg placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                 autoFocus
                 onKeyDown={(e) => e.key === "Enter" && handleVerifyOtp()}
               />
@@ -238,7 +200,7 @@ const Auth = () => {
                 Verify & Sign In
               </button>
               <button
-                onClick={() => mode === "email" ? handleEmailOtp() : handlePhoneOtp()}
+                onClick={() => handleEmailOtp()}
                 disabled={loading}
                 className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
