@@ -33,54 +33,47 @@ export const ATSKeywordScanner = ({ skills, aiInsight }: ATSKeywordScannerProps)
     : 0;
 
   const getImportanceColor = (importance: number) => {
-    if (importance > 80) return "border-red-500/40 bg-red-500/5 dark:bg-red-500/10";
-    if (importance > 50) return "border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10";
-    return "border-border bg-secondary/30";
+    if (importance > 80) return "border-red-500/20 bg-red-500/5 dark:bg-red-500/8";
+    if (importance > 50) return "border-amber-500/20 bg-amber-500/5 dark:bg-amber-500/8";
+    return "border-border/50 bg-muted/20";
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.25 }}
-      className="glass-strong rounded-2xl p-6 glow-border"
+      className="premium-card rounded-2xl p-6"
     >
-      {/* AI Insight — merged at top */}
+      {/* AI Insight */}
       {aiInsight && (
-        <div className="flex items-start gap-3 mb-5 pb-4 border-b border-border relative overflow-hidden rounded-lg bg-gradient-to-r from-primary/5 to-accent/5 p-4 -mx-1 -mt-1">
-          <motion.div
-            animate={{ rotate: [0, 5, -5, 0] }}
-            transition={{ duration: 3, repeat: Infinity }}
-            className="p-2 rounded-lg bg-primary/10 shrink-0"
-          >
-            <Brain className="w-4 h-4 text-primary" />
-          </motion.div>
+        <div className="flex items-start gap-3 mb-6 pb-5 border-b border-border/30">
+          <div className="w-8 h-8 rounded-lg bg-foreground/5 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <Brain className="w-4 h-4 text-muted-foreground" />
+          </div>
           <div>
-            <h4 className="font-display font-semibold text-xs uppercase tracking-wider text-primary mb-0.5">AI Insight</h4>
+            <h4 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-1">AI Insight</h4>
             <p className="text-sm text-foreground/80 leading-relaxed">{aiInsight}</p>
           </div>
         </div>
       )}
 
       <div className="flex items-center justify-between mb-5">
-        <div className="flex items-center gap-2">
-          <motion.div
-            whileHover={{ rotate: 15 }}
-            className="p-2 rounded-lg bg-primary/10"
-          >
-            <Search className="w-5 h-5 text-primary" />
-          </motion.div>
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-foreground/5 flex items-center justify-center">
+            <Search className="w-4 h-4 text-foreground/60" />
+          </div>
           <div>
-            <h3 className="font-display font-semibold text-lg text-foreground">
+            <h3 className="font-display font-semibold text-base text-foreground">
               ATS Keyword Scanner
             </h3>
-            <p className="text-xs text-muted-foreground">Click keywords you already have in your resume</p>
+            <p className="text-[11px] text-muted-foreground/60">Tap keywords already in your resume</p>
           </div>
         </div>
 
-        {/* Coverage Bar */}
-        <div className="flex items-center gap-3 min-w-[160px]">
-          <div className="flex-1 h-2.5 rounded-full bg-muted/50 overflow-hidden">
+        {/* Coverage */}
+        <div className="flex items-center gap-3 min-w-[140px]">
+          <div className="flex-1 h-1.5 rounded-full bg-muted/40 overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${coveragePercent}%` }}
@@ -91,7 +84,7 @@ export const ATSKeywordScanner = ({ skills, aiInsight }: ATSKeywordScannerProps)
               }`}
             />
           </div>
-          <span className={`text-sm font-bold whitespace-nowrap ${
+          <span className={`text-sm font-bold font-mono whitespace-nowrap ${
             coveragePercent >= 80 ? "text-emerald-500" :
             coveragePercent >= 50 ? "text-amber-500" : "text-red-500"
           }`}>
@@ -107,26 +100,25 @@ export const ATSKeywordScanner = ({ skills, aiInsight }: ATSKeywordScannerProps)
           return (
             <motion.button
               key={kw.word}
-              initial={{ opacity: 0, scale: 0.8 }}
+              initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.02 * i, type: "spring", stiffness: 300 }}
-              whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => toggleKeyword(kw.word)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-200 cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 cursor-pointer ${
                 isChecked
-                  ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/40 shadow-sm"
+                  ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
                   : getImportanceColor(kw.importance)
               }`}
             >
               {isChecked ? (
                 <CheckCircle2 className="w-3 h-3" />
               ) : (
-                <XCircle className="w-3 h-3 text-muted-foreground" />
+                <XCircle className="w-3 h-3 text-muted-foreground/40" />
               )}
               {kw.word}
               {kw.importance > 80 && !isChecked && (
-                <Zap className="w-3 h-3 text-red-500 ml-0.5" />
+                <Zap className="w-3 h-3 text-red-500/60 ml-0.5" />
               )}
             </motion.button>
           );
@@ -134,15 +126,15 @@ export const ATSKeywordScanner = ({ skills, aiInsight }: ATSKeywordScannerProps)
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 mt-4 pt-3 border-t border-border">
-        <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
-          <Zap className="w-3 h-3 text-red-500" /> Critical (80%+)
+      <div className="flex items-center gap-5 mt-5 pt-4 border-t border-border/30">
+        <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground/50">
+          <Zap className="w-3 h-3 text-red-500/50" /> Critical
         </span>
-        <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
-          <span className="w-2 h-2 rounded-full bg-amber-500" /> Important (50-80%)
+        <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground/50">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500/50" /> Important
         </span>
-        <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
-          <span className="w-2 h-2 rounded-full bg-muted-foreground" /> Supporting
+        <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground/50">
+          <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" /> Supporting
         </span>
       </div>
     </motion.div>
