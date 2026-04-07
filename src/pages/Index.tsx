@@ -1,7 +1,7 @@
 import { useState, useEffect, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Brain, Filter, LayoutDashboard, Search, LogOut, LogIn, Loader2, Moon, Sun, Save, BookmarkCheck, CheckCircle2, RefreshCw, Lock } from "lucide-react";
+import { Sparkles, Brain, Filter, LayoutDashboard, Search, LogOut, LogIn, Loader2, Save, BookmarkCheck, CheckCircle2, RefreshCw, Lock, ArrowRight, Shield, Zap, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -19,11 +19,17 @@ import { ResumeBuilder } from "@/components/ResumeBuilder";
 import type { DecodeResult, ResumeGapResult } from "@/types/jd";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
-
 const ApplicationTracker = lazy(() => import("@/components/ApplicationTracker").then(module => ({ default: module.ApplicationTracker })));
 
 type Tab = "decode" | "applications";
 
+const stagger = {
+  animate: { transition: { staggerChildren: 0.08 } }
+};
+const fadeUp = {
+  initial: { opacity: 0, y: 16 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } }
+};
 
 const Index = () => {
   const { user, loading, signOut } = useAuth();
@@ -37,100 +43,68 @@ const Index = () => {
   const [userResumeText, setUserResumeText] = useState("");
   const [gapResult, setGapResult] = useState<ResumeGapResult | null>(null);
 
-  // Reset saved state when new decode happens
-  useEffect(() => {
-    setSavedJdId(null);
-  }, [results]);
+  useEffect(() => { setSavedJdId(null); }, [results]);
 
   const handleSaveJd = async () => {
-    if (!user) {
-      toast.info("Sign in to save your decoded JDs.");
-      navigate("/auth");
-      return;
-    }
+    if (!user) { toast.info("Sign in to save your decoded JDs."); navigate("/auth"); return; }
     if (!results) return;
     setSavingJd(true);
     try {
       const { data, error } = await supabase.from("jd_vault").insert({
-        user_id: user.id,
-        title: results.title,
-        raw_text: jdText,
-        skills_json: results.skills as any,
+        user_id: user.id, title: results.title, raw_text: jdText, skills_json: results.skills as any,
       }).select("id").single();
       if (error) throw error;
       setSavedJdId(data.id);
       toast.success("JD saved to your history!");
-    } catch (err: any) {
-      console.error(err);
-      toast.error("Failed to save JD.");
-    } finally {
-      setSavingJd(false);
-    }
+    } catch (err: any) { console.error(err); toast.error("Failed to save JD."); }
+    finally { setSavingJd(false); }
   };
 
   const handleTabSwitch = (tab: Tab) => {
-    if (tab === "applications" && !user) {
-      toast.info("Sign in to access your application tracker.");
-      navigate("/auth");
-      return;
-    }
+    if (tab === "applications" && !user) { toast.info("Sign in to access your application tracker."); navigate("/auth"); return; }
     setActiveTab(tab);
   };
 
-  const filteredSkills = results
-    ? priorityFilter
-      ? results.skills.filter((s) => s.importance > 80)
-      : results.skills
-    : [];
+  const filteredSkills = results ? priorityFilter ? results.skills.filter((s) => s.importance > 80) : results.skills : [];
 
   const getAiInsight = (skills: DecodeResult["skills"]) => {
-    const critical = skills
-      .filter((s) => s.importance > 80)
-      .slice(0, 3)
-      .map((s) => s.skill);
+    const critical = skills.filter((s) => s.importance > 80).slice(0, 3).map((s) => s.skill);
     if (critical.length === 0) return "All skills have moderate importance — a well-rounded generalist role.";
     return `Focus on ${critical.join(", ")} for this role; the rest are secondary infrastructure skills.`;
   };
 
-  const handleDecode = async () => {
-    await decodeJD(jdText);
-  };
-
-  const handleForceRedecode = async () => {
-    await decodeJD(jdText, true);
-  };
+  const handleDecode = async () => { await decodeJD(jdText); };
+  const handleForceRedecode = async () => { await decodeJD(jdText, true); };
 
   const tabClass = (tab: Tab) =>
-    `relative flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${
+    `relative flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
       activeTab === tab
         ? "text-primary-foreground"
-        : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
     }`;
 
   const displayName = user?.email || user?.phone || "User";
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Header */}
-      <header className="relative z-10 flex items-center justify-between px-6 py-4 md:px-12 border-b border-border backdrop-blur-sm bg-background/80">
+    <div className="min-h-screen bg-background relative overflow-hidden grain-overlay dot-grid-bg">
+      {/* ── Header ── */}
+      <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-3.5 md:px-12 border-b border-border/50 backdrop-blur-xl bg-background/70">
         <motion.div
-          initial={{ opacity: 0, x: -20 }}
+          initial={{ opacity: 0, x: -12 }}
           animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
           className="flex items-center gap-2.5"
         >
-          <motion.div
-            animate={{ rotate: [0, 10, -10, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <Sparkles className="w-6 h-6 text-primary" />
-          </motion.div>
-          <h1 className="font-display font-bold text-2xl text-foreground tracking-tight">
-            Lumina <span className="text-gradient-primary drop-shadow-sm">JD</span>
+          <div className="w-8 h-8 rounded-lg bg-foreground flex items-center justify-center">
+            <Sparkles className="w-4 h-4 text-background" />
+          </div>
+          <h1 className="font-display font-bold text-xl text-foreground tracking-tight">
+            Lumina<span className="text-muted-foreground font-normal ml-1">JD</span>
           </h1>
         </motion.div>
 
         {/* Tab Navigation */}
-        <nav className="flex items-center gap-1 bg-muted/50 rounded-full p-1 backdrop-blur-sm">
+        <nav className="flex items-center gap-0.5 bg-muted/40 rounded-full p-0.5 backdrop-blur-sm border border-border/30">
           {[
             { key: "decode" as Tab, icon: Search, label: "Decoder" },
             { key: "applications" as Tab, icon: LayoutDashboard, label: "Applications" },
@@ -139,110 +113,110 @@ const Index = () => {
               {activeTab === tab.key && (
                 <motion.div
                   layoutId="activeTab"
-                  className="absolute inset-0 bg-primary rounded-full shadow-lg"
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  className="absolute inset-0 bg-foreground dark:bg-primary rounded-full"
+                  transition={{ type: "spring", stiffness: 500, damping: 35 }}
                 />
               )}
               <span className="relative z-10 flex items-center gap-2">
-                <tab.icon className="w-4 h-4" />
-                {tab.label}
+                <tab.icon className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">{tab.label}</span>
               </span>
             </button>
           ))}
         </nav>
 
-        {/* User info + actions */}
+        {/* User actions */}
         <motion.div
-          initial={{ opacity: 0, x: 20 }}
+          initial={{ opacity: 0, x: 12 }}
           animate={{ opacity: 1, x: 0 }}
-          className="flex items-center gap-2"
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className="flex items-center gap-1.5"
         >
           <ThemeToggle />
           {user ? (
             <>
-              <span className="text-xs text-muted-foreground hidden md:inline truncate max-w-[120px]">
+              <span className="text-xs text-muted-foreground hidden md:inline truncate max-w-[100px] font-mono">
                 {displayName}
               </span>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+              <button
                 onClick={signOut}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all"
               >
                 <LogOut className="w-3.5 h-3.5" />
-                Sign out
-              </motion.button>
+                <span className="hidden sm:inline">Sign out</span>
+              </button>
             </>
           ) : (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <button
               onClick={() => navigate("/auth")}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-primary text-primary-foreground hover:opacity-90 transition-all"
+              className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold bg-foreground text-background hover:opacity-90 transition-all"
             >
               <LogIn className="w-3.5 h-3.5" />
               Sign in
-            </motion.button>
+            </button>
           )}
         </motion.div>
       </header>
 
-      {/* Main Content */}
-      <main className="relative z-10 px-6 md:px-12 pb-16">
+      {/* ── Main Content ── */}
+      <main className="relative z-10 px-6 md:px-12 lg:px-20 pb-24">
         <AnimatePresence mode="wait">
           {activeTab === "decode" ? (
             <motion.div
               key="decode"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             >
+              {/* ── Hero Section ── */}
               <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1, duration: 0.5 }}
-                className="text-center mb-10 mt-12 md:mt-24"
+                variants={stagger}
+                initial="initial"
+                animate="animate"
+                className="text-center mb-12 mt-16 md:mt-28 max-w-4xl mx-auto"
               >
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold mb-6 uppercase tracking-widest shine-effect">
-                  <Sparkles className="w-3.5 h-3.5" /> 
-                  The #1 ATS Optimization Engine
-                </div>
-                
-                <motion.div
-                  initial={{ scale: 0.9 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                >
-                  <h2 className="font-display font-black text-5xl md:text-7xl text-foreground mb-6 tracking-tight leading-tight">
-                    Beat the ATS.<br/>
-                    <span className="text-gradient-primary drop-shadow-sm glow-text">Land the Interview.</span>
+                <motion.div variants={fadeUp}>
+                  <div className="badge-pill bg-foreground/5 border border-border/50 text-muted-foreground mb-8 mx-auto w-fit shine-effect">
+                    <Sparkles className="w-3 h-3" />
+                    The #1 ATS Optimization Engine
+                  </div>
+                </motion.div>
+
+                <motion.div variants={fadeUp}>
+                  <h2 className="text-display font-black text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-foreground mb-6">
+                    Beat the ATS.
+                    <br />
+                    <span className="text-muted-foreground">Land the Interview.</span>
                   </h2>
                 </motion.div>
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className="text-muted-foreground text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed mb-8"
-                >
-                  Over 95% of Fortune 500 companies use an ATS. Paste a job description below and let our AI algorithm instantly detect exactly what skills, keywords, and metrics you need to rank first. 
-                </motion.p>
 
-                
-                
-                <div className="flex flex-wrap justify-center items-center gap-6 text-sm font-semibold text-foreground/80 mb-12">
-                   <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> 100% Free & Private</span>
-                   <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Instant Gap Analysis</span>
-                   <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> AI Resume Snippets</span>
-                </div>
+                <motion.div variants={fadeUp}>
+                  <p className="text-body-refined text-muted-foreground text-base md:text-lg max-w-xl mx-auto mb-10">
+                    95% of Fortune 500 companies use an ATS. Paste a job description and our algorithm instantly detects the exact skills, keywords, and metrics you need to rank first.
+                  </p>
+                </motion.div>
+
+                <motion.div variants={fadeUp} className="flex flex-wrap justify-center items-center gap-8 text-xs font-medium text-muted-foreground mb-14">
+                  <span className="flex items-center gap-2">
+                    <Shield className="w-3.5 h-3.5 text-foreground/40" /> 100% Private
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <BarChart3 className="w-3.5 h-3.5 text-foreground/40" /> Instant Analysis
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <Zap className="w-3.5 h-3.5 text-foreground/40" /> AI Resume Snippets
+                  </span>
+                </motion.div>
               </motion.div>
 
+              {/* ── Text Input ── */}
               <GlassTextArea value={jdText} onChange={setJdText} isScanning={isScanning} />
 
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
                 className="flex justify-center mt-8"
               >
                 <DecodeButton
@@ -253,155 +227,117 @@ const Index = () => {
                 />
               </motion.div>
 
-              {/* Results */}
+              {/* ── Results ── */}
               <AnimatePresence>
                 {results && (
                   <motion.div
-                    initial={{ opacity: 0, y: 60 }}
+                    initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 20 }}
-                    transition={{ duration: 0.6, ease: "easeOut" }}
-                    className="mt-12 max-w-6xl mx-auto"
+                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    className="mt-16 max-w-6xl mx-auto space-y-8"
                   >
-                    {/* Title with alignment note styling */}
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
-                      className="text-center mb-6"
-                    >
-                      <h3 className="font-display font-bold text-3xl md:text-4xl text-foreground text-gradient-primary mb-1">
-                        {results.title}
-                      </h3>
+                    {/* Results header */}
+                    <div className="text-center space-y-4">
                       <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: "120px" }}
-                        transition={{ delay: 0.4, duration: 0.5 }}
-                        className="h-1 bg-gradient-to-r from-primary to-accent rounded-full mx-auto mt-3"
-                      />
-                      {/* Cache indicator + Re-decode */}
-                      <div className="mt-3 flex items-center justify-center gap-3">
-                        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 bg-emerald-500/10 px-2.5 py-1 rounded-full">
+                        initial={{ opacity: 0, scale: 0.96 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
+                      >
+                        <h3 className="text-display font-bold text-3xl md:text-4xl text-foreground">
+                          {results.title}
+                        </h3>
+                        <div className="section-divider w-20 mx-auto mt-4" />
+                      </motion.div>
+
+                      <div className="flex items-center justify-center gap-3 flex-wrap">
+                        <span className="badge-pill bg-foreground/5 border border-border/50 text-muted-foreground">
                           <Lock className="w-3 h-3" />
-                          {wasCached ? "Locked Score (Cached)" : "Score Locked"}
+                          {wasCached ? "Cached Result" : "Score Locked"}
                         </span>
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
+                        <button
                           onClick={handleForceRedecode}
                           disabled={isScanning}
-                          className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground bg-muted/50 hover:bg-muted px-3 py-1 rounded-full border border-border transition-all disabled:opacity-40"
-                          title="Re-analyze with fresh AI decode (will update the cached skills)"
+                          className="badge-pill bg-transparent border border-border/50 text-muted-foreground hover:text-foreground hover:border-border transition-all disabled:opacity-40"
                         >
                           <RefreshCw className={`w-3 h-3 ${isScanning ? 'animate-spin' : ''}`} />
-                          Re-decode (Fresh)
-                        </motion.button>
+                          Re-decode
+                        </button>
                       </div>
-                      {/* Save JD Button */}
-                      <motion.button
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.5 }}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+
+                      <button
                         onClick={handleSaveJd}
                         disabled={savingJd || !!savedJdId}
-                        className={`mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
+                        className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all ${
                           savedJdId
-                            ? "bg-[hsl(var(--skill-core))]/15 text-[hsl(var(--skill-core))] border border-[hsl(var(--skill-core))]/30"
-                            : "bg-primary text-primary-foreground hover:opacity-90"
-                        } disabled:opacity-60`}
+                            ? "bg-[hsl(var(--skill-core))]/10 text-[hsl(var(--skill-core))] border border-[hsl(var(--skill-core))]/20"
+                            : "bg-foreground text-background hover:opacity-90"
+                        } disabled:opacity-50`}
                       >
-                        {savingJd ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : savedJdId ? (
-                          <BookmarkCheck className="w-4 h-4" />
-                        ) : (
-                          <Save className="w-4 h-4" />
-                        )}
-                        {savedJdId ? "Saved to History" : "Save This Analysis"}
-                      </motion.button>
-                    </motion.div>
+                        {savingJd ? <Loader2 className="w-4 h-4 animate-spin" /> : savedJdId ? <BookmarkCheck className="w-4 h-4" /> : <Save className="w-4 h-4" />}
+                        {savedJdId ? "Saved" : "Save Analysis"}
+                      </button>
+                    </div>
 
-                    {/* Priority Filter Toggle */}
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.2 }}
-                      className="flex justify-center mb-6"
-                    >
-                      <motion.button
-                        whileHover={{ scale: 1.03 }}
-                        whileTap={{ scale: 0.97 }}
+                    {/* Priority Filter */}
+                    <div className="flex justify-center">
+                      <button
                         onClick={() => setPriorityFilter(!priorityFilter)}
-                        className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 border ${
+                        className={`flex items-center gap-2.5 px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 border ${
                           priorityFilter
-                            ? "bg-foreground text-background border-transparent shadow-md dark:bg-primary/20 dark:text-primary dark:border-primary/40 dark:glass"
-                            : "bg-background text-foreground border-border hover:bg-muted dark:bg-transparent dark:text-muted-foreground dark:hover:text-foreground dark:glass"
+                            ? "bg-foreground text-background border-transparent dark:bg-primary/20 dark:text-primary dark:border-primary/40"
+                            : "bg-transparent text-muted-foreground border-border/50 hover:text-foreground hover:border-border"
                         }`}
                       >
-                        <Filter className="w-4 h-4" />
+                        <Filter className="w-3.5 h-3.5" />
                         Priority Filter
-                        <span
-                          className={`inline-flex items-center w-11 h-6 rounded-full p-0.5 relative transition-colors duration-300 ${
-                            priorityFilter ? "bg-emerald-500 dark:bg-emerald-500" : "bg-black/20 dark:bg-black/50 border border-border"
-                          }`}
-                        >
+                        <span className={`inline-flex items-center w-9 h-5 rounded-full p-0.5 transition-colors duration-300 ${
+                          priorityFilter ? "bg-emerald-500" : "bg-foreground/10 border border-border/50"
+                        }`}>
                           <motion.span
-                            animate={{ x: priorityFilter ? 20 : 0 }}
+                            animate={{ x: priorityFilter ? 16 : 0 }}
                             transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                            className={`w-5 h-5 rounded-full ${priorityFilter ? "bg-white" : "bg-white dark:bg-zinc-400"} shadow-md`}
+                            className={`w-4 h-4 rounded-full ${priorityFilter ? "bg-white" : "bg-muted-foreground/40"} shadow-sm`}
                           />
                         </span>
-                      </motion.button>
-                    </motion.div>
+                      </button>
+                    </div>
 
-                    {/* Skills row */}
+                    {/* Skills grid */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       <SkillRadarChart skills={filteredSkills} />
                       <SkillProgressBars skills={filteredSkills} priorityMode={priorityFilter} />
                     </div>
 
-                    {/* AI Insight Box */}
-                    {/* ATS Keyword Scanner + AI Insight (merged) */}
-                    <div className="mt-6">
-                      <ATSKeywordScanner skills={filteredSkills} aiInsight={getAiInsight(results.skills)} />
-                    </div>
+                    {/* ATS Keyword Scanner */}
+                    <ATSKeywordScanner skills={filteredSkills} aiInsight={getAiInsight(results.skills)} />
 
-                    {/* Consultant Mode Section */}
-                    <div className="mt-8 space-y-6">
+                    {/* Requirements & Strategy */}
+                    <div className="space-y-6">
                       <CriticalRequirements requirements={results.requirements} />
                       <WinningStrategy steps={results.winning_strategy} />
                     </div>
 
                     {/* Resume Gap Analyzer */}
-                    <div className="mt-6">
-                      <ResumeGapAnalyzer
+                    <ResumeGapAnalyzer
+                      skills={results.skills}
+                      jobTitle={results.title}
+                      onResumeTextChange={setUserResumeText}
+                      onResultChange={setGapResult}
+                    />
+
+                    {/* ATS Score Simulator */}
+                    {gapResult && <ATSScoreSimulator result={gapResult} />}
+
+                    {/* Resume Builder */}
+                    {gapResult && (
+                      <ResumeBuilder
+                        resumeText={userResumeText}
                         skills={results.skills}
+                        deductions={gapResult.deductions}
                         jobTitle={results.title}
-                        onResumeTextChange={setUserResumeText}
-                        onResultChange={setGapResult}
+                        gapResult={gapResult}
                       />
-                    </div>
-
-                    {/* ATS Score Simulator — shown after gap analysis */}
-                    {gapResult && (
-                      <div className="mt-6">
-                        <ATSScoreSimulator result={gapResult} />
-                      </div>
-                    )}
-
-                    {/* ATS Resume Generator — shown after gap analysis */}
-                    {gapResult && (
-                      <div className="mt-6">
-                        <ResumeBuilder
-                          resumeText={userResumeText}
-                          skills={results.skills}
-                          deductions={gapResult.deductions}
-                          jobTitle={results.title}
-                          gapResult={gapResult}
-                        />
-                      </div>
                     )}
                   </motion.div>
                 )}
@@ -410,19 +346,34 @@ const Index = () => {
           ) : (
             <motion.div
               key="applications"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
               className="mt-8"
             >
-              <Suspense fallback={<div className="flex justify-center p-12"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>
+              <Suspense fallback={<div className="flex justify-center p-12"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
                 <ApplicationTracker />
               </Suspense>
             </motion.div>
           )}
         </AnimatePresence>
       </main>
+
+      {/* ── Footer ── */}
+      <footer className="relative z-10 border-t border-border/30 py-8 px-6 md:px-12">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground/60">
+            <div className="w-5 h-5 rounded bg-foreground/5 flex items-center justify-center">
+              <Sparkles className="w-2.5 h-2.5 text-muted-foreground/40" />
+            </div>
+            Lumina JD
+          </div>
+          <p className="text-xs text-muted-foreground/40 font-mono">
+            Built for job seekers who refuse to be filtered out.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };
