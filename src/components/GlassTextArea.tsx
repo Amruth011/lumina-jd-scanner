@@ -37,7 +37,7 @@ export const GlassTextArea = ({ value, onChange, isScanning }: GlassTextAreaProp
           <textarea
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            placeholder="Paste the full job description here..."
+            placeholder="Paste complete 'About the Job' for better results (contains JD, requirements, company details etc)..."
             className="w-full h-72 bg-transparent rounded-2xl pl-14 pr-6 py-6 text-foreground placeholder:text-muted-foreground/40 resize-none focus:outline-none text-sm leading-relaxed transition-all font-mono"
             disabled={isScanning}
           />
