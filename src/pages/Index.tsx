@@ -1,7 +1,7 @@
 import { useState, useEffect, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Brain, Filter, LayoutDashboard, Search, LogOut, LogIn, Loader2, Save, BookmarkCheck, CheckCircle2, RefreshCw, Lock, ArrowRight, Shield, Zap, BarChart3 } from "lucide-react";
+import { Sparkles, Brain, Filter, LayoutDashboard, Search, LogOut, LogIn, Loader2, Save, BookmarkCheck, CheckCircle2, RefreshCw, ArrowRight, Shield, Zap, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -251,10 +251,7 @@ const Index = () => {
                       </motion.div>
 
                       <div className="flex items-center justify-center gap-3 flex-wrap">
-                        <span className="badge-pill bg-foreground/5 border border-border/50 text-muted-foreground">
-                          <Lock className="w-3 h-3" />
-                          {wasCached ? "Cached Result" : "Score Locked"}
-                        </span>
+
                         <button
                           onClick={handleForceRedecode}
                           disabled={isScanning}
