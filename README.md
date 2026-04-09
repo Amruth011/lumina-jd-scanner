@@ -15,7 +15,7 @@ Experience the production deployment on Vercel:
 ### 🎨 Dual-Theme Design System
 * **Executive Light (Warm Paper):** A sophisticated off-white reading experience with Zinc accents.
 * **Deep Obsidian (Warm Zinc):** A calm, eye-friendly dark mode matching industry-leading AI tools.
-* **iOS Glassmorphism:** Heavy backdrop blurs and translucent panels provide a stunning native feel.
+* **Glassmorphism:** Heavy backdrop blurs and translucent panels provide a stunning native feel.
 
 ### 🔍 AI Skill Decoding
 Paste any Job Description and let the AI extract, categorize, and score every requirement.
