@@ -12,7 +12,7 @@ export const GlassTextArea = ({ value, onChange, isScanning }: GlassTextAreaProp
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="relative w-full max-w-3xl mx-auto group"
+      className="relative w-full mx-auto group"
     >
       <div className="relative premium-card liquid-glass rounded-2xl p-[1px] overflow-hidden">
         {/* Scanning indicator */}

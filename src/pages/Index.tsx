@@ -159,7 +159,7 @@ const Index = () => {
       </header>
 
       {/* ── Main Content ── */}
-      <main className="relative z-10 px-6 md:px-12 lg:px-20 pb-24">
+      <main className="relative z-10 px-4 md:px-8 pb-24">
         <AnimatePresence mode="wait">
           {activeTab === "decode" ? (
             <motion.div
@@ -174,7 +174,7 @@ const Index = () => {
                 variants={stagger}
                 initial="initial"
                 animate="animate"
-                className="text-center mb-12 mt-16 md:mt-28 max-w-4xl mx-auto"
+                className="text-center mb-12 mt-16 md:mt-28 w-full mx-auto px-4"
               >
                 <motion.div variants={fadeUp}>
                   <div className="badge-pill bg-foreground/5 border border-border/50 text-muted-foreground mb-8 mx-auto w-fit shine-effect">
@@ -235,7 +235,7 @@ const Index = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 20 }}
                     transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                    className="mt-16 max-w-6xl mx-auto space-y-8"
+                    className="mt-16 w-full mx-auto space-y-8 px-4"
                   >
                     {/* Results header */}
                     <div className="text-center space-y-4">
@@ -359,7 +359,7 @@ const Index = () => {
 
       {/* ── Footer ── */}
       <footer className="relative z-10 border-t border-border/30 py-8 px-6 md:px-12">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
+        <div className="w-full mx-auto flex items-center justify-between px-4">
           <div className="flex items-center gap-2 text-xs text-muted-foreground/60">
             <div className="w-5 h-5 rounded bg-foreground/5 flex items-center justify-center">
               <Sparkles className="w-2.5 h-2.5 text-muted-foreground/40" />
