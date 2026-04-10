@@ -149,8 +149,9 @@ const Index = () => {
           ) : (
             <button
               onClick={() => navigate("/auth")}
-              className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-bold bg-foreground text-background hover:opacity-90 transition-all specular-highlight premium-button-glow"
+              className="relative overflow-hidden flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-bold bg-foreground text-background hover:opacity-90 transition-all liquid-glass-refraction premium-button-glow"
             >
+              <div className="liquid-water-layer" />
               <LogIn className="w-3.5 h-3.5 fill-current" />
               Sign in
             </button>
@@ -265,12 +266,13 @@ const Index = () => {
                       <button
                         onClick={handleSaveJd}
                         disabled={savingJd || !!savedJdId}
-                        className={`inline-flex items-center gap-2.5 px-8 py-3.5 rounded-2xl text-sm font-bold transition-all ${
+                        className={`relative overflow-hidden inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-2xl text-sm font-bold transition-all ${
                           savedJdId
                             ? "bg-[hsl(var(--skill-core))]/10 text-[hsl(var(--skill-core))] border border-[hsl(var(--skill-core))]/20 shadow-inner"
-                            : "bg-foreground text-background hover:opacity-90 specular-highlight premium-button-glow"
+                            : "bg-foreground text-background hover:opacity-90 liquid-glass-refraction premium-button-glow"
                         } disabled:opacity-50 active:scale-95`}
                       >
+                        <div className="liquid-water-layer" />
                         {savingJd ? <Loader2 className="w-4 h-4 animate-spin" /> : savedJdId ? <BookmarkCheck className="w-4 h-4" /> : <Save className="w-4 h-4 fill-current" />}
                         {savedJdId ? "Saved" : "Save Analysis"}
                       </button>
@@ -280,12 +282,13 @@ const Index = () => {
                     <div className="flex justify-center">
                       <button
                         onClick={() => setPriorityFilter(!priorityFilter)}
-                        className={`flex items-center gap-3 px-6 py-3 rounded-2xl text-sm font-bold transition-all duration-500 border shadow-sm active:scale-95 ${
+                        className={`relative overflow-hidden flex items-center gap-3 px-6 py-3 rounded-2xl text-sm font-bold transition-all duration-500 border shadow-sm active:scale-95 ${
                           priorityFilter
-                            ? "bg-foreground text-background border-transparent dark:bg-primary/20 dark:text-primary dark:border-primary/40 specular-highlight"
+                            ? "bg-foreground text-background border-transparent dark:bg-primary/20 dark:text-primary dark:border-primary/40 liquid-glass-refraction"
                             : "bg-transparent text-muted-foreground border-border/50 hover:text-foreground hover:border-border"
                         }`}
                       >
+                        <div className="liquid-water-layer opacity-10" />
                         <Filter className="w-3.5 h-3.5" />
                         Priority Filter
                         <span className={`inline-flex items-center w-10 h-5 rounded-full p-0.5 transition-colors duration-500 ${

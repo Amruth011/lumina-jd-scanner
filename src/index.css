@@ -416,6 +416,64 @@
     50%, 100% { left: 150%; }
   }
 
+  /* ── Liquid Water Glass Effect ── */
+  .liquid-water-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    opacity: 0.15;
+    mix-blend-mode: overlay;
+  }
+
+  .dark .liquid-water-layer {
+    opacity: 0.25;
+    mix-blend-mode: soft-light;
+  }
+
+  .liquid-water-layer::before,
+  .liquid-water-layer::after {
+    content: '';
+    position: absolute;
+    inset: -100%;
+    background-image: 
+      radial-gradient(circle at 50% 50%, hsl(var(--foreground) / 0.4) 0%, transparent 40%),
+      radial-gradient(circle at 20% 30%, hsl(var(--foreground) / 0.3) 0%, transparent 30%),
+      radial-gradient(circle at 80% 70%, hsl(var(--foreground) / 0.3) 0%, transparent 30%);
+    animation: caustic-motion 12s linear infinite;
+  }
+
+  .liquid-water-layer::after {
+    animation-delay: -6s;
+    animation-duration: 15s;
+    opacity: 0.5;
+    transform: rotate(45deg);
+  }
+
+  @keyframes caustic-motion {
+    0% { transform: translate(-10%, -10%) rotate(0deg) scale(1); }
+    33% { transform: translate(10%, 5%) rotate(120deg) scale(1.1); }
+    66% { transform: translate(-5%, 10%) rotate(240deg) scale(0.9); }
+    100% { transform: translate(-10%, -10%) rotate(360deg) scale(1); }
+  }
+
+  .liquid-glass-refraction {
+    box-shadow: 
+      inset 0 1px 1px 0 hsl(0 0% 100% / 0.2),
+      inset 0 -1px 1px 0 hsl(0 0% 0% / 0.1),
+      0 1px 2px 0 hsl(0 0% 0% / 0.1),
+      0 12px 24px -12px hsl(var(--foreground) / 0.2);
+  }
+
+  .dark .liquid-glass-refraction {
+    box-shadow: 
+      inset 0 1px 1px 0 hsl(0 0% 100% / 0.1),
+      inset 0 -1px 1px 0 hsl(0 0% 0% / 0.4),
+      0 1px 3px 0 hsl(0 0% 0% / 0.4),
+      0 20px 40px -20px hsl(0 0% 0% / 0.6);
+  }
+
+
 
   /* ── Typography scale ── */
   .text-display {

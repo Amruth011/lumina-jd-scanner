@@ -18,15 +18,18 @@ export const DecodeButton = ({ onClick, isLoading, disabled, isDecoded }: Decode
       className={`
         relative group rounded-2xl px-12 py-5 font-display font-bold text-base tracking-tight
         ${isDecoded
-          ? "bg-emerald-600 text-white shadow-emerald-500/20"
-          : "bg-foreground text-background dark:bg-primary dark:text-primary-foreground specular-highlight premium-button-glow"
+          ? "bg-emerald-600 text-white shadow-emerald-500/20 shadow-lg"
+          : "bg-foreground text-background dark:bg-primary dark:text-primary-foreground liquid-glass-refraction premium-button-glow"
         }
         transition-all duration-500 disabled:opacity-30 disabled:cursor-not-allowed
         overflow-hidden
       `}
     >
-      {/* Specular highlight top-edge overlay for extra punch */}
-      <div className="absolute inset-x-0 top-0 h-px bg-white/20 z-20 pointer-events-none" />
+      {/* Liquid Water Layer */}
+      <div className="liquid-water-layer" />
+      
+      {/* Specular highlight top-edge overlay */}
+      <div className="absolute inset-x-0 top-0 h-px bg-white/30 z-20 pointer-events-none" />
 
       {/* Shimmer sweep */}
       {!disabled && !isLoading && !isDecoded && (
@@ -36,7 +39,7 @@ export const DecodeButton = ({ onClick, isLoading, disabled, isDecoded }: Decode
       {/* Loading ring */}
       {isLoading && (
         <motion.div
-          className="absolute inset-0 rounded-full border-2 border-background/20 z-0"
+          className="absolute inset-0 rounded-2xl border-2 border-background/20 z-0"
           animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0, 0.3] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         />
@@ -52,7 +55,7 @@ export const DecodeButton = ({ onClick, isLoading, disabled, isDecoded }: Decode
         ) : (
           <Zap className="w-5 h-5 fill-current" />
         )}
-        <span className="drop-shadow-sm">
+        <span className="drop-shadow-md">
           {isLoading ? "Analyzing..." : isDecoded ? "Decoded" : "Decode Job Description"}
         </span>
         {!isLoading && !isDecoded && (
