@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, Loader2, ArrowRight, Upload, PlusCircle as PlusCircleIcon, AlertTriangle, CheckCircle2, XCircle, Sparkles, Copy, ShieldCheck, Edit3, Trash2, Plus, Download } from "lucide-react";
+import { FileText, Loader2, ArrowRight, Upload, PlusCircle as PlusCircleIcon, AlertTriangle, CheckCircle2, XCircle, Sparkles, Copy, ShieldCheck, Edit3, Trash2, Plus, Download, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { saveApplication, type TrackedApplication } from "@/hooks/useApplications";
@@ -591,18 +591,21 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
             </details>
 
             <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.02, y: -1 }}
+              whileTap={{ scale: 0.98, y: 0 }}
               onClick={handleCompare}
               disabled={isAnalyzing || resumeText.trim().length < 20}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold bg-accent text-accent-foreground hover:opacity-90 transition-all disabled:opacity-40"
+              className="flex items-center gap-2 px-7 py-3 rounded-full text-sm font-bold bg-accent text-accent-foreground hover:bg-muted transition-all disabled:opacity-40 specular-highlight premium-button-glow"
             >
+              <div className="shimmer-sweep" />
               {isAnalyzing ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" /> Analyzing...
+                  <Loader2 className="w-5 h-5 animate-spin mr-1" /> Analyzing...
                 </>
               ) : (
-                "Run Gap Analysis"
+                <>
+                  <BarChart3 className="w-4 h-4 mr-1" /> Run Gap Analysis
+                </>
               )}
             </motion.button>
           </motion.div>

@@ -134,12 +134,12 @@ export const ApplicationTracker = () => {
           <div className="ml-auto flex items-center gap-3">
             <span className="text-xs text-muted-foreground">{apps.length} tracked</span>
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.05, y: -1 }}
+              whileTap={{ scale: 0.95, y: 0 }}
               onClick={() => setShowAddForm(!showAddForm)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-primary text-primary-foreground hover:opacity-90 transition-all"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-primary text-primary-foreground hover:opacity-90 transition-all specular-highlight premium-button-glow shadow-sm"
             >
-              <Plus className="w-3.5 h-3.5" /> Add Manually
+              <Plus className="w-3.5 h-3.5" /> <span className="tracking-tight">Add Manually</span>
             </motion.button>
           </div>
         </div>
@@ -185,12 +185,12 @@ export const ApplicationTracker = () => {
                 </select>
                 <div className="flex gap-2">
                   <motion.button
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
+                    whileHover={{ scale: 1.02, y: -1 }}
+                    whileTap={{ scale: 0.98, y: 0 }}
                     onClick={handleManualAdd}
-                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-semibold bg-accent text-accent-foreground hover:opacity-90 transition-all"
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-bold bg-accent text-accent-foreground hover:bg-muted transition-all specular-highlight premium-button-glow"
                   >
-                    <Check className="w-3.5 h-3.5" /> Save
+                    <Check className="w-3.5 h-3.5" /> Save Application
                   </motion.button>
                   <button
                     onClick={() => setShowAddForm(false)}

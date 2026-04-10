@@ -149,9 +149,9 @@ const Index = () => {
           ) : (
             <button
               onClick={() => navigate("/auth")}
-              className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold bg-foreground text-background hover:opacity-90 transition-all"
+              className="flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-bold bg-foreground text-background hover:opacity-90 transition-all specular-highlight premium-button-glow"
             >
-              <LogIn className="w-3.5 h-3.5" />
+              <LogIn className="w-3.5 h-3.5 fill-current" />
               Sign in
             </button>
           )}
@@ -265,13 +265,13 @@ const Index = () => {
                       <button
                         onClick={handleSaveJd}
                         disabled={savingJd || !!savedJdId}
-                        className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all ${
+                        className={`inline-flex items-center gap-2 px-7 py-3 rounded-full text-sm font-bold transition-all ${
                           savedJdId
-                            ? "bg-[hsl(var(--skill-core))]/10 text-[hsl(var(--skill-core))] border border-[hsl(var(--skill-core))]/20"
-                            : "bg-foreground text-background hover:opacity-90"
-                        } disabled:opacity-50`}
+                            ? "bg-[hsl(var(--skill-core))]/10 text-[hsl(var(--skill-core))] border border-[hsl(var(--skill-core))]/20 shadow-inner"
+                            : "bg-foreground text-background hover:opacity-90 specular-highlight premium-button-glow"
+                        } disabled:opacity-50 active:scale-95`}
                       >
-                        {savingJd ? <Loader2 className="w-4 h-4 animate-spin" /> : savedJdId ? <BookmarkCheck className="w-4 h-4" /> : <Save className="w-4 h-4" />}
+                        {savingJd ? <Loader2 className="w-4 h-4 animate-spin" /> : savedJdId ? <BookmarkCheck className="w-4 h-4" /> : <Save className="w-4 h-4 fill-current" />}
                         {savedJdId ? "Saved" : "Save Analysis"}
                       </button>
                     </div>
@@ -280,21 +280,21 @@ const Index = () => {
                     <div className="flex justify-center">
                       <button
                         onClick={() => setPriorityFilter(!priorityFilter)}
-                        className={`flex items-center gap-2.5 px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 border ${
+                        className={`flex items-center gap-3 px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-500 border shadow-sm active:scale-95 ${
                           priorityFilter
-                            ? "bg-foreground text-background border-transparent dark:bg-primary/20 dark:text-primary dark:border-primary/40"
+                            ? "bg-foreground text-background border-transparent dark:bg-primary/20 dark:text-primary dark:border-primary/40 specular-highlight"
                             : "bg-transparent text-muted-foreground border-border/50 hover:text-foreground hover:border-border"
                         }`}
                       >
                         <Filter className="w-3.5 h-3.5" />
                         Priority Filter
-                        <span className={`inline-flex items-center w-9 h-5 rounded-full p-0.5 transition-colors duration-300 ${
+                        <span className={`inline-flex items-center w-10 h-5 rounded-full p-0.5 transition-colors duration-500 ${
                           priorityFilter ? "bg-emerald-500" : "bg-foreground/10 border border-border/50"
                         }`}>
                           <motion.span
-                            animate={{ x: priorityFilter ? 16 : 0 }}
+                            animate={{ x: priorityFilter ? 20 : 0 }}
                             transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                            className={`w-4 h-4 rounded-full ${priorityFilter ? "bg-white" : "bg-muted-foreground/40"} shadow-sm`}
+                            className={`w-4 h-4 rounded-full ${priorityFilter ? "bg-white shadow-lg" : "bg-muted-foreground/40"} shadow-sm`}
                           />
                         </span>
                       </button>
