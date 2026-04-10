@@ -122,7 +122,7 @@ const Auth = () => {
             <div className="space-y-3">
               <button
                 onClick={() => setMode("email")}
-                className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border border-border bg-background hover:bg-muted/50 transition-all text-sm font-bold text-foreground specular-highlight premium-button-glow"
+                className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl border border-border bg-background hover:bg-muted/50 transition-all text-sm font-bold text-foreground specular-highlight premium-button-glow"
               >
                 <Mail className="w-5 h-5 text-primary fill-current/10" />
                 Continue with Email
@@ -140,7 +140,7 @@ const Auth = () => {
               <button
                 onClick={handleGoogleSignIn}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-xl border border-border bg-background hover:bg-muted/50 transition-all text-sm font-bold text-foreground disabled:opacity-40 specular-highlight premium-button-glow shadow-sm"
+                className="w-full flex items-center justify-center gap-3 px-4 py-4 rounded-2xl border border-border bg-background hover:bg-muted/50 transition-all text-sm font-bold text-foreground disabled:opacity-40 specular-highlight premium-button-glow shadow-sm"
               >
                 {loading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -172,7 +172,7 @@ const Auth = () => {
               <button
                 onClick={handleEmailOtp}
                 disabled={loading}
-                className="w-full py-4 rounded-xl bg-primary text-primary-foreground font-bold text-sm tracking-tight hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2 specular-highlight premium-button-glow shadow-md shadow-primary/20"
+                className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-sm tracking-tight hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2 specular-highlight premium-button-glow shadow-md shadow-primary/20"
               >
                 {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                 Send Verification Code
@@ -201,7 +201,7 @@ const Auth = () => {
               <button
                 onClick={handleVerifyOtp}
                 disabled={loading}
-                className="w-full py-4 rounded-xl bg-primary text-primary-foreground font-bold text-sm tracking-tight hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2 specular-highlight premium-button-glow shadow-md shadow-primary/20"
+                className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-sm tracking-tight hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2 specular-highlight premium-button-glow shadow-md shadow-primary/20"
               >
                 {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                 Verify & Sign In

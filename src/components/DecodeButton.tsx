@@ -16,7 +16,7 @@ export const DecodeButton = ({ onClick, isLoading, disabled, isDecoded }: Decode
       onClick={onClick}
       disabled={disabled || isLoading}
       className={`
-        relative group rounded-full px-10 py-4 font-display font-bold text-base tracking-tight
+        relative group rounded-2xl px-12 py-5 font-display font-bold text-base tracking-tight
         ${isDecoded
           ? "bg-emerald-600 text-white shadow-emerald-500/20"
           : "bg-foreground text-background dark:bg-primary dark:text-primary-foreground specular-highlight premium-button-glow"

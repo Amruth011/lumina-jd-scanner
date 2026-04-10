@@ -595,7 +595,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
               whileTap={{ scale: 0.98, y: 0 }}
               onClick={handleCompare}
               disabled={isAnalyzing || resumeText.trim().length < 20}
-              className="flex items-center gap-2 px-7 py-3 rounded-full text-sm font-bold bg-accent text-accent-foreground hover:bg-muted transition-all disabled:opacity-40 specular-highlight premium-button-glow"
+              className="flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-2xl text-sm font-bold bg-accent text-accent-foreground hover:bg-muted transition-all disabled:opacity-40 specular-highlight premium-button-glow"
             >
               <div className="shimmer-sweep" />
               {isAnalyzing ? (

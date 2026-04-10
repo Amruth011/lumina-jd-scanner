@@ -137,7 +137,7 @@ export const ApplicationTracker = () => {
               whileHover={{ scale: 1.05, y: -1 }}
               whileTap={{ scale: 0.95, y: 0 }}
               onClick={() => setShowAddForm(!showAddForm)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-primary text-primary-foreground hover:opacity-90 transition-all specular-highlight premium-button-glow shadow-sm"
+              className="flex items-center gap-1.5 px-5 py-2.5 rounded-2xl text-xs font-bold bg-primary text-primary-foreground hover:opacity-90 transition-all specular-highlight premium-button-glow shadow-sm"
             >
               <Plus className="w-3.5 h-3.5" /> <span className="tracking-tight">Add Manually</span>
             </motion.button>
@@ -188,7 +188,7 @@ export const ApplicationTracker = () => {
                     whileHover={{ scale: 1.02, y: -1 }}
                     whileTap={{ scale: 0.98, y: 0 }}
                     onClick={handleManualAdd}
-                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-bold bg-accent text-accent-foreground hover:bg-muted transition-all specular-highlight premium-button-glow"
+                    className="flex-1 flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-xs font-bold bg-accent text-accent-foreground hover:bg-muted transition-all specular-highlight premium-button-glow"
                   >
                     <Check className="w-3.5 h-3.5" /> Save Application
                   </motion.button>

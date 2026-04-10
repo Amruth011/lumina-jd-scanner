@@ -149,7 +149,7 @@ const Index = () => {
           ) : (
             <button
               onClick={() => navigate("/auth")}
-              className="flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-bold bg-foreground text-background hover:opacity-90 transition-all specular-highlight premium-button-glow"
+              className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-bold bg-foreground text-background hover:opacity-90 transition-all specular-highlight premium-button-glow"
             >
               <LogIn className="w-3.5 h-3.5 fill-current" />
               Sign in
@@ -265,7 +265,7 @@ const Index = () => {
                       <button
                         onClick={handleSaveJd}
                         disabled={savingJd || !!savedJdId}
-                        className={`inline-flex items-center gap-2 px-7 py-3 rounded-full text-sm font-bold transition-all ${
+                        className={`inline-flex items-center gap-2.5 px-8 py-3.5 rounded-2xl text-sm font-bold transition-all ${
                           savedJdId
                             ? "bg-[hsl(var(--skill-core))]/10 text-[hsl(var(--skill-core))] border border-[hsl(var(--skill-core))]/20 shadow-inner"
                             : "bg-foreground text-background hover:opacity-90 specular-highlight premium-button-glow"
@@ -280,7 +280,7 @@ const Index = () => {
                     <div className="flex justify-center">
                       <button
                         onClick={() => setPriorityFilter(!priorityFilter)}
-                        className={`flex items-center gap-3 px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-500 border shadow-sm active:scale-95 ${
+                        className={`flex items-center gap-3 px-6 py-3 rounded-2xl text-sm font-bold transition-all duration-500 border shadow-sm active:scale-95 ${
                           priorityFilter
                             ? "bg-foreground text-background border-transparent dark:bg-primary/20 dark:text-primary dark:border-primary/40 specular-highlight"
                             : "bg-transparent text-muted-foreground border-border/50 hover:text-foreground hover:border-border"
