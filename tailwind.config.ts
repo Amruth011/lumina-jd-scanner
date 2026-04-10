@@ -16,6 +16,8 @@ export default {
       fontFamily: {
         sans: ["Inter", "sans-serif"],
         display: ["Outfit", "Space Grotesk", "sans-serif"],
+        heading: ["'Instrument Serif'", "serif"],
+        body: ["'Barlow'", "sans-serif"],
       },
       fontSize: {
         xs: ["0.875rem", { lineHeight: "1.25rem" }],
