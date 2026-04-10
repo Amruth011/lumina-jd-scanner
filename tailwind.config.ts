@@ -17,6 +17,10 @@ export default {
         sans: ["Inter", "sans-serif"],
         display: ["Outfit", "Space Grotesk", "sans-serif"],
       },
+      fontSize: {
+        xs: ["0.7875rem", { lineHeight: "1.1rem" }],
+        sm: ["0.91875rem", { lineHeight: "1.3rem" }],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

@@ -28,7 +28,7 @@ export const GlassTextArea = ({ value, onChange, isScanning }: GlassTextAreaProp
           {/* Line numbers gutter */}
           <div className="absolute left-0 top-0 bottom-0 w-12 bg-muted/30 border-r border-border/30 pointer-events-none flex flex-col items-end pt-6 pr-2 gap-[1px]">
             {Array.from({ length: 12 }).map((_, i) => (
-              <span key={i} className="text-[10px] font-mono text-muted-foreground/25 leading-[1.625rem]">
+              <span key={i} className="text-[10.5px] font-mono text-muted-foreground/45 leading-[1.625rem]">
                 {i + 1}
               </span>
             ))}
@@ -38,7 +38,7 @@ export const GlassTextArea = ({ value, onChange, isScanning }: GlassTextAreaProp
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder="Paste complete 'About the Job' for better results (contains JD, requirements, company details etc)..."
-            className="w-full h-72 bg-transparent rounded-2xl pl-14 pr-6 py-6 text-foreground placeholder:text-muted-foreground/40 resize-none focus:outline-none text-sm leading-relaxed transition-all font-mono"
+            className="w-full h-72 bg-transparent rounded-2xl pl-14 pr-6 py-6 text-foreground placeholder:text-muted-foreground/55 resize-none focus:outline-none text-sm leading-relaxed transition-all font-mono"
             disabled={isScanning}
           />
         </div>
@@ -48,7 +48,7 @@ export const GlassTextArea = ({ value, onChange, isScanning }: GlassTextAreaProp
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: value.length > 0 ? 1 : 0 }}
-        className="absolute bottom-3 right-4 text-[10px] text-muted-foreground/40 font-mono"
+        className="absolute bottom-3 right-4 text-[10.5px] text-muted-foreground/55 font-mono"
       >
         {value.length.toLocaleString()} chars
       </motion.div>
