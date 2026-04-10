@@ -360,13 +360,13 @@ const Index = () => {
       {/* ── Footer ── */}
       <footer className="relative z-10 border-t border-border/30 py-8 px-6 md:px-12">
         <div className="w-full mx-auto flex items-center justify-between px-4">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground/75">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground/90">
             <div className="w-5 h-5 rounded bg-foreground/5 flex items-center justify-center">
-              <Sparkles className="w-2.5 h-2.5 text-muted-foreground/55" />
+              <Sparkles className="w-3 h-3 text-muted-foreground/80" />
             </div>
             Lumina JD
           </div>
-          <p className="text-xs text-muted-foreground/55 font-mono">
+          <p className="text-xs text-muted-foreground/80 font-mono">
             Built for job seekers who refuse to be filtered out.
           </p>
         </div>

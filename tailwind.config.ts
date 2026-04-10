@@ -18,8 +18,8 @@ export default {
         display: ["Outfit", "Space Grotesk", "sans-serif"],
       },
       fontSize: {
-        xs: ["0.7875rem", { lineHeight: "1.1rem" }],
-        sm: ["0.91875rem", { lineHeight: "1.3rem" }],
+        xs: ["0.875rem", { lineHeight: "1.25rem" }],
+        sm: ["1rem", { lineHeight: "1.5rem" }],
       },
       colors: {
         border: "hsl(var(--border))",

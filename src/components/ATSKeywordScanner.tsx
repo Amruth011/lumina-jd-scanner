@@ -52,7 +52,7 @@ export const ATSKeywordScanner = ({ skills, aiInsight }: ATSKeywordScannerProps)
             <Brain className="w-4 h-4 text-muted-foreground" />
           </div>
           <div>
-            <h4 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 mb-1">AI Insight</h4>
+            <h4 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/85 mb-1">AI Insight</h4>
             <p className="text-sm text-foreground/80 leading-relaxed">{aiInsight}</p>
           </div>
         </div>
@@ -61,13 +61,13 @@ export const ATSKeywordScanner = ({ skills, aiInsight }: ATSKeywordScannerProps)
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-foreground/5 flex items-center justify-center">
-            <Search className="w-4 h-4 text-foreground/60" />
+            <Search className="w-4 h-4 text-foreground/85" />
           </div>
           <div>
             <h3 className="font-display font-semibold text-base text-foreground">
               ATS Keyword Scanner
             </h3>
-            <p className="text-[11px] text-muted-foreground/60">Tap keywords already in your resume</p>
+            <p className="text-sm text-muted-foreground/80">Tap keywords already in your resume</p>
           </div>
         </div>
 
@@ -127,13 +127,13 @@ export const ATSKeywordScanner = ({ skills, aiInsight }: ATSKeywordScannerProps)
 
       {/* Legend */}
       <div className="flex items-center gap-5 mt-5 pt-4 border-t border-border/30">
-        <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground/50">
+        <span className="flex items-center gap-1.5 text-xs text-muted-foreground/80">
           <Zap className="w-3 h-3 text-red-500/50" /> Critical
         </span>
-        <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground/50">
+        <span className="flex items-center gap-1.5 text-xs text-muted-foreground/80">
           <span className="w-1.5 h-1.5 rounded-full bg-amber-500/50" /> Important
         </span>
-        <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground/50">
+        <span className="flex items-center gap-1.5 text-xs text-muted-foreground/80">
           <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" /> Supporting
         </span>
       </div>
