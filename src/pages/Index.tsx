@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Sparkles, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { HowItWorksSection } from "@/components/HowItWorksSection";
 import { FeaturedSection } from "@/components/FeaturedSection";
