@@ -26,8 +26,8 @@ const services = [
 
 export const ServicesSection = () => {
   return (
-    <section className="bg-slate-50 py-28 md:py-40 px-6 overflow-hidden relative">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(59,130,246,0.04)_0%,_transparent_60%)] pointer-events-none" />
+    <section className="bg-transparent py-28 md:py-40 px-6 overflow-hidden relative">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(59,130,246,0.02)_0%,_transparent_60%)] pointer-events-none" />
       
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="flex justify-between items-end mb-12">

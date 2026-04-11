@@ -86,7 +86,7 @@ const Index = () => {
   const displayName = user?.email || user?.phone || "User";
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden grain-overlay dot-grid-bg">
+    <div className="min-h-screen bg-background dot-grid-bg grain-overlay relative overflow-hidden">
       {/* ── Header ── */}
       <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-3.5 md:px-12 border-b border-border/50 liquid-glass backdrop-blur-none bg-transparent">
         <motion.div

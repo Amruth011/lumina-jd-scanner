@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 export const PhilosophySection = () => {
   return (
-    <section className="bg-white py-28 md:py-40 px-6 overflow-hidden">
+    <section className="bg-transparent py-28 md:py-40 px-6 overflow-hidden">
       <div className="max-w-6xl mx-auto">
         <motion.h2
           initial={{ opacity: 0, y: 40 }}

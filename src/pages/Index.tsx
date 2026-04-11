@@ -8,9 +8,9 @@ import { ServicesSection } from "@/components/ServicesSection";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-white font-sans text-slate-800">
+    <div className="min-h-screen bg-background dot-grid-bg grain-overlay font-sans text-slate-800">
       {/* ── SECTION 1 — HERO ── */}
-      <section className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 overflow-hidden relative flex flex-col">
+      <section className="min-h-screen relative flex flex-col overflow-hidden">
         {/* Navbar */}
         <nav className="relative z-20 px-6 py-6 w-full">
           <div className="liquid-glass rounded-full pill max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
@@ -54,14 +54,10 @@ const Index = () => {
             transition={{ duration: 0.6 }}
             className="flex flex-col items-center"
           >
-            <span className="text-blue-600 text-sm font-medium tracking-widest uppercase mb-6 inline-block relative">
-              AI-Powered Career Intelligence
-              <motion.div
-                className="absolute inset-0 bg-blue-400/10 blur-xl -z-10"
-                animate={{ opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 3, repeat: Infinity }}
-              />
-            </span>
+            <div className="liquid-glass rounded-full px-4 py-1.5 flex items-center gap-2 mb-8 border border-slate-200/50 hover:bg-white/40 transition-colors cursor-default group">
+              <Sparkles size={14} className="text-blue-500 group-hover:rotate-12 transition-transform" />
+              <span className="text-slate-600 text-[10px] font-bold tracking-[0.2em] uppercase">The #1 ATS Optimization Engine</span>
+            </div>
             
             <h1 className="text-6xl md:text-8xl lg:text-9xl text-slate-900 tracking-tight font-serif">
               Land in the top <em className="italic" style={{ color: "#3B82F6" }}>0.1%.</em>

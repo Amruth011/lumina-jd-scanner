@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 export const FeaturedSection = () => {
   return (
-    <section className="bg-slate-50 pt-10 pb-24 px-6 overflow-hidden">
+    <section className="bg-transparent pt-10 pb-24 px-6 overflow-hidden">
       <div className="max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 60 }}
