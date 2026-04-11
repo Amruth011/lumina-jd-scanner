@@ -10,25 +10,34 @@
 @layer base {
   :root {
     /* OpenAI Minimalism - Paper Light Mode */
-    --background: 34 80% 98%; /* Slightly less saturated, very elegant ivory/paper */
-    --foreground: 222 47% 11%;
-    --card: 34 80% 98%;
-    --card-foreground: 222 47% 11%;
-    --popover: 34 80% 98%;
-    --popover-foreground: 222 47% 11%;
-    --primary: 222 47% 11%; /* Deep charcoal/slate as primary action color */
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222 47% 11%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222 47% 11%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222 47% 11%;
+    --background: 34 100% 98%;
+    --foreground: 240 5% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 5% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 5% 10%;
+
+    --primary: 240 5% 16%;
+    --primary-foreground: 34 100% 98%;
+
+    --accent: 240 5% 96%;
+    --accent-foreground: 240 5% 10%;
+
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 240 5% 10%;
+
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 5% 30%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 5% 90%;
+    --input: 240 5% 90%;
+    --ring: 240 5% 10%;
+
     --radius: 0.75rem;
 
     --skill-critical: 10 80% 50%;

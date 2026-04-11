@@ -16,9 +16,9 @@ const Index = () => {
         <nav className="relative z-20 px-6 py-6 w-full">
           <div className="liquid-glass rounded-full pill max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Sparkles size={24} color="#1E293B" />
+              <Sparkles size={24} color="#3B82F6" />
               <span className="text-slate-800 font-semibold text-lg">Lumina JD</span>
-              <span className="bg-slate-100 text-slate-600 text-[10px] px-2 py-0.5 rounded-full ml-2 font-bold uppercase tracking-wider">0.1% Strategist</span>
+              <span className="bg-blue-50 text-blue-600 text-xs px-2 py-0.5 rounded-full ml-2 font-medium">0.1% Strategist</span>
               
               <div className="hidden md:flex items-center gap-8 ml-8">
                 {["Features", "How It Works", "Tracker"].map((item) => (
@@ -40,7 +40,7 @@ const Index = () => {
               </Link>
               <Link
                 to="/home"
-                className="bg-slate-900 hover:bg-black rounded-full px-6 py-2 text-white text-sm font-medium transition-all shadow-lg shadow-slate-900/10"
+                className="bg-blue-600 hover:bg-blue-700 rounded-full px-6 py-2 text-white text-sm font-medium transition-all shadow-lg shadow-blue-500/20"
               >
                 Try Free
               </Link>
@@ -62,7 +62,7 @@ const Index = () => {
             </div>
             
             <h1 className="text-6xl md:text-8xl lg:text-9xl text-slate-900 tracking-tight font-serif">
-              Land in the top <em className="italic" style={{ color: "#1E293B" }}>0.1%.</em>
+              Land in the top <em className="italic" style={{ color: "#3B82F6" }}>0.1%.</em>
             </h1>
             
             <p className="text-slate-500 text-lg md:text-xl max-w-2xl mx-auto mt-6 leading-relaxed">
@@ -73,12 +73,12 @@ const Index = () => {
             <div className="flex gap-4 mt-10 justify-center flex-wrap">
               <Link
                 to="/home"
-                className="bg-slate-900 hover:bg-black text-white rounded-full px-8 py-4 text-base font-semibold flex items-center gap-2 transition-all shadow-xl shadow-slate-900/10 group"
+                className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-8 py-4 text-base font-semibold flex items-center gap-2 transition-all shadow-xl shadow-blue-500/25 group"
               >
                 Analyze My JD Free
                 <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
               </Link>
-              <button className="liquid-glass rounded-full px-8 py-4 text-slate-700 text-base font-medium transition-all hover:bg-white/40 border border-slate-200/50">
+              <button className="liquid-glass rounded-full px-8 py-4 text-slate-700 text-base font-medium transition-all hover:bg-white/80">
                 See a Sample Report
               </button>
             </div>
@@ -120,9 +120,9 @@ const Index = () => {
             Built for the modern career strategist
           </p>
           <div className="flex gap-8 text-slate-500 text-sm">
-            <a href="#" className="hover:text-slate-900 transition-colors">Privacy</a>
-            <a href="#" className="hover:text-slate-900 transition-colors">Terms</a>
-            <a href="#" className="hover:text-slate-900 transition-colors">Support</a>
+            <a href="#" className="hover:text-blue-600 transition-colors">Privacy</a>
+            <a href="#" className="hover:text-blue-600 transition-colors">Terms</a>
+            <a href="#" className="hover:text-blue-600 transition-colors">Support</a>
           </div>
         </div>
       </footer>

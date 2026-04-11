@@ -21,15 +21,15 @@ export const PhilosophySection = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="liquid-glass rounded-3xl p-10 aspect-[4/3] bg-gradient-to-br from-slate-50 to-slate-100/50 flex flex-col justify-between border border-slate-200/50"
+            className="liquid-glass rounded-3xl p-10 aspect-[4/3] bg-gradient-to-br from-blue-50 to-slate-100 flex flex-col justify-between"
           >
             <div className="flex flex-wrap gap-3">
               {[
-                { label: "Python", value: "100%", color: "bg-slate-700" },
-                { label: "MLOps", value: "80%", color: "bg-slate-500" },
-                { label: "Docker", value: "60%", color: "bg-slate-400" }
+                { label: "Python", value: "100%", color: "bg-blue-600" },
+                { label: "MLOps", value: "80%", color: "bg-emerald-500" },
+                { label: "Docker", value: "60%", color: "bg-purple-500" }
               ].map((tag, i) => (
-                <div key={i} className="flex items-center gap-2 bg-white/80 px-4 py-2 rounded-full text-xs font-bold text-slate-700 shadow-sm border border-slate-100">
+                <div key={i} className="flex items-center gap-2 bg-white/80 px-4 py-2 rounded-full text-xs font-semibold text-slate-700 shadow-sm">
                   <span className={`w-2 h-2 rounded-full ${tag.color}`} />
                   {tag.label}: {tag.value}
                 </div>
@@ -37,10 +37,10 @@ export const PhilosophySection = () => {
             </div>
 
             <div className="space-y-1">
-              <span className="text-slate-400 text-xs font-bold uppercase tracking-wider">Match Score</span>
+              <span className="text-slate-400 text-sm">Match Score</span>
               <div className="flex items-baseline gap-3">
-                <span className="text-6xl md:text-7xl font-bold text-slate-900">91%</span>
-                <span className="text-slate-400 text-sm font-medium italic">Top 0.1% Range</span>
+                <span className="text-6xl md:text-7xl font-bold text-blue-600">91%</span>
+                <span className="text-slate-400 text-sm font-medium">Top 0.1% Range</span>
               </div>
             </div>
           </motion.div>
