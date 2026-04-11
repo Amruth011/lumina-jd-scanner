@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import { Sparkles, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { GlobalNavbar } from "@/components/GlobalNavbar";
+import { ScannerView } from "@/components/ScannerView";
 import { HowItWorksSection } from "@/components/HowItWorksSection";
 import { FeaturedSection } from "@/components/FeaturedSection";
 import { PhilosophySection } from "@/components/PhilosophySection";
@@ -10,46 +11,12 @@ import { ServicesSection } from "@/components/ServicesSection";
 const Index = () => {
   return (
     <div className="min-h-screen bg-background dot-grid-bg grain-overlay font-sans text-slate-800">
+      <GlobalNavbar />
+
       {/* ── SECTION 1 — HERO ── */}
       <section className="min-h-screen relative flex flex-col overflow-hidden">
-        {/* Navbar */}
-        <nav className="relative z-20 px-6 py-6 w-full">
-          <div className="liquid-glass rounded-full pill max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Sparkles size={24} color="#3B82F6" />
-              <span className="text-slate-800 font-semibold text-lg">Lumina JD</span>
-              <span className="bg-blue-50 text-blue-600 text-xs px-2 py-0.5 rounded-full ml-2 font-medium">0.1% Strategist</span>
-              
-              <div className="hidden md:flex items-center gap-8 ml-8">
-                {["Features", "How It Works", "Tracker"].map((item) => (
-                  <a
-                    key={item}
-                    href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
-                    className="text-slate-600 hover:text-slate-900 text-sm font-medium transition-colors"
-                  >
-                    {item}
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-6">
-              <ThemeToggle />
-              <Link to="/auth" className="text-slate-600 hover:text-slate-900 text-sm font-medium transition-colors">
-                Sign In
-              </Link>
-              <Link
-                to="/home"
-                className="bg-blue-600 hover:bg-blue-700 rounded-full px-6 py-2 text-white text-sm font-medium transition-all shadow-lg shadow-blue-500/20"
-              >
-                Try Free
-              </Link>
-            </div>
-          </div>
-        </nav>
-
         {/* Hero Content */}
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-12 text-center -translate-y-[10%]">
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-12 text-center -translate-y-[5%] md:-translate-y-[10%]">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -71,13 +38,13 @@ const Index = () => {
 
             {/* Dual CTA */}
             <div className="flex gap-4 mt-10 justify-center flex-wrap">
-              <Link
-                to="/home"
+              <button
+                onClick={() => document.querySelector("#scanner")?.scrollIntoView({ behavior: "smooth" })}
                 className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-8 py-4 text-base font-semibold flex items-center gap-2 transition-all shadow-xl shadow-blue-500/25 group"
               >
                 Analyze My JD Free
                 <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
+              </button>
               <button className="liquid-glass rounded-full px-8 py-4 text-slate-700 text-base font-medium transition-all hover:bg-white/80">
                 See a Sample Report
               </button>
@@ -97,6 +64,19 @@ const Index = () => {
             </div>
           </motion.div>
         </div>
+      </section>
+
+      {/* ── SECTION 2 — SCANNER (The "Working" Part) ── */}
+      <section id="scanner" className="relative py-20 bg-white/30 backdrop-blur-sm border-y border-slate-100">
+        <div className="max-w-7xl mx-auto text-center mb-16 px-6">
+          <h2 className="text-4xl md:text-6xl text-slate-900 tracking-tight font-serif mb-6 leading-tight">
+            Ready to <em className="italic" style={{ color: "#3B82F6" }}>decode</em> your next role?
+          </h2>
+          <p className="text-slate-500 text-lg max-w-2xl mx-auto">
+            Our high-precision engine extracts the exact DNA of the job description to give you an unfair advantage.
+          </p>
+        </div>
+        <ScannerView />
       </section>
 
       {/* Sections */}
