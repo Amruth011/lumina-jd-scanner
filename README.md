@@ -42,13 +42,21 @@ Lumina JD isn't just a scanner; it's a **Career Strategist** designed for the mo
 
 ---
 
-## 🛠️ Tech Stack
+## 🧠 AI Intelligence & Semantic Logic
 
-* **Frontend:** React, TypeScript, Tailwind CSS
-* **Design System:** Shadcn UI, Framer Motion, iOS Glass UI
-* **AI Engine:** Gemini 2.0 Flash & Gemini 1.5 Pro
-* **Backend:** Supabase (PostgreSQL, Auth, Edge Functions)
-* **Deployment:** Vercel (CI/CD Pipeline)
+As an AI-first platform, Lumina JD employs advanced prompt engineering and data extraction patterns to ensure accuracy and strategic depth.
+
+### 🔬 High-Fidelity Extraction
+The engine uses **Gemini 3 Flash** with a system-level instruction set that mimics a Senior Technical Recruiter.
+- **Semantic OR-Logic:** Intelligently detects required alternatives (e.g., "React OR Angular") to prevent penalizing candidates who meet at least one criterion.
+- **Importance Weighting:** Calculates a dynamic `0-100` importance score for every skill based on JD context and frequency.
+- **Deterministic Scoring:** Implements a custom caching layer to ensure identical JDs return consistent, reproducible scores.
+
+### 🏆 The "Top 0.1%" Winning Strategy
+Beyond simple keyword matching, Lumina generates 3 unique, actionable steps for every role:
+1. **Gap Specificity:** Identifies the exact technical delta between your resume and the JD.
+2. **Actionable Justification:** Provides AI-written bullet points that quantify your experience relative to the missing skills.
+3. **Market Alignment:** Analyzes broader industry trends to suggest project-based bridge-building strategies.
 
 ---
 
