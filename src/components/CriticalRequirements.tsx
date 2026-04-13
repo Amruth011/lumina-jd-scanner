@@ -56,7 +56,7 @@ export const CriticalRequirements = ({ requirements }: CriticalRequirementsProps
           <h3 className="font-display font-bold text-lg md:text-xl text-foreground tracking-tight">
             Critical Requirements
           </h3>
-          <p className="text-[11px] text-muted-foreground font-medium">Must-have qualifications from the JD</p>
+          <p className="text-tag text-muted-foreground/60">Must-have qualifications from the JD</p>
         </div>
       </div>
 
@@ -75,7 +75,7 @@ export const CriticalRequirements = ({ requirements }: CriticalRequirementsProps
             >
               <div className="flex items-center gap-2.5">
                 <div className={`w-1.5 h-1.5 rounded-full ${config.iconColor} opacity-50`} />
-                <span className="font-display font-bold text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">{config.title}</span>
+                <span className="text-tag text-muted-foreground/40">{config.title}</span>
               </div>
               <div className="flex flex-wrap gap-2.5">
                 {section.items.map((item, i) => (
@@ -84,7 +84,7 @@ export const CriticalRequirements = ({ requirements }: CriticalRequirementsProps
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.03 * i, type: "spring", stiffness: 300 }}
-                    className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-[11px] font-bold border transition-all cursor-default shadow-sm ${config.chipStyle}`}
+                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-display font-bold border transition-all cursor-default shadow-sm ${config.chipStyle}`}
                   >
                     {item}
                   </motion.span>

@@ -22,10 +22,10 @@ export const SkillProgressBars = ({ skills, priorityMode }: SkillProgressBarsPro
       className="premium-card rounded-2xl p-6"
     >
       <div className="flex items-center justify-between mb-8">
-        <h3 className="font-display font-bold text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">
+        <h3 className="text-tag text-muted-foreground/60">
           Skills Breakdown
         </h3>
-        <span className="text-[10px] font-mono font-bold text-muted-foreground/40 uppercase tracking-tighter">{skills.length} skills total</span>
+        <span className="text-[11px] font-mono font-bold text-muted-foreground/30 uppercase tracking-widest">{skills.length} SKILLS TOTAL</span>
       </div>
       <div className="space-y-4 max-h-[340px] overflow-y-auto pr-2">
         {skills.map((skill, i) => {
@@ -38,10 +38,10 @@ export const SkillProgressBars = ({ skills, priorityMode }: SkillProgressBarsPro
               transition={{ delay: 0.05 * i, duration: 0.3 }}
             >
               <div className="flex justify-between items-center mb-2">
-                <span className="text-[13px] font-bold text-foreground/90 tracking-tight">{skill.skill}</span>
-                <span className="text-[10px] text-muted-foreground/70 flex items-center gap-2 font-mono font-bold">
+                <span className="text-base font-bold text-foreground/90 tracking-tight">{skill.skill}</span>
+                <span className="text-[11px] text-muted-foreground/70 flex items-center gap-2 font-mono font-bold">
                   {tier.label && (
-                    <span className={`text-[9px] font-bold uppercase tracking-[0.12em] px-2.5 py-0.5 rounded-full border shadow-sm ${tier.labelClass}`}>
+                    <span className={`text-[10px] font-bold uppercase tracking-[0.1em] px-3 py-0.5 rounded-full border shadow-sm ${tier.labelClass}`}>
                       {tier.label}
                     </span>
                   )}

@@ -52,7 +52,7 @@ export const ATSKeywordScanner = ({ skills, aiInsight }: ATSKeywordScannerProps)
             <Brain className="w-4 h-4 text-accent-blue" />
           </div>
           <div className="space-y-1.5">
-            <h4 className="font-display font-bold text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">AI Analyst Insight</h4>
+            <h4 className="text-tag text-muted-foreground/60 mb-1">AI Analyst Insight</h4>
             <p className="text-sm text-foreground/85 leading-relaxed font-medium">{aiInsight}</p>
           </div>
         </div>
@@ -67,7 +67,7 @@ export const ATSKeywordScanner = ({ skills, aiInsight }: ATSKeywordScannerProps)
             <h3 className="font-display font-bold text-lg md:text-xl text-foreground tracking-tight">
               ATS Keyword Scanner
             </h3>
-            <p className="text-[11px] text-muted-foreground font-medium">Verify keywords present in your resume</p>
+            <p className="text-tag text-muted-foreground/60">Verify keywords present in your resume</p>
           </div>
         </div>
 
@@ -105,7 +105,7 @@ export const ATSKeywordScanner = ({ skills, aiInsight }: ATSKeywordScannerProps)
               transition={{ delay: 0.02 * i, type: "spring", stiffness: 300 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => toggleKeyword(kw.word)}
-              className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-[11px] font-bold border transition-all duration-300 cursor-pointer shadow-sm ${
+              className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-display font-bold border transition-all duration-300 cursor-pointer shadow-sm ${
                 isChecked
                   ? "bg-accent-emerald/10 text-accent-emerald border-accent-emerald/40 shadow-accent-emerald/5"
                   : getImportanceStyles(kw.importance)
@@ -127,13 +127,13 @@ export const ATSKeywordScanner = ({ skills, aiInsight }: ATSKeywordScannerProps)
 
       {/* Legend */}
       <div className="flex items-center gap-6 mt-8 pt-5 border-t border-border/20">
-        <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/70">
+        <span className="flex items-center gap-2 text-tag text-muted-foreground/60">
           <div className="w-2.5 h-2.5 rounded-full bg-accent-red/30 flex items-center justify-center"><Zap className="w-1.5 h-1.5 text-accent-red" /></div> Critical
         </span>
-        <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/70">
+        <span className="flex items-center gap-2 text-tag text-muted-foreground/60">
           <div className="w-2 h-2 rounded-full bg-accent-amber/40" /> Important
         </span>
-        <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/70">
+        <span className="flex items-center gap-2 text-tag text-muted-foreground/60">
           <div className="w-2 h-2 rounded-full bg-muted-foreground/20" /> Supporting
         </span>
       </div>
