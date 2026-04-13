@@ -525,7 +525,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                    onChange={(e) => setIsAutoRunEnabled(e.target.checked)} 
                  />
                  <span className="text-xs font-semibold whitespace-nowrap text-foreground">Auto-Run Analysis</span>
-                 <div className={`w-8 h-4 rounded-full transition-colors relative border ${isAutoRunEnabled ? 'bg-accent-emerald border-accent-emerald/50' : 'bg-black/10 dark:bg-black/40 border-border'}`}>
+                 <div className={`w-8 h-4 rounded-full transition-colors relative border ${isAutoRunEnabled ? 'bg-accent-emerald border-accent-emerald/50' : 'bg-black/10 border-border'}`}>
                     <div className={`absolute w-3 h-3 shadow-sm rounded-full top-0.5 transition-transform ${isAutoRunEnabled ? 'translate-x-[18px] bg-white' : 'translate-x-0.5 bg-white/60'}`} />
                  </div>
                </label>
