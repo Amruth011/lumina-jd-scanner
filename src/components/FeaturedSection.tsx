@@ -80,7 +80,6 @@ export const FeaturedSection = () => {
             </motion.button>
           </div>
         </motion.div>
-        </motion.div>
       </div>
     </section>
   );

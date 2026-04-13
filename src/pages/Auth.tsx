@@ -4,7 +4,6 @@ import { Sparkles, Mail, Phone, Loader2, ArrowLeft, Moon, Sun } from "lucide-rea
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 type AuthMode = "select" | "email";
 type AuthStep = "input" | "otp";
@@ -80,10 +79,6 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 relative">
-      {/* Theme toggle */}
-      <div className="absolute top-4 right-4 z-50">
-        <ThemeToggle />
-      </div>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
