@@ -40,11 +40,12 @@
 
     --radius: 0.75rem;
 
-    --skill-critical: 10 80% 50%;
-    --skill-core: 200 80% 40%;
-    --skill-supporting: 150 60% 40%;
-    --skill-muted: 240 5% 46%;
-    --badge-gold: 45 100% 55%;
+    --accent-blue: 217 91% 60%;
+    --accent-blue-rgb: 59, 130, 246; /* Approximate for light mode */
+    --accent-emerald: 160 84% 39%;
+    --accent-violet: 262 83% 58%;
+    --accent-amber: 38 92% 50%;
+    --accent-red: 0 84% 60%;
 
     --sidebar-background: 34 100% 98%;
     --sidebar-foreground: 240 5% 10%;
@@ -77,20 +78,21 @@
     --secondary-foreground: 240 5% 96%;
 
     --muted: 240 5% 20%;
-    --muted-foreground: 240 5% 65%;
+    --muted-foreground: 240 5% 70%;
 
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 240 5% 26%;
-    --input: 240 5% 26%;
+    --border: 240 5% 30%;
+    --input: 240 5% 30%;
     --ring: 240 5% 94%;
 
-    --skill-critical: 10 70% 60%;
-    --skill-core: 200 70% 60%;
-    --skill-supporting: 150 50% 50%;
-    --skill-muted: 240 5% 65%;
-    --badge-gold: 45 100% 55%;
+    --accent-blue: 212 100% 78%;
+    --accent-blue-rgb: 56, 189, 248;
+    --accent-emerald: 160 84% 75%;
+    --accent-violet: 262 83% 80%;
+    --accent-amber: 38 92% 78%;
+    --accent-red: 0 70% 75%;
 
     --sidebar-background: 240 5% 10%;
     --sidebar-foreground: 240 5% 96%;
@@ -98,7 +100,7 @@
     --sidebar-primary-foreground: 240 5% 10%;
     --sidebar-accent: 240 5% 20%;
     --sidebar-accent-foreground: 240 5% 96%;
-    --sidebar-border: 240 5% 26%;
+    --sidebar-border: 240 5% 30%;
     --sidebar-ring: 240 5% 94%;
   }
 }

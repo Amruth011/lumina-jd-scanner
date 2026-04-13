@@ -85,13 +85,19 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
         y += size * 0.2;
       };
 
-      addText("Lumina JD - Strategy to Reach 100% Match", 18, true, [48, 86, 211]);
+      // Semantic Brand Colors for PDF
+      const colorBlue = [59, 130, 246]; // accent-blue
+      const colorEmerald = [16, 185, 129]; // accent-emerald
+      const colorRed = [239, 68, 68]; // accent-red
+      const colorViolet = [139, 92, 246]; // accent-violet
+
+      addText("Lumina JD - Strategy to Reach 100% Match", 18, true, colorBlue);
       y += 10;
       addText(`Current Match Score: ${result.overall_match}%`, 14, true);
-      addText("Target Score: 100%", 14, true, [16, 185, 129]);
+      addText("Target Score: 100%", 14, true, colorEmerald);
       y += 5;
 
-      addText("Critical Gaps to Fix", 14, true, [220, 38, 38]);
+      addText("Critical Gaps to Fix", 14, true, colorRed);
       if (result.deductions?.length) {
         result.deductions.forEach((d) => addText(`- (-${d.percent}%) ${d.reason}`, 12));
       } else {
@@ -99,7 +105,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
       }
       y += 5;
 
-      addText("Step-by-step Action Plan", 14, true, [16, 185, 129]);
+      addText("Step-by-step Action Plan", 14, true, colorEmerald);
       if (result.actionable_directives?.length) {
         result.actionable_directives.forEach((d) => {
           addText(`Action: ${d.action.toUpperCase()} - ${d.description}`, 12, true);
@@ -112,7 +118,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
       y += 5;
 
       if (result.tailored_resume_snippets) {
-        addText("Ready-to-Use Resume Snippets", 14, true, [147, 51, 234]);
+        addText("Ready-to-Use Resume Snippets", 14, true, colorViolet);
         addText("Professional Summary:", 12, true);
         addText(result.tailored_resume_snippets.professional_summary, 12);
         y += 3;
@@ -381,15 +387,15 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
   };
 
   const getBarColor = (verdict: string) => {
-    if (verdict === "strong") return "from-[hsl(160,64%,36%)] to-[hsl(155,55%,48%)]";
-    if (verdict === "partial") return "from-amber-500 to-yellow-400";
-    return "from-red-500 to-rose-400";
+    if (verdict === "strong") return "bg-accent-emerald shadow-[0_0_10px_rgba(16,185,129,0.2)]";
+    if (verdict === "partial") return "bg-accent-amber shadow-[0_0_10px_rgba(245,158,11,0.2)]";
+    return "bg-accent-red shadow-[0_0_10px_rgba(239,68,68,0.2)]";
   };
 
   const getVerdictIcon = (verdict: string) => {
-    if (verdict === "strong") return <CheckCircle2 className="w-3.5 h-3.5 text-[hsl(var(--skill-core))]" />;
-    if (verdict === "partial") return <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />;
-    return <XCircle className="w-3.5 h-3.5 text-destructive" />;
+    if (verdict === "strong") return <CheckCircle2 className="w-3.5 h-3.5 text-accent-emerald" />;
+    if (verdict === "partial") return <AlertTriangle className="w-3.5 h-3.5 text-accent-amber" />;
+    return <XCircle className="w-3.5 h-3.5 text-accent-red" />;
   };
 
   const getVerdictLabel = (verdict: string) => {
@@ -399,9 +405,9 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
   };
 
   const getMatchColor = (percent: number) => {
-    if (percent >= 80) return "text-[hsl(var(--skill-core))]";
-    if (percent >= 50) return "text-amber-500";
-    return "text-destructive";
+    if (percent >= 80) return "text-accent-emerald drop-shadow-[0_0_8px_rgba(16,185,129,0.3)]";
+    if (percent >= 50) return "text-accent-amber drop-shadow-[0_0_8px_rgba(245,158,11,0.3)]";
+    return "text-accent-red drop-shadow-[0_0_8px_rgba(239,68,68,0.3)]";
   };
 
   return (
@@ -424,10 +430,10 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
               className="bg-background border border-border rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl"
             >
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 rounded-full bg-amber-500/10">
-                  <AlertTriangle className="w-5 h-5 text-amber-500" />
+                <div className="p-2 rounded-full bg-accent-amber/10">
+                  <AlertTriangle className="w-5 h-5 text-accent-amber" />
                 </div>
-                <h3 className="font-display font-semibold text-lg text-foreground">Replace Current Resume?</h3>
+                <h3 className="font-display font-bold text-lg text-foreground tracking-tight">Replace Current Resume?</h3>
               </div>
               <p className="text-sm text-muted-foreground mb-6">
                 You have existing analysis results. Uploading a new resume will erase them. Would you like to save the current results first?
@@ -469,24 +475,27 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
       transition={{ duration: 0.5, delay: 0.3 }}
       className="glass-strong rounded-2xl p-6 glow-border"
     >
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-4">
           <motion.div
-            whileHover={{ rotate: 10 }}
-            className="p-2 rounded-lg bg-accent/10"
+            whileHover={{ rotate: 10, scale: 1.1 }}
+            className="w-11 h-11 rounded-xl bg-foreground/5 flex items-center justify-center border border-foreground/5"
           >
-            <FileText className="w-5 h-5 text-accent" />
+            <FileText className="w-5 h-5 text-foreground/70" />
           </motion.div>
-          <h3 className="font-display font-semibold text-lg text-foreground">
-            Resume Gap Analyzer
-          </h3>
+          <div>
+            <h3 className="font-display font-bold text-lg md:text-xl text-foreground tracking-tight">
+              Resume Gap Analyzer
+            </h3>
+            <p className="text-[11px] text-muted-foreground/70 font-medium">Evaluate your resume against the JD</p>
+          </div>
         </div>
         {!isOpen && (
           <motion.button
             whileHover={{ scale: 1.05, x: 3 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setIsOpen(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium bg-primary/15 text-primary border border-primary/30 hover:bg-primary/25 transition-all"
+            className="flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold bg-foreground text-background hover:opacity-90 transition-all liquid-glass-refraction shadow-lg shadow-foreground/5"
           >
             Compare Resume <ArrowRight className="w-3.5 h-3.5" />
           </motion.button>
@@ -502,10 +511,10 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
             transition={{ duration: 0.4, ease: "easeOut" }}
           >
             {/* Trust and Auto-run header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3 bg-secondary/30 p-3 rounded-lg border border-border">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3 bg-secondary/30 p-3 rounded-xl border border-border/50 backdrop-blur-sm">
                <div className="flex items-center gap-3">
-                 <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600 bg-emerald-500/10 px-2.5 py-1 rounded-full"><ShieldCheck className="w-3.5 h-3.5" /> 100% Secure & Private</span>
-                 <span className="flex items-center gap-1.5 text-xs font-semibold text-blue-600 bg-blue-500/10 px-2.5 py-1 rounded-full"><CheckCircle2 className="w-3.5 h-3.5" /> ATS-Optimized</span>
+                 <span className="flex items-center gap-1.5 text-[10px] font-bold text-accent-emerald bg-accent-emerald/10 px-2.5 py-1 rounded-full uppercase tracking-wider border border-accent-emerald/10"><ShieldCheck className="w-3.5 h-3.5" /> 100% Secure</span>
+                 <span className="flex items-center gap-1.5 text-[10px] font-bold text-accent-blue bg-accent-blue/10 px-2.5 py-1 rounded-full uppercase tracking-wider border border-accent-blue/10"><CheckCircle2 className="w-3.5 h-3.5" /> ATS-Optimized</span>
                </div>
                
                <label className="flex items-center gap-2 cursor-pointer bg-background px-3 py-1.5 rounded-md border border-border shadow-sm">
@@ -516,8 +525,8 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                    onChange={(e) => setIsAutoRunEnabled(e.target.checked)} 
                  />
                  <span className="text-xs font-semibold whitespace-nowrap text-foreground">Auto-Run Analysis</span>
-                 <div className={`w-8 h-4 rounded-full transition-colors relative border ${isAutoRunEnabled ? 'bg-emerald-500 border-emerald-500' : 'bg-black/20 dark:bg-black/50 border-border'}`}>
-                    <div className={`absolute w-3 h-3 shadow-sm rounded-full top-0.5 transition-transform ${isAutoRunEnabled ? 'translate-x-[18px] bg-white' : 'translate-x-0.5 bg-white dark:bg-zinc-400'}`} />
+                 <div className={`w-8 h-4 rounded-full transition-colors relative border ${isAutoRunEnabled ? 'bg-accent-emerald border-accent-emerald/50' : 'bg-black/10 dark:bg-black/40 border-border'}`}>
+                    <div className={`absolute w-3 h-3 shadow-sm rounded-full top-0.5 transition-transform ${isAutoRunEnabled ? 'translate-x-[18px] bg-white' : 'translate-x-0.5 bg-white/60'}`} />
                  </div>
                </label>
             </div>
@@ -678,43 +687,42 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.1 }}
-                className="mb-5 rounded-xl border-2 border-destructive/30 bg-destructive/5 p-5"
+                className="mb-8 rounded-2xl border border-accent-red/20 bg-accent-red/5 p-6 shadow-sm shadow-accent-red/5"
               >
-                <div className="flex items-center gap-2 mb-3">
-                  <motion.div
-                    animate={{ rotate: [0, -5, 5, 0] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="flex items-center justify-center w-7 h-7 rounded-full bg-destructive/15"
-                  >
-                    <AlertTriangle className="w-4 h-4 text-destructive" />
-                  </motion.div>
-                  <h4 className="text-sm font-bold text-destructive">
-                    Why Not 100%? — Fix These to Improve Your Score
-                  </h4>
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-accent-red/10 border border-accent-red/10">
+                    <AlertTriangle className="w-4 h-4 text-accent-red" />
+                  </div>
+                  <div className="space-y-0.5">
+                    <h4 className="font-display font-bold text-[10px] uppercase tracking-[0.2em] text-accent-red/60 leading-none">
+                      Why Not 100%?
+                    </h4>
+                    <p className="text-sm font-bold text-foreground tracking-tight">Fix These to Improve Your Score</p>
+                  </div>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {result.deductions.map((d, i) => (
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.05 * i }}
-                      className="flex flex-col bg-background/60 rounded-xl border border-destructive/20 overflow-hidden"
+                      className="flex flex-col bg-background/40 hover:bg-background/60 rounded-xl border border-border/40 overflow-hidden transition-all group"
                     >
-                      <div className="flex items-start gap-3 px-4 py-3">
-                        <span className="text-destructive font-bold text-sm whitespace-nowrap mt-0.5 min-w-[35px] bg-destructive/10 px-1.5 py-0.5 rounded text-center">-{d.percent}%</span>
+                      <div className="flex items-center gap-4 px-4 py-3.5">
+                        <span className="font-mono font-bold text-xs text-accent-red px-2 py-1 rounded bg-accent-red/10 border border-accent-red/10 min-w-[45px] text-center">-{d.percent}%</span>
                         <div className="flex-1">
-                           <span className="text-sm text-foreground leading-snug">{d.reason}</span>
+                           <span className="text-[13px] font-bold text-foreground/80 leading-tight tracking-tight">{d.reason}</span>
                         </div>
                         <motion.button
                            whileHover={{ scale: 1.05 }}
                            whileTap={{ scale: 0.95 }}
                            onClick={() => handleGenerateBullet(i, d.reason)}
                            disabled={generatingFor === i || !!generatedBullets[i]}
-                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-all disabled:opacity-50"
+                           className="flex items-center gap-2 px-4 py-2 rounded-xl text-[9px] font-display font-bold bg-accent-blue/10 text-accent-blue border border-accent-blue/20 hover:bg-accent-blue/20 transition-all disabled:opacity-50 uppercase tracking-[0.2em] shadow-sm"
                         >
                            {generatingFor === i ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-                           {generatingFor === i ? "Generating..." : generatedBullets[i] ? "Generated" : "Fix with AI"}
+                           {generatingFor === i ? "Working..." : generatedBullets[i] ? "Generated" : "Fix with AI"}
                         </motion.button>
                       </div>
 
@@ -784,12 +792,12 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                       {sm.skill}
                     </span>
                     <span className="text-xs text-muted-foreground flex items-center gap-1.5">
-                      <span className={`text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded ${
+                      <span className={`text-[9px] font-bold uppercase tracking-[0.15em] px-2 py-0.5 rounded-full border ${
                         sm.verdict === "strong"
-                          ? "text-[hsl(var(--skill-core))] bg-[hsl(var(--skill-core)/0.12)]"
+                          ? "text-accent-emerald bg-accent-emerald/10 border-accent-emerald/10"
                           : sm.verdict === "partial"
-                          ? "text-amber-600 bg-amber-500/10"
-                          : "text-destructive bg-destructive/10"
+                          ? "text-accent-amber bg-accent-amber/10 border-accent-amber/10"
+                          : "text-accent-red bg-accent-red/10 border-accent-red/10"
                       }`}>
                         {getVerdictLabel(sm.verdict)}
                       </span>
@@ -817,7 +825,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                className="mt-4 glass rounded-xl p-4 relative overflow-hidden"
              >
                <motion.div
-                 className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-accent rounded-full"
+                 className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-accent-blue to-accent-violet rounded-full opacity-60"
                />
                <p className="text-sm text-muted-foreground leading-relaxed pl-3">
                  {result.summary}
@@ -825,7 +833,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
              </motion.div>
            </div>{/* END PAGE 1 */}
            
-           <div ref={page2Ref} className="bg-background/50 border-t border-border p-5 sm:p-8">
+           <div ref={page2Ref} className="bg-background/20 border-t border-border/40 p-5 sm:p-8">
              {/* Actionable Directives */}
              {(result.actionable_directives && result.actionable_directives.length > 0) && (
                <motion.div
@@ -833,26 +841,33 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                  animate={{ opacity: 1 }}
                  className="mt-0"
                >
-                 <div className="flex items-center gap-2 mb-4">
-                    <Edit3 className="w-5 h-5 text-primary" />
-                    <h4 className="font-display font-semibold text-lg text-primary">Required Resume Changes</h4>
+                 <div className="flex items-center gap-3 mb-6">
+                    <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/10">
+                       <Edit3 className="w-4 h-4 text-primary" />
+                    </div>
+                    <div>
+                       <h4 className="font-display font-bold text-lg text-foreground tracking-tight leading-none">Required Changes</h4>
+                       <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70 mt-1 font-bold">Actionable Directives</p>
+                    </div>
                  </div>
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                    {result.actionable_directives.map((dir, idx) => {
                      let Icon = Edit3;
-                     let color = "text-amber-500 bg-amber-500/10 border-amber-500/20";
-                     if (dir.action === "add") { Icon = Plus; color = "text-[hsl(var(--skill-core))] bg-[hsl(var(--skill-core))/0.1] border-[hsl(var(--skill-core))/0.2]"; }
-                     if (dir.action === "delete") { Icon = Trash2; color = "text-destructive bg-destructive/10 border-destructive/20"; }
-                     if (dir.action === "replace") { Icon = Sparkles; color = "text-purple-500 bg-purple-500/10 border-purple-500/20"; }
+                     let color = "text-accent-amber bg-accent-amber/5 border-accent-amber/20";
+                     if (dir.action === "add") { Icon = Plus; color = "text-accent-emerald bg-accent-emerald/5 border-accent-emerald/20"; }
+                     if (dir.action === "delete") { Icon = Trash2; color = "text-accent-red bg-accent-red/5 border-accent-red/20"; }
+                     if (dir.action === "replace") { Icon = Sparkles; color = "text-accent-violet bg-accent-violet/5 border-accent-violet/20"; }
 
                      return (
-                       <div key={idx} className={`p-4 rounded-xl border ${color} relative`}>
-                         <div className="flex items-center gap-2 mb-2">
-                            <Icon className="w-4 h-4" />
-                            <span className="text-xs font-bold uppercase tracking-widest">{dir.action}</span>
+                       <div key={idx} className={`p-5 rounded-2xl border ${color} relative flex flex-col gap-3 shadow-sm`}>
+                         <div className="flex items-center gap-2">
+                            <div className="p-1 px-2 rounded-md bg-background/40">
+                               <Icon className="w-3.5 h-3.5" />
+                            </div>
+                            <span className="font-display font-bold text-[9px] uppercase tracking-[0.2em]">{dir.action}</span>
                          </div>
-                         <p className="text-sm font-semibold text-foreground/90 mb-1">{dir.description}</p>
-                         <p className="text-xs text-muted-foreground/80">{dir.reasoning}</p>
+                         <p className="text-[13.5px] font-bold text-foreground/90 leading-tight tracking-tight">{dir.description}</p>
+                         <p className="text-xs text-muted-foreground/70 font-medium leading-relaxed">{dir.reasoning}</p>
                        </div>
                      )
                    })}
@@ -865,32 +880,40 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="mt-8 border border-primary/20 bg-primary/5 rounded-xl p-5"
+                className="mt-10 border border-accent-blue/20 bg-accent-blue/5 rounded-2xl p-6 backdrop-blur-sm shadow-sm"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="font-display font-semibold text-primary flex items-center gap-2">
-                    <Sparkles className="w-4 h-4" /> Tailored For Your Resume
-                  </h4>
-                  <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Copy & Paste</span>
+                <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center gap-3">
+                     <div className="w-9 h-9 rounded-xl bg-accent-blue/10 flex items-center justify-center border border-accent-blue/10">
+                       <Sparkles className="w-4 h-4 text-accent-blue" />
+                     </div>
+                     <div>
+                       <h4 className="font-display font-bold text-lg text-accent-blue tracking-tight leading-none">
+                         Tailored Output
+                       </h4>
+                       <p className="text-[10px] uppercase tracking-[0.2em] text-accent-blue/40 mt-1 font-bold">Direct Application-Ready</p>
+                     </div>
+                  </div>
+                  <span className="text-[9px] text-muted-foreground/60 font-bold uppercase tracking-[0.2em]">Copy & Paste</span>
                 </div>
                 
-                <div className="space-y-4">
-                  <div className="relative group bg-background/60 p-4 rounded-lg border border-border shadow-sm">
-                    <h5 className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground mb-2">Professional Summary</h5>
-                    <p className="text-sm text-foreground/90 leading-relaxed font-medium">{result.tailored_resume_snippets.professional_summary}</p>
-                    <button onClick={() => handleCopyBullet(result.tailored_resume_snippets!.professional_summary)} className="absolute right-2 top-2 p-1.5 opacity-0 group-hover:opacity-100 bg-background rounded-md shadow-sm border border-border text-muted-foreground hover:text-foreground transition-all">
-                      <Copy className="w-3.5 h-3.5" />
-                    </button>
+                <div className="space-y-6">
+                  <div className="relative group bg-background/50 p-5 rounded-2xl border border-border/40 shadow-sm transition-all hover:bg-background/80">
+                     <h5 className="font-display font-bold text-[9px] uppercase tracking-[0.2em] text-muted-foreground/70 mb-3">Professional Summary</h5>
+                     <p className="text-sm text-foreground/80 leading-relaxed font-medium">{result.tailored_resume_snippets.professional_summary}</p>
+                     <button onClick={() => handleCopyBullet(result.tailored_resume_snippets!.professional_summary)} className="absolute right-3 top-3 p-2 opacity-0 group-hover:opacity-100 bg-background rounded-xl shadow-md border border-border text-muted-foreground hover:text-foreground transition-all">
+                       <Copy className="w-4 h-4" />
+                     </button>
                   </div>
 
-                  <div className="space-y-2">
-                    <h5 className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground ml-1">Experience Bullet Points</h5>
+                  <div className="space-y-3">
+                    <h5 className="font-display font-bold text-[9px] uppercase tracking-[0.2em] text-muted-foreground/60 ml-1">Experience Bullet Points</h5>
                     {result.tailored_resume_snippets.experience_bullets.map((bullet, idx) => (
-                      <div key={idx} className="relative group bg-background/60 p-3.5 rounded-lg border border-border shadow-sm pl-8">
-                        <span className="absolute left-3.5 top-5 w-1.5 h-1.5 rounded-full bg-primary" />
-                        <p className="text-sm text-foreground/90 leading-relaxed font-medium">{bullet}</p>
-                        <button onClick={() => handleCopyBullet(bullet)} className="absolute right-2 top-2 p-1.5 opacity-0 group-hover:opacity-100 bg-background rounded-md shadow-sm border border-border text-muted-foreground hover:text-foreground transition-all">
-                          <Copy className="w-3.5 h-3.5" />
+                      <div key={idx} className="relative group bg-background/50 p-4 rounded-xl border border-border/30 shadow-sm pl-10 transition-all hover:bg-background/80">
+                        <span className="absolute left-4 top-[1.125rem] w-2 h-2 rounded-full bg-accent-blue/40" />
+                        <p className="text-sm text-foreground/85 leading-relaxed font-medium">{bullet}</p>
+                        <button onClick={() => handleCopyBullet(bullet)} className="absolute right-3 top-3 p-2 opacity-0 group-hover:opacity-100 bg-background rounded-xl shadow-md border border-border text-muted-foreground hover:text-foreground transition-all">
+                          <Copy className="w-4 h-4" />
                         </button>
                       </div>
                     ))}

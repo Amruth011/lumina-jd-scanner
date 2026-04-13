@@ -4,21 +4,21 @@ import { FileText, Upload, Trophy } from "lucide-react";
 const steps = [
   {
     icon: FileText,
-    color: "#3B82F6",
+    accentClass: "text-accent-blue",
     number: "01",
     title: "Paste Your JD",
     body: "Drop in any job description. Gemini AI instantly decodes every requirement, categorizing skills by importance."
   },
   {
     icon: Upload,
-    color: "#10B981",
+    accentClass: "text-accent-emerald",
     number: "02",
     title: "Upload Your Resume",
     body: "We compare your profile against the JD and generate an Overall Match Score with a precise gap analysis."
   },
   {
     icon: Trophy,
-    color: "#8B5CF6",
+    accentClass: "text-accent-violet",
     number: "03",
     title: "Get Your Playbook",
     body: "Receive tailored projects, ATS-bypass keywords, and an enterprise strategy to become the obvious hire."
@@ -34,7 +34,7 @@ export const HowItWorksSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-blue-500 text-sm tracking-widest uppercase block mb-4"
+          className="text-accent-blue/40 text-[10px] font-bold tracking-[0.4em] uppercase block mb-6"
         >
           The Process
         </motion.span>
@@ -44,12 +44,12 @@ export const HowItWorksSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.1 }}
-          className="text-4xl md:text-6xl text-slate-900 leading-[1.1] tracking-tight font-serif mb-16"
+          className="text-4xl md:text-5xl lg:text-6xl text-foreground tracking-tighter font-serif mb-20 leading-[1.05]"
         >
-          From applicant to <em className="italic" style={{ color: "#3B82F6" }}>top candidate.</em>
+          From applicant to <em className="italic text-accent-blue drop-shadow-[0_0_10px_rgba(var(--accent-blue-rgb),0.3)] not-italic font-serif">top candidate.</em>
         </motion.h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
           {steps.map((step, index) => (
             <motion.div
               key={index}
@@ -57,14 +57,18 @@ export const HowItWorksSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.15 * (index + 1) }}
-              className="liquid-glass rounded-3xl p-8 relative"
+              className="premium-card rounded-3xl p-10 relative hover-glow bg-card/10 border-border/40"
             >
-              <step.icon size={32} style={{ color: step.color }} className="mb-6" />
-              <span className="text-blue-100 text-6xl font-bold absolute top-4 right-4 select-none -z-10">
+              <div className={`p-4 rounded-2xl w-fit mb-8 bg-card/20 border border-white/5 ${step.accentClass}`}>
+                <step.icon size={28} className="drop-shadow-[0_0_10px_currentColor]" />
+              </div>
+              
+              <span className="text-foreground/5 text-8xl font-display font-bold absolute top-0 right-4 select-none opacity-10 pointer-events-none">
                 {step.number}
               </span>
-              <h3 className="text-slate-800 text-xl font-semibold mb-2">{step.title}</h3>
-              <p className="text-slate-600 text-sm leading-relaxed">{step.body}</p>
+              
+              <h3 className="text-foreground font-display text-xl md:text-2xl font-bold mb-4 tracking-tight leading-none">{step.title}</h3>
+              <p className="text-muted-foreground/80 text-sm md:text-base leading-relaxed font-medium tracking-tight">{step.body}</p>
             </motion.div>
           ))}
         </div>

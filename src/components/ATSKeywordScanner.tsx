@@ -32,10 +32,10 @@ export const ATSKeywordScanner = ({ skills, aiInsight }: ATSKeywordScannerProps)
     ? Math.round((checkedKeywords.size / keywords.length) * 100)
     : 0;
 
-  const getImportanceColor = (importance: number) => {
-    if (importance > 80) return "border-red-500/20 bg-red-500/5 dark:bg-red-500/8";
-    if (importance > 50) return "border-amber-500/20 bg-amber-500/5 dark:bg-amber-500/8";
-    return "border-border/50 bg-muted/20";
+  const getImportanceStyles = (importance: number) => {
+    if (importance > 80) return "border-accent-red/10 bg-accent-red/5 text-muted-foreground/90";
+    if (importance > 50) return "border-accent-amber/10 bg-accent-amber/5 text-muted-foreground/90";
+    return "border-border/40 bg-muted/20 text-muted-foreground/70";
   };
 
   return (
@@ -47,46 +47,46 @@ export const ATSKeywordScanner = ({ skills, aiInsight }: ATSKeywordScannerProps)
     >
       {/* AI Insight */}
       {aiInsight && (
-        <div className="flex items-start gap-3 mb-6 pb-5 border-b border-border/30">
-          <div className="w-8 h-8 rounded-lg bg-foreground/5 flex items-center justify-center flex-shrink-0 mt-0.5">
-            <Brain className="w-4 h-4 text-muted-foreground" />
+        <div className="flex items-start gap-3 mb-8 pb-6 border-b border-border/30">
+          <div className="w-9 h-9 rounded-xl bg-accent-blue/5 flex items-center justify-center flex-shrink-0 mt-0.5 border border-accent-blue/10">
+            <Brain className="w-4 h-4 text-accent-blue" />
           </div>
-          <div>
-            <h4 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/85 mb-1">AI Insight</h4>
-            <p className="text-sm text-foreground/80 leading-relaxed">{aiInsight}</p>
+          <div className="space-y-1.5">
+            <h4 className="font-display font-bold text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">AI Analyst Insight</h4>
+            <p className="text-sm text-foreground/85 leading-relaxed font-medium">{aiInsight}</p>
           </div>
         </div>
       )}
 
-      <div className="flex items-center justify-between mb-5">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-foreground/5 flex items-center justify-center">
-            <Search className="w-4 h-4 text-foreground/85" />
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-4">
+          <div className="w-11 h-11 rounded-xl bg-foreground/5 flex items-center justify-center border border-foreground/5">
+            <Search className="w-5 h-5 text-foreground/70" />
           </div>
           <div>
-            <h3 className="font-display font-semibold text-base text-foreground">
+            <h3 className="font-display font-bold text-lg md:text-xl text-foreground tracking-tight">
               ATS Keyword Scanner
             </h3>
-            <p className="text-sm text-muted-foreground/80">Tap keywords already in your resume</p>
+            <p className="text-[11px] text-muted-foreground font-medium">Verify keywords present in your resume</p>
           </div>
         </div>
 
         {/* Coverage */}
-        <div className="flex items-center gap-3 min-w-[140px]">
+        <div className="flex items-center gap-4 min-w-[160px]">
           <div className="flex-1 h-1.5 rounded-full bg-muted/40 overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${coveragePercent}%` }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-              className={`h-full rounded-full ${
-                coveragePercent >= 80 ? "bg-emerald-500" :
-                coveragePercent >= 50 ? "bg-amber-500" : "bg-red-500"
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className={`h-full rounded-full shadow-[0_0_10px_rgba(0,0,0,0.05)] ${
+                coveragePercent >= 80 ? "bg-accent-emerald" :
+                coveragePercent >= 50 ? "bg-accent-amber" : "bg-accent-red"
               }`}
             />
           </div>
-          <span className={`text-sm font-bold font-mono whitespace-nowrap ${
-            coveragePercent >= 80 ? "text-emerald-500" :
-            coveragePercent >= 50 ? "text-amber-500" : "text-red-500"
+          <span className={`text-[13px] font-bold font-mono tracking-tighter whitespace-nowrap px-2 py-0.5 rounded-md ${
+            coveragePercent >= 80 ? "bg-accent-emerald/10 text-accent-emerald" :
+            coveragePercent >= 50 ? "bg-accent-amber/10 text-accent-amber" : "bg-accent-red/10 text-accent-red"
           }`}>
             {coveragePercent}%
           </span>
@@ -94,7 +94,7 @@ export const ATSKeywordScanner = ({ skills, aiInsight }: ATSKeywordScannerProps)
       </div>
 
       {/* Keyword Chips */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2.5">
         {keywords.map((kw, i) => {
           const isChecked = checkedKeywords.has(kw.word);
           return (
@@ -105,20 +105,20 @@ export const ATSKeywordScanner = ({ skills, aiInsight }: ATSKeywordScannerProps)
               transition={{ delay: 0.02 * i, type: "spring", stiffness: 300 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => toggleKeyword(kw.word)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 cursor-pointer ${
+              className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-[11px] font-bold border transition-all duration-300 cursor-pointer shadow-sm ${
                 isChecked
-                  ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
-                  : getImportanceColor(kw.importance)
+                  ? "bg-accent-emerald/10 text-accent-emerald border-accent-emerald/40 shadow-accent-emerald/5"
+                  : getImportanceStyles(kw.importance)
               }`}
             >
               {isChecked ? (
-                <CheckCircle2 className="w-3 h-3" />
+                <CheckCircle2 className="w-3.5 h-3.5" />
               ) : (
-                <XCircle className="w-3 h-3 text-muted-foreground/40" />
+                <XCircle className="w-3.5 h-3.5 opacity-20" />
               )}
               {kw.word}
               {kw.importance > 80 && !isChecked && (
-                <Zap className="w-3 h-3 text-red-500/60 ml-0.5" />
+                <Zap className="w-3 h-3 text-accent-red/60 ml-0.5" />
               )}
             </motion.button>
           );
@@ -126,15 +126,15 @@ export const ATSKeywordScanner = ({ skills, aiInsight }: ATSKeywordScannerProps)
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-5 mt-5 pt-4 border-t border-border/30">
-        <span className="flex items-center gap-1.5 text-xs text-muted-foreground/80">
-          <Zap className="w-3 h-3 text-red-500/50" /> Critical
+      <div className="flex items-center gap-6 mt-8 pt-5 border-t border-border/20">
+        <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/70">
+          <div className="w-2.5 h-2.5 rounded-full bg-accent-red/30 flex items-center justify-center"><Zap className="w-1.5 h-1.5 text-accent-red" /></div> Critical
         </span>
-        <span className="flex items-center gap-1.5 text-xs text-muted-foreground/80">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-500/50" /> Important
+        <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/70">
+          <div className="w-2 h-2 rounded-full bg-accent-amber/40" /> Important
         </span>
-        <span className="flex items-center gap-1.5 text-xs text-muted-foreground/80">
-          <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" /> Supporting
+        <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/70">
+          <div className="w-2 h-2 rounded-full bg-muted-foreground/20" /> Supporting
         </span>
       </div>
     </motion.div>

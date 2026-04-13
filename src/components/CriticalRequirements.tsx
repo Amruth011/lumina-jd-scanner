@@ -10,26 +10,26 @@ const sectionConfig = {
   education: {
     icon: GraduationCap,
     title: "Education",
-    chipStyle: "bg-amber-500/8 text-amber-600 dark:text-amber-400 border-amber-500/20",
-    iconColor: "text-amber-500",
+    chipStyle: "bg-accent-amber/10 text-accent-amber border-accent-amber/20",
+    iconColor: "text-accent-amber",
   },
   experience: {
     icon: Clock,
     title: "Experience",
-    chipStyle: "bg-blue-500/8 text-blue-600 dark:text-blue-400 border-blue-500/20",
-    iconColor: "text-blue-500",
+    chipStyle: "bg-accent-blue/10 text-accent-blue border-accent-blue/20",
+    iconColor: "text-accent-blue",
   },
   soft_skills: {
     icon: Users,
     title: "Soft Skills",
-    chipStyle: "bg-emerald-500/8 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
-    iconColor: "text-emerald-500",
+    chipStyle: "bg-accent-emerald/10 text-accent-emerald border-accent-emerald/20",
+    iconColor: "text-accent-emerald",
   },
   agreements: {
     icon: AlertTriangle,
     title: "Agreements & Conditions",
-    chipStyle: "bg-red-500/8 text-red-600 dark:text-red-400 border-red-500/20",
-    iconColor: "text-red-500",
+    chipStyle: "bg-accent-red/10 text-accent-red border-accent-red/20",
+    iconColor: "text-accent-red",
   },
 };
 
@@ -48,19 +48,19 @@ export const CriticalRequirements = ({ requirements }: CriticalRequirementsProps
       transition={{ duration: 0.5, delay: 0.2 }}
       className="premium-card rounded-2xl p-6"
     >
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-9 h-9 rounded-lg bg-amber-500/10 flex items-center justify-center">
-          <Zap className="w-4 h-4 text-amber-500" />
+      <div className="flex items-center gap-4 mb-8">
+        <div className="w-11 h-11 rounded-xl bg-accent-amber/10 flex items-center justify-center border border-accent-amber/10 shadow-sm shadow-accent-amber/5">
+          <Zap className="w-5 h-5 text-accent-amber" />
         </div>
         <div>
-          <h3 className="font-display font-semibold text-base text-foreground">
+          <h3 className="font-display font-bold text-lg md:text-xl text-foreground tracking-tight">
             Critical Requirements
           </h3>
-          <p className="text-[11px] text-muted-foreground/60">Must-have qualifications from the JD</p>
+          <p className="text-[11px] text-muted-foreground font-medium">Must-have qualifications from the JD</p>
         </div>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-8">
         {sections.map((section, sIndex) => {
           const config = sectionConfig[section.key];
           if (section.items.length === 0) return null;
@@ -71,19 +71,20 @@ export const CriticalRequirements = ({ requirements }: CriticalRequirementsProps
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.08 * sIndex, duration: 0.3 }}
+              className="space-y-3"
             >
-              <div className="flex items-center gap-2 mb-3">
-                <config.icon className={`w-3.5 h-3.5 ${config.iconColor}`} />
-                <span className="text-xs font-semibold text-foreground uppercase tracking-wider">{config.title}</span>
+              <div className="flex items-center gap-2.5">
+                <div className={`w-1.5 h-1.5 rounded-full ${config.iconColor} opacity-50`} />
+                <span className="font-display font-bold text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">{config.title}</span>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2.5">
                 {section.items.map((item, i) => (
                   <motion.span
                     key={item}
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.03 * i, type: "spring", stiffness: 300 }}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all cursor-default ${config.chipStyle}`}
+                    className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-[11px] font-bold border transition-all cursor-default shadow-sm ${config.chipStyle}`}
                   >
                     {item}
                   </motion.span>

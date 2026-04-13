@@ -16,20 +16,20 @@ export const GlobalNavbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-6 w-full pointer-events-none">
-      <div className="liquid-glass rounded-full pill max-w-6xl mx-auto px-6 py-3 flex items-center justify-between pointer-events-auto shadow-2xl shadow-black/5">
+      <div className="premium-card rounded-full pill max-w-6xl mx-auto px-6 py-3 flex items-center justify-between pointer-events-auto border-border/20 shadow-2xl shadow-black/10">
         <div className="flex items-center gap-2">
-          <Link to="/" className="flex items-center gap-2">
-            <Sparkles size={24} color="#3B82F6" />
-            <span className="text-slate-800 font-semibold text-lg">Lumina JD</span>
+          <Link to="/" className="flex items-center gap-2 group">
+            <Sparkles size={24} className="text-accent-blue drop-shadow-[0_0_8px_rgba(var(--accent-blue-rgb),0.5)] transition-transform group-hover:rotate-12" />
+            <span className="text-foreground font-display font-bold text-xl tracking-tighter">Lumina JD</span>
           </Link>
-          <span className="bg-blue-50 text-blue-600 text-[10px] px-2 py-0.5 rounded-full ml-2 font-bold uppercase tracking-wider">0.1% Strategist</span>
+          <span className="bg-accent-blue/10 text-accent-blue text-[10px] px-3 py-0.5 rounded-full ml-4 font-bold uppercase tracking-widest border border-accent-blue/20 shadow-sm shadow-accent-blue/5">0.1% Strategist</span>
           
           <div className="hidden md:flex items-center gap-8 ml-8">
             {navLinks.map((item) => (
               <a
                 key={item.name}
                 href={item.href}
-                className="text-slate-600 hover:text-slate-900 text-sm font-medium transition-colors"
+                className="text-muted-foreground hover:text-foreground text-sm font-semibold transition-colors tracking-tight"
                 onClick={(e) => {
                   if (item.href.startsWith("#")) {
                     e.preventDefault();
@@ -48,12 +48,12 @@ export const GlobalNavbar = () => {
           
           {user ? (
             <div className="flex items-center gap-4">
-              <span className="hidden lg:block text-xs text-slate-500 font-medium truncate max-w-[120px]">
+              <span className="hidden lg:block text-[10px] text-muted-foreground/60 font-bold uppercase tracking-wider truncate max-w-[120px]">
                 {user.email}
               </span>
               <button
                 onClick={signOut}
-                className="text-slate-600 hover:text-slate-900 text-sm font-medium transition-all p-2 hover:bg-slate-100 rounded-full"
+                className="text-muted-foreground hover:text-foreground text-sm transition-all p-2 hover:bg-muted/50 rounded-full"
                 title="Sign Out"
               >
                 <LogOut size={18} />
@@ -62,7 +62,7 @@ export const GlobalNavbar = () => {
           ) : (
             <Link 
               to="/auth" 
-              className="text-slate-600 hover:text-slate-900 text-sm font-medium transition-colors hidden sm:block"
+              className="text-muted-foreground hover:text-foreground text-sm font-semibold transition-colors hidden sm:block tracking-tight"
             >
               Sign In
             </Link>
@@ -76,7 +76,7 @@ export const GlobalNavbar = () => {
                 document.querySelector("#scanner")?.scrollIntoView({ behavior: "smooth" });
               }
             }}
-            className="bg-blue-600 hover:bg-blue-700 rounded-full px-6 py-2 text-white text-sm font-medium transition-all shadow-lg shadow-blue-500/20 active:scale-95 whitespace-nowrap"
+            className="bg-accent-blue hover:opacity-90 rounded-full px-6 py-2.5 text-white text-sm font-bold transition-all shadow-lg shadow-accent-blue/20 active:scale-95 whitespace-nowrap"
           >
             {user ? "Scan JD" : "Try Free"}
           </Link>

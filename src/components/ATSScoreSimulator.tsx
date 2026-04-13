@@ -13,14 +13,13 @@ export const ATSScoreSimulator = ({ result }: ATSScoreSimulatorProps) => {
     const totalCount = result.skill_matches.length;
     const keywordRate = totalCount > 0 ? Math.round((strongCount / totalCount) * 100) : 0;
 
-    // section completeness: based on whether snippets and directives exist
     const hasSnippets = !!result.tailored_resume_snippets;
     const hasDirectives = !!result.actionable_directives?.length;
     const sectionScore = Math.round(
       (result.overall_match * 0.5) + (keywordRate * 0.3) + ((hasSnippets ? 10 : 0) + (hasDirectives ? 10 : 0))
     );
 
-    const formattingScore = 85; // assume decent formatting from uploaded file
+    const formattingScore = 85; 
 
     const overallScore = Math.round(
       (result.overall_match * 0.6) + (keywordRate * 0.25) + (formattingScore * 0.15)
@@ -58,70 +57,75 @@ export const ATSScoreSimulator = ({ result }: ATSScoreSimulatorProps) => {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.2 }}
-      className={`rounded-xl border-2 p-5 liquid-glass backdrop-blur-none ${
+      className={`rounded-2xl border p-6 glass backdrop-blur-md relative overflow-hidden ${
         verdict.pass
-          ? "border-emerald-500/30 bg-emerald-500/5"
-          : "border-red-500/30 bg-red-500/5"
+          ? "border-accent-emerald/20 bg-accent-emerald/5"
+          : "border-accent-red/20 bg-accent-red/5"
       }`}
     >
+      <div className={`absolute left-0 top-0 bottom-0 w-1 ${verdict.pass ? 'bg-accent-emerald/40' : 'bg-accent-red/40'}`} />
+      
       {/* Header */}
-      <div className="flex items-center gap-3 mb-4">
+      <div className="flex items-center gap-6 mb-10">
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: "spring", stiffness: 300, delay: 0.3 }}
-          className={`w-12 h-12 rounded-full flex items-center justify-center ${
-            verdict.pass ? "bg-emerald-500/20" : "bg-red-500/20"
+          className={`w-16 h-16 rounded-2xl flex items-center justify-center border shadow-sm ${
+            verdict.pass ? "bg-accent-emerald/10 border-accent-emerald/20" : "bg-accent-red/10 border-accent-red/20"
           }`}
         >
           {verdict.pass ? (
-            <ShieldCheck className="w-6 h-6 text-emerald-500" />
+            <ShieldCheck className="w-8 h-8 text-accent-emerald" />
           ) : (
-            <ShieldX className="w-6 h-6 text-red-500" />
+            <ShieldX className="w-8 h-8 text-accent-red" />
           )}
         </motion.div>
         <div>
-          <h4 className={`font-display font-bold text-lg ${
-            verdict.pass ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
+          <h4 className={`font-display font-bold text-lg md:text-xl tracking-tight leading-none mb-2 ${
+            verdict.pass ? "text-accent-emerald" : "text-accent-red"
           }`}>
             ATS Verdict: {verdict.pass ? "LIKELY PASS" : "LIKELY FAIL"}
           </h4>
-          <p className="text-xs text-muted-foreground">
-            Simulated against Workday, Greenhouse & Lever ATS algorithms
+          <p className="text-[11px] text-muted-foreground/70 font-mono font-bold uppercase tracking-tighter">
+            Enterprise Grade Simulation Core
           </p>
         </div>
-        <motion.span
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.5, type: "spring" }}
-          className={`ml-auto text-3xl font-display font-bold ${
-            verdict.pass ? "text-emerald-500" : "text-red-500"
-          }`}
-        >
-          {verdict.score}%
-        </motion.span>
+        <div className="ml-auto text-right">
+          <motion.span
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className={`text-5xl md:text-6xl font-display font-bold tracking-tighter block leading-none mb-1.5 ${
+              verdict.pass ? "text-accent-emerald" : "text-accent-red"
+            }`}
+          >
+            {verdict.score}%
+          </motion.span>
+          <span className="font-display font-bold text-[10px] text-muted-foreground/60 uppercase tracking-[0.25em] block leading-none">Confidence Score</span>
+        </div>
       </div>
 
       {/* Score Breakdown */}
-      <div className="grid grid-cols-3 gap-3 mb-4">
+      <div className="grid grid-cols-3 gap-6 mb-10">
         {[
           { label: "Keyword Match", value: verdict.keyword_match_rate },
           { label: "Section Score", value: verdict.section_completeness },
           { label: "Format Score", value: verdict.formatting_score },
         ].map((metric, i) => (
-          <div key={metric.label} className="bg-background/60 rounded-lg p-3 border border-border text-center">
+          <div key={metric.label} className="bg-background/40 backdrop-blur-md rounded-2xl p-6 border border-border/40 text-center shadow-inner">
             <motion.span
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 + i * 0.1 }}
-              className={`text-xl font-bold block ${
-                metric.value >= 70 ? "text-emerald-500" :
-                metric.value >= 50 ? "text-amber-500" : "text-red-500"
+              className={`text-3xl md:text-4xl font-display font-bold block tracking-tighter leading-none mb-3 ${
+                metric.value >= 70 ? "text-accent-emerald/80" :
+                metric.value >= 50 ? "text-accent-amber/80" : "text-accent-red/80"
               }`}
             >
               {metric.value}%
             </motion.span>
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
+            <span className="font-display font-bold text-[10px] text-muted-foreground/60 uppercase tracking-[0.25em] block leading-none">
               {metric.label}
             </span>
           </div>
@@ -129,17 +133,19 @@ export const ATSScoreSimulator = ({ result }: ATSScoreSimulatorProps) => {
       </div>
 
       {/* Reasons & Tips */}
-      <div className="space-y-2">
-        {verdict.reasons.map((r, i) => (
-          <div key={i} className="flex items-start gap-2 text-sm text-foreground/80">
-            <ChevronRight className="w-3.5 h-3.5 mt-0.5 text-muted-foreground shrink-0" />
-            {r}
-          </div>
-        ))}
+      <div className="space-y-4 pl-1">
+        <div className="flex flex-col gap-3.5">
+          {verdict.reasons.map((r, i) => (
+            <div key={i} className="flex items-start gap-3.5 text-[14.5px] text-foreground/85 font-medium leading-[1.6]">
+              <ChevronRight className="w-4 h-4 mt-1.5 text-muted-foreground/40 shrink-0" />
+              <span>{r}</span>
+            </div>
+          ))}
+        </div>
         {!verdict.pass && verdict.tips.map((tip, i) => (
-          <div key={`tip-${i}`} className="flex items-start gap-2 text-sm text-amber-600 dark:text-amber-400">
-            <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-            {tip}
+          <div key={`tip-${i}`} className="flex items-start gap-4 p-5 rounded-2xl bg-accent-amber/5 border border-accent-amber/10 text-[13.5px] text-accent-amber font-bold leading-relaxed shadow-sm shadow-accent-amber/5">
+            <AlertTriangle className="w-4 h-4 mt-1 shrink-0 text-accent-amber/60" />
+            <span>{tip}</span>
           </div>
         ))}
       </div>

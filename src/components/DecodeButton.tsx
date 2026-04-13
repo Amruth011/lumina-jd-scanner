@@ -18,7 +18,7 @@ export const DecodeButton = ({ onClick, isLoading, disabled, isDecoded }: Decode
       className={`
         relative group rounded-2xl px-12 py-5 font-display font-bold text-base tracking-tight
         ${isDecoded
-          ? "bg-emerald-600 text-white shadow-emerald-500/20 shadow-lg"
+          ? "bg-accent-emerald text-white shadow-xl shadow-accent-emerald/20 border border-accent-emerald/30"
           : "bg-foreground text-background dark:bg-primary dark:text-primary-foreground liquid-glass-refraction premium-button-glow"
         }
         transition-all duration-500 disabled:opacity-30 disabled:cursor-not-allowed

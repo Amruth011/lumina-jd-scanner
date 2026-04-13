@@ -15,8 +15,9 @@ export default {
     extend: {
       fontFamily: {
         sans: ["Inter", "sans-serif"],
-        display: ["Outfit", "Space Grotesk", "sans-serif"],
+        display: ["Outfit", "sans-serif"],
         serif: ["Instrument Serif", "serif"],
+        mono: ["JetBrains Mono", "monospace"],
       },
       fontSize: {
         xs: ["0.875rem", { lineHeight: "1.25rem" }],
@@ -28,9 +29,13 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        critical: "#3B82F6",
-        core: "#10B981",
-        support: "#8B5CF6",
+        accent: {
+          blue: "hsl(var(--accent-blue))",
+          emerald: "hsl(var(--accent-emerald))",
+          violet: "hsl(var(--accent-violet))",
+          amber: "hsl(var(--accent-amber))",
+          red: "hsl(var(--accent-red))",
+        },
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -47,7 +52,7 @@ export default {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
         },
-        accent: {
+        accent_alt: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },

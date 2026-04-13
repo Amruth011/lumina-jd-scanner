@@ -151,33 +151,36 @@ export const ResumeBuilder = ({ resumeText, skills, deductions, jobTitle, gapRes
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.35 }}
-      className="glass-strong rounded-2xl p-6 glow-border"
+      className="premium-card rounded-2xl p-6 relative overflow-hidden"
     >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <motion.div whileHover={{ rotate: 10 }} className="p-2 rounded-lg bg-emerald-500/10">
-            <Wand2 className="w-5 h-5 text-emerald-500" />
-          </motion.div>
+      <div className="flex items-center justify-between flex-wrap gap-8 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-accent-emerald/10 flex items-center justify-center border border-accent-emerald/10 shadow-sm shadow-accent-emerald/5">
+            <Wand2 className="w-6 h-6 text-accent-emerald" />
+          </div>
           <div>
-            <h3 className="font-display font-semibold text-lg text-foreground">AI Resume Generator</h3>
-            <p className="text-xs text-muted-foreground">AI rewrites your resume with JD keywords — preserves your real experience</p>
+            <h3 className="font-display font-bold text-lg md:text-xl text-foreground tracking-tight leading-none mb-1.5">
+              AI Strategy Engine
+            </h3>
+            <p className="text-[11px] text-muted-foreground font-medium font-sans">Optimizing for high-tier ATS filters</p>
           </div>
         </div>
 
         <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.02, y: -2 }}
+          whileTap={{ scale: 0.98, y: 0 }}
           onClick={handleGenerate}
           disabled={isGenerating}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold bg-emerald-500 text-white hover:bg-emerald-600 transition-all disabled:opacity-50 shadow-md"
+          className="relative overflow-hidden flex items-center gap-2.5 px-8 py-3.5 rounded-2xl text-sm font-bold bg-accent-emerald text-white hover:bg-accent-emerald/90 transition-all liquid-glass-refraction shadow-xl shadow-accent-emerald/10 disabled:opacity-50"
         >
+          <div className="liquid-water-layer opacity-20" />
           {isGenerating ? (
-            <><Loader2 className="w-4 h-4 animate-spin" /> AI Generating...</>
+            <><Loader2 className="w-4 h-4 animate-spin" /> Engine Working...</>
           ) : (
-            <><Sparkles className="w-4 h-4" /> Generate ATS Resume</>
+            <><Sparkles className="w-4 h-4" /> Generate Optimized Assets</>
           )}
         </motion.button>
       </div>
@@ -188,57 +191,60 @@ export const ResumeBuilder = ({ resumeText, skills, deductions, jobTitle, gapRes
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="mt-6"
+            className="mt-10 border-t border-border/40 pt-10"
           >
-            <div className="flex items-center justify-between mb-4 pb-3 border-b border-border">
-              <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Your Resume — AI Optimized for ATS</span>
-              <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between mb-8 flex-wrap gap-6">
+              <div className="flex flex-col gap-1.5">
+                <span className="font-display font-bold text-[10px] uppercase tracking-[0.25em] text-accent-emerald leading-none">Output Preview</span>
+                <span className="text-[11px] text-muted-foreground/70 font-mono font-bold uppercase tracking-tighter">Enterprise Standard Optimization</span>
+              </div>
+              <div className="flex items-center gap-3">
                 <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={copyFullResume}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-all">
-                  <Copy className="w-3 h-3" /> Copy All
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-[11px] font-bold bg-muted/30 text-muted-foreground border border-border/40 hover:bg-muted/50 transition-all shadow-sm uppercase tracking-widest">
+                  <Copy className="w-3.5 h-3.5" /> Copy Text
                 </motion.button>
-                <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={handleDownloadPDF}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-500 text-white hover:bg-emerald-600 transition-all">
-                  <Download className="w-3 h-3" /> Download PDF
+                <motion.button whileHover={{ scale: 1.05, y: -1 }} whileTap={{ scale: 1, y: 0 }} onClick={handleDownloadPDF}
+                  className="relative overflow-hidden flex items-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-bold bg-accent-emerald text-white hover:bg-accent-emerald/90 transition-all liquid-glass-refraction shadow-lg shadow-accent-emerald/10 uppercase tracking-widest">
+                  <div className="liquid-water-layer opacity-20" />
+                  <Download className="w-4 h-4" /> Download PDF
                 </motion.button>
-                <button onClick={() => setIsOpen(false)} className="p-1 rounded-md text-muted-foreground hover:text-foreground transition-colors">
+                <button onClick={() => setIsOpen(false)} className="p-3 rounded-xl text-muted-foreground/60 hover:text-foreground hover:bg-muted/50 transition-all border border-transparent hover:border-border/40">
                   <X className="w-4 h-4" />
                 </button>
               </div>
             </div>
 
-            <div className="bg-white dark:bg-zinc-900 border border-border rounded-xl p-6 sm:p-8 space-y-5 shadow-inner max-h-[600px] overflow-y-auto">
+            <div className="bg-background/40 backdrop-blur-md border border-border/40 rounded-3xl p-6 sm:p-12 space-y-12 shadow-inner max-h-[750px] overflow-y-auto custom-scrollbar">
               {/* Professional Summary */}
-              <div className="relative">
-                <div className="flex items-center justify-between mb-2 border-b border-border pb-1">
-                  <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Professional Summary</h4>
-                  <button onClick={() => handleCopy(resume.professional_summary)} className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-primary hover:bg-primary/10 transition-colors border border-primary/20">
-                    <Copy className="w-3 h-3" /> Copy
+              <div className="relative group/section">
+                <div className="flex items-center justify-between mb-6 border-b border-border/10 pb-3">
+                  <h4 className="font-display font-bold text-[10px] uppercase tracking-[0.3em] text-muted-foreground/60">Professional Summary</h4>
+                  <button onClick={() => handleCopy(resume.professional_summary)} className="opacity-0 group-hover/section:opacity-100 flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-bold text-accent-blue bg-accent-blue/10 hover:bg-accent-blue/20 transition-all border border-accent-blue/20 uppercase tracking-widest">
+                    <Copy className="w-3.5 h-3.5" /> Copy
                   </button>
                 </div>
-                <p className="text-sm text-foreground leading-relaxed">{resume.professional_summary}</p>
+                <p className="text-[14.5px] text-foreground/80 leading-[1.7] font-medium">{resume.professional_summary}</p>
               </div>
 
               {/* Technical Skills */}
-              <div>
-                <div className="flex items-center justify-between mb-2 border-b border-border pb-1">
-                  <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Technical Skills</h4>
-                  <button onClick={() => handleCopy(resume.skills_section.join("\n"))} className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-primary hover:bg-primary/10 transition-colors border border-primary/20">
-                    <Copy className="w-3 h-3" /> Copy
+              <div className="group/section">
+                <div className="flex items-center justify-between mb-6 border-b border-border/10 pb-3">
+                  <h4 className="font-display font-bold text-[10px] uppercase tracking-[0.3em] text-muted-foreground/60">Technical Skills</h4>
+                  <button onClick={() => handleCopy(resume.skills_section.join("\n"))} className="opacity-0 group-hover/section:opacity-100 flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-bold text-accent-blue bg-accent-blue/10 hover:bg-accent-blue/20 transition-all border border-accent-blue/20 uppercase tracking-widest">
+                    <Copy className="w-3.5 h-3.5" /> Copy
                   </button>
                 </div>
-                <div className="space-y-1">
+                <div className="flex flex-wrap gap-2.5">
                   {resume.skills_section.map((skill, i) => (
-                    <p key={i} className="text-sm text-foreground">{skill}</p>
+                    <span key={i} className="px-3.5 py-2 bg-muted/20 border border-border/30 rounded-xl text-xs font-bold text-foreground/80 tracking-tight">{skill}</span>
                   ))}
                 </div>
               </div>
 
               {/* Experience & Projects */}
-              <div>
-                <div className="flex items-center justify-between mb-2 border-b border-border pb-1">
-                  <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Experience & Projects</h4>
+              <div className="group/section">
+                <div className="flex items-center justify-between mb-8 border-b border-border/10 pb-3">
+                  <h4 className="font-display font-bold text-[10px] uppercase tracking-[0.3em] text-muted-foreground/60">Experience & Projects</h4>
                   <button onClick={() => {
                     let expText = "";
                     resume.experience.forEach(exp => {
@@ -248,21 +254,22 @@ export const ResumeBuilder = ({ resumeText, skills, deductions, jobTitle, gapRes
                       expText += "\n";
                     });
                     handleCopy(expText);
-                  }} className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-primary hover:bg-primary/10 transition-colors border border-primary/20">
-                    <Copy className="w-3 h-3" /> Copy
+                  }} className="opacity-0 group-hover/section:opacity-100 flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-bold text-accent-blue bg-accent-blue/10 hover:bg-accent-blue/20 transition-all border border-accent-blue/20 uppercase tracking-widest">
+                    <Copy className="w-3.5 h-3.5" /> Copy
                   </button>
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-10">
                   {resume.experience.map((exp, i) => (
-                    <div key={i}>
-                      <h5 className="text-sm font-bold text-foreground">{exp.heading}</h5>
-                      {exp.content && <p className="text-xs text-muted-foreground mt-0.5">{exp.content}</p>}
+                    <div key={i} className="relative pl-6 border-l-2 border-accent-emerald/20">
+                      <div className="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-accent-emerald shadow-[0_0_8px_rgba(16,185,129,0.3)]" />
+                      <h5 className="text-[15px] font-display font-bold text-foreground tracking-tight mb-1.5">{exp.heading}</h5>
+                      {exp.content && <p className="text-[10px] text-muted-foreground/70 font-mono font-bold tracking-[0.1em] uppercase mb-4">{exp.content}</p>}
                       {exp.bullets && exp.bullets.length > 0 && (
-                        <ul className="mt-1.5 space-y-1">
+                        <ul className="space-y-3.5 mt-3">
                           {exp.bullets.map((bullet, j) => (
-                            <li key={j} className="text-sm text-foreground flex gap-2">
-                              <span className="text-primary mt-0.5">•</span>
-                              <span>{bullet}</span>
+                            <li key={j} className="text-[13.5px] text-foreground flex gap-3.5 leading-[1.6]">
+                              <span className="text-accent-emerald/40 mt-2 w-1.5 h-[1px] bg-current shrink-0" />
+                              <span className="font-medium">{bullet}</span>
                             </li>
                           ))}
                         </ul>
@@ -274,31 +281,35 @@ export const ResumeBuilder = ({ resumeText, skills, deductions, jobTitle, gapRes
 
               {/* Education */}
               {resume.education.length > 0 && (
-                <div>
-                  <div className="flex items-center justify-between mb-2 border-b border-border pb-1">
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Education</h4>
-                    <button onClick={() => handleCopy(resume.education.join("\n"))} className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-primary hover:bg-primary/10 transition-colors border border-primary/20">
-                      <Copy className="w-3 h-3" /> Copy
+                <div className="group/section">
+                  <div className="flex items-center justify-between mb-6 border-b border-border/10 pb-3">
+                    <h4 className="font-display font-bold text-[10px] uppercase tracking-[0.3em] text-muted-foreground/60">Education</h4>
+                    <button onClick={() => handleCopy(resume.education.join("\n"))} className="opacity-0 group-hover/section:opacity-100 flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-bold text-accent-blue bg-accent-blue/10 hover:bg-accent-blue/20 transition-all border border-accent-blue/20 uppercase tracking-widest">
+                      <Copy className="w-3.5 h-3.5" /> Copy
                     </button>
                   </div>
-                  {resume.education.map((edu, i) => (
-                    <p key={i} className="text-sm text-foreground">{edu}</p>
-                  ))}
+                  <div className="space-y-3">
+                    {resume.education.map((edu, i) => (
+                      <p key={i} className="text-[14px] text-foreground/80 font-bold tracking-tight">{edu}</p>
+                    ))}
+                  </div>
                 </div>
               )}
 
               {/* Certifications */}
               {resume.certifications && resume.certifications.length > 0 && (
-                <div>
-                  <div className="flex items-center justify-between mb-2 border-b border-border pb-1">
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Certifications</h4>
-                    <button onClick={() => handleCopy(resume.certifications!.join("\n"))} className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-primary hover:bg-primary/10 transition-colors border border-primary/20">
-                      <Copy className="w-3 h-3" /> Copy
+                <div className="group/section">
+                  <div className="flex items-center justify-between mb-6 border-b border-border/10 pb-3">
+                    <h4 className="font-display font-bold text-[10px] uppercase tracking-[0.3em] text-muted-foreground/60">Certifications</h4>
+                    <button onClick={() => handleCopy(resume.certifications!.join("\n"))} className="opacity-0 group-hover/section:opacity-100 flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-bold text-accent-blue bg-accent-blue/10 hover:bg-accent-blue/20 transition-all border border-accent-blue/20 uppercase tracking-widest">
+                      <Copy className="w-3.5 h-3.5" /> Copy
                     </button>
                   </div>
-                  {resume.certifications.map((cert, i) => (
-                    <p key={i} className="text-sm text-foreground">{cert}</p>
-                  ))}
+                  <div className="space-y-3">
+                    {resume.certifications.map((cert, i) => (
+                      <p key={i} className="text-[14px] text-foreground/80 font-bold tracking-tight">{cert}</p>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

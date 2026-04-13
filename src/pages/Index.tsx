@@ -10,7 +10,7 @@ import { ServicesSection } from "@/components/ServicesSection";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background dot-grid-bg grain-overlay font-sans text-slate-800">
+    <div className="min-h-screen bg-background dot-grid-bg grain-overlay font-sans text-foreground">
       <GlobalNavbar />
 
       {/* ── SECTION 1 — HERO ── */}
@@ -23,16 +23,16 @@ const Index = () => {
             transition={{ duration: 0.6 }}
             className="flex flex-col items-center"
           >
-            <div className="liquid-glass rounded-full px-4 py-1.5 flex items-center gap-2 mb-8 border border-slate-200/50 hover:bg-white/40 transition-colors cursor-default group">
-              <Sparkles size={14} className="text-blue-500 group-hover:rotate-12 transition-transform" />
-              <span className="text-slate-600 text-[10px] font-bold tracking-[0.2em] uppercase">The #1 ATS Optimization Engine</span>
+            <div className="liquid-glass rounded-full px-4 py-1.5 flex items-center gap-2 mb-8 border border-border/40 hover:bg-background/40 transition-colors cursor-default group">
+              <Sparkles size={14} className="text-accent-blue group-hover:rotate-12 transition-transform" />
+              <span className="text-muted-foreground text-[10px] font-bold tracking-[0.25em] uppercase">The #1 ATS Optimization Engine</span>
             </div>
             
-            <h1 className="text-6xl md:text-8xl lg:text-9xl text-slate-900 tracking-tight font-serif">
-              Land in the top <em className="italic" style={{ color: "#3B82F6" }}>0.1%.</em>
+            <h1 className="text-6xl md:text-8xl lg:text-9xl text-foreground tracking-tighter font-serif leading-[0.9]">
+              Land in the top <em className="italic text-accent-blue opacity-100 drop-shadow-[0_0_15px_rgba(var(--accent-blue-rgb),0.3)] not-italic font-serif">0.1%.</em>
             </h1>
             
-            <p className="text-slate-500 text-lg md:text-xl max-w-2xl mx-auto mt-6 leading-relaxed">
+            <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mt-8 leading-relaxed font-sans font-medium">
               Paste a job description. Upload your resume. Get your exact match score, skill gaps, and a winning playbook — in seconds.
             </p>
 
@@ -40,12 +40,12 @@ const Index = () => {
             <div className="flex gap-4 mt-10 justify-center flex-wrap">
               <button
                 onClick={() => document.querySelector("#scanner")?.scrollIntoView({ behavior: "smooth" })}
-                className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-8 py-4 text-base font-semibold flex items-center gap-2 transition-all shadow-xl shadow-blue-500/25 group"
+                className="bg-accent-blue hover:opacity-90 text-white rounded-full px-10 py-5 text-base font-semibold flex items-center gap-2 transition-all shadow-xl shadow-accent-blue/20 group"
               >
                 Analyze My JD Free
                 <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
               </button>
-              <button className="liquid-glass rounded-full px-8 py-4 text-slate-700 text-base font-medium transition-all hover:bg-white/80">
+              <button className="liquid-glass rounded-full px-10 py-5 text-foreground text-base font-medium transition-all hover:bg-background/80 dark:hover:bg-card/40">
                 See a Sample Report
               </button>
             </div>
@@ -57,7 +57,7 @@ const Index = () => {
                 "94% Interview Rate",
                 "ATS Bypass Playbook Included"
               ].map((stat, i) => (
-                <div key={i} className="liquid-glass rounded-full px-6 py-3 text-slate-600 text-sm font-medium">
+                <div key={i} className="liquid-glass rounded-full px-6 py-3 text-muted-foreground text-sm font-semibold tracking-wide">
                   {stat}
                 </div>
               ))}
@@ -67,12 +67,12 @@ const Index = () => {
       </section>
 
       {/* ── SECTION 2 — SCANNER (The "Working" Part) ── */}
-      <section id="scanner" className="relative py-20 bg-white/30 backdrop-blur-sm border-y border-slate-100">
+      <section id="scanner" className="relative py-20 bg-background/30 dark:bg-card/10 backdrop-blur-sm border-y border-border/40">
         <div className="max-w-7xl mx-auto text-center mb-16 px-6">
-          <h2 className="text-4xl md:text-6xl text-slate-900 tracking-tight font-serif mb-6 leading-tight">
-            Ready to <em className="italic" style={{ color: "#3B82F6" }}>decode</em> your next role?
+          <h2 className="text-4xl md:text-6xl text-foreground tracking-tighter font-serif mb-6 leading-tight">
+            Ready to <em className="italic text-accent-blue not-italic font-serif">decode</em> your next role?
           </h2>
-          <p className="text-slate-500 text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto font-medium">
             Our high-precision engine extracts the exact DNA of the job description to give you an unfair advantage.
           </p>
         </div>
@@ -90,13 +90,13 @@ const Index = () => {
       <ServicesSection />
 
       {/* Footer */}
-      <footer className="bg-white border-t border-slate-100 py-12 px-6">
+      <footer className="bg-background border-t border-border/40 py-12 px-6">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-2">
-            <Sparkles size={20} color="#3B82F6" />
-            <span className="text-slate-800 font-bold">Lumina JD</span>
+            <Sparkles size={20} className="text-accent-blue" />
+            <span className="text-foreground font-bold">Lumina JD</span>
           </div>
-          <p className="text-slate-400 text-xs font-medium uppercase tracking-widest">
+          <p className="text-muted-foreground/60 text-[10px] font-bold uppercase tracking-[0.3em]">
             Built for the modern career strategist
           </p>
           <div className="flex gap-8 text-slate-500 text-sm">
