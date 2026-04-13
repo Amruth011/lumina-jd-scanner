@@ -9,99 +9,52 @@
 
 @layer base {
   :root {
-    /* OpenAI Minimalism - Paper Light Mode */
-    --background: 34 100% 98%;
-    --foreground: 240 5% 10%;
+    /* OpenAI Minimalism - Classic Professional Light Mode */
+    --background: 210 40% 98%; /* Very light grey/blue tint for professional feel */
+    --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 240 5% 10%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 5% 10%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 240 5% 16%;
-    --primary-foreground: 34 100% 98%;
+    --primary: 222 47% 11%;
+    --primary-foreground: 210 40% 98%;
 
-    --accent: 240 5% 96%;
-    --accent-foreground: 240 5% 10%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
 
-    --secondary: 240 5% 96%;
-    --secondary-foreground: 240 5% 10%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 240 5% 96%;
-    --muted-foreground: 240 5% 30%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 240 5% 90%;
-    --input: 240 5% 90%;
-    --ring: 240 5% 10%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 222 47% 11%;
 
     --radius: 0.75rem;
 
     --accent-blue: 217 91% 60%;
-    --accent-blue-rgb: 59, 130, 246; /* Approximate for light mode */
+    --accent-blue-rgb: 59, 130, 246;
     --accent-emerald: 160 84% 39%;
     --accent-violet: 262 83% 58%;
     --accent-amber: 38 92% 50%;
     --accent-red: 0 84% 60%;
 
-    --sidebar-background: 34 100% 98%;
-    --sidebar-foreground: 240 5% 10%;
-    --sidebar-primary: 240 5% 16%;
+    --sidebar-background: 210 40% 98%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 222 47% 11%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 5% 96%;
-    --sidebar-accent-foreground: 240 5% 10%;
-    --sidebar-border: 240 5% 90%;
-    --sidebar-ring: 240 5% 10%;
-  }
-
-  .dark {
-    /* OpenAI Minimalism - Warm Zinc Dark Mode */
-    --background: 240 5% 10%;
-    --foreground: 240 5% 96%;
-
-    --card: 240 5% 14%;
-    --card-foreground: 240 5% 96%;
-
-    --popover: 240 5% 14%;
-    --popover-foreground: 240 5% 96%;
-
-    --primary: 240 5% 94%;
-    --primary-foreground: 240 5% 10%;
-
-    --accent: 240 5% 20%;
-    --accent-foreground: 240 5% 96%;
-
-    --secondary: 240 5% 20%;
-    --secondary-foreground: 240 5% 96%;
-
-    --muted: 240 5% 20%;
-    --muted-foreground: 240 5% 70%;
-
-    --destructive: 0 70% 50%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 240 5% 30%;
-    --input: 240 5% 30%;
-    --ring: 240 5% 94%;
-
-    --accent-blue: 212 100% 78%;
-    --accent-blue-rgb: 56, 189, 248;
-    --accent-emerald: 160 84% 75%;
-    --accent-violet: 262 83% 80%;
-    --accent-amber: 38 92% 78%;
-    --accent-red: 0 70% 75%;
-
-    --sidebar-background: 240 5% 10%;
-    --sidebar-foreground: 240 5% 96%;
-    --sidebar-primary: 240 5% 94%;
-    --sidebar-primary-foreground: 240 5% 10%;
-    --sidebar-accent: 240 5% 20%;
-    --sidebar-accent-foreground: 240 5% 96%;
-    --sidebar-border: 240 5% 30%;
-    --sidebar-ring: 240 5% 94%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 222 47% 11%;
   }
 }
 
@@ -143,30 +96,19 @@
     inset: 0;
     pointer-events: none;
     z-index: 9999;
-    opacity: 0.025;
+    opacity: 0.035;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
     background-repeat: repeat;
     mix-blend-mode: multiply;
   }
 
-  .dark .grain-overlay::before {
-    opacity: 0.04;
-    mix-blend-mode: soft-light;
-  }
-
   /* ── Premium dot-grid background ── */
   .dot-grid-bg {
     background-image:
-      radial-gradient(circle at 50% 0%, hsl(var(--muted-foreground) / 0.06) 0%, transparent 50%),
-      radial-gradient(circle at 1px 1px, hsl(var(--foreground) / 0.04) 1px, transparent 0);
+      radial-gradient(circle at 50% 0%, hsl(var(--muted-foreground) / 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 1px 1px, hsl(var(--foreground) / 0.05) 1px, transparent 0);
     background-size: 100% 100%, 24px 24px;
     background-attachment: fixed;
-  }
-
-  .dark .dot-grid-bg {
-    background-image:
-      radial-gradient(circle at 50% 0%, hsl(var(--muted-foreground) / 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 1px 1px, hsl(var(--foreground) / 0.03) 1px, transparent 0);
   }
 
   /* ── iOS-grade Luxury Liquid Glassmorphism ── */
@@ -214,22 +156,22 @@
   }
 
   .dark .glass, .dark .glass-strong, .dark .liquid-glass {
-    background: hsl(var(--card) / 0.45);
-    border: 0.5px solid hsl(0 0% 100% / 0.08);
+    background: hsl(0 0% 100% / 0.85);
+    border: 0.5px solid hsl(var(--border) / 0.5);
     box-shadow:
-      0 0 0 0.5px hsl(0 0% 100% / 0.05),
-      0 1px 2px hsl(0 0% 0% / 0.3),
-      0 24px 64px -12px hsl(0 0% 0% / 0.6),
-      inset 0 1px 1px hsl(0 0% 100% / 0.03); /* Subtle dark mode refraction */
+      0 0 0 0.5px hsl(var(--border) / 0.3),
+      0 1px 2px hsl(0 0% 0% / 0.05),
+      0 24px 64px -12px hsl(0 0% 0% / 0.08),
+      inset 0 1px 1px hsl(0 0% 100% / 0.5); 
   }
 
   .dark .glass-strong {
-    background: hsl(var(--card) / 0.58);
+    background: hsl(0 0% 100% / 0.95);
     box-shadow:
-      0 0 0 0.5px hsl(0 0% 100% / 0.08),
-      0 1px 3px hsl(0 0% 0% / 0.4),
-      0 32px 72px -16px hsl(0 0% 0% / 0.7),
-      inset 0 1px 0 0 hsl(0 0% 100% / 0.06);
+      0 0 0 0.5px hsl(var(--border) / 0.4),
+      0 1px 3px hsl(0 0% 0% / 0.06),
+      0 32px 72px -16px hsl(0 0% 0% / 0.1),
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.6);
   }
 
   /* ── Liquid Movement Effect ── */
