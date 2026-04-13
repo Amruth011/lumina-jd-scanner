@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { Sparkles, LogOut, LogIn, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { ThemeToggle } from "./ThemeToggle";
 import { useAuth } from "@/hooks/useAuth";
 
 export const GlobalNavbar = () => {
@@ -44,7 +43,6 @@ export const GlobalNavbar = () => {
         </div>
 
         <div className="flex items-center gap-4 lg:gap-6">
-          <ThemeToggle />
           
           {user ? (
             <div className="flex items-center gap-4">
