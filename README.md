@@ -1,12 +1,20 @@
-# Lumina JD | AI-Powered ATS Optimization Engine & Career Strategist
+<div align="center">
 
-**Lumina JD** is a comprehensive resume screening weapon designed to move job seekers from "average applicant" to **ATS-certified, interview-ready**. Built with a pristine **OpenAI Minimalist** aesthetic and Apple iOS Glassmorphism, it uses Gemini AI to deconstruct complex Job Descriptions into actionable data and automatically generate ATS-optimized resumes.
+# 💎 Lumina JD
+### AI-Powered ATS Optimization Engine & Career Strategist
 
----
+[![Status](https://img.shields.io/badge/Status-Live-success?style=for-the-badge&logo=vercel)](https://lumina-jd-scanner-main.vercel.app/)
+[![AI](https://img.shields.io/badge/Engine-Gemini_3_Flash-blue?style=for-the-badge&logo=google-gemini)](https://ai.google.dev/)
+[![Stack](https://img.shields.io/badge/Stack-React_|_Supabase-000?style=for-the-badge&logo=react)](https://supabase.com/)
+[![License](https://img.shields.io/badge/License-MIT-gray?style=for-the-badge)](LICENSE)
 
-## 🚀 Live Demo
-Experience the production deployment on Vercel:
-**[Lumina JD Live App](https://lumina-jd-scanner-main.vercel.app/)** *(Optimized for both Desktop and Mobile)*
+![Lumina Hero](public/readme/hero.png)
+
+**Lumina JD** is a comprehensive resume screening weapon designed to move job seekers from "average applicant" to **ATS-certified, interview-ready**. Built with a pristine **OpenAI Minimalist** aesthetic and Apple iOS Glassmorphism, it leverages Gemini 3 Flash to deconstruct complex Job Descriptions into actionable data and automatically generate market-winning resumes.
+
+[**Explore the Live App →**](https://lumina-jd-scanner-main.vercel.app/)
+
+</div>
 
 ---
 
