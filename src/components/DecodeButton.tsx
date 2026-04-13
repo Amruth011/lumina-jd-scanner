@@ -19,7 +19,7 @@ export const DecodeButton = ({ onClick, isLoading, disabled, isDecoded }: Decode
         relative group rounded-2xl px-12 py-5 font-display font-bold text-base tracking-tight
         ${isDecoded
           ? "bg-accent-emerald text-white shadow-xl shadow-accent-emerald/20 border border-accent-emerald/30"
-          : "bg-foreground text-background dark:bg-primary dark:text-primary-foreground liquid-glass-refraction premium-button-glow"
+          : "bg-primary text-primary-foreground liquid-glass-refraction premium-button-glow shadow-lg"
         }
         transition-all duration-500 disabled:opacity-30 disabled:cursor-not-allowed
         overflow-hidden
