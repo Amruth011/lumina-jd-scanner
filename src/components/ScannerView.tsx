@@ -76,7 +76,7 @@ export const ScannerView = () => {
   const handleForceRedecode = async () => { await decodeJD(jdText, true); };
 
   const tabClass = (tab: Tab) =>
-    `relative flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+    `relative flex items-center gap-2 px-6 py-2.5 rounded-full text-[13px] font-display font-bold transition-all duration-300 ${
       activeTab === tab
         ? "text-primary-foreground"
         : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -164,7 +164,7 @@ export const ScannerView = () => {
                         whileTap={{ scale: 0.95 }}
                         onClick={handleForceRedecode}
                         disabled={isScanning}
-                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-[0.15em] bg-muted/40 text-muted-foreground border border-border/40 hover:text-foreground hover:bg-muted/60 transition-all disabled:opacity-40"
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-[11px] font-display font-bold uppercase tracking-[0.1em] bg-muted/40 text-muted-foreground border border-border/40 hover:text-foreground hover:bg-muted/60 transition-all disabled:opacity-40"
                       >
                         <RefreshCw className={`w-3.5 h-3.5 ${isScanning ? 'animate-spin' : ''}`} />
                         Engine Reboot
@@ -175,7 +175,7 @@ export const ScannerView = () => {
                         whileTap={{ scale: 0.98, y: 0 }}
                         onClick={handleSaveJd}
                         disabled={savingJd || !!savedJdId}
-                        className={`relative overflow-hidden inline-flex items-center justify-center gap-3 px-10 py-4 rounded-2xl text-[11px] font-bold uppercase tracking-[0.2em] transition-all shadow-xl ${
+                        className={`relative overflow-hidden inline-flex items-center justify-center gap-3 px-10 py-4 rounded-2xl text-[13px] font-display font-bold uppercase tracking-[0.1em] transition-all shadow-xl ${
                           savedJdId
                             ? "bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/20 shadow-inner"
                             : "bg-foreground text-background hover:opacity-90 liquid-glass-refractive shadow-foreground/5"
@@ -194,9 +194,9 @@ export const ScannerView = () => {
                       whileHover={{ scale: 1.02, y: -1 }}
                       whileTap={{ scale: 0.98, y: 1 }}
                       onClick={() => setPriorityFilter(!priorityFilter)}
-                      className={`relative overflow-hidden flex items-center gap-3 px-8 py-3.5 rounded-2xl text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-500 border shadow-sm ${
+                      className={`relative overflow-hidden flex items-center gap-3 px-8 py-3.5 rounded-2xl text-[11px] font-display font-bold uppercase tracking-[0.1em] transition-all duration-500 border shadow-sm ${
                         priorityFilter
-                          ? "bg-foreground text-background border-transparent liquid-glass-refraction"
+                          ? "bg-foreground text-background border-transparent liquid-glass-refractive"
                           : "bg-background/40 text-muted-foreground border-border/60 hover:text-foreground hover:border-border"
                       }`}
                     >
