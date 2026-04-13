@@ -45,7 +45,7 @@ const Index = () => {
                 Analyze My JD Free
                 <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
               </button>
-              <button className="liquid-glass rounded-full px-10 py-5 text-foreground text-base font-medium transition-all hover:bg-background/80 dark:hover:bg-card/40">
+              <button className="liquid-glass rounded-full px-10 py-5 text-foreground text-base font-medium transition-all hover:bg-background/80">
                 See a Sample Report
               </button>
             </div>
@@ -67,7 +67,7 @@ const Index = () => {
       </section>
 
       {/* ── SECTION 2 — SCANNER (The "Working" Part) ── */}
-      <section id="scanner" className="relative py-20 bg-background/30 dark:bg-card/10 backdrop-blur-sm border-y border-border/40">
+      <section id="scanner" className="relative py-20 bg-background/30 backdrop-blur-sm border-y border-border/40">
         <div className="max-w-7xl mx-auto text-center mb-16 px-6">
           <h2 className="text-4xl md:text-6xl text-foreground tracking-tighter font-serif mb-6 leading-tight">
             Ready to <em className="italic text-accent-blue not-italic font-serif">decode</em> your next role?

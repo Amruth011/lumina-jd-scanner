@@ -88,7 +88,7 @@ export const ScannerView = () => {
     <div className="w-full max-w-7xl mx-auto px-4 md:px-8 pb-24">
       {/* Tab Navigation Internal */}
       <div className="flex justify-center mb-12">
-        <nav className="flex items-center gap-0.5 bg-muted/20 dark:bg-muted/30 rounded-full p-0.5 backdrop-blur-sm border border-border/40">
+        <nav className="flex items-center gap-0.5 bg-muted/40 rounded-full p-0.5 backdrop-blur-md border border-border/60">
           {[
             { key: "decode" as Tab, icon: Search, label: "Decoder" },
             { key: "applications" as Tab, icon: LayoutDashboard, label: "Applications" },
@@ -97,7 +97,7 @@ export const ScannerView = () => {
               {activeTab === tab.key && (
                 <motion.div
                   layoutId="activeTabScanner"
-                  className="absolute inset-0 bg-foreground dark:bg-primary rounded-full"
+                  className="absolute inset-0 bg-primary rounded-full shadow-sm"
                   transition={{ type: "spring", stiffness: 500, damping: 35 }}
                 />
               )}
