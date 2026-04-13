@@ -29,7 +29,7 @@ export const PhilosophySection = () => {
                 { label: "MLOps", value: "80%", accent: "bg-accent-emerald" },
                 { label: "Docker", value: "60%", accent: "bg-accent-violet" }
               ].map((tag, i) => (
-                <div key={i} className="flex items-center gap-3 bg-background/40 dark:bg-card/40 px-5 py-2.5 rounded-full text-[11px] font-bold text-foreground/70 shadow-sm border border-border/10 backdrop-blur-md tracking-tight">
+                <div key={i} className="flex items-center gap-3 bg-background/60 px-5 py-2.5 rounded-full text-[11px] font-bold text-foreground/70 shadow-sm border border-border/20 backdrop-blur-md tracking-tight">
                   <span className={`w-2.5 h-2.5 rounded-full ${tag.accent} shadow-[0_0_8px_rgba(var(--accent-blue-rgb),0.2)]`} />
                   {tag.label}: {tag.value}
                 </div>
