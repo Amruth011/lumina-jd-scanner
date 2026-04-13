@@ -60,13 +60,70 @@ Beyond simple keyword matching, Lumina generates 3 unique, actionable steps for 
 
 ---
 
-## 🤝 Contributing & Contact
+## 🏗️ System Architecture
+
+```mermaid
+graph TD
+    User([User Resume & JD]) --> React[React / Vite Frontend]
+    React --> Auth[Supabase Auth]
+    React --> Functions[Supabase Edge Functions]
+    Functions --> Gemini[[Gemini 3 Flash AI]]
+    Gemini --> Functions
+    Functions --> DB[(Supabase PG Vault)]
+    DB --> React
+    React --> PDF[JS PDF Generator]
+```
+
+## 🛠️ Tech Stack
+
+### Frontend & Design
+- **Core:** React 18, TypeScript, Vite
+- **Ui/UX:** Shadcn UI, Radix Primitives, Tailwind CSS
+- **Animations:** Framer Motion (Liquid Motion), Lucide Icons
+- **State:** TanStack Query (React Query)
+
+### AI & Intelligence
+- **LLM:** Google Gemini 3 Flash (Primary), Gemini 1.5 Pro (Strategy)
+- **Integration:** Supabase Edge Functions (Deno Runtime)
+- **Logic:** Custom Semantic Mapping & ATS Match Algorithms
+
+### Infrastructure & DevOps
+- **Backend:** Supabase (Auth, PostgreSQL, Realtime)
+- **Deployment:** Vercel (Production Edge Network)
+- **Testing:** Playwright (E2E), Vitest (Unit)
+
+---
+
+## 🚀 Setup & Launch
+
+1. **Clone & Install:**
+   ```bash
+   git clone https://github.com/Amruth011/lumina-jd-scanner.git
+   cd lumina-jd-scanner
+   npm install
+   ```
+2. **Environment Configuration:** Create a `.env` file with your Supabase and Gemini keys.
+3. **Run Dev Server:**
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## 🤝 Contributing & Vision
 
 Created by **Amruth Kumar M**, an AI & Data Science student at Reva University. 
 
-* **GitHub:** [Amruth011](https://github.com/Amruth011)
+**Roadmap 2026:**
+- [ ] Multi-document Resume Comparison
+- [ ] LinkedIn Profile URL Optimization
+- [ ] Real-time Mock Interview Simulator based on JD
+
+* **GitHub:** [@Amruth011](https://github.com/Amruth011)
 * **Instagram:** [@assuredtechfuture](https://www.instagram.com/assuredtechfuture)
-* **LinkedIn:** Connect and follow the journey.
+* **LinkedIn:** [Connect with Amruth](https://www.linkedin.com/in/amruthkumarm/)
 
 ---
-*Lumina JD: Turn every Job Description into a Job Offer.*
+<div align="center">
+<i>Lumina JD: Turn every Job Description into a Job Offer.</i>
+</div>
