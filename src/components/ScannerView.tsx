@@ -88,7 +88,7 @@ export const ScannerView = () => {
     <div className="w-full max-w-7xl mx-auto px-4 md:px-8 pb-24">
       {/* Tab Navigation Internal */}
       <div className="flex justify-center mb-12">
-        <nav className="flex items-center gap-0.5 bg-muted/40 rounded-full p-0.5 backdrop-blur-md border border-border/60">
+        <nav className="flex items-center gap-0.5 bg-background/20 rounded-full p-1 backdrop-blur-3xl border border-white/40 shadow-xl shadow-black/5">
           {[
             { key: "decode" as Tab, icon: Search, label: "Decoder" },
             { key: "applications" as Tab, icon: LayoutDashboard, label: "Applications" },
@@ -152,7 +152,7 @@ export const ScannerView = () => {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.1, type: "spring", stiffness: 150 }}
                     >
-                      <h3 className="font-display font-bold text-4xl md:text-5xl lg:text-6x text-foreground tracking-tighter leading-[1.05] max-w-5xl mx-auto px-4">
+                      <h3 className="font-serif italic text-4xl md:text-5xl lg:text-7xl text-foreground tracking-[-0.04em] leading-[0.9] max-w-5xl mx-auto px-4 mt-4 text-balance">
                         {results.title}
                       </h3>
                       <div className="section-divider w-24 mx-auto mt-10 opacity-60" />
@@ -178,7 +178,7 @@ export const ScannerView = () => {
                         className={`relative overflow-hidden inline-flex items-center justify-center gap-3 px-10 py-4 rounded-2xl text-[11px] font-bold uppercase tracking-[0.2em] transition-all shadow-xl ${
                           savedJdId
                             ? "bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/20 shadow-inner"
-                            : "bg-foreground text-background hover:opacity-90 liquid-glass-refraction shadow-foreground/5"
+                            : "bg-foreground text-background hover:opacity-90 liquid-glass-refractive shadow-foreground/5"
                         } disabled:opacity-50`}
                       >
                         <div className="liquid-water-layer opacity-10" />

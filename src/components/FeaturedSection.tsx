@@ -9,13 +9,13 @@ export const FeaturedSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.9 }}
-          className="rounded-3xl overflow-hidden premium-card border-border/40 aspect-video container relative bg-card/10"
+          className="rounded-3xl overflow-hidden liquid-glass-refractive aspect-video container relative border-white/40 shadow-2xl shadow-black/5"
         >
           {/* Mock UI Visualization */}
           <div className="absolute inset-0 p-8 flex gap-8">
             {/* Left panel: Skill Radar */}
             <div className="flex-1 flex flex-col justify-center items-center">
-              <span className="text-muted-foreground/60 text-[10px] font-bold tracking-[0.3em] uppercase mb-4">Skill Radar</span>
+              <span className="text-muted-foreground/60 text-[10px] font-bold tracking-[0.4em] uppercase mb-4 block">Skill Radar</span>
               <div className="w-full max-w-[240px] aspect-square relative">
                 <svg viewBox="0 0 100 100" className="w-full h-full rotate-[-90deg]">
                   <circle cx="50" cy="50" r="40" fill="none" className="stroke-accent-blue" strokeWidth="2" strokeDasharray="251.2" strokeDashoffset="50" opacity="0.8" />
@@ -35,7 +35,7 @@ export const FeaturedSection = () => {
                   </svg>
                   <span className="text-4xl font-display font-bold text-foreground">87%</span>
                </div>
-               <span className="text-muted-foreground/40 text-[10px] font-bold tracking-[0.3em] uppercase mt-4 whitespace-nowrap">Overall Match Score</span>
+               <span className="text-muted-foreground/40 text-[10px] font-bold tracking-[0.3em] uppercase mt-4 whitespace-nowrap">Overall DNA Match</span>
             </div>
 
             {/* Right panel: Skill Bars */}
@@ -66,9 +66,9 @@ export const FeaturedSection = () => {
           {/* Bottom overlay content */}
           <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 flex justify-between items-end bg-gradient-to-t from-background to-transparent">
             <div className="glass rounded-2xl p-6 md:p-8 max-w-xl border-border/20 shadow-2xl">
-              <span className="text-muted-foreground/40 text-[10px] font-bold uppercase tracking-[0.3em] mb-4 block">Executive Insight View</span>
-              <p className="text-foreground/80 text-sm md:text-base leading-relaxed font-medium">
-                Every skill is ranked by real importance — not just mentioned. <span className="text-accent-blue font-bold text-xs uppercase tracking-widest px-1.5 py-0.5 rounded bg-accent-blue/5 border border-accent-blue/10">Critical</span> means &gt;85%. <span className="text-accent-emerald font-bold text-xs uppercase tracking-widest px-1.5 py-0.5 rounded bg-accent-emerald/5 border border-accent-emerald/10">Core</span> means standard. <span className="text-accent-violet font-bold text-xs uppercase tracking-widest px-1.5 py-0.5 rounded bg-accent-violet/5 border border-accent-violet/10">Supporting</span> indicates depth.
+              <span className="text-muted-foreground/40 text-[10px] font-bold uppercase tracking-[0.4em] mb-4 block">Executive Insight View</span>
+              <p className="text-foreground/80 text-sm md:text-base leading-relaxed font-body-refined font-medium">
+                Every skill is ranked by real importance — not just mentioned. <span className="text-accent-blue font-bold text-xs uppercase tracking-widest px-1.5 py-0.5 rounded bg-accent-blue/5 border border-accent-blue/10 font-display">Critical</span> means &gt;85%. <span className="text-accent-emerald font-bold text-xs uppercase tracking-widest px-1.5 py-0.5 rounded bg-accent-emerald/5 border border-accent-emerald/10 font-display">Core</span> means standard. <span className="text-accent-violet font-bold text-xs uppercase tracking-widest px-1.5 py-0.5 rounded bg-accent-violet/5 border border-accent-violet/10 font-display">Supporting</span> indicates depth.
               </p>
             </div>
             <motion.button

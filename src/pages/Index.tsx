@@ -28,8 +28,8 @@ const Index = () => {
               <span className="text-muted-foreground text-[10px] font-bold tracking-[0.25em] uppercase">The #1 ATS Optimization Engine</span>
             </div>
             
-            <h1 className="text-6xl md:text-8xl lg:text-9xl text-foreground tracking-tighter font-serif leading-[0.9]">
-              Land in the top <em className="italic text-accent-blue opacity-100 drop-shadow-[0_0_15px_rgba(var(--accent-blue-rgb),0.3)] not-italic font-serif">0.1%.</em>
+            <h1 className="text-7xl md:text-9xl text-foreground tracking-[-0.06em] font-serif leading-[0.85] text-balance">
+              Land in the <span className="italic text-accent-blue drop-shadow-[0_0_25px_rgba(var(--accent-blue-rgb),0.2)]">top 0.1%</span>
             </h1>
             
             <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mt-8 leading-relaxed font-sans font-medium">
@@ -45,7 +45,7 @@ const Index = () => {
                 Analyze My JD Free
                 <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
               </button>
-              <button className="liquid-glass rounded-full px-10 py-5 text-foreground text-base font-medium transition-all hover:bg-background/80">
+              <button className="liquid-glass-refractive rounded-full px-10 py-5 text-foreground text-sm font-display font-bold transition-all hover:bg-white/60 active:scale-95">
                 See a Sample Report
               </button>
             </div>
@@ -57,7 +57,7 @@ const Index = () => {
                 "94% Interview Rate",
                 "ATS Bypass Playbook Included"
               ].map((stat, i) => (
-                <div key={i} className="liquid-glass rounded-full px-6 py-3 text-muted-foreground text-sm font-semibold tracking-wide">
+                <div key={i} className="liquid-glass-refractive rounded-full px-6 py-3 text-muted-foreground text-[11px] font-display font-bold uppercase tracking-[0.15em] border-white/40">
                   {stat}
                 </div>
               ))}
@@ -69,8 +69,8 @@ const Index = () => {
       {/* ── SECTION 2 — SCANNER (The "Working" Part) ── */}
       <section id="scanner" className="relative py-20 bg-background/30 backdrop-blur-sm border-y border-border/40">
         <div className="max-w-7xl mx-auto text-center mb-16 px-6">
-          <h2 className="text-4xl md:text-6xl text-foreground tracking-tighter font-serif mb-6 leading-tight">
-            Ready to <em className="italic text-accent-blue not-italic font-serif">decode</em> your next role?
+          <h2 className="text-5xl md:text-7xl text-foreground tracking-[-0.05em] font-serif mb-6 leading-[0.95]">
+            Ready to <em className="italic text-accent-blue">decode</em> your next role?
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto font-medium">
             Our high-precision engine extracts the exact DNA of the job description to give you an unfair advantage.

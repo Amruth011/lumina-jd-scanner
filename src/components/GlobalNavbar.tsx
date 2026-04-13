@@ -15,11 +15,11 @@ export const GlobalNavbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-6 w-full pointer-events-none">
-      <div className="premium-card rounded-full pill max-w-6xl mx-auto px-6 py-3 flex items-center justify-between pointer-events-auto border-border/20 shadow-2xl shadow-black/10">
+      <div className="liquid-glass-refractive rounded-full pill max-w-6xl mx-auto px-6 py-3 flex items-center justify-between pointer-events-auto border-white/40 shadow-2xl shadow-black/5">
         <div className="flex items-center gap-2">
           <Link to="/" className="flex items-center gap-2 group">
             <Sparkles size={24} className="text-accent-blue drop-shadow-[0_0_8px_rgba(var(--accent-blue-rgb),0.5)] transition-transform group-hover:rotate-12" />
-            <span className="text-foreground font-display font-bold text-xl tracking-tighter">Lumina JD</span>
+            <span className="text-foreground font-display font-bold text-xl tracking-tight">Lumina JD</span>
           </Link>
           <span className="bg-accent-blue/10 text-accent-blue text-[10px] px-3 py-0.5 rounded-full ml-4 font-bold uppercase tracking-widest border border-accent-blue/20 shadow-sm shadow-accent-blue/5">0.1% Strategist</span>
           
@@ -28,7 +28,7 @@ export const GlobalNavbar = () => {
               <a
                 key={item.name}
                 href={item.href}
-                className="text-muted-foreground hover:text-foreground text-sm font-semibold transition-colors tracking-tight"
+                className="text-muted-foreground hover:text-foreground text-[13px] font-display font-bold transition-all tracking-tight"
                 onClick={(e) => {
                   if (item.href.startsWith("#")) {
                     e.preventDefault();
