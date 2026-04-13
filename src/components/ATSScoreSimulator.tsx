@@ -87,7 +87,7 @@ export const ATSScoreSimulator = ({ result }: ATSScoreSimulatorProps) => {
           }`}>
             ATS Verdict: {verdict.pass ? "LIKELY PASS" : "LIKELY FAIL"}
           </h4>
-          <p className="text-[11px] text-muted-foreground/70 font-mono font-bold uppercase tracking-tighter">
+          <p className="text-tag text-muted-foreground/40 font-mono tracking-widest">
             Enterprise Grade Simulation Core
           </p>
         </div>
@@ -102,7 +102,7 @@ export const ATSScoreSimulator = ({ result }: ATSScoreSimulatorProps) => {
           >
             {verdict.score}%
           </motion.span>
-          <span className="font-display font-bold text-[10px] text-muted-foreground/60 uppercase tracking-[0.25em] block leading-none">Confidence Score</span>
+          <span className="text-tag text-muted-foreground/40 block leading-none">Confidence Score</span>
         </div>
       </div>
 
@@ -125,7 +125,7 @@ export const ATSScoreSimulator = ({ result }: ATSScoreSimulatorProps) => {
             >
               {metric.value}%
             </motion.span>
-            <span className="font-display font-bold text-[10px] text-muted-foreground/60 uppercase tracking-[0.25em] block leading-none">
+            <span className="text-tag text-muted-foreground/30 block leading-none">
               {metric.label}
             </span>
           </div>
@@ -136,14 +136,14 @@ export const ATSScoreSimulator = ({ result }: ATSScoreSimulatorProps) => {
       <div className="space-y-4 pl-1">
         <div className="flex flex-col gap-3.5">
           {verdict.reasons.map((r, i) => (
-            <div key={i} className="flex items-start gap-3.5 text-[14.5px] text-foreground/85 font-medium leading-[1.6]">
+            <div key={i} className="flex items-start gap-4 text-sm md:text-base text-foreground/80 font-medium leading-relaxed">
               <ChevronRight className="w-4 h-4 mt-1.5 text-muted-foreground/40 shrink-0" />
               <span>{r}</span>
             </div>
           ))}
         </div>
         {!verdict.pass && verdict.tips.map((tip, i) => (
-          <div key={`tip-${i}`} className="flex items-start gap-4 p-5 rounded-2xl bg-accent-amber/5 border border-accent-amber/10 text-[13.5px] text-accent-amber font-bold leading-relaxed shadow-sm shadow-accent-amber/5">
+          <div key={`tip-${i}`} className="flex items-start gap-4 p-5 rounded-2xl bg-accent-amber/5 border border-accent-amber/10 text-sm text-accent-amber/90 font-bold leading-relaxed shadow-sm shadow-accent-amber/5">
             <AlertTriangle className="w-4 h-4 mt-1 shrink-0 text-accent-amber/60" />
             <span>{tip}</span>
           </div>

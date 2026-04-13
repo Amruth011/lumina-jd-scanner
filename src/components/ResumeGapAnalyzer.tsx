@@ -487,7 +487,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
             <h3 className="font-display font-bold text-lg md:text-xl text-foreground tracking-tight">
               Resume Gap Analyzer
             </h3>
-            <p className="text-[11px] text-muted-foreground/70 font-medium">Evaluate your resume against the JD</p>
+            <p className="text-tag text-muted-foreground/60">Evaluate your resume against the JD</p>
           </div>
         </div>
         {!isOpen && (
@@ -513,8 +513,8 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
             {/* Trust and Auto-run header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3 bg-secondary/30 p-3 rounded-xl border border-border/50 backdrop-blur-sm">
                <div className="flex items-center gap-3">
-                 <span className="flex items-center gap-1.5 text-[10px] font-bold text-accent-emerald bg-accent-emerald/10 px-2.5 py-1 rounded-full uppercase tracking-wider border border-accent-emerald/10"><ShieldCheck className="w-3.5 h-3.5" /> 100% Secure</span>
-                 <span className="flex items-center gap-1.5 text-[10px] font-bold text-accent-blue bg-accent-blue/10 px-2.5 py-1 rounded-full uppercase tracking-wider border border-accent-blue/10"><CheckCircle2 className="w-3.5 h-3.5" /> ATS-Optimized</span>
+                 <span className="flex items-center gap-1.5 text-tag text-accent-emerald bg-accent-emerald/10 px-3 py-1 rounded-full border border-accent-emerald/10"><ShieldCheck className="w-3.5 h-3.5" /> 100% SECURE</span>
+                 <span className="flex items-center gap-1.5 text-tag text-accent-blue bg-accent-blue/10 px-3 py-1 rounded-full border border-accent-blue/10"><CheckCircle2 className="w-3.5 h-3.5" /> ATS-OPTIMIZED</span>
                </div>
                
                <label className="flex items-center gap-2 cursor-pointer bg-background px-3 py-1.5 rounded-md border border-border shadow-sm">
@@ -694,7 +694,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                     <AlertTriangle className="w-4 h-4 text-accent-red" />
                   </div>
                   <div className="space-y-0.5">
-                    <h4 className="font-display font-bold text-[10px] uppercase tracking-[0.2em] text-accent-red/60 leading-none">
+                    <h4 className="text-tag text-accent-red/60 leading-none">
                       Why Not 100%?
                     </h4>
                     <p className="text-sm font-bold text-foreground tracking-tight">Fix These to Improve Your Score</p>
@@ -712,14 +712,14 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                       <div className="flex items-center gap-4 px-4 py-3.5">
                         <span className="font-mono font-bold text-xs text-accent-red px-2 py-1 rounded bg-accent-red/10 border border-accent-red/10 min-w-[45px] text-center">-{d.percent}%</span>
                         <div className="flex-1">
-                           <span className="text-[13px] font-bold text-foreground/80 leading-tight tracking-tight">{d.reason}</span>
+                           <span className="text-[14px] font-bold text-foreground/80 leading-tight tracking-tight">{d.reason}</span>
                         </div>
                         <motion.button
                            whileHover={{ scale: 1.05 }}
                            whileTap={{ scale: 0.95 }}
                            onClick={() => handleGenerateBullet(i, d.reason)}
                            disabled={generatingFor === i || !!generatedBullets[i]}
-                           className="flex items-center gap-2 px-4 py-2 rounded-xl text-[9px] font-display font-bold bg-accent-blue/10 text-accent-blue border border-accent-blue/20 hover:bg-accent-blue/20 transition-all disabled:opacity-50 uppercase tracking-[0.2em] shadow-sm"
+                           className="flex items-center gap-2 px-4 py-2 rounded-xl text-tag text-accent-blue bg-accent-blue/10 border border-accent-blue/20 hover:bg-accent-blue/20 transition-all disabled:opacity-50 shadow-sm"
                         >
                            {generatingFor === i ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
                            {generatingFor === i ? "Working..." : generatedBullets[i] ? "Generated" : "Fix with AI"}
