@@ -421,15 +421,33 @@
 
   /* ── Typography scale ── */
   .text-display {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Instrument Serif', serif;
     letter-spacing: -0.04em;
     line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  .text-ui-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: none;
+  }
+
+  .text-tag {
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
   }
 
   .text-body-refined {
     font-family: 'Inter', sans-serif;
     letter-spacing: -0.01em;
-    line-height: 1.7;
+    line-height: 1.6;
+    font-size: 15px;
   }
 
   /* ── Sound wave gradient bars (legacy) ── */

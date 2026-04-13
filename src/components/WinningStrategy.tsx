@@ -24,7 +24,7 @@ export const WinningStrategy = ({ steps }: WinningStrategyProps) => {
           <h3 className="font-display font-bold text-lg md:text-xl text-foreground tracking-tight">
             Winning Strategy
           </h3>
-          <p className="text-[11px] text-muted-foreground/70 font-medium uppercase tracking-[0.15em]">Executive Level Tactics</p>
+          <p className="text-tag text-accent-blue/60 mb-1">Executive Level Tactics</p>
         </div>
       </div>
 
@@ -41,14 +41,14 @@ export const WinningStrategy = ({ steps }: WinningStrategyProps) => {
               <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-muted/20 flex items-center justify-center text-[10px] font-mono font-bold text-muted-foreground/40 group-hover:text-accent-blue group-hover:bg-accent-blue/10 transition-all border border-transparent group-hover:border-accent-blue/20">
                 0{i + 1}
               </span>
-              <h4 className="text-[13px] font-bold text-foreground/90 leading-tight tracking-tight pr-4">
+              <h4 className="text-base font-serif italic text-foreground tracking-[-0.01em] pr-4">
                 {step.title}
               </h4>
             </div>
-            <p className="text-[11.5px] text-muted-foreground/70 font-medium leading-[1.6]">
+            <p className="text-sm text-muted-foreground/80 leading-relaxed font-medium">
               {step.description}
             </p>
-            <div className="flex items-center gap-2 text-[8px] text-muted-foreground/60 transition-colors mt-auto uppercase tracking-[0.2em] font-bold">
+            <div className="flex items-center gap-2 text-tag text-muted-foreground/40 mt-auto uppercase tracking-[0.2em]">
               <Zap className="w-3 h-3" />
               Strategic Directive
             </div>
