@@ -58,6 +58,12 @@ Beyond simple keyword matching, Lumina generates 3 unique, actionable steps for 
 2. **Actionable Justification:** Provides AI-written bullet points that quantify your experience relative to the missing skills.
 3. **Market Alignment:** Analyzes broader industry trends to suggest project-based bridge-building strategies.
 
+### 📊 Data Science Methodology
+The platform treats every Job Description as a semi-structured dataset.
+- **NLP Pipeline:** Tokenization and entity recognition to isolate tech-stacks from fluff.
+- **Heuristic Matching:** Cross-references extracted skills against a normalized taxonomy to handle variations (e.g., "TS" mapping to "TypeScript").
+- **Quality Assurance:** Automated consistency tests (see `test_consistency.js`) ensure the AI output stays within expected structural bounds.
+
 ---
 
 ## 🏗️ System Architecture
