@@ -58,9 +58,9 @@ export const useDecodeJD = () => {
       setResults(result);
       setWasCached(false);
       toast.success(`Decoded: ${data.title}${forceRefresh ? " (fresh decode)" : ""}`, { duration: 4000 });
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      toast.error(err.message || "Failed to decode JD. Please try again.");
+      toast.error((err as Error).message || "Failed to decode JD. Please try again.");
     } finally {
       setIsScanning(false);
     }

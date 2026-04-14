@@ -8,7 +8,7 @@
 [![Stack](https://img.shields.io/badge/Stack-React_|_Supabase-000?style=for-the-badge&logo=react)](https://supabase.com/)
 [![License](https://img.shields.io/badge/License-MIT-gray?style=for-the-badge)](LICENSE)
 
-![Lumina Hero](public/readme/hero.png)
+<img src="public/readme/hero.png" width="800" alt="Lumina Hero">
 
 **Lumina JD** is a comprehensive resume screening weapon designed to move job seekers from "average applicant" to **ATS-certified, interview-ready**. Built with a pristine **OpenAI Minimalist** aesthetic and Apple iOS Glassmorphism, it leverages Gemini 3 Flash to deconstruct complex Job Descriptions into actionable data and automatically generate market-winning resumes.
 

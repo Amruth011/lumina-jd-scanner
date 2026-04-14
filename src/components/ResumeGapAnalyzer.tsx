@@ -28,7 +28,7 @@ async function extractPdfText(file: File): Promise<string> {
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
     const content = await page.getTextContent();
-    fullText += content.items.map((item: any) => item.str).join(" ") + "\n";
+    fullText += content.items.map((item: unknown) => (item as { str: string }).str).join(" ") + "\n";
   }
   return fullText.trim();
 }
@@ -148,14 +148,14 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
         ...prev,
         [index]: data.bullet || `Spearheaded initiatives addressing ${reason}, driving measurable improvements in project delivery.`,
       }));
-    } catch (err: any) {
+    } catch (err) {
       console.error("Bullet generation error:", err);
       const keywords = reason.replace(/missing/i, "").trim();
       setGeneratedBullets((prev) => ({
         ...prev,
         [index]: `Led cross-functional initiatives in ${keywords || "this domain"}, resulting in measurable efficiency gains and stakeholder alignment.`,
       }));
-      toast.error("Using fallback — deploy generate-bullet function for real AI bullets.");
+      toast.error((err as Error).message || "Using fallback — deploy generate-bullet function for real AI bullets.");
     } finally {
       setGeneratingFor(null);
     }
@@ -194,9 +194,9 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
         onResumeTextChange?.(text);
         toast.success("Resume parsed successfully — previous results cleared.");
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error("File parse error:", err);
-      toast.error("Failed to parse file. Try pasting text manually.");
+      toast.error((err as Error).message || "Failed to parse file. Try pasting text manually.");
       setFileName("");
     } finally {
       setIsParsing(false);
@@ -251,7 +251,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
     setPendingFile(null);
   };
 
-  const handleCompare = async () => {
+  const handleCompare = useCallback(async () => {
     const trimmedResume = resumeText.trim();
     if (trimmedResume.length < 20) {
       toast.error("Please upload a resume or paste text (min 20 characters).");
@@ -295,8 +295,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
       }
 
       const deterministicResult = computeDeterministicScore(trimmedResume, skills);
-
-      let aiResult: any = null;
+      let aiResult: Partial<ResumeGapResult> | null = null;
       try {
         const { data, error } = await supabase.functions.invoke("compare-resume", {
           body: { resumeText: trimmedResume, skills },
@@ -329,13 +328,13 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
             summary: aiResult.summary || baseResult.summary,
             deductions: baseResult.deductions.map((d) => {
               const keyword = d.reason.replace("Missing: ", "").replace("Partial match: ", "").split(" —")[0].toLowerCase();
-              const aiDed = aiResult.deductions?.find((ad: any) => ad.reason?.toLowerCase().includes(keyword));
+              const aiDed = aiResult.deductions?.find((ad) => ad.reason?.toLowerCase().includes(keyword));
               return aiDed?.fix_snippet ? { ...d, fix_snippet: aiDed.fix_snippet } : d;
             }),
             tailored_resume_snippets: aiResult.tailored_resume_snippets || undefined,
             actionable_directives: aiResult.actionable_directives || undefined,
             skill_matches: baseResult.skill_matches.map((sm) => {
-              const aiSm = aiResult.skill_matches?.find((a: any) => a.skill === sm.skill);
+              const aiSm = aiResult.skill_matches?.find((a) => a.skill === sm.skill);
               return aiSm?.note ? { ...sm, note: aiSm.note } : sm;
             }),
           }
@@ -346,20 +345,20 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
       onResultChange?.(finalResult);
       setLastAnalyzedText(trimmedResume);
       toast.success(`Resume match: ${finalResult.overall_match}%`);
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      toast.error(err.message || "Failed to analyze resume.");
+      toast.error((err as Error).message || "Failed to analyze resume.");
     } finally {
       setIsAnalyzing(false);
     }
-  };
+  }, [resumeText, jdText, skills, onResultChange]);
 
   useEffect(() => {
     if (!isAutoRunEnabled) return;
     const trimmedResume = resumeText.trim();
     if (trimmedResume.length <= 20 || trimmedResume === lastAnalyzedText || isAnalyzing || isParsing) return;
     void handleCompare();
-  }, [isAutoRunEnabled, resumeText, lastAnalyzedText, isAnalyzing, isParsing, skills]);
+  }, [isAutoRunEnabled, resumeText, lastAnalyzedText, isAnalyzing, isParsing, handleCompare]);
 
   const handleAddToTracker = async () => {
     if (!result) return;

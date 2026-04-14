@@ -29,8 +29,8 @@ const Auth = () => {
       if (error) throw error;
       setStep("otp");
       toast.success("Check your email for the verification code.");
-    } catch (err: any) {
-      toast.error(err.message || "Failed to send OTP.");
+    } catch (err) {
+      toast.error((err as Error).message || "Failed to send OTP.");
     } finally {
       setLoading(false);
     }
@@ -47,8 +47,8 @@ const Auth = () => {
       if (error) throw error;
       toast.success("Signed in successfully!");
       navigate("/");
-    } catch (err: any) {
-      toast.error(err.message || "Invalid code.");
+    } catch (err) {
+      toast.error((err as Error).message || "Invalid code.");
     } finally {
       setLoading(false);
     }
@@ -64,8 +64,8 @@ const Auth = () => {
         },
       });
       if (error) throw error;
-    } catch (err: any) {
-      toast.error(err.message || "Google sign-in failed.");
+    } catch (err) {
+      toast.error((err as Error).message || "Google sign-in failed.");
     } finally {
       setLoading(false);
     }

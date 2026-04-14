@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
@@ -18,7 +18,7 @@ export const useApplications = () => {
   const [apps, setApps] = useState<TrackedApplication[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchApps = async () => {
+  const fetchApps = useCallback(async () => {
     if (!user) {
       setApps([]);
       setLoading(false);
@@ -38,7 +38,7 @@ export const useApplications = () => {
       toast.error("Failed to load applications.");
     } else {
       setApps(
-        (data || []).map((row: any) => ({
+        (data || []).map((row) => ({
           id: row.id,
           company: row.company,
           role: row.role,
@@ -50,7 +50,7 @@ export const useApplications = () => {
       );
     }
     setLoading(false);
-  };
+  }, [user, apps.length]);
 
   useEffect(() => {
     fetchApps();
@@ -81,7 +81,7 @@ export const useApplications = () => {
       window.removeEventListener("tracker-updated", handler);
       supabase.removeChannel(channel);
     };
-  }, [user]);
+  }, [user, fetchApps]);
 
   const saveApp = async (app: TrackedApplication) => {
     if (!user) throw new Error("Not authenticated");
@@ -97,7 +97,7 @@ export const useApplications = () => {
   };
 
   const updateApp = async (id: string, updates: Partial<TrackedApplication>) => {
-    const dbUpdates: any = { updated_at: new Date().toISOString() };
+    const dbUpdates: Record<string, unknown> = { updated_at: new Date().toISOString() };
     if (updates.company) dbUpdates.company = updates.company;
     if (updates.role) dbUpdates.role = updates.role;
     if (updates.status) dbUpdates.status = updates.status;

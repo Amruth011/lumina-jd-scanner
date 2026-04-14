@@ -49,9 +49,9 @@ export const ResumeBuilder = ({ resumeText, skills, deductions, jobTitle, gapRes
       });
       setIsOpen(true);
       toast.success("ATS-optimized resume generated!");
-    } catch (err: any) {
+    } catch (err) {
       console.error("Resume generation error:", err);
-      toast.error(err.message || "Failed to generate resume. Please try again.");
+      toast.error((err as Error).message || "Failed to generate resume. Please try again.");
     } finally {
       setIsGenerating(false);
     }

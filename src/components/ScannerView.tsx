@@ -50,12 +50,12 @@ export const ScannerView = () => {
     setSavingJd(true);
     try {
       const { data, error } = await supabase.from("jd_vault").insert({
-        user_id: user.id, title: results.title, raw_text: jdText, skills_json: results.skills as any,
+        user_id: user.id, title: results.title, raw_text: jdText, skills_json: results.skills,
       }).select("id").single();
       if (error) throw error;
       setSavedJdId(data.id);
       toast.success("JD saved to your history!");
-    } catch (err: any) { console.error(err); toast.error("Failed to save JD."); }
+    } catch (err) { console.error(err); toast.error("Failed to save JD."); }
     finally { setSavingJd(false); }
   };
 
