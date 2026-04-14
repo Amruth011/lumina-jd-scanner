@@ -89,3 +89,41 @@ export interface ATSVerdict {
   reasons: string[];
   tips: string[];
 }
+// ── NEW: Master Vault types ──
+export type VaultItemType = 'professional' | 'project' | 'education' | 'certification';
+
+export interface VaultItem {
+  id: string;
+  user_id: string;
+  type: VaultItemType;
+  title: string;
+  organization: string;
+  period: string;
+  description: string;
+  bullets: string[];
+  skills: string[];
+  is_quantified?: boolean; // Track if this entry has metrics/numbers
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserProfileWithVault {
+  id: string;
+  email?: string;
+  full_name?: string;
+  phone?: string;
+  location?: string;
+  linkedin_url?: string;
+  github_url?: string; // Enhanced portfolio support
+  website_url?: string;
+  summary_master?: string;
+}
+
+// ── NEW: Tailoring types ──
+export interface TailorRequest {
+  jd_title: string;
+  jd_skills: Skill[];
+  company_name?: string;
+  vault_items: VaultItem[];
+  personal_info: UserProfileWithVault;
+}

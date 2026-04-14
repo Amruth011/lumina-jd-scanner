@@ -15,12 +15,14 @@ import { WinningStrategy } from "@/components/WinningStrategy";
 import { ResumeGapAnalyzer } from "@/components/ResumeGapAnalyzer";
 import { ATSKeywordScanner } from "@/components/ATSKeywordScanner";
 import { ATSScoreSimulator } from "@/components/ATSScoreSimulator";
-import { ResumeBuilder } from "@/components/ResumeBuilder";
+import { ResumeEnhancer } from "@/components/ResumeEnhancer";
+import { MasterVault } from "@/components/MasterVault";
+import { ResumeGenerator } from "@/components/ResumeGenerator";
 import type { DecodeResult, ResumeGapResult } from "@/types/jd";
 
 const ApplicationTracker = lazy(() => import("@/components/ApplicationTracker").then(module => ({ default: module.ApplicationTracker })));
 
-type Tab = "decode" | "applications";
+type Tab = "decode" | "vault" | "applications";
 
 const stagger = {
   animate: { transition: { staggerChildren: 0.08 } }
@@ -60,7 +62,11 @@ export const ScannerView = () => {
   };
 
   const handleTabSwitch = (tab: Tab) => {
-    if (tab === "applications" && !user) { toast.info("Sign in to access your application tracker."); navigate("/auth"); return; }
+    if ((tab === "applications" || tab === "vault") && !user) {
+      toast.info(`Sign in to access your ${tab === "vault" ? "Master Vault" : "application tracker"}.`);
+      navigate("/auth");
+      return;
+    }
     setActiveTab(tab);
   };
 
@@ -91,7 +97,8 @@ export const ScannerView = () => {
         <nav className="flex items-center gap-0.5 bg-background/20 rounded-full p-1 backdrop-blur-3xl border border-white/40 shadow-xl shadow-black/5">
           {[
             { key: "decode" as Tab, icon: Search, label: "Decoder" },
-            { key: "applications" as Tab, icon: LayoutDashboard, label: "Applications" },
+            { key: "vault" as Tab, icon: LayoutDashboard, label: "Master Vault" },
+            { key: "applications" as Tab, icon: Briefcase, label: "Applications" },
           ].map((tab) => (
             <button key={tab.key} onClick={() => handleTabSwitch(tab.key)} className={tabClass(tab.key)}>
               {activeTab === tab.key && (
@@ -236,8 +243,13 @@ export const ScannerView = () => {
 
                   {gapResult && <ATSScoreSimulator result={gapResult} />}
 
+                  <ResumeGenerator
+                    jdTitle={results.title}
+                    jdSkills={results.skills}
+                  />
+
                   {gapResult && (
-                    <ResumeBuilder
+                    <ResumeEnhancer
                       resumeText={userResumeText}
                       skills={results.skills}
                       deductions={gapResult.deductions}
@@ -249,7 +261,7 @@ export const ScannerView = () => {
               )}
             </AnimatePresence>
           </motion.div>
-        ) : (
+        ) : activeTab === "applications" ? (
           <motion.div
             key="applications"
             initial={{ opacity: 0, y: 12 }}
@@ -260,6 +272,16 @@ export const ScannerView = () => {
             <Suspense fallback={<div className="flex justify-center p-12"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
               <ApplicationTracker />
             </Suspense>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="vault"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <MasterVault />
           </motion.div>
         )}
       </AnimatePresence>

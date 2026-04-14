@@ -635,201 +635,237 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 200 }}
-              className="mb-5 text-center py-6 glass liquid-glass rounded-xl relative overflow-hidden"
+              className="mb-8 text-center p-12 glass shadow-2xl rounded-[40px] relative overflow-hidden group"
             >
               <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5"
-                animate={{ opacity: [0.3, 0.6, 0.3] }}
-                transition={{ duration: 3, repeat: Infinity }}
+                className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 opacity-50"
+                animate={{ 
+                  scale: [1, 1.1, 1],
+                  rotate: [0, 2, 0]
+                }}
+                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
               />
-              <div className="relative z-10">
-                <span className={`text-5xl font-display font-bold ${getMatchColor(result.overall_match)}`}>
-                  {result.overall_match}%
-                </span>
-                <p className="text-sm text-muted-foreground mt-1">Overall Match Score</p>
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="relative">
+                  <span className={`text-7xl md:text-8xl font-display font-black tracking-tighter ${getMatchColor(result.overall_match)}`}>
+                    {result.overall_match}%
+                  </span>
+                  <div className="absolute -top-2 -right-6 flex items-center gap-1.5 px-3 py-1 rounded-full bg-foreground text-background text-[10px] font-black uppercase tracking-widest shadow-lg">
+                    <Zap className="w-3 h-3 fill-current" /> Match
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground/60 font-bold uppercase tracking-[0.3em] mt-4">Enterprise Match Score</p>
 
-                <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+                <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
                   {!addedToTracker ? (
                     <motion.button
-                      whileHover={{ scale: 1.05 }}
+                      whileHover={{ scale: 1.05, y: -2 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={handleAddToTracker}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold text-primary bg-primary/10 border border-primary/20 hover:bg-primary/20 transition-all"
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-bold text-foreground bg-foreground/5 border border-foreground/10 hover:bg-foreground/10 transition-all shadow-sm"
                     >
-                      <PlusCircleIcon className="w-3.5 h-3.5" /> Add to Tracker
+                      <PlusCircleIcon className="w-4 h-4" /> Save to Pipeline
                     </motion.button>
                   ) : (
-                    <motion.span
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="inline-flex items-center gap-1 text-xs text-[hsl(var(--skill-core))] font-semibold"
-                    >
-                      <CheckCircle2 className="w-3.5 h-3.5" /> Tracked
-                    </motion.span>
+                    <div className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-bold text-accent-emerald bg-accent-emerald/5 border border-accent-emerald/10">
+                      <CheckCircle2 className="w-4 h-4" /> Tracked in Dashboard
+                    </div>
                   )}
                   
                   <motion.button
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={{ scale: 1.05, y: -2 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={handleExportPDF}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold text-accent-foreground bg-accent hover:opacity-90 transition-all border border-accent/20 shadow-sm"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-bold text-background bg-foreground hover:opacity-90 transition-all shadow-xl shadow-foreground/10"
                   >
-                    <FileText className="w-3.5 h-3.5" /> Action Plan
+                    <FileText className="w-4 h-4" /> Export Strategy PDF
                   </motion.button>
                 </div>
               </div>
             </motion.div>
 
-            {/* Why Not 100% — Prominent deductions panel */}
-            {result.deductions && result.deductions.length > 0 && (
+            {/* WHY NOT 100% - THE STRATEGY PANEL */}
+            {result.deductions && result.deductions.length > 0 ? (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.1 }}
-                className="mb-8 rounded-2xl border border-accent-red/20 bg-accent-red/5 p-6 shadow-sm shadow-accent-red/5"
+                className="mb-8 rounded-[40px] border border-accent-red/20 bg-accent-red/5 p-8 relative overflow-hidden"
               >
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-accent-red/10 border border-accent-red/10">
-                    <AlertTriangle className="w-4 h-4 text-accent-red" />
+                <div className="absolute top-0 right-0 p-8 opacity-5 scale-150 pointer-events-none">
+                   <AlertTriangle className="w-32 h-32 text-accent-red" />
+                </div>
+                
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-12 h-12 rounded-2xl bg-accent-red/10 border border-accent-red/20 flex items-center justify-center">
+                    <Zap className="w-6 h-6 text-accent-red" />
                   </div>
-                  <div className="space-y-0.5">
-                    <h4 className="text-tag text-accent-red/60 leading-none">
-                      Why Not 100%?
-                    </h4>
-                    <p className="text-sm font-bold text-foreground tracking-tight">Fix These to Improve Your Score</p>
+                  <div>
+                    <h4 className="text-2xl font-display font-bold text-foreground tracking-tight">Strategy: The Gap Closer</h4>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-black opacity-60">Architecting 100% Match Candidacy</p>
                   </div>
                 </div>
-                <div className="space-y-3">
+
+                <div className="space-y-4">
                   {result.deductions.map((d, i) => (
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.05 * i }}
-                      className="flex flex-col bg-background/40 hover:bg-background/60 rounded-xl border border-border/40 overflow-hidden transition-all group"
+                      className="group relative bg-background/40 hover:bg-background/80 rounded-2xl border border-border/40 overflow-hidden transition-all duration-300"
                     >
-                      <div className="flex items-center gap-4 px-4 py-3.5">
-                        <span className="font-mono font-bold text-xs text-accent-red px-2 py-1 rounded bg-accent-red/10 border border-accent-red/10 min-w-[45px] text-center">-{d.percent}%</span>
-                        <div className="flex-1">
-                           <span className="text-[14px] font-bold text-foreground/80 leading-tight tracking-tight">{d.reason}</span>
+                      <div className="flex items-center gap-5 px-6 py-5">
+                        <div className="flex flex-col items-center justify-center px-4 py-2 rounded-xl bg-accent-red/10 border border-accent-red/20 min-w-[70px]">
+                          <span className="text-[10px] font-bold text-accent-red/60 uppercase tracking-tighter">Impact</span>
+                          <span className="text-xl font-display font-black text-accent-red">-{d.percent}%</span>
+                        </div>
+                        <div className="flex-1 space-y-1">
+                           <span className="text-base font-bold text-foreground leading-tight tracking-tight block">{d.reason}</span>
+                           <span className="text-xs text-muted-foreground italic flex items-center gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
+                             <Sparkles className="w-3 h-3" /> Potential 0.1% candidacy bottleneck detected.
+                           </span>
                         </div>
                         <motion.button
                            whileHover={{ scale: 1.05 }}
                            whileTap={{ scale: 0.95 }}
                            onClick={() => handleGenerateBullet(i, d.reason)}
                            disabled={generatingFor === i || !!generatedBullets[i]}
-                           className="flex items-center gap-2 px-4 py-2 rounded-xl text-tag text-accent-blue bg-accent-blue/10 border border-accent-blue/20 hover:bg-accent-blue/20 transition-all disabled:opacity-50 shadow-sm"
+                           className="flex items-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-bold text-accent-blue bg-accent-blue/10 border border-accent-blue/20 hover:bg-accent-blue/20 transition-all disabled:opacity-50 shadow-sm"
                         >
-                           {generatingFor === i ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-                           {generatingFor === i ? "Working..." : generatedBullets[i] ? "Generated" : "Fix with AI"}
+                           {generatingFor === i ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                           {generatingFor === i ? "Brewing..." : generatedBullets[i] ? "Optimized" : "Inject AI Polish"}
                         </motion.button>
                       </div>
 
-                      {/* Fix Snippet — ready-to-paste suggestion from gap analysis */}
-                      {d.fix_snippet && (
-                        <div className="bg-emerald-500/5 border-t border-emerald-500/15 px-4 py-2.5 flex gap-2 items-start group relative">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 mt-0.5 shrink-0" />
-                          <p className="text-xs text-emerald-700 font-medium leading-relaxed flex-1">
-                            <span className="font-bold">Fix:</span> {d.fix_snippet}
-                          </p>
-                          <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            onClick={() => handleCopyBullet(d.fix_snippet!)}
-                            className="p-1 rounded text-emerald-500 hover:bg-emerald-500/10 transition-colors opacity-0 group-hover:opacity-100"
-                            title="Copy fix snippet"
-                          >
-                            <Copy className="w-3 h-3" />
-                          </motion.button>
-                        </div>
-                      )}
-
                       <AnimatePresence>
-                        {generatedBullets[i] && (
+                        {(d.fix_snippet || generatedBullets[i]) && (
                           <motion.div
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
-                            className="bg-primary/5 border-t border-primary/10 px-4 py-3 flex gap-3 items-start relative group"
+                            className="bg-foreground/5 border-t border-white/5 p-6 space-y-4"
                           >
-                            <Sparkles className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-                            <p className="text-sm text-foreground/90 font-medium leading-relaxed flex-1">
-                              "{generatedBullets[i]}"
-                            </p>
-                            <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                              onClick={() => handleCopyBullet(generatedBullets[i])}
-                              className="p-1.5 rounded-md text-primary hover:bg-primary/10 transition-colors opacity-0 group-hover:opacity-100 absolute right-2 top-2"
-                              title="Copy to clipboard"
-                            >
-                              <Copy className="w-4 h-4" />
-                            </motion.button>
+                            {d.fix_snippet && (
+                              <div className="flex gap-4 items-start">
+                                <div className="w-6 h-6 rounded-full bg-accent-emerald/10 flex items-center justify-center shrink-0">
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-accent-emerald" />
+                                </div>
+                                <div className="space-y-1 flex-1">
+                                  <p className="text-[10px] font-bold text-accent-emerald uppercase tracking-widest leading-none mb-1">Static Analysis Fix</p>
+                                  <p className="text-sm text-foreground/80 font-medium leading-relaxed italic">"{d.fix_snippet}"</p>
+                                </div>
+                                <button onClick={() => handleCopyBullet(d.fix_snippet!)} className="p-2 hover:bg-white/10 rounded-xl transition-colors"><Copy className="w-4 h-4 text-muted-foreground" /></button>
+                              </div>
+                            )}
+                            
+                            {generatedBullets[i] && (
+                              <div className="flex gap-4 items-start pt-4 border-t border-white/5">
+                                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                                  <Sparkles className="w-3.5 h-3.5 text-primary" />
+                                </div>
+                                <div className="space-y-1 flex-1">
+                                  <p className="text-[10px] font-bold text-primary uppercase tracking-widest leading-none mb-1">Generative AI Reinforcement</p>
+                                  <p className="text-sm text-foreground font-bold leading-relaxed">"{generatedBullets[i]}"</p>
+                                </div>
+                                <button onClick={() => handleCopyBullet(generatedBullets[i])} className="p-2 hover:bg-white/10 rounded-xl transition-colors"><Copy className="w-4 h-4 text-muted-foreground" /></button>
+                              </div>
+                            )}
                           </motion.div>
                         )}
                       </AnimatePresence>
                     </motion.div>
                   ))}
                 </div>
-                <p className="mt-3 text-xs text-muted-foreground italic">
-                  Address these gaps to push your match score closer to 100%.
-                </p>
               </motion.div>
+            ) : (
+                <div className="mb-8 rounded-[40px] border border-accent-emerald/20 bg-accent-emerald/5 p-12 text-center space-y-4">
+                   <div className="w-20 h-20 rounded-full bg-accent-emerald/10 flex items-center justify-center mx-auto border border-accent-emerald/20">
+                     <CheckCircle2 className="w-10 h-10 text-accent-emerald" />
+                   </div>
+                   <h4 className="text-2xl font-display font-bold">Unicorn Candidate Status</h4>
+                   <p className="text-muted-foreground max-w-sm mx-auto">No significant skill gaps detected. Your profile matches the JD's core signature exactly.</p>
+                </div>
             )}
 
-            {/* Skill bars */}
-            <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
-              {result.skill_matches.map((sm, i) => (
-                <motion.div
-                  key={sm.skill}
-                  initial={{ opacity: 0, x: -15 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.05 * i, duration: 0.3 }}
-                >
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-sm font-medium text-foreground flex items-center gap-1.5">
-                      {getVerdictIcon(sm.verdict)}
-                      {sm.skill}
-                    </span>
-                    <span className="text-xs text-muted-foreground flex items-center gap-1.5">
-                      <span className={`text-[9px] font-bold uppercase tracking-[0.15em] px-2 py-0.5 rounded-full border ${
-                        sm.verdict === "strong"
-                          ? "text-accent-emerald bg-accent-emerald/10 border-accent-emerald/10"
-                          : sm.verdict === "partial"
-                          ? "text-accent-amber bg-accent-amber/10 border-accent-amber/10"
-                          : "text-accent-red bg-accent-red/10 border-accent-red/10"
-                      }`}>
-                        {getVerdictLabel(sm.verdict)}
-                      </span>
-                      {sm.match_percent}%
-                    </span>
+            {/* THE HEATMAP & ROADMAP GRID */}
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr,300px] gap-6">
+                {/* SKILL HEATMAP */}
+                <div className="rounded-[40px] bg-muted/20 p-8 border border-white/5">
+                  <div className="flex items-center justify-between mb-8">
+                     <h4 className="text-lg font-bold tracking-tight">Competency Breakdown</h4>
+                     <div className="flex gap-2">
+                       {['strong', 'partial', 'missing'].map(v => (
+                         <div key={v} className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-background border border-border font-bold capitalize">
+                           <div className={`w-1.5 h-1.5 rounded-full ${getBarColor(v)}`} />
+                           <span className="text-[10px] text-muted-foreground uppercase">{v}</span>
+                         </div>
+                       ))}
+                     </div>
                   </div>
-                  <div className="w-full h-2.5 rounded-full bg-muted/50 overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${sm.match_percent}%` }}
-                      transition={{ duration: 0.8, delay: 0.1 * i, ease: "easeOut" }}
-                      className={`h-full rounded-full bg-gradient-to-r ${getBarColor(sm.verdict)}`}
-                    />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {result.skill_matches.map((sm, i) => (
+                      <div key={sm.skill} className="p-4 rounded-2xl bg-background/40 border border-white/5 flex items-center justify-between group hover:bg-background transition-all">
+                        <div className="flex items-center gap-3">
+                           {getVerdictIcon(sm.verdict)}
+                           <span className="text-sm font-medium">{sm.skill}</span>
+                        </div>
+                        <span className={`text-[10px] font-black uppercase tracking-widest ${
+                          sm.match_percent >= 80 ? 'text-accent-emerald' : sm.match_percent >= 50 ? 'text-accent-amber' : 'text-accent-red'
+                        }`}>{sm.match_percent}%</span>
+                      </div>
+                    ))}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">{sm.note}</p>
-                </motion.div>
-              ))}
+                </div>
+
+                {/* SIDEBAR: ACTION ROADMAP */}
+                <div className="space-y-6">
+                  <div className="rounded-3xl bg-foreground text-background p-6 space-y-6 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 p-4 opacity-10">
+                        <BarChart3 className="w-24 h-24" />
+                      </div>
+                      <div className="relative z-10 space-y-4">
+                        <h5 className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">Success Roadmap</h5>
+                        <h4 className="text-xl font-display font-bold leading-tight">Your Path to <span className="text-primary italic">100%</span></h4>
+                        
+                        <div className="space-y-4 pt-4">
+                          {[
+                            { step: 1, label: "Address Missing Skills", done: result.skill_matches.every(s => s.verdict !== 'missing') },
+                            { step: 2, label: "Quantify Experience", done: !!result.tailored_resume_snippets },
+                            { step: 3, label: "Final ATS Audit", done: result.overall_match >= 90 }
+                          ].map((s, i) => (
+                            <div key={i} className="flex gap-4 items-center">
+                                <div className={`w-6 h-6 rounded-full border flex items-center justify-center text-[10px] font-bold ${s.done ? 'bg-accent-emerald border-accent-emerald text-white' : 'border-white/20 text-white/40'}`}>
+                                  {s.done ? <CheckCircle2 className="w-3.5 h-3.5" /> : s.step}
+                                </div>
+                                <span className={`text-xs font-bold ${s.done ? 'line-through opacity-40' : ''}`}>{s.label}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        <button 
+                          onClick={handleExportPDF}
+                          className="w-full py-4 mt-6 rounded-[20px] bg-white/10 hover:bg-white/20 border border-white/10 text-white text-xs font-bold transition-all"
+                        >
+                          Download Battleplan PDF
+                        </button>
+                      </div>
+                  </div>
+                </div>
             </div>
 
-             {/* Summary */}
-             <motion.div
-               initial={{ opacity: 0 }}
-               animate={{ opacity: 1 }}
-               transition={{ delay: 0.3 }}
-               className="mt-4 glass rounded-xl p-4 relative overflow-hidden"
-             >
-               <motion.div
-                 className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-accent-blue to-accent-violet rounded-full opacity-60"
-               />
-               <p className="text-sm text-muted-foreground leading-relaxed pl-3">
-                 {result.summary}
-               </p>
-             </motion.div>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="mt-8 glass rounded-[32px] p-6 relative overflow-hidden"
+            >
+              <motion.div
+                className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-accent-blue to-accent-violet rounded-full opacity-60"
+              />
+              <p className="text-base text-card-foreground font-medium leading-relaxed pl-4 italic">
+                "{result.summary}"
+              </p>
+            </motion.div>
            </div>{/* END PAGE 1 */}
            
            <div ref={page2Ref} className="bg-background/20 border-t border-border/40 p-5 sm:p-8">

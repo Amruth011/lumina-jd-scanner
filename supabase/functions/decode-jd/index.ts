@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.1.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -39,148 +40,43 @@ serve(async (req) => {
       });
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
 
-    const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        temperature: 0,
-        seed: 42,
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          {
-            role: "system",
-            content: `You are an expert recruiter, JD analyst, and career strategist. Extract comprehensive information from job descriptions.
+    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-3-flash" });
 
-IMPORTANT RULES FOR THE TITLE FIELD:
-- FIRST, look for an explicit job title and company name in the JD text.
-- If BOTH company and job title are clearly stated, format as: "Company Name — Job Title" (e.g. "Google — Data Scientist").
-- If ONLY the job title is stated (no company), use just the title: "Data Scientist".
-- Do NOT rename or re-interpret the job title based on the skills listed. If the JD says "Data Scientist" but focuses on ML engineering tasks, still use "Data Scientist" as the title.
-- If the skills heavily align with a different role, ADD a parenthetical note: e.g. "Data Scientist (skills align closely with ML Engineering)" — but KEEP the original title.
-- If NO explicit job title is found in the JD, infer the best-fit role and format as: "This JD aligns with [Inferred Role] based on the requirements" (e.g. "This JD aligns with ML Engineer based on the requirements").
-- If NO company name is found, do NOT fabricate one — omit it.
+    const prompt = `
+      You are an expert recruiter and career strategist. Analyze this job description thoroughly.
+      
+      JD Text:
+      ${jdText}
 
-CRITICAL RULE FOR SKILLS:
-- If a JD lists alternatives (e.g. "React or Angular", "AWS/GCP/Azure", or "Requires either Python, Java, or C++"), DO NOT extract them as separate, mandatory skills. 
-- You MUST extract them as a SINGLE composite skill item using " OR ". E.g., extract exactly as: "React OR Angular", "AWS OR GCP OR Azure", "Python OR Java OR C++".
-- This is incredibly important to ensure the candidate isn't unfairly judged for missing an alternative they weren't required to have.`,
-          },
-          {
-            role: "user",
-            content: `Analyze this job description thoroughly. Extract:
-1. The exact job title (and company if mentioned) as written in the JD — do NOT infer or rename it
-2. All required skills with category and importance (0-100)
-3. Critical requirements: education, experience, soft skills, and any agreements/conditions
-4. A "Top 0.1% Winning Strategy" — 3 specific, actionable steps to stand out for THIS role
+      INSTRUCTIONS:
+      1. TITLE: Extract the company and title (e.g. "Google - Data Scientist"). If not found, infer the best fit.
+      2. SKILLS: Extract skills into categories (Languages, Frameworks, Tools, Databases, Cloud, Soft Skills, Other).
+      3. STRATEGY: Provide exactly 3 actionable steps to be a top 0.1% candidate for THIS role.
+      4. COMPOSITE SKILLS: If the JD says "React or Angular", extract as a single skill: "React OR Angular". Do NOT split them.
 
-Job Description:
-${jdText}`,
-          },
-        ],
-        tools: [
-          {
-            type: "function",
-            function: {
-              name: "extract_jd_full",
-              description: "Extract skills, requirements, and winning strategy from a job description",
-              parameters: {
-                type: "object",
-                properties: {
-                  title: { type: "string", description: "The EXACT job title from the JD. Format: 'Company — Job Title' if both exist, just 'Job Title' if no company, or 'This JD aligns with [Role] based on the requirements' if no explicit title. If skills align with a different role, add parenthetical note e.g. 'Data Scientist (skills align closely with ML Engineering)'." },
-                  skills: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        category: { type: "string", enum: ["Languages", "Frameworks", "Tools", "Databases", "Cloud", "Soft Skills", "Other"] },
-                        skill: { type: "string" },
-                        importance: { type: "number" },
-                      },
-                      required: ["category", "skill", "importance"],
-                    },
-                  },
-                  requirements: {
-                    type: "object",
-                    properties: {
-                      education: {
-                        type: "array",
-                        items: { type: "string" },
-                        description: "Education requirements like B.Tech, Masters, PhD",
-                      },
-                      experience: {
-                        type: "string",
-                        description: "Experience requirement like '3+ years' or '5-8 years'",
-                      },
-                      soft_skills: {
-                        type: "array",
-                        items: { type: "string" },
-                        description: "Soft skills like Stakeholder Management, Agile, Leadership",
-                      },
-                      agreements: {
-                        type: "array",
-                        items: { type: "string" },
-                        description: "Any mentions of shifts, relocation, legal terms, NDAs, travel",
-                      },
-                    },
-                    required: ["education", "experience", "soft_skills", "agreements"],
-                  },
-                  winning_strategy: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        title: { type: "string", description: "Short strategy title" },
-                        description: { type: "string", description: "Detailed actionable step" },
-                      },
-                      required: ["title", "description"],
-                    },
-                    description: "Exactly 3 actionable steps to be a top 0.1% candidate",
-                  },
-                },
-                required: ["title", "skills", "requirements", "winning_strategy"],
-              },
-            },
-          },
-        ],
-        tool_choice: { type: "function", function: { name: "extract_jd_full" } },
-      }),
-    });
-
-    if (!aiResponse.ok) {
-      const status = aiResponse.status;
-      if (status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again later." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+      RETURN JSON FORMAT:
+      {
+        "title": "...",
+        "skills": [{"category": "...", "skill": "...", "importance": 100}, ...],
+        "requirements": {
+          "education": ["..."],
+          "experience": "...",
+          "soft_skills": ["..."],
+          "agreements": ["..."]
+        },
+        "winning_strategy": [{"title": "...", "description": "..."}]
       }
-      if (status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits exhausted. Please add funds." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      const errText = await aiResponse.text();
-      console.error("AI error:", status, errText);
-      throw new Error("AI gateway error");
-    }
+    `;
 
-    const aiData = await aiResponse.json();
-    const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-    let parsed: JDParsed;
-
-    if (toolCall?.function?.arguments) {
-      parsed = JSON.parse(toolCall.function.arguments);
-    } else {
-      const content = aiData.choices?.[0]?.message?.content || "";
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) throw new Error("Could not parse AI response");
-      parsed = JSON.parse(jsonMatch[0]);
-    }
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+    const cleanJson = text.replace(/```json/g, "").replace(/```/g, "").trim();
+    const parsed: JDParsed = JSON.parse(cleanJson);
 
     // Save to database
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;

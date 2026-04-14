@@ -1,0 +1,469 @@
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus, Briefcase, Code, GraduationCap, Award, Trash2, Edit3, Save, X, Loader2, Sparkles, User, Globe, Linkedin, Mail, Phone, MapPin, Github, Import, Zap } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
+import type { VaultItem, VaultItemType, UserProfileWithVault } from "@/types/jd";
+
+export const MasterVault = () => {
+  const { user } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [items, setItems] = useState<VaultItem[]>([]);
+  const [profile, setProfile] = useState<UserProfileWithVault | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [editingItem, setEditingItem] = useState<Partial<VaultItem> | null>(null);
+  useEffect(() => {
+    if (user) {
+      fetchData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const { data: profileData } = await supabase.from("profiles").select("*").eq("id", user?.id).single();
+      const { data: vaultData } = await supabase.from("master_vault").select("*").eq("user_id", user?.id).order('created_at', { ascending: false });
+      
+      setProfile(profileData as UserProfileWithVault);
+      setItems(vaultData as VaultItem[] || []);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to load vault data.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleImportResume = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    setIsSyncing(true);
+    const toastId = toast.loading("Smart Sync: Parsing your resume...");
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const { data, error } = await supabase.functions.invoke('parse-resume-file', {
+        body: formData,
+      });
+
+      if (error) throw error;
+      
+      toast.loading("Smart Sync: Extracting experience into vault...", { id: toastId });
+
+      // After parsing text, we use Gemini to structure it into vault items
+      const { data: structData, error: structError } = await supabase.functions.invoke('tailor-resume', {
+        body: {
+          jd_title: "Structure all experience",
+          jd_skills: [],
+          vault_items: [],
+          personal_info: {},
+          raw_resume_text: data.text,
+          mode: 'import' // Special mode for tailor-resume to just structure data
+        }
+      });
+
+      if (structError) throw structError;
+
+      // Batch insert into vault
+      if (structData.experience) {
+        const newItems = structData.experience.map((exp: { heading: string; content: string; bullets: string[] }) => ({
+          user_id: user.id,
+          type: 'professional',
+          title: exp.heading.split('|')[0].trim(),
+          organization: exp.heading.split('|')[1]?.trim() || "Imported",
+          description: exp.content,
+          bullets: exp.bullets || [],
+          skills: [],
+          is_quantified: (exp.bullets || []).some((b: string) => /[\d%]/.test(b))
+        }));
+
+        const { error: insertError } = await supabase.from("master_vault").insert(newItems);
+        if (insertError) throw insertError;
+      }
+
+      toast.success("Smart Sync complete: Experience added to vault!", { id: toastId });
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      toast.error("Smart Sync failed. Please try manual entry.", { id: toastId });
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    if (!profile) return;
+    setIsSaving(true);
+    try {
+      const { error } = await supabase.from("profiles").update(profile).eq("id", user?.id);
+      if (error) throw error;
+      toast.success("Profile updated in Master Vault.");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update profile.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSuggestMetrics = () => {
+    if (!editingItem?.description) return;
+    toast.info("Quantifier Assistant: Look for areas where you improved efficiency, saved cost, or reduced time.");
+    const suggested = editingItem.description + "\n\n[?] Tip: Add a metric here (e.g. 'Improved efficiency by 25%').";
+    setEditingItem({ ...editingItem, description: suggested });
+  };
+
+  const handleSaveItem = async () => {
+    if (!editingItem || !user) return;
+    setIsSaving(true);
+    
+    // Auto-detect quantification
+    const hasNumbers = /[\d%]/.test(editingItem.description || "") || (editingItem.bullets || []).some(b => /[\d%]/.test(b));
+    const itemToSave = { ...editingItem, is_quantified: hasNumbers };
+
+    try {
+      if (editingItem.id) {
+        const { error } = await supabase.from("master_vault").update(itemToSave).eq("id", editingItem.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from("master_vault").insert({ ...itemToSave, user_id: user.id });
+        if (error) throw error;
+      }
+      toast.success("Vault item saved.");
+      setEditingItem(null);
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to save item.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteItem = async (id: string) => {
+    if (!confirm("Are you sure you want to remove this item from your vault?")) return;
+    try {
+      const { error } = await supabase.from("master_vault").delete().eq("id", id);
+      if (error) throw error;
+      toast.success("Item removed.");
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete item.");
+    }
+  };
+
+  if (isLoading) return <div className="flex justify-center p-12"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
+
+  return (
+    <div className="space-y-8 max-w-5xl mx-auto">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+        <div>
+          <h2 className="text-4xl font-display font-bold tracking-tight mb-2 flex items-center gap-3">
+            The Master Vault
+            <div className="px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-bold text-primary uppercase tracking-widest">Secure</div>
+          </h2>
+          <p className="text-muted-foreground text-sm max-w-md">Your centralized career library. Everything you've ever achieved, ready to be tailored by AI.</p>
+        </div>
+        
+        <div className="flex flex-wrap items-center gap-4">
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            onChange={handleImportResume} 
+            accept=".pdf,.docx,.txt" 
+            className="hidden" 
+          />
+          <button 
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isSyncing}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-muted/30 border border-white/5 text-xs font-bold hover:bg-muted/50 transition-all active:scale-95 disabled:opacity-50"
+          >
+            {isSyncing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Import className="w-3.5 h-3.5" />}
+            Smart Sync Resume
+          </button>
+          
+          <div className="flex bg-muted/30 p-1 rounded-2xl border border-white/5">
+            {[
+              { id: 'profile', icon: User, label: 'Profile' },
+              { id: 'professional', icon: Briefcase, label: 'Exp' },
+              { id: 'project', icon: Code, label: 'Projects' },
+              { id: 'education', icon: GraduationCap, label: 'Edu' },
+              { id: 'certification', icon: Award, label: 'Certs' },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as VaultItemType | 'profile')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                  activeTab === tab.id ? "bg-background shadow-lg text-foreground" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <tab.icon className="w-3.5 h-3.5" />
+                <span className="hidden lg:inline">{tab.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <AnimatePresence mode="wait">
+        {activeTab === 'profile' ? (
+          <motion.div
+            key="profile"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            className="premium-card p-10 space-y-10 relative overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
+              <User className="w-64 h-64 -rotate-12" />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+              <div className="space-y-3">
+                <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Identity</label>
+                <div className="relative group">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <input
+                    className="w-full bg-background/40 border border-border/40 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
+                    value={profile?.full_name || ""}
+                    onChange={(e) => setProfile({ ...profile!, full_name: e.target.value })}
+                    placeholder="Full Legal Name"
+                  />
+                </div>
+              </div>
+              <div className="space-y-3">
+                <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Base Location</label>
+                <div className="relative group">
+                  <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <input
+                    className="w-full bg-background/40 border border-border/40 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
+                    value={profile?.location || ""}
+                    onChange={(e) => setProfile({ ...profile!, location: e.target.value })}
+                    placeholder="e.g. Bangalore, KA"
+                  />
+                </div>
+              </div>
+              <div className="space-y-3">
+                <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">LinkedIn HQ</label>
+                <div className="relative group">
+                  <Linkedin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <input
+                    className="w-full bg-background/40 border border-border/40 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
+                    value={profile?.linkedin_url || ""}
+                    onChange={(e) => setProfile({ ...profile!, linkedin_url: e.target.value })}
+                    placeholder="linkedin.com/in/username"
+                  />
+                </div>
+              </div>
+              <div className="space-y-3">
+                <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">GitHub / Code</label>
+                <div className="relative group">
+                  <Github className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <input
+                    className="w-full bg-background/40 border border-border/40 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
+                    value={profile?.github_url || ""}
+                    onChange={(e) => setProfile({ ...profile!, github_url: e.target.value })}
+                    placeholder="github.com/username"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3 pt-2">
+              <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Master Summary Repository</label>
+              <textarea
+                className="w-full bg-background/40 border border-border/40 rounded-3xl p-6 text-sm focus:ring-2 ring-primary/20 transition-all h-48 resize-none outline-none"
+                value={profile?.summary_master || ""}
+                onChange={(e) => setProfile({ ...profile!, summary_master: e.target.value })}
+                placeholder="Paste every achievement, skill, and mission statement here. The AI will distill the 0.1% strongest parts for every application."
+              />
+            </div>
+
+            <div className="flex justify-between items-center pt-6 border-t border-white/5">
+              <div className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium italic">
+                Last encrypted sync: {new Date().toLocaleDateString()}
+              </div>
+              <button
+                onClick={handleSaveProfile}
+                disabled={isSaving}
+                className="flex items-center gap-3 px-10 py-4 rounded-2xl text-sm font-bold bg-foreground text-background hover:scale-[1.02] transition-all shadow-xl shadow-foreground/10 active:scale-95 disabled:opacity-50"
+              >
+                {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                Save Master Profile
+              </button>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+          >
+            <button
+              onClick={() => setEditingItem({ type: activeTab as VaultItemType, bullets: [], skills: [] })}
+              className="col-span-1 lg:col-span-2 py-12 border-2 border-dashed border-border/20 rounded-[40px] flex flex-col items-center justify-center gap-4 text-muted-foreground hover:text-foreground hover:bg-muted/10 transition-all group overflow-hidden relative"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="w-16 h-16 rounded-3xl bg-muted/40 flex items-center justify-center group-hover:scale-110 group-hover:bg-primary/10 transition-all duration-500 shadow-inner">
+                <Plus className="w-8 h-8 group-hover:text-primary transition-colors" />
+              </div>
+              <div className="text-center">
+                <span className="block text-sm font-bold uppercase tracking-[0.2em] mb-1">Add New {activeTab} Record</span>
+                <span className="text-[10px] text-muted-foreground">Expand your career architecture.</span>
+              </div>
+            </button>
+
+            {items.filter(item => item.type === activeTab).map((item) => (
+              <div key={item.id} className="premium-card p-8 flex flex-col justify-between gap-6 group hover:border-primary/40 transition-all hover:shadow-2xl hover:shadow-primary/5">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="space-y-1">
+                      <h4 className="font-display font-bold text-xl leading-none">{item.title}</h4>
+                      <p className="text-[11px] font-bold text-primary uppercase tracking-widest">{item.organization}</p>
+                    </div>
+                    {item.is_quantified && (
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-green-500/10 border border-green-500/20 text-[9px] font-bold text-green-500 uppercase tracking-tighter">
+                        <Zap className="w-3 h-3 fill-current" />
+                        Quantified
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-medium bg-muted/30 w-fit px-3 py-1 rounded-full border border-white/5">
+                    <MapPin className="w-3 h-3" />
+                    {item.period}
+                  </div>
+                  
+                  <p className="text-sm leading-relaxed text-foreground/70 line-clamp-3">{item.description}</p>
+                  
+                  <div className="flex flex-wrap gap-2">
+                    {item.skills.map((s, i) => (
+                      <span key={i} className="px-3 py-1 rounded-xl bg-white/5 border border-white/10 text-[9px] font-bold text-foreground/60 uppercase tracking-widest">{s}</span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-4 border-t border-white/5 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+                  <button onClick={() => setEditingItem(item)} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-muted/40 hover:bg-muted text-[10px] font-bold uppercase tracking-widest transition-all"><Edit3 className="w-3.5 h-3.5" /> Edit</button>
+                  <button onClick={() => handleDeleteItem(item.id)} className="p-2.5 rounded-xl bg-muted/40 hover:bg-red-500/10 hover:text-red-500 text-muted-foreground transition-all"><Trash2 className="w-4 h-4" /></button>
+                </div>
+              </div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Edit Modal - Upgraded for Quantifier Assistant */}
+      <AnimatePresence>
+        {editingItem && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-background/90 backdrop-blur-xl"
+              onClick={() => setEditingItem(null)}
+            />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="premium-card w-full max-w-3xl p-10 relative z-10 overflow-hidden border border-white/10 shadow-3xl shadow-black/50"
+            >
+              <div className="flex justify-between items-center mb-10">
+                <div className="space-y-1">
+                  <h3 className="text-2xl font-display font-bold">Edit Vault Entry</h3>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Type: {editingItem.type}</p>
+                </div>
+                <button onClick={() => setEditingItem(null)} className="p-3 rounded-2xl hover:bg-muted transition-all"><X className="w-6 h-6" /></button>
+              </div>
+
+              <div className="space-y-8 max-h-[65vh] overflow-y-auto pr-4 custom-scrollbar">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Title / Designation</label>
+                    <input
+                      className="w-full bg-muted/20 border border-border/40 rounded-2xl px-5 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
+                      value={editingItem.title || ""}
+                      onChange={(e) => setEditingItem({ ...editingItem, title: e.target.value })}
+                      placeholder="e.g. Lead Product Designer"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Organization / Brand</label>
+                    <input
+                      className="w-full bg-muted/20 border border-border/40 rounded-2xl px-5 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
+                      value={editingItem.organization || ""}
+                      onChange={(e) => setEditingItem({ ...editingItem, organization: e.target.value })}
+                      placeholder="e.g. OpenAI"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Time Horizon</label>
+                  <input
+                    className="w-full bg-muted/20 border border-border/40 rounded-2xl px-5 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
+                    value={editingItem.period || ""}
+                    onChange={(e) => setEditingItem({ ...editingItem, period: e.target.value })}
+                    placeholder="e.g. Oct 2022 - Current"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Raw Achievement Data (Full Context)</label>
+                    <button 
+                      onClick={handleSuggestMetrics}
+                      className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[9px] font-bold text-primary uppercase tracking-widest hover:bg-primary/20 transition-all"
+                    >
+                      <Zap className="w-3 h-3" /> Suggest Metrics
+                    </button>
+                  </div>
+                  <textarea
+                    className="w-full bg-muted/20 border border-border/40 rounded-3xl p-6 text-sm h-48 resize-none focus:ring-2 ring-primary/20 transition-all outline-none"
+                    value={editingItem.description || ""}
+                    onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
+                    placeholder="Input all raw achievements here. Include internal project names, budgets, and team sizes. The AI will curate this into polished bullets later."
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Keyword Tags (Comma separated)</label>
+                  <input
+                    className="w-full bg-muted/20 border border-border/40 rounded-2xl px-5 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
+                    value={editingItem.skills?.join(", ") || ""}
+                    onChange={(e) => setEditingItem({ ...editingItem, skills: e.target.value.split(",").map(s => s.trim()).filter(s => s) })}
+                    placeholder="Vector DBs, LLM Fine-tuning, PyTorch..."
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-4 pt-10 mt-6 border-t border-white/5">
+                <button onClick={() => setEditingItem(null)} className="px-8 py-4 rounded-2xl text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground hover:bg-muted/30 transition-all">Discard</button>
+                <button
+                  onClick={handleSaveItem}
+                  disabled={isSaving}
+                  className="flex items-center gap-3 px-12 py-4 rounded-2xl text-xs font-bold uppercase tracking-[0.2em] bg-foreground text-background hover:scale-105 transition-all shadow-xl shadow-foreground/20 active:scale-95 disabled:opacity-50"
+                >
+                  {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                  Archive to Vault
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};

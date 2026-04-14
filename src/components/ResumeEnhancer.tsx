@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Skill, Deduction, GeneratedResume, ResumeGapResult } from "@/types/jd";
 import jsPDF from "jspdf";
 
-interface ResumeBuilderProps {
+interface ResumeEnhancerProps {
   resumeText: string;
   skills: Skill[];
   deductions?: Deduction[];
@@ -14,7 +14,7 @@ interface ResumeBuilderProps {
   gapResult?: ResumeGapResult | null;
 }
 
-export const ResumeBuilder = ({ resumeText, skills, deductions, jobTitle, gapResult }: ResumeBuilderProps) => {
+export const ResumeEnhancer = ({ resumeText, skills, deductions, jobTitle, gapResult }: ResumeEnhancerProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [resume, setResume] = useState<GeneratedResume | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -163,9 +163,9 @@ export const ResumeBuilder = ({ resumeText, skills, deductions, jobTitle, gapRes
           </div>
           <div>
             <h3 className="font-display font-bold text-lg md:text-xl text-foreground tracking-tight leading-none mb-1.5">
-              AI Strategy Engine
+              AI Resume Enhancer
             </h3>
-            <p className="text-[11px] text-muted-foreground font-medium font-sans">Optimizing for high-tier ATS filters</p>
+            <p className="text-[11px] text-muted-foreground font-medium font-sans">Optimizing uploaded resume for this JD</p>
           </div>
         </div>
 
@@ -178,9 +178,9 @@ export const ResumeBuilder = ({ resumeText, skills, deductions, jobTitle, gapRes
         >
           <div className="liquid-water-layer opacity-20" />
           {isGenerating ? (
-            <><Loader2 className="w-4 h-4 animate-spin" /> Engine Working...</>
+            <><Loader2 className="w-4 h-4 animate-spin" /> Enhancing...</>
           ) : (
-            <><Sparkles className="w-4 h-4" /> Generate Optimized Assets</>
+            <><Sparkles className="w-4 h-4" /> Enhance Uploaded Resume</>
           )}
         </motion.button>
       </div>
@@ -195,7 +195,7 @@ export const ResumeBuilder = ({ resumeText, skills, deductions, jobTitle, gapRes
           >
             <div className="flex items-center justify-between mb-8 flex-wrap gap-6">
               <div className="flex flex-col gap-1.5">
-                <span className="font-display font-bold text-[10px] uppercase tracking-[0.25em] text-accent-emerald leading-none">Output Preview</span>
+                <span className="font-display font-bold text-[10px] uppercase tracking-[0.25em] text-accent-emerald leading-none">Enhancement Preview</span>
                 <span className="text-[11px] text-muted-foreground/70 font-mono font-bold uppercase tracking-tighter">Enterprise Standard Optimization</span>
               </div>
               <div className="flex items-center gap-3">

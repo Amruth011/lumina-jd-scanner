@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.1.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -53,200 +54,45 @@ serve(async (req) => {
       });
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
+
+    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-3-flash" });
 
     const skillNames = (skills as Skill[]).map((s) => `${s.skill} (importance: ${s.importance}%)`).join(", ");
 
-    const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        seed: 42,
-        model: "google/gemini-2.5-flash",
-        messages: [
-          {
-            role: "system",
-            content: `You are an expert ATS (Applicant Tracking System) consultant and resume analyzer. Your primary goal is to help candidates pass ATS screening with highly accurate, trustworthy recommendations.
+    const prompt = `
+      You are an expert ATS (Applicant Tracking System) consultant. Analyze this resume against the required skills.
+      
+      Required Skills: ${skillNames}
+      Resume:
+      ${resumeText}
 
-**SCORING RULES — READ CAREFULLY:**
-1. For each skill, evaluate the resume CONTEXTUALLY — not just keyword matching. Look for:
-   - Direct mentions of the skill
-   - Synonyms and equivalent technologies (e.g., "Postgres" = "PostgreSQL", "K8s" = "Kubernetes")
-   - Demonstrated usage in project descriptions, even without explicit mention
-   - Related experience that implies the skill (e.g., "deployed containerized microservices" implies Docker knowledge)
+      SCORING RULES:
+      1. Contextual matching - look for synonyms and implied expertise.
+      2. Weighted average for the overall score.
+      3. For gaps, provide a "fix_snippet" using the user's actual context.
 
-2. Match percentages per skill:
-   - 100 = Explicit mention OR clear demonstrated expertise
-   - 70-90 = Strong implicit evidence or synonym match
-   - 40-60 = Partial/tangential evidence
-   - 0-20 = No evidence found
-
-3. ALTERNATIVE/OR/SLASH SKILLS: "Python or R", "React/Angular", "AWS or GCP" — having ANY ONE = 100% match. Do NOT deduct for missing alternatives.
-
-4. Overall score must be a WEIGHTED AVERAGE of individual skill scores using the importance weights.
-
-5. For EVERY deduction, provide a "fix_snippet" — a ready-to-paste resume bullet using the user's ACTUAL experience context.
-
-6. Provide actionable_directives with specific "this: <old> replace with this: <new>" instructions.
-
-**FEW-SHOT EXAMPLES FOR SCORING CALIBRATION:**
-
-### Example 1: 100% Match (Contextual & Direct)
-- **JD Skills**: React (100%), TypeScript (90%), AWS (70%)
-- **Resume**: "Lead Engineer with 6 years experience building React apps. Migrated legacy systems to TypeScript. Architected serverless backends on AWS Lambda."
-- **Analysis**: 100% match. All core and supporting skills are explicitly mentioned with high-level responsibility.
-
-### Example 2: 80% Match (Minor Gap)
-- **JD Skills**: Python (100%), PostgreSQL (80%), Kubernetes (40%)
-- **Resume**: "Python Developer specialized in Django and PostgreSQL. Optimized complex SQL queries. No experience with K8s."
-- **Analysis**: ~82% match. Core skills (Python/SQL) are 100%, but Kubernetes (importance 40%) is missing. The weighted deduction results in ~80-85%.
-
-### Example 3: 50% Match (Partial/Junior)
-- **JD Skills**: Project Management (100%), Stakeholder Mapping (80%)
-- **Resume**: "Administrative assistant who coordinated team calendars and sat in on leadership meetings."
-- **Analysis**: ~45% match. While there is exposure to "coordination," there is no evidence of managing full project lifecycles or mapping stakeholders. Deductions are significant.`,
-          },
-          {
-            role: "user",
-            content: `Analyze this resume against required skills. Be CONTEXTUALLY ACCURATE — don't just do keyword matching. Consider project descriptions, implied skills, and technology ecosystems.
-
-Required Skills (with importance weights): ${skillNames}
-
-Resume:
-${resumeText}`,
-          },
-        ],
-        tools: [
-          {
-            type: "function",
-            function: {
-              name: "analyze_resume_gap",
-              description: "Analyze resume skill gaps against JD requirements",
-              parameters: {
-                type: "object",
-                properties: {
-                  overall_match: { type: "number", description: "Overall weighted match percentage 0-100" },
-                  skill_matches: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        skill: { type: "string" },
-                        match_percent: { type: "number", description: "How well the resume matches this skill 0-100" },
-                        verdict: { type: "string", enum: ["strong", "partial", "missing"] },
-                        note: { type: "string", description: "Brief explanation of why this score was given" },
-                      },
-                      required: ["skill", "match_percent", "verdict", "note"],
-                    },
-                  },
-                  deductions: {
-                    type: "array",
-                    description: "List of specific deductions from 100% match score",
-                    items: {
-                      type: "object",
-                      properties: {
-                        reason: { type: "string" },
-                        percent: { type: "number" },
-                        fix_snippet: { type: "string", description: "Ready-to-paste resume bullet to fix this gap, using user's actual experience context" },
-                      },
-                      required: ["reason", "percent", "fix_snippet"],
-                    },
-                  },
-                  summary: { type: "string", description: "2-3 sentence gap analysis summary" },
-                  tailored_resume_snippets: {
-                    type: "object",
-                    properties: {
-                      professional_summary: { type: "string", description: "Tailored 2-3 sentence professional summary using JD keywords" },
-                      experience_bullets: {
-                        type: "array",
-                        items: { type: "string" },
-                        description: "3-5 quantified, action-oriented bullet points targeting JD gaps"
-                      }
-                    },
-                    required: ["professional_summary", "experience_bullets"]
-                  },
-                  actionable_directives: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        action: { type: "string", enum: ["add", "delete", "replace", "edit"] },
-                        description: { type: "string", description: "Exactly what to change, e.g. 'Replace \"Created web apps\" with \"Developed scalable web applications using React and TypeScript\"'" },
-                        reasoning: { type: "string" }
-                      },
-                      required: ["action", "description", "reasoning"]
-                    }
-                  }
-                },
-                required: ["overall_match", "skill_matches", "deductions", "summary", "tailored_resume_snippets", "actionable_directives"],
-              },
-            },
-          },
-        ],
-        tool_choice: { type: "function", function: { name: "analyze_resume_gap" } },
-        temperature: 0,
-      }),
-    });
-
-    if (!aiResponse.ok) {
-      const status = aiResponse.status;
-      if (status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again later." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+      RETURN JSON FORMAT:
+      {
+        "overall_match": 0-100,
+        "skill_matches": [{"skill": "...", "match_percent": 0-100, "verdict": "strong|partial|missing", "note": "..."}],
+        "deductions": [{"reason": "...", "percent": 0, "fix_snippet": "..."}],
+        "summary": "...",
+        "tailored_resume_snippets": {
+          "professional_summary": "...",
+          "experience_bullets": ["..."]
+        },
+        "actionable_directives": [{"action": "add|delete|replace|edit", "description": "...", "reasoning": "..."}]
       }
-      if (status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits exhausted. Please add funds." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      const errText = await aiResponse.text();
-      console.error("AI error:", status, errText);
-      throw new Error("AI gateway error");
-    }
+    `;
 
-    const aiData = await aiResponse.json();
-    const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-    let parsed: CompareParsed;
-
-    if (toolCall?.function?.arguments) {
-      parsed = JSON.parse(toolCall.function.arguments);
-    } else {
-      const content = aiData.choices?.[0]?.message?.content || "";
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) throw new Error("Could not parse AI response");
-      parsed = JSON.parse(jsonMatch[0]);
-    }
-
-    // Recalculate overall_match as weighted average from skill_matches for consistency
-    if (parsed.skill_matches?.length > 0) {
-      let totalWeight = 0;
-      let weightedSum = 0;
-      for (const sm of parsed.skill_matches) {
-        const importance = (skills as Skill[]).find((s) => s.skill === sm.skill)?.importance || 50;
-        totalWeight += importance;
-        weightedSum += (sm.match_percent / 100) * importance;
-      }
-      if (totalWeight > 0) {
-        parsed.overall_match = Math.round((weightedSum / totalWeight) * 100);
-      }
-    }
-
-    // Normalize deductions to sum to (100 - overall_match)
-    if (parsed.deductions?.length > 0) {
-      const targetDeduction = 100 - parsed.overall_match;
-      const rawTotal = parsed.deductions.reduce((sum: number, d) => sum + d.percent, 0);
-      if (rawTotal > 0 && targetDeduction > 0) {
-        const scale = targetDeduction / rawTotal;
-        for (const d of parsed.deductions) {
-          d.percent = Math.max(1, Math.round(d.percent * scale));
-        }
-      }
-    }
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+    const cleanJson = text.replace(/```json/g, "").replace(/```/g, "").trim();
+    const parsed: CompareParsed = JSON.parse(cleanJson);
 
     return new Response(JSON.stringify(parsed), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

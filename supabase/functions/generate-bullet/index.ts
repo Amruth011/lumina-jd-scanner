@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.1.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,52 +18,31 @@ serve(async (req) => {
       });
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
 
-    const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          {
-            role: "system",
-            content: `You are an expert resume writer specializing in ATS optimization. Generate a single, powerful resume bullet point that directly addresses a specific skill gap. The bullet must:
-1. Start with a strong action verb
-2. Include quantified results (%, $, numbers)
-3. Incorporate exact keywords from the gap reason
-4. Sound authentic and professional — not generic
-5. Be 1-2 lines maximum
-Return ONLY the bullet point text, nothing else.`,
-          },
-          {
-            role: "user",
-            content: `Gap to fix: "${gapReason}"
-Job title: "${jobTitle || 'Professional'}"
-Resume context: "${resumeContext?.slice(0, 500) || 'Not provided'}"
+    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-3-flash" });
 
-Generate one powerful, ATS-optimized bullet point that would eliminate this gap.`,
-          },
-        ],
-      }),
-    });
+    const prompt = `
+      You are an expert resume writer. Generate a single, powerful resume bullet point that directly addresses this skill gap.
+      
+      Gap to fix: "${gapReason}"
+      Job title: "${jobTitle || 'Professional'}"
+      Context: "${resumeContext?.slice(0, 500) || ''}"
 
-    if (!aiResponse.ok) {
-      const status = aiResponse.status;
-      if (status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      throw new Error("AI gateway error");
-    }
+      RULES:
+      1. Start with a strong action verb.
+      2. Include quantified results (%, $, or numbers).
+      3. Focus on impact, not just duties.
+      4. Max 2 lines.
 
-    const aiData = await aiResponse.json();
-    const bullet = aiData.choices?.[0]?.message?.content?.trim() || "";
+      Return ONLY the bullet point text.
+    `;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const bullet = response.text().trim();
 
     return new Response(JSON.stringify({ bullet }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

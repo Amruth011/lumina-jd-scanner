@@ -7,6 +7,7 @@ import { HowItWorksSection } from "@/components/HowItWorksSection";
 import { FeaturedSection } from "@/components/FeaturedSection";
 import { PhilosophySection } from "@/components/PhilosophySection";
 import { ServicesSection } from "@/components/ServicesSection";
+import { MasterVault } from "@/components/MasterVault";
 
 const Index = () => {
   return (
@@ -77,6 +78,29 @@ const Index = () => {
           </p>
         </div>
         <ScannerView />
+      </section>
+
+      {/* ── SECTION 3 — MASTER VAULT (The Archive) ── */}
+      <section id="master-vault" className="relative py-32 bg-background overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-24">
+             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent-blue/10 border border-accent-blue/20 text-accent-blue text-[10px] font-black uppercase tracking-[0.3em] mb-6">
+               <ArrowRight size={10} /> Persistent Career Library
+             </div>
+             <h2 className="text-6xl md:text-8xl text-foreground tracking-[-0.05em] font-serif mb-8 leading-none">
+               Your <em className="italic text-accent-blue">Master Vault</em>
+             </h2>
+             <p className="text-muted-foreground text-xl max-w-2xl mx-auto font-medium leading-relaxed">
+               Sync your professional history once. Let our AI tailor your profile for every single opportunity, perfectly.
+             </p>
+          </div>
+          
+          <div className="p-1 rounded-[48px] bg-gradient-to-br from-white/10 to-transparent border border-white/10 shadow-3xl">
+             <div className="bg-background/80 backdrop-blur-3xl rounded-[44px] p-8 md:p-12 border border-white/5">
+                <MasterVault />
+             </div>
+          </div>
+        </div>
       </section>
 
       {/* Sections */}
