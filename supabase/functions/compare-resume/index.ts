@@ -5,6 +5,42 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+interface Skill {
+  skill: string;
+  importance: number;
+}
+
+interface SkillMatch {
+  skill: string;
+  match_percent: number;
+  verdict: "strong" | "partial" | "missing";
+  note: string;
+}
+
+interface Deduction {
+  reason: string;
+  percent: number;
+  fix_snippet: string;
+}
+
+interface ActionableDirective {
+  action: "add" | "delete" | "replace" | "edit";
+  description: string;
+  reasoning: string;
+}
+
+interface CompareParsed {
+  overall_match: number;
+  skill_matches: SkillMatch[];
+  deductions: Deduction[];
+  summary: string;
+  tailored_resume_snippets: {
+    professional_summary: string;
+    experience_bullets: string[];
+  };
+  actionable_directives: ActionableDirective[];
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -20,7 +56,7 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const skillNames = skills.map((s: any) => `${s.skill} (importance: ${s.importance}%)`).join(", ");
+    const skillNames = (skills as Skill[]).map((s) => `${s.skill} (importance: ${s.importance}%)`).join(", ");
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -175,7 +211,7 @@ ${resumeText}`,
 
     const aiData = await aiResponse.json();
     const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-    let parsed: any;
+    let parsed: CompareParsed;
 
     if (toolCall?.function?.arguments) {
       parsed = JSON.parse(toolCall.function.arguments);
@@ -191,7 +227,7 @@ ${resumeText}`,
       let totalWeight = 0;
       let weightedSum = 0;
       for (const sm of parsed.skill_matches) {
-        const importance = skills.find((s: any) => s.skill === sm.skill)?.importance || 50;
+        const importance = (skills as Skill[]).find((s) => s.skill === sm.skill)?.importance || 50;
         totalWeight += importance;
         weightedSum += (sm.match_percent / 100) * importance;
       }
@@ -203,7 +239,7 @@ ${resumeText}`,
     // Normalize deductions to sum to (100 - overall_match)
     if (parsed.deductions?.length > 0) {
       const targetDeduction = 100 - parsed.overall_match;
-      const rawTotal = parsed.deductions.reduce((sum: number, d: any) => sum + d.percent, 0);
+      const rawTotal = parsed.deductions.reduce((sum: number, d) => sum + d.percent, 0);
       if (rawTotal > 0 && targetDeduction > 0) {
         const scale = targetDeduction / rawTotal;
         for (const d of parsed.deductions) {

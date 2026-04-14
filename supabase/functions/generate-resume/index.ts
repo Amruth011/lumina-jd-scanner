@@ -5,6 +5,28 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+interface Skill {
+  skill: string;
+  importance: number;
+}
+
+interface Deduction {
+  reason: string;
+  fix_snippet?: string;
+}
+
+interface ResumeParsed {
+  professional_summary: string;
+  skills_section: string[];
+  experience: Array<{
+    heading: string;
+    content: string;
+    bullets: string[];
+  }>;
+  education: string[];
+  certifications?: string[];
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -20,8 +42,8 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const skillNames = skills.map((s: any) => `${s.skill} (${s.importance}%)`).join(", ");
-    const gaps = (deductions || []).map((d: any) => `${d.reason}${d.fix_snippet ? ' → Fix: ' + d.fix_snippet : ''}`).join("\n");
+    const skillNames = (skills as Skill[]).map((s) => `${s.skill} (${s.importance}%)`).join(", ");
+    const gaps = (deductions as Deduction[] || []).map((d) => `${d.reason}${d.fix_snippet ? ' → Fix: ' + d.fix_snippet : ''}`).join("\n");
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -135,7 +157,7 @@ ${resumeText}`,
 
     const aiData = await aiResponse.json();
     const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-    let parsed: any;
+    let parsed: ResumeParsed;
 
     if (toolCall?.function?.arguments) {
       parsed = JSON.parse(toolCall.function.arguments);

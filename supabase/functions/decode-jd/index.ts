@@ -6,6 +6,27 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+interface JDSkill {
+  category: "Languages" | "Frameworks" | "Tools" | "Databases" | "Cloud" | "Soft Skills" | "Other";
+  skill: string;
+  importance: number;
+}
+
+interface JDParsed {
+  title: string;
+  skills: JDSkill[];
+  requirements: {
+    education: string[];
+    experience: string;
+    soft_skills: string[];
+    agreements: string[];
+  };
+  winning_strategy: Array<{
+    title: string;
+    description: string;
+  }>;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -150,7 +171,7 @@ ${jdText}`,
 
     const aiData = await aiResponse.json();
     const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-    let parsed: any;
+    let parsed: JDParsed;
 
     if (toolCall?.function?.arguments) {
       parsed = JSON.parse(toolCall.function.arguments);
