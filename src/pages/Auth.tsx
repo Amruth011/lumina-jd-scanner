@@ -23,7 +23,7 @@ const Auth = () => {
       const { error } = await supabase.auth.signInWithOtp({ 
         email: email.trim(),
         options: {
-          emailRedirectTo: window.location.origin,
+          emailRedirectTo: `${window.location.origin}/auth`,
         },
       });
       if (error) throw error;
@@ -98,7 +98,7 @@ const Auth = () => {
           </h2>
           <p className="text-sm text-muted-foreground text-center mb-6">
             {step === "otp"
-              ? `We sent a magic link and code to ${email}`
+              ? `Check your inbox at ${email} for your login code`
               : "Track your applications and save your analyses"}
           </p>
 
@@ -182,15 +182,15 @@ const Auth = () => {
           {/* OTP / Magic Link Help text */}
           {step === "otp" && (
             <div className="space-y-4">
-              <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-xl text-center mb-2">
-                 <p className="text-sm font-semibold text-emerald-600 mb-1">Click the Magic Link in your email</p>
-                 <p className="text-xs text-muted-foreground">Or if you received a 6-digit code, enter it below:</p>
+              <div className="bg-primary/5 border border-primary/10 p-4 rounded-xl text-center mb-2">
+                 <p className="text-sm font-semibold text-foreground mb-1">Enter your 6-digit code</p>
+                 <p className="text-xs text-muted-foreground leading-relaxed">We've sent a code to your email. Check your inbox and spam folder, then enter it below to sign in instantly.</p>
               </div>
               <input
                 type="text"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                placeholder="000000 (Optional)"
+                placeholder="------"
                 maxLength={6}
                 className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-sm text-center tracking-[0.2em] font-mono text-lg placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                 autoFocus
