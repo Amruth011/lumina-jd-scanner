@@ -4,11 +4,13 @@ import { Plus, Briefcase, Code, GraduationCap, Award, Trash2, Edit3, Save, X, Lo
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 import type { VaultItem, VaultItemType, UserProfileWithVault } from "@/types/jd";
 
 export const MasterVault = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [activeTab, setActiveTab] = useState<VaultItemType | 'profile'>('profile');
   const [items, setItems] = useState<VaultItem[]>([]);
   const [profile, setProfile] = useState<UserProfileWithVault | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -16,11 +18,15 @@ export const MasterVault = () => {
   const [isSyncing, setIsSyncing] = useState(false);
   const [editingItem, setEditingItem] = useState<Partial<VaultItem> | null>(null);
   useEffect(() => {
-    if (user) {
-      fetchData();
+    if (!authLoading) {
+      if (user) {
+        fetchData();
+      } else {
+        setIsLoading(false);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, authLoading]);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -161,6 +167,23 @@ export const MasterVault = () => {
   };
 
   if (isLoading) return <div className="flex justify-center p-12"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
+
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12 py-24 text-center space-y-6">
+        <div className="w-20 h-20 rounded-full bg-primary/5 flex items-center justify-center border border-primary/10">
+          <User className="w-8 h-8 text-primary/40" />
+        </div>
+        <div className="space-y-2">
+          <h3 className="text-2xl font-display font-bold">Secure Vault is Locked</h3>
+          <p className="text-muted-foreground text-sm max-w-xs">Please sign in to access your persistent career library and AI-sync features.</p>
+        </div>
+        <Link to="/auth" className="px-8 py-3 rounded-2xl bg-foreground text-background text-sm font-bold hover:scale-[1.02] transition-all shadow-xl shadow-foreground/10 active:scale-95">
+          Proceed to Secure Login
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 max-w-5xl mx-auto">
