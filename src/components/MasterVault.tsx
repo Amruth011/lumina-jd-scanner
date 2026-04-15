@@ -21,12 +21,47 @@ export const MasterVault = () => {
     if (!authLoading) {
       if (user) {
         fetchData();
+        // Restore drafted summary on load
+        const draftedSummary = localStorage.getItem(`draft_summary_${user.id}`);
+        if (draftedSummary && !profile?.summary_master) {
+          setProfile(prev => prev ? { ...prev, summary_master: draftedSummary } : null);
+        }
       } else {
         setIsLoading(false);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, authLoading]);
+
+  // Persistence for Profile Summary
+  useEffect(() => {
+    if (user && profile?.summary_master) {
+      localStorage.setItem(`draft_summary_${user.id}`, profile.summary_master);
+    }
+  }, [profile?.summary_master, user]);
+
+  // Persistence for Editing Item Draft
+  useEffect(() => {
+    if (user && editingItem) {
+      localStorage.setItem(`draft_vault_item_${user.id}`, JSON.stringify(editingItem));
+    }
+  }, [editingItem, user]);
+
+  // Restore drafting item on focus/mount
+  useEffect(() => {
+    if (user && !editingItem) {
+      const saved = localStorage.getItem(`draft_vault_item_${user.id}`);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed && Object.keys(parsed).length > 2) { // Only restore if it's more than just a type
+            setEditingItem(parsed);
+          }
+        } catch (e) {
+          console.error("Failed to parse drafted item", e);
+        }
+      }
+    }
+  }, [user]);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -108,8 +143,18 @@ export const MasterVault = () => {
     if (!profile) return;
     setIsSaving(true);
     try {
-      const { error } = await supabase.from("profiles").update(profile).eq("id", user?.id);
-      if (error) throw error;
+      // Field Sanitization: Only send fields that belong in the profiles table
+      const { id, email, ...updateData } = profile; 
+      
+      console.log("MasterVault: Updating profile with data:", updateData);
+      
+      const { error } = await supabase.from("profiles").update(updateData).eq("id", user?.id);
+      if (error) {
+        console.error("MasterVault Profile Update Error:", error);
+        throw error;
+      }
+      
+      localStorage.removeItem(`draft_summary_${user.id}`);
       toast.success("Profile updated in Master Vault.");
     } catch (err) {
       console.error(err);
@@ -128,26 +173,38 @@ export const MasterVault = () => {
 
   const handleSaveItem = async () => {
     if (!editingItem || !user) return;
-    setIsSaving(true);
-    
-    // Auto-detect quantification
-    const hasNumbers = /[\d%]/.test(editingItem.description || "") || (editingItem.bullets || []).some(b => /[\d%]/.test(b));
-    const itemToSave = { ...editingItem, is_quantified: hasNumbers };
-
     try {
+      // Field Sanitization: Remove system fields & detect quantification
+      const hasNumbers = /[\d%]/.test(editingItem.description || "") || (editingItem.bullets || []).some(b => /[\d%]/.test(b));
+      
+      const itemToSave = { 
+        ...editingItem,
+        is_quantified: hasNumbers
+      };
+
+      console.log("MasterVault: Archiving item:", itemToSave);
+
       if (editingItem.id) {
         const { error } = await supabase.from("master_vault").update(itemToSave).eq("id", editingItem.id);
-        if (error) throw error;
+        if (error) {
+          console.error("MasterVault Update Error:", error);
+          throw error;
+        }
       } else {
         const { error } = await supabase.from("master_vault").insert({ ...itemToSave, user_id: user.id });
-        if (error) throw error;
+        if (error) {
+          console.error("MasterVault Insert Error:", error);
+          throw error;
+        }
       }
+      
       toast.success("Vault item saved.");
+      localStorage.removeItem(`draft_vault_item_${user.id}`);
       setEditingItem(null);
       fetchData();
     } catch (err) {
       console.error(err);
-      toast.error("Failed to save item.");
+      toast.error("Failed to save item. Check if you have special characters or if a field is too long.");
     } finally {
       setIsSaving(false);
     }
@@ -298,6 +355,18 @@ export const MasterVault = () => {
                   />
                 </div>
               </div>
+              <div className="space-y-3">
+                <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Secure Contact</label>
+                <div className="relative group">
+                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <input
+                    className="w-full bg-background/40 border border-border/40 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
+                    value={profile?.phone || ""}
+                    onChange={(e) => setProfile({ ...profile!, phone: e.target.value })}
+                    placeholder="+91 98765 43210"
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="space-y-3 pt-2">
@@ -333,8 +402,10 @@ export const MasterVault = () => {
             className="grid grid-cols-1 lg:grid-cols-2 gap-6"
           >
             <button
-              onClick={() => setEditingItem({ type: activeTab as VaultItemType, bullets: [], skills: [] })}
-              className="col-span-1 lg:col-span-2 py-12 border-2 border-dashed border-border/20 rounded-[40px] flex flex-col items-center justify-center gap-4 text-muted-foreground hover:text-foreground hover:bg-muted/10 transition-all group overflow-hidden relative"
+              onClick={() => {
+                setEditingItem({ type: activeTab as VaultItemType, bullets: [], skills: [], title: '', organization: '', period: '', description: '' });
+              }}
+              className="col-span-1 lg:col-span-2 py-12 border-2 border-dashed border-primary/20 rounded-[40px] flex flex-col items-center justify-center gap-4 text-muted-foreground hover:text-foreground hover:bg-primary/5 transition-all group overflow-hidden relative shadow-inner"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="w-16 h-16 rounded-3xl bg-muted/40 flex items-center justify-center group-hover:scale-110 group-hover:bg-primary/10 transition-all duration-500 shadow-inner">
@@ -394,8 +465,8 @@ export const MasterVault = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-background/90 backdrop-blur-xl"
-              onClick={() => setEditingItem(null)}
+              className="absolute inset-0 bg-background/95 backdrop-blur-2xl"
+              // Removed backdrop-click close to prevent accidental data loss
             />
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
@@ -408,7 +479,16 @@ export const MasterVault = () => {
                   <h3 className="text-2xl font-display font-bold">Edit Vault Entry</h3>
                   <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Type: {editingItem.type}</p>
                 </div>
-                <button onClick={() => setEditingItem(null)} className="p-3 rounded-2xl hover:bg-muted transition-all"><X className="w-6 h-6" /></button>
+                <button 
+                  onClick={() => {
+                    if (confirm("Close without saving? Unsaved changes will be held in draft.")) {
+                      setEditingItem(null);
+                    }
+                  }} 
+                  className="p-3 rounded-2xl hover:bg-muted transition-all"
+                >
+                  <X className="w-6 h-6" />
+                </button>
               </div>
 
               <div className="space-y-8 max-h-[65vh] overflow-y-auto pr-4 custom-scrollbar">
@@ -473,11 +553,21 @@ export const MasterVault = () => {
               </div>
 
               <div className="flex justify-end gap-4 pt-10 mt-6 border-t border-white/5">
-                <button onClick={() => setEditingItem(null)} className="px-8 py-4 rounded-2xl text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground hover:bg-muted/30 transition-all">Discard</button>
+                <button 
+                  onClick={() => {
+                    if (confirm("Discard draft permanently? All typed content in this form will be erased.")) {
+                      localStorage.removeItem(`draft_vault_item_${user?.id}`);
+                      setEditingItem(null);
+                    }
+                  }} 
+                  className="px-8 py-4 rounded-2xl text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground hover:bg-muted/30 transition-all"
+                >
+                  Discard Draft
+                </button>
                 <button
                   onClick={handleSaveItem}
                   disabled={isSaving}
-                  className="flex items-center gap-3 px-12 py-4 rounded-2xl text-xs font-bold uppercase tracking-[0.2em] bg-foreground text-background hover:scale-105 transition-all shadow-xl shadow-foreground/20 active:scale-95 disabled:opacity-50"
+                  className="flex items-center gap-3 px-12 py-4 rounded-2xl text-xs font-bold uppercase tracking-[0.2em] bg-foreground text-background hover:scale-105 transition-all shadow-2xl shadow-foreground/20 active:scale-95 disabled:opacity-50"
                 >
                   {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                   Archive to Vault

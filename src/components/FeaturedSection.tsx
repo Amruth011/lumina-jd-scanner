@@ -8,14 +8,14 @@ export const FeaturedSection = () => {
           initial={{ opacity: 0, y: 60 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.9 }}
-          className="rounded-3xl overflow-hidden liquid-glass-refractive aspect-video container relative border-white/40 shadow-2xl shadow-black/5"
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          className="rounded-[40px] overflow-hidden premium-card aspect-video container relative border-white/5 shadow-2xl shadow-black/10 transition-all duration-700"
         >
           {/* Mock UI Visualization */}
           <div className="absolute inset-0 p-8 flex gap-8">
             {/* Left panel: Skill Radar */}
             <div className="flex-1 flex flex-col justify-center items-center">
-              <span className="text-muted-foreground/60 text-[10px] font-bold tracking-[0.4em] uppercase mb-4 block">Skill Radar</span>
+              <span className="text-muted-foreground/40 text-[10px] font-black tracking-[0.4em] uppercase mb-6 block">Intelligence Radar</span>
               <div className="w-full max-w-[240px] aspect-square relative">
                 <svg viewBox="0 0 100 100" className="w-full h-full rotate-[-90deg]">
                   <circle cx="50" cy="50" r="40" fill="none" className="stroke-accent-blue" strokeWidth="2" strokeDasharray="251.2" strokeDashoffset="50" opacity="0.8" />
@@ -33,9 +33,9 @@ export const FeaturedSection = () => {
                     <circle cx="64" cy="64" r="58" fill="none" className="stroke-muted/40" strokeWidth="8" />
                     <circle cx="64" cy="64" r="58" fill="none" className="stroke-accent-blue" strokeWidth="8" strokeDasharray="364.4" strokeDashoffset="47.3" strokeLinecap="round" />
                   </svg>
-                  <span className="text-4xl font-display font-bold text-foreground">87%</span>
+                  <span className="text-5xl font-display font-black text-foreground tracking-tighter">87%</span>
                </div>
-               <span className="text-muted-foreground/40 text-[10px] font-bold tracking-[0.3em] uppercase mt-4 whitespace-nowrap">Overall DNA Match</span>
+               <span className="text-muted-foreground/30 text-[10px] font-black tracking-[0.4em] uppercase mt-6 whitespace-nowrap">Proprietary DNA Match</span>
             </div>
 
             {/* Right panel: Skill Bars */}
@@ -66,16 +66,18 @@ export const FeaturedSection = () => {
           {/* Bottom overlay content */}
           <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 flex justify-between items-end bg-gradient-to-t from-background to-transparent">
             <div className="glass rounded-2xl p-6 md:p-8 max-w-xl border-border/20 shadow-2xl">
-              <span className="text-muted-foreground/40 text-[10px] font-bold uppercase tracking-[0.4em] mb-4 block">Executive Insight View</span>
-              <p className="text-foreground/80 text-sm md:text-base leading-relaxed font-body-refined font-medium">
-                Every skill is ranked by real importance — not just mentioned. <span className="text-accent-blue font-bold text-xs uppercase tracking-widest px-1.5 py-0.5 rounded bg-accent-blue/5 border border-accent-blue/10 font-display">Critical</span> means &gt;85%. <span className="text-accent-emerald font-bold text-xs uppercase tracking-widest px-1.5 py-0.5 rounded bg-accent-emerald/5 border border-accent-emerald/10 font-display">Core</span> means standard. <span className="text-accent-violet font-bold text-xs uppercase tracking-widest px-1.5 py-0.5 rounded bg-accent-violet/5 border border-accent-violet/10 font-display">Supporting</span> indicates depth.
+              <span className="text-muted-foreground/30 text-[10px] font-black uppercase tracking-[0.4em] mb-6 block">Strategic Insight Engine</span>
+              <p className="text-foreground/80 text-sm md:text-base leading-relaxed font-body-refined font-medium max-w-lg">
+                Precision skill detection for 0.1% candidates. <span className="text-accent-blue font-black text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full bg-accent-blue/5 border border-accent-blue/10">Critical</span> assets. <span className="text-accent-emerald font-black text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full bg-accent-emerald/5 border border-accent-emerald/10">Core</span> competencies. <span className="text-accent-violet font-black text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full bg-accent-violet/5 border border-accent-violet/10">Edge</span> capabilities.
               </p>
             </div>
             <motion.button
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-accent-blue text-white rounded-full px-10 py-4 text-sm font-bold shadow-xl shadow-accent-blue/20 mb-2 transition-all hover:opacity-90 active:scale-95"
+              className="relative overflow-hidden bg-foreground text-background rounded-2xl px-12 py-5 text-[11px] font-black uppercase tracking-widest shadow-2xl shadow-foreground/20 transition-all"
             >
+              <div className="liquid-water-layer opacity-10" />
+              <div className="shimmer-sweep" />
               Analyze Your JD
             </motion.button>
           </div>

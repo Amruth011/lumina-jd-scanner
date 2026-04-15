@@ -36,7 +36,7 @@ export const ServicesSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            className="text-3xl md:text-5xl text-foreground tracking-tighter font-serif"
+            className="text-4xl md:text-6xl text-foreground tracking-tighter font-display font-black leading-none"
           >
             How Lumina works
           </motion.h2>
@@ -45,7 +45,7 @@ export const ServicesSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-muted-foreground/60 text-[10px] uppercase font-bold tracking-[0.2em] hidden md:block"
+            className="text-muted-foreground/30 text-[10px] uppercase font-black tracking-[0.4em] hidden md:block"
           >
             Core features
           </motion.span>
@@ -58,8 +58,8 @@ export const ServicesSection = () => {
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.15 * (index + 1) }}
-              className="premium-card rounded-3xl overflow-hidden group border-border/40 bg-card/20"
+              transition={{ duration: 0.8, delay: 0.15 * (index + 1), ease: [0.16, 1, 0.3, 1] }}
+              className="premium-card rounded-[40px] overflow-hidden group border-white/5 bg-card/20 hover:scale-[1.02] transition-all duration-700"
             >
               {/* Visual Area */}
               <div className={`aspect-video bg-gradient-to-br ${service.gradient} p-8 flex items-center justify-center relative overflow-hidden`}>
@@ -96,14 +96,14 @@ export const ServicesSection = () => {
               {/* Body */}
               <div className="p-8 md:p-10">
                 <div className="flex justify-between items-start mb-6">
-                  <span className={`${service.tagClass} uppercase tracking-[0.3em] text-[10px] font-bold`}>
+                  <span className={`${service.tagClass} uppercase tracking-[0.4em] text-[10px] font-black`}>
                     {service.tag}
                   </span>
-                  <div className={`${service.iconBg} ${service.iconClass} rounded-2xl p-2.5 group-hover:rotate-45 transition-transform duration-500 border border-current/10 shadow-sm`}>
-                    <ArrowUpRight size={20} />
+                  <div className={`${service.iconBg} ${service.iconClass} rounded-2xl p-3 group-hover:rotate-45 transition-all duration-700 border border-current/10 shadow-2xl`}>
+                    <ArrowUpRight size={22} />
                   </div>
                 </div>
-                <h3 className="text-foreground text-2xl md:text-3xl mb-4 tracking-tight font-display font-bold leading-none">
+                <h3 className="text-foreground text-3xl md:text-4xl mb-6 tracking-tighter font-display font-black leading-none group-hover:text-primary transition-colors duration-500">
                   {service.title}
                 </h3>
                 <p className="text-muted-foreground/80 text-[15px] leading-relaxed font-medium">

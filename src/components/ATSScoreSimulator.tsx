@@ -57,75 +57,80 @@ export const ATSScoreSimulator = ({ result }: ATSScoreSimulatorProps) => {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.2 }}
-      className={`rounded-2xl border p-6 glass backdrop-blur-md relative overflow-hidden ${
+      className={`rounded-[40px] p-10 premium-card relative overflow-hidden transition-all duration-700 ${
         verdict.pass
-          ? "border-accent-emerald/20 bg-accent-emerald/5"
-          : "border-accent-red/20 bg-accent-red/5"
+          ? "border-accent-emerald/20 hover:border-accent-emerald/40"
+          : "border-accent-red/20 hover:border-accent-red/40"
       }`}
     >
-      <div className={`absolute left-0 top-0 bottom-0 w-1 ${verdict.pass ? 'bg-accent-emerald/40' : 'bg-accent-red/40'}`} />
+      <div className={`absolute top-0 right-0 p-12 opacity-5 pointer-events-none`}>
+        {verdict.pass ? <ShieldCheck className="w-64 h-64 -rotate-12" /> : <ShieldX className="w-64 h-64 rotate-12" />}
+      </div>
       
       {/* Header */}
-      <div className="flex items-center gap-6 mb-10">
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: "spring", stiffness: 300, delay: 0.3 }}
-          className={`w-16 h-16 rounded-2xl flex items-center justify-center border shadow-sm ${
-            verdict.pass ? "bg-accent-emerald/10 border-accent-emerald/20" : "bg-accent-red/10 border-accent-red/20"
-          }`}
-        >
-          {verdict.pass ? (
-            <ShieldCheck className="w-8 h-8 text-accent-emerald" />
-          ) : (
-            <ShieldX className="w-8 h-8 text-accent-red" />
-          )}
-        </motion.div>
-        <div>
-          <h4 className={`font-display font-bold text-lg md:text-xl tracking-tight leading-none mb-2 ${
-            verdict.pass ? "text-accent-emerald" : "text-accent-red"
-          }`}>
-            ATS Verdict: {verdict.pass ? "LIKELY PASS" : "LIKELY FAIL"}
-          </h4>
-          <p className="text-tag text-muted-foreground/40 font-mono tracking-widest">
-            Enterprise Grade Simulation Core
-          </p>
-        </div>
-        <div className="ml-auto text-right">
-          <motion.span
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className={`text-5xl md:text-6xl font-display font-bold tracking-tighter block leading-none mb-1.5 ${
+      <div className="flex flex-col md:flex-row items-center md:items-end justify-between gap-10 mb-12 relative z-10">
+        <div className="flex items-center gap-6">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 300, delay: 0.3 }}
+            className={`w-14 h-14 rounded-2xl flex items-center justify-center border shadow-2xl ${
+              verdict.pass ? "bg-accent-emerald/10 border-accent-emerald/20" : "bg-accent-red/10 border-accent-red/20"
+            }`}
+          >
+            {verdict.pass ? (
+              <ShieldCheck className="w-7 h-7 text-accent-emerald" />
+            ) : (
+              <ShieldX className="w-7 h-7 text-accent-red" />
+            )}
+          </motion.div>
+          <div>
+            <h4 className={`text-4xl font-display font-black tracking-tighter leading-none mb-2 ${
               verdict.pass ? "text-accent-emerald" : "text-accent-red"
+            }`}>
+              ATS Verdict: {verdict.pass ? "PASS" : "FAIL"}
+            </h4>
+            <p className="text-[10px] uppercase tracking-[0.3em] font-black text-muted-foreground/40">
+              Enterprise Grade Simulation Core
+            </p>
+          </div>
+        </div>
+        
+        <div className="text-center md:text-right">
+          <motion.span
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5, type: "spring" }}
+            className={`text-6xl md:text-8xl font-display font-black tracking-tighter block leading-none mb-2 ${
+              verdict.pass ? "text-accent-emerald shadow-emerald-500/20" : "text-accent-red shadow-red-500/20"
             }`}
           >
             {verdict.score}%
           </motion.span>
-          <span className="text-tag text-muted-foreground/40 block leading-none">Confidence Score</span>
+          <span className="text-[10px] uppercase tracking-[0.2em] font-black text-muted-foreground/40 block">Confidence Score</span>
         </div>
       </div>
 
       {/* Score Breakdown */}
-      <div className="grid grid-cols-3 gap-6 mb-10">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 relative z-10">
         {[
           { label: "Keyword Match", value: verdict.keyword_match_rate },
           { label: "Section Score", value: verdict.section_completeness },
           { label: "Format Score", value: verdict.formatting_score },
         ].map((metric, i) => (
-          <div key={metric.label} className="bg-background/40 backdrop-blur-md rounded-2xl p-6 border border-border/40 text-center shadow-inner">
+          <div key={metric.label} className="bg-white/5 backdrop-blur-md rounded-3xl p-8 border border-white/5 text-center shadow-inner group hover:bg-white/10 transition-all duration-500">
             <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 + i * 0.1 }}
-              className={`text-3xl md:text-4xl font-display font-bold block tracking-tighter leading-none mb-3 ${
-                metric.value >= 70 ? "text-accent-emerald/80" :
-                metric.value >= 50 ? "text-accent-amber/80" : "text-accent-red/80"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 + i * 0.1 }}
+              className={`text-4xl font-display font-black block tracking-tighter leading-none mb-4 ${
+                metric.value >= 70 ? "text-accent-emerald" :
+                metric.value >= 50 ? "text-accent-amber" : "text-accent-red"
               }`}
             >
               {metric.value}%
             </motion.span>
-            <span className="text-tag text-muted-foreground/30 block leading-none">
+            <span className="text-[10px] uppercase tracking-[0.2em] font-black text-muted-foreground/30 block group-hover:text-muted-foreground/60 transition-colors">
               {metric.label}
             </span>
           </div>

@@ -104,10 +104,15 @@ export const ApplicationTracker = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.1 * i }}
-              className="premium-card rounded-2xl p-8 text-center shadow-lg hover:shadow-xl transition-all border border-border/40"
+              className="premium-card rounded-[40px] p-10 text-center relative overflow-hidden group"
             >
-              <span className={`text-5xl font-display font-bold tracking-tighter ${stat.color} block leading-none`}>{stat.value}</span>
-              <p className="font-display font-bold text-[10px] uppercase tracking-[0.3em] text-muted-foreground/60 mt-4 leading-none">{stat.label}</p>
+              <div className="relative z-10">
+                <span className={`text-6xl md:text-7xl font-display font-black tracking-tighter ${stat.color} block leading-none`}>{stat.value}</span>
+                <p className="font-display font-black text-[10px] uppercase tracking-[0.4em] text-muted-foreground/40 mt-6 leading-none group-hover:text-muted-foreground/70 transition-colors">{stat.label}</p>
+              </div>
+              <div className="absolute -bottom-4 -right-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                 <Briefcase className={`w-32 h-32 ${stat.color}`} />
+              </div>
             </motion.div>
           ))}
         </div>
@@ -116,29 +121,30 @@ export const ApplicationTracker = () => {
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        className="premium-card rounded-2xl p-8 shadow-2xl relative overflow-hidden"
+        className="premium-card rounded-[40px] p-10 shadow-2xl relative overflow-hidden"
       >
-        <div className="flex items-center justify-between mb-10 flex-wrap gap-6">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-accent-blue/10 flex items-center justify-center border border-accent-blue/10 shadow-sm shadow-accent-blue/5">
-              <Briefcase className="w-6 h-6 text-accent-blue" />
+        <div className="flex items-center justify-between mb-12 flex-wrap gap-8">
+          <div className="flex items-center gap-6">
+            <div className="w-16 h-16 rounded-3xl bg-accent-blue/5 border border-accent-blue/10 flex items-center justify-center shadow-2xl shadow-accent-blue/10">
+              <Briefcase className="w-8 h-8 text-accent-blue" />
             </div>
             <div>
-              <h3 className="font-display font-bold text-lg md:text-xl text-foreground tracking-tight leading-none mb-1.5">
-                Strategic Tracker
+              <h3 className="font-display font-black text-2xl md:text-3xl text-foreground tracking-tighter leading-none mb-2">
+                Executive Pipeline
               </h3>
-              <p className="text-[11px] text-muted-foreground font-medium">Monitoring {apps.length} active applications</p>
+              <p className="text-[10px] uppercase tracking-[0.2em] font-black text-muted-foreground/40">Monitoring {apps.length} Strategic Opportunities</p>
             </div>
           </div>
           
           <motion.button
-            whileHover={{ scale: 1.02, y: -2 }}
-            whileTap={{ scale: 0.98, y: 0 }}
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.95, y: 0 }}
             onClick={() => setShowAddForm(!showAddForm)}
-            className="relative overflow-hidden flex items-center gap-2.5 px-6 py-3 rounded-2xl text-sm font-bold bg-foreground text-background hover:opacity-90 transition-all liquid-glass-refraction shadow-xl shadow-foreground/5"
+            className="relative overflow-hidden flex items-center gap-3 px-8 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest bg-foreground text-background hover:scale-[1.05] transition-all shadow-2xl shadow-foreground/20"
           >
-            <div className="liquid-water-layer opacity-20" />
-            <Plus className="w-4 h-4" /> Add Manual Entry
+            <div className="liquid-water-layer opacity-10" />
+            <div className="shimmer-sweep" />
+            <Plus className="w-4 h-4" /> Add Manual Intelligence
           </motion.button>
         </div>
 
@@ -260,7 +266,7 @@ export const ApplicationTracker = () => {
                             layout
                             initial={{ opacity: 0, scale: 0.98 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="group glass p-6 rounded-2xl border-border/40 hover:border-accent-blue/30 transition-all duration-500 hover:shadow-2xl hover:shadow-accent-blue/5 relative"
+                            className="group liquid-glass-refractive p-8 rounded-3xl border border-white/5 hover:border-accent-blue/40 transition-all duration-700 hover:shadow-2xl hover:shadow-accent-blue/5 relative"
                           >
                             {/* Actions Overlay */}
                             <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 z-20">

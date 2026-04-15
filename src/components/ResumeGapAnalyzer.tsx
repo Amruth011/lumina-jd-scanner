@@ -486,7 +486,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
             <h3 className="font-display font-bold text-lg md:text-xl text-foreground tracking-tight">
               Resume Gap Analyzer
             </h3>
-            <p className="text-tag text-muted-foreground/60">Evaluate your resume against the JD</p>
+            <p className="text-[10px] uppercase tracking-[0.3em] font-black text-muted-foreground/40">Evaluate your resume against the JD signature</p>
           </div>
         </div>
         {!isOpen && (
@@ -512,8 +512,8 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
             {/* Trust and Auto-run header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3 bg-secondary/30 p-3 rounded-xl border border-border/50 backdrop-blur-sm">
                <div className="flex items-center gap-3">
-                 <span className="flex items-center gap-1.5 text-tag text-accent-emerald bg-accent-emerald/10 px-3 py-1 rounded-full border border-accent-emerald/10"><ShieldCheck className="w-3.5 h-3.5" /> 100% SECURE</span>
-                 <span className="flex items-center gap-1.5 text-tag text-accent-blue bg-accent-blue/10 px-3 py-1 rounded-full border border-accent-blue/10"><CheckCircle2 className="w-3.5 h-3.5" /> ATS-OPTIMIZED</span>
+                 <span className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-[0.2em] text-accent-emerald bg-accent-emerald/5 px-3 py-1.5 rounded-xl border border-accent-emerald/10"><ShieldCheck className="w-3.5 h-3.5" /> 100% SECURE</span>
+                 <span className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-[0.2em] text-accent-blue bg-accent-blue/5 px-3 py-1.5 rounded-xl border border-accent-blue/10"><CheckCircle2 className="w-3.5 h-3.5" /> ATS-OPTIMIZED</span>
                </div>
                
                <label className="flex items-center gap-2 cursor-pointer bg-background px-3 py-1.5 rounded-md border border-border shadow-sm">
@@ -650,11 +650,11 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                   <span className={`text-7xl md:text-8xl font-display font-black tracking-tighter ${getMatchColor(result.overall_match)}`}>
                     {result.overall_match}%
                   </span>
-                  <div className="absolute -top-2 -right-6 flex items-center gap-1.5 px-3 py-1 rounded-full bg-foreground text-background text-[10px] font-black uppercase tracking-widest shadow-lg">
-                    <Zap className="w-3 h-3 fill-current" /> Match
+                  <div className="absolute -top-3 -right-6 flex items-center gap-2 px-4 py-1.5 rounded-xl bg-foreground text-background text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl">
+                    <Zap className="w-3.5 h-3.5 fill-current" /> Optimal Match
                   </div>
                 </div>
-                <p className="text-sm text-muted-foreground/60 font-bold uppercase tracking-[0.3em] mt-4">Enterprise Match Score</p>
+                <p className="text-[10px] text-muted-foreground/30 font-black uppercase tracking-[0.5em] mt-6">Enterprise Strategy Result</p>
 
                 <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
                   {!addedToTracker ? (
@@ -790,9 +790,9 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
             {/* THE HEATMAP & ROADMAP GRID */}
             <div className="grid grid-cols-1 lg:grid-cols-[1fr,300px] gap-6">
                 {/* SKILL HEATMAP */}
-                <div className="rounded-[40px] bg-muted/20 p-8 border border-white/5">
-                  <div className="flex items-center justify-between mb-8">
-                     <h4 className="text-lg font-bold tracking-tight">Competency Breakdown</h4>
+                 <div className="rounded-[40px] bg-white/5 p-10 border border-white/5 relative overflow-hidden group">
+                  <div className="flex items-center justify-between mb-10 relative z-10">
+                     <h4 className="text-xl font-display font-black tracking-tight">Competency Breakdown</h4>
                      <div className="flex gap-2">
                        {['strong', 'partial', 'missing'].map(v => (
                          <div key={v} className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-background border border-border font-bold capitalize">

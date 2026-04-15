@@ -81,36 +81,37 @@ export const ScannerView = () => {
   const handleDecode = async () => { await decodeJD(jdText); };
   const handleForceRedecode = async () => { await decodeJD(jdText, true); };
 
-  const tabClass = (tab: Tab) =>
-    `relative flex items-center gap-2 px-6 py-2.5 rounded-full text-[13px] font-display font-bold transition-all duration-300 ${
-      activeTab === tab
-        ? "text-primary-foreground"
-        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-    }`;
-
   const displayName = user?.email || user?.phone || "User";
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 md:px-8 pb-24">
       {/* Tab Navigation Internal */}
       <div className="flex justify-center mb-12">
-        <nav className="flex items-center gap-0.5 bg-background/20 rounded-full p-1 backdrop-blur-3xl border border-white/40 shadow-xl shadow-black/5">
+        <nav className="flex items-center gap-1.5 bg-muted/30 p-1.5 rounded-3xl backdrop-blur-3xl border border-white/5 shadow-2xl shadow-black/10">
           {[
-            { key: "decode" as Tab, icon: Search, label: "Decoder" },
+            { key: "decode" as Tab, icon: Search, label: "JD Decoder" },
             { key: "vault" as Tab, icon: LayoutDashboard, label: "Master Vault" },
-            { key: "applications" as Tab, icon: Briefcase, label: "Applications" },
+            { key: "applications" as Tab, icon: Briefcase, label: "Pipeline" },
           ].map((tab) => (
-            <button key={tab.key} onClick={() => handleTabSwitch(tab.key)} className={tabClass(tab.key)}>
+            <button 
+              key={tab.key} 
+              onClick={() => handleTabSwitch(tab.key)} 
+              className={`relative flex items-center gap-2 px-6 py-2.5 rounded-2xl text-xs font-display font-bold transition-all duration-500 ${
+                activeTab === tab.key
+                  ? "text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+              }`}
+            >
               {activeTab === tab.key && (
                 <motion.div
                   layoutId="activeTabScanner"
-                  className="absolute inset-0 bg-primary rounded-full shadow-sm"
-                  transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                  className="absolute inset-0 bg-foreground rounded-2xl shadow-lg"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
               <span className="relative z-10 flex items-center gap-2">
-                <tab.icon className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">{tab.label}</span>
+                <tab.icon className={`w-3.5 h-3.5 ${activeTab === tab.key ? 'text-background' : 'text-primary/40'}`} />
+                <span className="hidden sm:inline tracking-tight">{tab.label}</span>
               </span>
             </button>
           ))}
@@ -182,13 +183,14 @@ export const ScannerView = () => {
                         whileTap={{ scale: 0.98, y: 0 }}
                         onClick={handleSaveJd}
                         disabled={savingJd || !!savedJdId}
-                        className={`relative overflow-hidden inline-flex items-center justify-center gap-3 px-10 py-4 rounded-2xl text-[13px] font-display font-bold uppercase tracking-[0.1em] transition-all shadow-xl ${
+                        className={`relative overflow-hidden inline-flex items-center justify-center gap-3 px-10 py-4 rounded-2xl text-[11px] font-display font-black uppercase tracking-[0.2em] transition-all shadow-2xl ${
                           savedJdId
                             ? "bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/20 shadow-inner"
-                            : "bg-foreground text-background hover:opacity-90 liquid-glass-refractive shadow-foreground/5"
+                            : "bg-foreground text-background hover:scale-[1.05] shadow-foreground/20"
                         } disabled:opacity-50`}
                       >
                         <div className="liquid-water-layer opacity-10" />
+                        <div className="shimmer-sweep" />
                         {savingJd ? <Loader2 className="w-4 h-4 animate-spin" /> : savedJdId ? <BookmarkCheck className="w-4 h-4" /> : <Save className="w-4 h-4" />}
                         {savedJdId ? "Archived" : "Archive Intelligence"}
                       </motion.button>
@@ -201,22 +203,22 @@ export const ScannerView = () => {
                       whileHover={{ scale: 1.02, y: -1 }}
                       whileTap={{ scale: 0.98, y: 1 }}
                       onClick={() => setPriorityFilter(!priorityFilter)}
-                      className={`relative overflow-hidden flex items-center gap-3 px-8 py-3.5 rounded-2xl text-[11px] font-display font-bold uppercase tracking-[0.1em] transition-all duration-500 border shadow-sm ${
+                      className={`relative overflow-hidden flex items-center gap-3 px-8 py-3.5 rounded-2xl text-[10px] uppercase font-black tracking-[0.2em] transition-all duration-500 border shadow-2xl ${
                         priorityFilter
-                          ? "bg-foreground text-background border-transparent liquid-glass-refractive"
-                          : "bg-background/40 text-muted-foreground border-border/60 hover:text-foreground hover:border-border"
+                          ? "bg-foreground text-background border-transparent"
+                          : "bg-muted/30 text-muted-foreground border-white/5 hover:text-foreground hover:bg-muted/50"
                       }`}
                     >
                       <div className="liquid-water-layer opacity-10" />
-                      <Filter className="w-4 h-4" />
+                      <Filter className={`w-3.5 h-3.5 ${priorityFilter ? '' : 'text-primary/40'}`} />
                       Critical Skills Only
-                      <div className={`inline-flex items-center w-9 h-4.5 rounded-full p-0.5 transition-colors duration-500 border ${
-                        priorityFilter ? "bg-accent-emerald border-accent-emerald/20" : "bg-muted/30 border-border/50"
+                      <div className={`inline-flex items-center w-8 h-4 rounded-full p-0.5 transition-colors duration-500 border ${
+                        priorityFilter ? "bg-accent-emerald border-accent-emerald/20" : "bg-black/10 border-white/5"
                       }`}>
                         <motion.span
-                          animate={{ x: priorityFilter ? 18 : 0 }}
+                          animate={{ x: priorityFilter ? 16 : 0 }}
                           transition={{ type: "spring", stiffness: 600, damping: 30 }}
-                          className={`w-3.5 h-3.5 rounded-full ${priorityFilter ? "bg-white shadow-md" : "bg-muted-foreground/30"} shadow-sm`}
+                          className={`w-2.5 h-2.5 rounded-full ${priorityFilter ? "bg-white shadow-md" : "bg-muted-foreground/30"} shadow-sm`}
                         />
                       </div>
                     </motion.button>
