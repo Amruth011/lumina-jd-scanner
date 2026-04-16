@@ -78,16 +78,8 @@ serve(async (req) => {
     const cleanJson = text.replace(/```json/g, "").replace(/```/g, "").trim();
     const parsed: JDParsed = JSON.parse(cleanJson);
 
-    // Save to database
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    await supabase.from("jd_vault").insert({
-      title: parsed.title,
-      skills_json: parsed.skills,
-      raw_text: jdText,
-    });
+    // Note: jd_vault insert was removed from here to be handled by the client 
+    // to ensure user_id is properly populated and RLS is respected.
 
     return new Response(JSON.stringify(parsed), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

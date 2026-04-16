@@ -144,7 +144,7 @@ export const MasterVault = () => {
     setIsSaving(true);
     try {
       // Field Sanitization: Only send fields that belong in the profiles table
-      const { id, email, ...updateData } = profile; 
+      const { id, email, created_at, ...updateData } = profile; 
       
       console.log("MasterVault: Updating profile with data:", updateData);
       
@@ -364,6 +364,18 @@ export const MasterVault = () => {
                     value={profile?.phone || ""}
                     onChange={(e) => setProfile({ ...profile!, phone: e.target.value })}
                     placeholder="+91 98765 43210"
+                  />
+                </div>
+              </div>
+              <div className="space-y-3">
+                <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Portfolio / Website</label>
+                <div className="relative group">
+                  <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <input
+                    className="w-full bg-background/40 border border-border/40 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
+                    value={profile?.website_url || ""}
+                    onChange={(e) => setProfile({ ...profile!, website_url: e.target.value })}
+                    placeholder="portfolio.com"
                   />
                 </div>
               </div>

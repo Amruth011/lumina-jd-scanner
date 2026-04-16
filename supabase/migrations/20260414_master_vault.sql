@@ -31,8 +31,12 @@ CREATE POLICY "Users can manage their own master vault"
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS full_name TEXT;
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS location TEXT;
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS linkedin_url TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS github_url TEXT;
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS website_url TEXT;
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS summary_master TEXT; -- For the "Master" professional summary
+
+-- 6. Add is_quantified to master_vault if not exists
+ALTER TABLE public.master_vault ADD COLUMN IF NOT EXISTS is_quantified BOOLEAN DEFAULT FALSE;
 
 -- 5. Add trigger for updated_at
 CREATE OR REPLACE FUNCTION update_updated_at_column()

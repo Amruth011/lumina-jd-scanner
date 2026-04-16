@@ -65,7 +65,12 @@ const Auth = () => {
       });
       if (error) throw error;
     } catch (err) {
-      toast.error((err as Error).message || "Google sign-in failed.");
+      const msg = (err as Error).message || "";
+      if (msg.includes("rate limit")) {
+        toast.error("Too many attempts. Please wait a few minutes.");
+      } else {
+        toast.error(msg || "Google sign-in failed.");
+      }
     } finally {
       setLoading(false);
     }
