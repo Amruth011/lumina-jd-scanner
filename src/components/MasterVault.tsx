@@ -79,36 +79,53 @@ export const MasterVault = () => {
     }
   };
 
+  const extractTextFromPDF = async (file: File) => {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
+    const workerSrc = await import("pdfjs-dist/legacy/build/pdf.worker.mjs?url");
+    pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc.default;
+    
+    const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+    let fullText = "";
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      const pageText = content.items.map((item: { str: string }) => item.str).join(" ");
+      fullText += pageText + "\n";
+    }
+    return fullText.trim();
+  };
+
   const handleImportResume = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
     setIsSyncing(true);
-    const toastId = toast.loading("Smart Sync: Parsing your resume...");
+    const toastId = toast.loading("Smart Sync: Parsing your resume locally...");
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      
-      const { data, error } = await supabase.functions.invoke('parse-resume-file', {
-        body: formData,
-      });
+      let rawText = "";
+      if (file.type === "application/pdf") {
+        rawText = await extractTextFromPDF(file);
+      } else {
+        rawText = await file.text();
+      }
 
-      if (error) throw error;
-      if (data?.error) throw new Error(`Parse Error: ${data.error}`);
-      if (!data?.text) throw new Error("No text extracted from file.");
+      if (!rawText || rawText.trim().length < 50) {
+        throw new Error("Could not extract sufficient text from this file.");
+      }
       
-      toast.loading("Smart Sync: Extracting experience into vault...", { id: toastId });
+      toast.loading("Smart Sync: Structure and tailoring experience via AI...", { id: toastId });
 
-      // After parsing text, we use Gemini to structure it into vault items
+      // After parsing text locally, we use Gemini to structure it into vault items
       const { data: structData, error: structError } = await supabase.functions.invoke('tailor-resume', {
         body: {
           jd_title: "Structure all experience",
           jd_skills: [],
           vault_items: [],
           personal_info: {},
-          raw_resume_text: data.text,
-          mode: 'import' // Special mode for tailor-resume to just structure data
+          resumeText: rawText, // Explicitly pass it as 'resumeText' which tailor-resume expects!
+          mode: 'import'
         }
       });
 
@@ -117,12 +134,12 @@ export const MasterVault = () => {
 
       // Batch insert into vault
       if (structData?.experience) {
-        const newItems = structData.experience.map((exp: { heading: string; content: string; bullets: string[] }) => ({
+        const newItems = structData.experience.map((exp: { company: string; role: string; bullets: string[] }) => ({
           user_id: user.id,
           type: 'professional',
-          title: exp.heading.split('|')[0].trim(),
-          organization: exp.heading.split('|')[1]?.trim() || "Imported",
-          description: exp.content,
+          title: exp.role || exp.company || "Imported Role",
+          organization: exp.company || "Imported Org",
+          description: (exp.bullets || []).join("\n"),
           bullets: exp.bullets || [],
           skills: [],
           is_quantified: (exp.bullets || []).some((b: string) => /[\d%]/.test(b))
@@ -132,7 +149,7 @@ export const MasterVault = () => {
         if (insertError) throw insertError;
       }
 
-      toast.success("Smart Sync complete: Experience added to vault!", { id: toastId });
+      toast.success("Smart Sync complete: Experience structured into vault!", { id: toastId });
       fetchData();
     } catch (err) {
       console.error(err);
