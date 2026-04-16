@@ -20,12 +20,13 @@ serve(async (req) => {
     const arrayBuffer = await file.arrayBuffer();
     const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
 
-    const models = ["gemini-1.5-pro", "gemini-1.5-flash", "gemini-pro"];
+    // Final Shield: True Resilience Fallback Loop
+    const models = ["gemini-2.0-flash", "gemini-1.5-pro", "gemini-1.5-flash"];
     let lastError = "";
 
     for (const modelName of models) {
       try {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${geminiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${geminiKey}`;
         
         const apiResponse = await fetch(url, {
           method: "POST",
@@ -52,17 +53,17 @@ serve(async (req) => {
 
         const errorData = await apiResponse.json();
         lastError = errorData.error?.message || apiResponse.statusText;
-        if (apiResponse.status !== 404 && !lastError.includes("not found")) break;
+        if (apiResponse.status !== 404 && apiResponse.status < 500) break;
       } catch (err) {
         lastError = err instanceof Error ? err.message : "Unknown error";
       }
     }
 
-    throw new Error(`AI Engine (Parse) failed. Last error: ${lastError}`);
+    throw new Error(`Critical AI Failure (Parse): ${lastError}`);
   } catch (err) {
     console.error("parse-resume-file error:", err);
     return new Response(JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }), {
-      status: 200, // Return 200 for client diagnostics
+      status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

@@ -9,68 +9,79 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { experience, missingSkill, jobTitle } = await req.json();
-    if (!experience || !missingSkill) throw new Error("Experience and missing skill are required");
+    const { originalBullet, jdContext, focusKeywords } = await req.json();
+    if (!originalBullet) throw new Error("Original bullet point is required");
 
     const geminiKey = Deno.env.get("GEMINI_API_KEY");
     if (!geminiKey) throw new Error("GEMINI_API_KEY is not configured in Supabase Secrets");
 
     const prompt = `
-      Create a high-impact, quantified professional bullet point for a resume.
-      Role: ${jobTitle || 'selected role'}
-      Experience Background: ${experience}
-      Skill to Highlight: ${missingSkill}
+      You are an expert resume optimizer. Rewrite this resume bullet point to be more high-impact and ATS-friendly.
+      Original: ${originalBullet}
+      Context: ${jdContext || 'General role'}
+      Focus Keywords: ${focusKeywords?.join(", ") || 'Action verbs, impact'}
 
       RETURN JSON FORMAT ONLY:
       {
-        "bullet": "Action-oriented bullet point with a metric...",
-        "explanation": "Why this works for ATS..."
+        "bullet": "The optimized high-impact bullet point",
+        "impact_score": 0-100,
+        "changes_made": ["Brief explanation of what was improved"]
       }
     `;
 
-    // Bulletproof Fallback Loop
-    const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"];
+    // Final Shield: True Resilience Fallback Loop
+    const models = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
     let lastError = "";
 
     for (const modelName of models) {
       try {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${geminiKey}`;
+        console.log(`True Resilience: Attempting with ${modelName}...`);
+        const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${geminiKey}`;
         
-        const generationConfig: { responseMimeType?: string } = {};
-        if (modelName.includes("1.5")) {
-          generationConfig.responseMimeType = "application/json";
-        }
-
         const apiResponse = await fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig,
+            contents: [{ parts: [{ text: prompt + "\n\nIMPORTANT: Return ONLY raw JSON, do not include any other text." }] }],
           }),
         });
 
         if (apiResponse.ok) {
           const data = await apiResponse.json();
           const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (!resultText) continue;
+          if (!resultText) {
+            console.warn(`True Resilience: Model ${modelName} returned empty text.`);
+            continue;
+          }
 
-          const cleanJson = resultText.replace(/```json\n?|\n?```/g, "").trim();
-          const resultJson = JSON.parse(cleanJson);
+          let resultJson;
+          try {
+            const firstBrace = resultText.indexOf('{');
+            const lastBrace = resultText.lastIndexOf('}');
+            if (firstBrace === -1 || lastBrace === -1) throw new Error("No JSON object found");
+            const jsonText = resultText.substring(firstBrace, lastBrace + 1);
+            resultJson = JSON.parse(jsonText);
+          } catch (parseErr) {
+            console.warn(`True Resilience: Parse error on ${modelName}:`, parseErr.message);
+            continue;
+          }
+
           return new Response(JSON.stringify(resultJson), {
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
 
-        const errorData = await apiResponse.json();
+        const errorData = await apiResponse.json().catch(() => ({}));
         lastError = errorData.error?.message || apiResponse.statusText;
-        if (apiResponse.status !== 404 && !lastError.includes("not found")) break;
+        console.warn(`True Resilience: Model ${modelName} failed (Status: ${apiResponse.status}). Error: ${lastError}`);
+        if (apiResponse.status === 401 || apiResponse.status === 403) break;
       } catch (err) {
         lastError = err instanceof Error ? err.message : "Unknown error";
+        console.error(`True Resilience: Exception on ${modelName}:`, lastError);
       }
     }
 
-    throw new Error(`AI Engine (Bullet) failed. Last error: ${lastError}`);
+    throw new Error(`Critical AI Failure (Bullet): All models failed. Last Error: ${lastError}`);
   } catch (err) {
     console.error("generate-bullet error:", err);
     return new Response(JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }), {

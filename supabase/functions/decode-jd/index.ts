@@ -46,54 +46,62 @@ serve(async (req) => {
       }
     `;
 
-    // Bulletproof Fallback Loop
-    const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"];
+    // Final Shield: True Resilience Fallback Loop
+    const models = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
     let lastError = "";
     
     for (const modelName of models) {
       try {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${geminiKey}`;
+        console.log(`True Resilience: Attempting with ${modelName}...`);
+        const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${geminiKey}`;
         
-        // Only 1.5+ models support responseMimeType
-        const generationConfig: { responseMimeType?: string } = {};
-        if (modelName.includes("1.5")) {
-          generationConfig.responseMimeType = "application/json";
-        }
-
         const apiResponse = await fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig,
+            contents: [{ parts: [{ text: prompt + "\n\nIMPORTANT: Return ONLY raw JSON, do not include any other text." }] }],
           }),
         });
 
         if (apiResponse.ok) {
           const data = await apiResponse.json();
           const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (!resultText) continue;
+          if (!resultText) {
+            console.warn(`True Resilience: Model ${modelName} returned empty text.`);
+            continue;
+          }
 
-          // If JSON mode was not used, we might need to strip markdown backticks
-          const cleanJson = resultText.replace(/```json\n?|\n?```/g, "").trim();
-          const parsed: JDParsed = JSON.parse(cleanJson);
+          // Smart Scraper: Find the first { and last } to bypass any AI chatter
+          let parsed: JDParsed;
+          try {
+            const firstBrace = resultText.indexOf('{');
+            const lastBrace = resultText.lastIndexOf('}');
+            if (firstBrace === -1 || lastBrace === -1) throw new Error("No JSON object found");
+            const jsonText = resultText.substring(firstBrace, lastBrace + 1);
+            parsed = JSON.parse(jsonText);
+          } catch (parseErr) {
+            console.warn(`True Resilience: Parse error on ${modelName}:`, parseErr.message);
+            continue;
+          }
           
           return new Response(JSON.stringify(parsed), {
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
 
-        const errorData = await apiResponse.json();
+        const errorData = await apiResponse.json().catch(() => ({}));
         lastError = errorData.error?.message || apiResponse.statusText;
-        console.warn(`Model ${modelName} failed: ${lastError}`);
+        console.warn(`True Resilience: Model ${modelName} failed (Status: ${apiResponse.status}). Error: ${lastError}`);
         
-        if (apiResponse.status !== 404 && !lastError.includes("not found")) break;
+        // If it's a 401/403 (Auth), stop immediately. Otherwise, try next model.
+        if (apiResponse.status === 401 || apiResponse.status === 403) break;
       } catch (err) {
         lastError = err instanceof Error ? err.message : "Unknown error";
+        console.error(`True Resilience: Exception on ${modelName}:`, lastError);
       }
     }
 
-    throw new Error(`AI Engine (Decode) failed. Last error: ${lastError}`);
+    throw new Error(`Critical AI Failure (Decode): All models failed. Last Error: ${lastError}`);
   } catch (e) {
     console.error("decode-jd error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
