@@ -22,9 +22,9 @@ function normalizeText(text: string): string {
 function normalizeSkills(skills: Skill[]): string {
   return [...skills]
     .map((skill) => ({
-      skill: skill.skill.trim().toLowerCase(),
-      category: skill.category.trim().toLowerCase(),
-      importance: skill.importance,
+      skill: (skill.skill || "").trim().toLowerCase(),
+      category: (skill.category || "general").trim().toLowerCase(),
+      importance: skill.importance || 50,
     }))
     .sort((a, b) => a.skill.localeCompare(b.skill) || a.category.localeCompare(b.category) || a.importance - b.importance)
     .map((skill) => `${skill.skill}|${skill.category}|${skill.importance}`)
