@@ -46,39 +46,50 @@ serve(async (req) => {
       }
     `;
 
-    // Direct fetch call to Gemini API - Ultra-Stable Stable v1 Endpoint
-    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
+    // High-Reliability Fallback Loop
+    const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"];
+    let lastError = "";
     
-    const apiResponse = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          responseMimeType: "application/json",
-        },
-      }),
-    });
+    for (const modelName of models) {
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${geminiKey}`;
+        const apiResponse = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { responseMimeType: "application/json" },
+          }),
+        });
 
-    if (!apiResponse.ok) {
-      const errorData = await apiResponse.json();
-      throw new Error(`Gemini API Error: ${errorData.error?.message || apiResponse.statusText}`);
+        if (apiResponse.ok) {
+          const data = await apiResponse.json();
+          const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (!resultText) continue;
+
+          const parsed: JDParsed = JSON.parse(resultText);
+          return new Response(JSON.stringify(parsed), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const errorData = await apiResponse.json();
+        lastError = errorData.error?.message || apiResponse.statusText;
+        console.warn(`Model ${modelName} failed: ${lastError}`);
+        
+        // If it's not a 404, it's a real error (like invalid key), so don't bother retrying others
+        if (apiResponse.status !== 404) break;
+      } catch (err) {
+        lastError = err instanceof Error ? err.message : "Unknown error";
+        console.error(`Retry loop error with ${modelName}:`, err);
+      }
     }
 
-    const data = await apiResponse.json();
-    const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    
-    if (!resultText) throw new Error("AI returned an empty response");
-
-    const parsed: JDParsed = JSON.parse(resultText);
-
-    return new Response(JSON.stringify(parsed), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    throw new Error(`AI Engine failed to find a working model. Last error: ${lastError}`);
   } catch (e) {
     console.error("decode-jd error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
-      status: 200, // Return 200 so client can see the JSON error message
+      status: 200, 
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

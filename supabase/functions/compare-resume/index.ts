@@ -35,34 +35,43 @@ serve(async (req) => {
       }
     `;
 
-    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
-    
-    const apiResponse = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          responseMimeType: "application/json",
-        },
-      }),
-    });
+    // High-Reliability Fallback Loop
+    const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"];
+    let lastError = "";
 
-    if (!apiResponse.ok) {
-      const errorData = await apiResponse.json();
-      throw new Error(`Gemini API Error: ${errorData.error?.message || apiResponse.statusText}`);
+    for (const modelName of models) {
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${geminiKey}`;
+        const apiResponse = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { responseMimeType: "application/json" },
+          }),
+        });
+
+        if (apiResponse.ok) {
+          const data = await apiResponse.json();
+          const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (!resultText) continue;
+
+          const resultJson = JSON.parse(resultText);
+          return new Response(JSON.stringify(resultJson), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const errorData = await apiResponse.json();
+        lastError = errorData.error?.message || apiResponse.statusText;
+        console.warn(`Model ${modelName} in compare-resume failed: ${lastError}`);
+        if (apiResponse.status !== 404) break;
+      } catch (err) {
+        lastError = err instanceof Error ? err.message : "Unknown error";
+      }
     }
 
-    const data = await apiResponse.json();
-    const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    
-    if (!resultText) throw new Error("AI returned an empty response");
-
-    const resultJson = JSON.parse(resultText);
-
-    return new Response(JSON.stringify(resultJson), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    throw new Error(`AI Engine (Compare) failed to find a working model. Last error: ${lastError}`);
   } catch (err) {
     console.error("compare-resume error:", err);
     return new Response(JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }), {
