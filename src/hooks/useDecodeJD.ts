@@ -61,12 +61,7 @@ export const useDecodeJD = () => {
     } catch (err) {
       console.error("Decode JD Error:", err);
       const errorMessage = (err as Error & { context?: { message?: string } })?.context?.message || (err as Error).message || "Unknown error";
-      
-      if (errorMessage.includes("non-2xx")) {
-        toast.error("AI Service Error: The strategy engine is busy or misconfigured. Please check your Supabase logs.");
-      } else {
-        toast.error(errorMessage);
-      }
+      toast.error(errorMessage);
     } finally {
       setIsScanning(false);
     }

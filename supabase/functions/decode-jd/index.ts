@@ -100,9 +100,10 @@ serve(async (req) => {
     console.error("decode-jd error:", e);
     const errorMessage = e instanceof Error ? e.message : "Unknown error";
     
-    // Return a structured error response that the client can display
+    // Return a 200 status even on error so the client can read the JSON body
+    // instead of Supabase throwing a generic "non-2xx" error.
     return new Response(JSON.stringify({ error: errorMessage }), {
-      status: errorMessage.includes("configured") || errorMessage.includes("malformed") ? 400 : 500,
+      status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
