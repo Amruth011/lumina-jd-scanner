@@ -95,6 +95,8 @@ export const MasterVault = () => {
       });
 
       if (error) throw error;
+      if (data?.error) throw new Error(`Parse Error: ${data.error}`);
+      if (!data?.text) throw new Error("No text extracted from file.");
       
       toast.loading("Smart Sync: Extracting experience into vault...", { id: toastId });
 
@@ -111,9 +113,10 @@ export const MasterVault = () => {
       });
 
       if (structError) throw structError;
+      if (structData?.error) throw new Error(`Tailor Error: ${structData.error}`);
 
       // Batch insert into vault
-      if (structData.experience) {
+      if (structData?.experience) {
         const newItems = structData.experience.map((exp: { heading: string; content: string; bullets: string[] }) => ({
           user_id: user.id,
           type: 'professional',
@@ -133,7 +136,7 @@ export const MasterVault = () => {
       fetchData();
     } catch (err) {
       console.error(err);
-      toast.error("Smart Sync failed. Please try manual entry.", { id: toastId });
+      toast.error(`Smart Sync failed: ${err instanceof Error ? err.message : String(err)}`, { id: toastId, duration: 8000 });
     } finally {
       setIsSyncing(false);
     }
