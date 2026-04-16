@@ -46,19 +46,26 @@ serve(async (req) => {
       }
     `;
 
-    // High-Reliability Fallback Loop
+    // Bulletproof Fallback Loop
     const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"];
     let lastError = "";
     
     for (const modelName of models) {
       try {
-        const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${geminiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${geminiKey}`;
+        
+        // Only 1.5+ models support responseMimeType
+        const generationConfig: { responseMimeType?: string } = {};
+        if (modelName.includes("1.5")) {
+          generationConfig.responseMimeType = "application/json";
+        }
+
         const apiResponse = await fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { responseMimeType: "application/json" },
+            generationConfig,
           }),
         });
 
@@ -67,7 +74,10 @@ serve(async (req) => {
           const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
           if (!resultText) continue;
 
-          const parsed: JDParsed = JSON.parse(resultText);
+          // If JSON mode was not used, we might need to strip markdown backticks
+          const cleanJson = resultText.replace(/```json\n?|\n?```/g, "").trim();
+          const parsed: JDParsed = JSON.parse(cleanJson);
+          
           return new Response(JSON.stringify(parsed), {
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
@@ -77,15 +87,13 @@ serve(async (req) => {
         lastError = errorData.error?.message || apiResponse.statusText;
         console.warn(`Model ${modelName} failed: ${lastError}`);
         
-        // If it's not a 404, it's a real error (like invalid key), so don't bother retrying others
-        if (apiResponse.status !== 404) break;
+        if (apiResponse.status !== 404 && !lastError.includes("not found")) break;
       } catch (err) {
         lastError = err instanceof Error ? err.message : "Unknown error";
-        console.error(`Retry loop error with ${modelName}:`, err);
       }
     }
 
-    throw new Error(`AI Engine failed to find a working model. Last error: ${lastError}`);
+    throw new Error(`AI Engine (Decode) failed. Last error: ${lastError}`);
   } catch (e) {
     console.error("decode-jd error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {

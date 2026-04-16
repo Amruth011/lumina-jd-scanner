@@ -27,19 +27,25 @@ serve(async (req) => {
       }
     `;
 
-    // High-Reliability Fallback Loop
+    // Bulletproof Fallback Loop
     const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"];
     let lastError = "";
 
     for (const modelName of models) {
       try {
-        const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${geminiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${geminiKey}`;
+        
+        const generationConfig: { responseMimeType?: string } = {};
+        if (modelName.includes("1.5")) {
+          generationConfig.responseMimeType = "application/json";
+        }
+
         const apiResponse = await fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { responseMimeType: "application/json" },
+            generationConfig,
           }),
         });
 
@@ -48,7 +54,8 @@ serve(async (req) => {
           const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
           if (!resultText) continue;
 
-          const resultJson = JSON.parse(resultText);
+          const cleanJson = resultText.replace(/```json\n?|\n?```/g, "").trim();
+          const resultJson = JSON.parse(cleanJson);
           return new Response(JSON.stringify(resultJson), {
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
@@ -56,14 +63,13 @@ serve(async (req) => {
 
         const errorData = await apiResponse.json();
         lastError = errorData.error?.message || apiResponse.statusText;
-        console.warn(`Model ${modelName} in generate-resume failed: ${lastError}`);
-        if (apiResponse.status !== 404) break;
+        if (apiResponse.status !== 404 && !lastError.includes("not found")) break;
       } catch (err) {
         lastError = err instanceof Error ? err.message : "Unknown error";
       }
     }
 
-    throw new Error(`AI Engine (Generate) failed to find a working model. Last error: ${lastError}`);
+    throw new Error(`AI Engine (Generate) failed. Last error: ${lastError}`);
   } catch (err) {
     console.error("generate-resume error:", err);
     return new Response(JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }), {

@@ -20,37 +20,45 @@ serve(async (req) => {
     const arrayBuffer = await file.arrayBuffer();
     const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
 
-    // Direct fetch call to Gemini Pro (better for file parsing) - Zero-Dependency v1 Stable
-    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key=${geminiKey}`;
-    
-    const apiResponse = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{
-          parts: [
-            { inlineData: { data: base64, mimeType: file.type || "application/pdf" } },
-            { text: "Extract ALL text content from this document. Return ONLY the raw text, preserving the structure perfectly. Do not add any commentary." }
-          ]
-        }]
-      }),
-    });
+    const models = ["gemini-1.5-pro", "gemini-1.5-flash", "gemini-pro"];
+    let lastError = "";
 
-    if (!apiResponse.ok) {
-      const errorData = await apiResponse.json();
-      throw new Error(`Gemini API (Pro) Error: ${errorData.error?.message || apiResponse.statusText}`);
+    for (const modelName of models) {
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${geminiKey}`;
+        
+        const apiResponse = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{
+              parts: [
+                { inlineData: { data: base64, mimeType: file.type || "application/pdf" } },
+                { text: "Extract ALL text content from this document. Return ONLY the raw text." }
+              ]
+            }]
+          }),
+        });
+
+        if (apiResponse.ok) {
+          const data = await apiResponse.json();
+          const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (!text) continue;
+
+          return new Response(JSON.stringify({ text }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const errorData = await apiResponse.json();
+        lastError = errorData.error?.message || apiResponse.statusText;
+        if (apiResponse.status !== 404 && !lastError.includes("not found")) break;
+      } catch (err) {
+        lastError = err instanceof Error ? err.message : "Unknown error";
+      }
     }
 
-    const data = await apiResponse.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    
-    if (!text || !text.trim()) {
-      throw new Error("Could not extract text from the uploaded file.");
-    }
-
-    return new Response(JSON.stringify({ text }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    throw new Error(`AI Engine (Parse) failed. Last error: ${lastError}`);
   } catch (err) {
     console.error("parse-resume-file error:", err);
     return new Response(JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }), {
