@@ -34,7 +34,7 @@ serve(async (req) => {
     const base64 = arrayBufferToBase64(arrayBuffer);
 
     // Final Shield: True Resilience Fallback Loop
-    const models = ["gemini-2.0-flash", "gemini-1.5-pro", "gemini-1.5-flash"];
+    const models = ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.0-flash', 'gemini-1.5-pro'];
     let lastError = "";
 
     for (const modelName of models) {
@@ -66,7 +66,7 @@ serve(async (req) => {
 
         const errorData = await apiResponse.json();
         lastError = errorData.error?.message || apiResponse.statusText;
-        if (apiResponse.status !== 404 && apiResponse.status < 500) break;
+        if (apiResponse.status >= 400 && apiResponse.status < 500 && apiResponse.status !== 429) break;
       } catch (err) {
         lastError = err instanceof Error ? err.message : "Unknown error";
       }

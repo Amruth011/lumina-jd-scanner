@@ -47,8 +47,8 @@ serve(async (req) => {
     `;
 
     // Final Shield: True Resilience Fallback Loop
-    const models = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
-    let lastError = "";
+    const models = ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+    const errors = [];
     
     for (const modelName of models) {
       try {
@@ -67,12 +67,12 @@ serve(async (req) => {
           const data = await apiResponse.json();
           const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
           if (!resultText) {
-            console.warn(`True Resilience: Model ${modelName} returned empty text.`);
+            errors.push(`${modelName}: returned empty text`);
             continue;
           }
 
           // Smart Scraper: Find the first { and last } to bypass any AI chatter
-          let parsed: JDParsed;
+          let parsed;
           try {
             const firstBrace = resultText.indexOf('{');
             const lastBrace = resultText.lastIndexOf('}');
@@ -80,7 +80,7 @@ serve(async (req) => {
             const jsonText = resultText.substring(firstBrace, lastBrace + 1);
             parsed = JSON.parse(jsonText);
           } catch (parseErr) {
-            console.warn(`True Resilience: Parse error on ${modelName}:`, parseErr.message);
+            errors.push(`${modelName}: Parse error - ${parseErr.message}`);
             continue;
           }
           
@@ -90,18 +90,17 @@ serve(async (req) => {
         }
 
         const errorData = await apiResponse.json().catch(() => ({}));
-        lastError = errorData.error?.message || apiResponse.statusText;
-        console.warn(`True Resilience: Model ${modelName} failed (Status: ${apiResponse.status}). Error: ${lastError}`);
+        const lastError = errorData.error?.message || apiResponse.statusText;
+        errors.push(`${modelName}: Status ${apiResponse.status} - ${lastError}`);
         
         // If it's a 401/403 (Auth), stop immediately. Otherwise, try next model.
         if (apiResponse.status === 401 || apiResponse.status === 403) break;
       } catch (err) {
-        lastError = err instanceof Error ? err.message : "Unknown error";
-        console.error(`True Resilience: Exception on ${modelName}:`, lastError);
+        errors.push(`${modelName}: Exception - ${err instanceof Error ? err.message : "Unknown"}`);
       }
     }
 
-    throw new Error(`Critical AI Failure (Decode): All models failed. Last Error: ${lastError}`);
+    throw new Error(`Critical AI Failure (Decode): ` + JSON.stringify(errors));
   } catch (e) {
     console.error("decode-jd error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
