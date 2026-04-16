@@ -252,7 +252,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
   };
 
   const handleCompare = useCallback(async () => {
-    const trimmedResume = resumeText.trim();
+    const trimmedResume = (resumeText || "").trim();
     if (trimmedResume.length < 20) {
       toast.error("Please upload a resume or paste text (min 20 characters).");
       return;
@@ -263,7 +263,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
     setAddedToTracker(false);
     try {
       // ── DETERMINISTIC IDENTITY CHECK (Hotfix) ──
-      if (jdText?.trim() === resumeText.trim()) {
+      if ((jdText || "").trim() === (resumeText || "").trim()) {
         const identityResult: ResumeGapResult = {
           overall_match: 100,
           skill_matches: skills.map(s => ({
@@ -355,7 +355,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
 
   useEffect(() => {
     if (!isAutoRunEnabled) return;
-    const trimmedResume = resumeText.trim();
+    const trimmedResume = (resumeText || "").trim();
     if (trimmedResume.length <= 20 || trimmedResume === lastAnalyzedText || isAnalyzing || isParsing) return;
     void handleCompare();
   }, [isAutoRunEnabled, resumeText, lastAnalyzedText, isAnalyzing, isParsing, handleCompare]);
@@ -602,7 +602,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
               whileHover={{ scale: 1.02, y: -1 }}
               whileTap={{ scale: 0.98, y: 0 }}
               onClick={handleCompare}
-              disabled={isAnalyzing || resumeText.trim().length < 20}
+              disabled={isAnalyzing || (resumeText || "").trim().length < 20}
               className="relative overflow-hidden flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-2xl text-sm font-bold bg-accent text-accent-foreground hover:bg-muted transition-all disabled:opacity-40 liquid-glass-refraction premium-button-glow"
             >
               <div className="liquid-water-layer opacity-20" />
