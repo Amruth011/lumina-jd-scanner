@@ -28,7 +28,7 @@ serve(async (req) => {
       }
     `;
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
     
     const apiResponse = await fetch(url, {
       method: "POST",

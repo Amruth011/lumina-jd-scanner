@@ -46,8 +46,8 @@ serve(async (req) => {
       }
     `;
 
-    // Direct fetch call to Gemini API - Ultra-Stable
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
+    // Direct fetch call to Gemini API - Ultra-Stable Stable v1 Endpoint
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
     
     const apiResponse = await fetch(url, {
       method: "POST",

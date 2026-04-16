@@ -20,8 +20,8 @@ serve(async (req) => {
     const arrayBuffer = await file.arrayBuffer();
     const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
 
-    // Direct fetch call to Gemini Pro (better for file parsing) - Zero-Dependency
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${geminiKey}`;
+    // Direct fetch call to Gemini Pro (better for file parsing) - Zero-Dependency v1 Stable
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key=${geminiKey}`;
     
     const apiResponse = await fetch(url, {
       method: "POST",
