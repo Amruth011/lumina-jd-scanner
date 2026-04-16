@@ -5,6 +5,19 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+    const chunkSize = 10000;
+    for (let i = 0; i < len; i += chunkSize) {
+        const chunk = bytes.subarray(i, i + chunkSize);
+        // Force TypeScript to accept chunk as an array of numbers for apply
+        binary += String.fromCharCode.apply(null, Array.from(chunk));
+    }
+    return btoa(binary);
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -18,7 +31,7 @@ serve(async (req) => {
     if (!geminiKey) throw new Error("GEMINI_API_KEY is not configured in Supabase Secrets");
 
     const arrayBuffer = await file.arrayBuffer();
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+    const base64 = arrayBufferToBase64(arrayBuffer);
 
     // Final Shield: True Resilience Fallback Loop
     const models = ["gemini-2.0-flash", "gemini-1.5-pro", "gemini-1.5-flash"];
