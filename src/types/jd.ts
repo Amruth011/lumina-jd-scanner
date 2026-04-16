@@ -110,6 +110,7 @@ export interface VaultItem {
 export interface UserProfileWithVault {
   id: string;
   email?: string;
+  display_name?: string;
   full_name?: string;
   phone?: string;
   location?: string;
@@ -117,6 +118,7 @@ export interface UserProfileWithVault {
   github_url?: string; // Enhanced portfolio support
   website_url?: string;
   summary_master?: string;
+  created_at?: string;
 }
 
 // ── NEW: Tailoring types ──
