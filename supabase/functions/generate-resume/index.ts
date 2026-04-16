@@ -1,81 +1,64 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.1.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-interface Skill {
-  skill: string;
-  importance: number;
-}
-
-interface Deduction {
-  reason: string;
-  fix_snippet?: string;
-}
-
-interface ResumeParsed {
-  professional_summary: string;
-  skills_section: string[];
-  experience: Array<{
-    heading: string;
-    content: string;
-    bullets: string[];
-  }>;
-  education: string[];
-  certifications?: string[];
-}
-
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { resumeText, skills, deductions, jobTitle, gapSummary } = await req.json();
-    if (!resumeText || !skills?.length) {
-      return new Response(JSON.stringify({ error: "Resume text and skills are required." }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    const { tailoredData, format } = await req.json();
+    if (!tailoredData) throw new Error("Tailored data is required");
 
     const geminiKey = Deno.env.get("GEMINI_API_KEY");
-    if (!geminiKey) throw new Error("GEMINI_API_KEY is not configured");
+    if (!geminiKey) throw new Error("GEMINI_API_KEY is not configured in Supabase Secrets");
 
-    const genAI = new GoogleGenerativeAI(geminiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const prompt = `
+      Format this tailored resume data into a professional ${format || 'markdown'} document.
+      Data:
+      ${JSON.stringify(tailoredData)}
 
-    const skillNames = (skills as Skill[]).map((s) => `${s.skill} (${s.importance}%)`).join(", ");
-    const gaps = (deductions as Deduction[] || []).map((d) => `${d.reason}${d.fix_snippet ? ' → Fix: ' + d.fix_snippet : ''}`).join("\n");
+      RETURN JSON FORMAT ONLY:
+      {
+        "content": "The formatted resume text in markdown or plain text",
+        "metadata": { "generated_at": "...", "format": "..." }
+      }
+    `;
+
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
     
-    // ... prompt setup code ...
+    const apiResponse = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          responseMimeType: "application/json",
+        },
+      }),
+    });
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    
-    // Robust JSON extraction
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      console.error("Failed to find JSON in AI response:", text);
-      throw new Error("AI response was malformed. Please try again.");
+    if (!apiResponse.ok) {
+      const errorData = await apiResponse.json();
+      throw new Error(`Gemini API Error: ${errorData.error?.message || apiResponse.statusText}`);
     }
 
-    try {
-      const parsed: ResumeParsed = JSON.parse(jsonMatch[0]);
-      return new Response(JSON.stringify(parsed), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    } catch (parseError) {
-      console.error("JSON Parse Error:", parseError, "Raw Text:", text);
-      throw new Error("Failed to parse optimized resume. The response was not valid JSON.");
-    }
-  } catch (e) {
-    console.error("generate-resume error:", e);
-    const errorMessage = e instanceof Error ? e.message : "Unknown error";
-    return new Response(JSON.stringify({ error: errorMessage }), {
-      status: 500,
+    const data = await apiResponse.json();
+    const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    
+    if (!resultText) throw new Error("AI returned an empty response");
+
+    const resultJson = JSON.parse(resultText);
+
+    return new Response(JSON.stringify(resultJson), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  } catch (err) {
+    console.error("generate-resume error:", err);
+    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }), {
+      status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

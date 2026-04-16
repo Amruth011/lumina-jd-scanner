@@ -1,113 +1,74 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.1.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
-  }
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { jd_title, jd_skills, company_name, vault_items, personal_info, mode, raw_resume_text } = await req.json();
+    const { resumeText, skills, jobTitle } = await req.json();
+    if (!resumeText) throw new Error("Resume text is required");
 
-    const genAI = new GoogleGenerativeAI(Deno.env.get("GEMINI_API_KEY") || "");
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const geminiKey = Deno.env.get("GEMINI_API_KEY");
+    if (!geminiKey) throw new Error("GEMINI_API_KEY is not configured in Supabase Secrets");
 
-    let prompt = "";
+    const skillList = (skills as { skill: string }[] || []).map(s => s.skill).join(", ");
+    const prompt = `
+      You are an expert resume writer. Tailor this resume for the position of "${jobTitle || 'selected role'}".
+      Focus on these keywords: ${skillList}
 
-    if (mode === 'import' && raw_resume_text) {
-      prompt = `
-        You are an elite data architect and career strategist.
-        I have raw text from a resume. I need you to parse it and return it in a structured JSON format suitable for a "Master Experience Vault".
-        
-        RAW TEXT:
-        ${raw_resume_text}
+      Original Resume:
+      ${resumeText}
 
-        EXTRACT AND STRUCTURE:
-        Parse every Professional Experience, Project, Education, and Certification into the following JSON structure.
-        Do not shorten the content yet, keep the full details.
+      RETURN JSON FORMAT ONLY:
+      {
+        "professional_summary": "Optimized summary...",
+        "experience": [
+          {
+            "company": "...",
+            "role": "...",
+            "bullets": ["Action bullet with quantified impact..."]
+          }
+        ],
+        "skills_section": ["Categorized skills..."]
+      }
+    `;
 
-        RETURN JSON FORMAT:
-        {
-          "experience": [
-            {
-              "heading": "Title | Organization",
-              "content": "Description of the role",
-              "bullets": ["Bullet 1", "Bullet 2"]
-            }
-          ],
-          "education": ["..."],
-          "certifications": ["..."]
-        }
-      `;
-    } else {
-      prompt = `
-        You are an elite, senior technical recruiter and talent strategist.
-        Your task is to generate a world-class, ATS-optimized resume by "picking and tailoring" content from a user's Master Experience Vault to match a specific Job Description (JD).
-
-        JD Title: ${jd_title}
-        JD Keywords: ${jd_skills?.map((s: { skill: string }) => s.skill).join(", ") || "None"}
-        Company Name: ${company_name}
-
-        PERSONAL INFO:
-        ${JSON.stringify(personal_info)}
-
-        MASTER VAULT ITEMS:
-        ${JSON.stringify(vault_items)}
-
-        PROCESS INSTRUCTIONS:
-        1. THE TAILORING ENGINE: Select the top 70% most relevant items from the vault. Ignore irrelevant ones.
-        2. KEYWORD INFUSION: For each selected item, rewrite the bullets to use the JD keywords. If the user has a matching skill, phrase the bullet point to align with the JD's technical language.
-        3. THE QUANTIFIER ASSISTANT: If a bullet point lacks a metric (%, $, time), add a placeholder like "[?] Quantify this: (e.g., Improved X by 20%)" to make it stand out.
-        4. CONTEXT-SPECIFIC SUMMARY: Write a professional summary that mentions the specific company name (${company_name}) and explains why the user's specific vault experience makes them a "0.1% candidate" for this role.
-
-        RETURN JSON FORMAT:
-        {
-          "professional_summary": "...",
-          "skills_section": ["Skill A", "Skill B"...],
-          "experience": [
-            {
-              "heading": "Title @ Organization | Period",
-              "content": "Specific Location or Team info",
-              "bullets": ["Keyword infused bullet...", "Bullet with [?] quantifier..."]
-            }
-          ],
-          "education": ["..."],
-          "certifications": ["..."]
-        }
-      `;
-    }
-
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
     
-    // Robust JSON extraction: look for the first '{' and last '}'
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      console.error("Failed to find JSON in AI response:", text);
-      throw new Error("AI response was malformed. Please try again.");
+    const apiResponse = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          responseMimeType: "application/json",
+        },
+      }),
+    });
+
+    if (!apiResponse.ok) {
+      const errorData = await apiResponse.json();
+      throw new Error(`Gemini API Error: ${errorData.error?.message || apiResponse.statusText}`);
     }
 
-    try {
-      const resultJson = JSON.parse(jsonMatch[0]);
-      return new Response(JSON.stringify(resultJson), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    } catch (parseError) {
-      console.error("JSON Parse Error:", parseError, "Raw Text:", text);
-      throw new Error("Failed to parse tailored resume. The response was not valid JSON.");
-    }
+    const data = await apiResponse.json();
+    const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    
+    if (!resultText) throw new Error("AI returned an empty response");
+
+    const resultJson = JSON.parse(resultText);
+
+    return new Response(JSON.stringify(resultJson), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (err) {
     console.error("tailor-resume error:", err);
-    const errorMessage = err instanceof Error ? err.message : "Unknown error";
-
-    return new Response(JSON.stringify({ error: errorMessage }), {
-      status: 500,
+    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }), {
+      status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

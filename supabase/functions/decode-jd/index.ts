@@ -1,30 +1,20 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.12.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-interface JDSkill {
-  category: "Languages" | "Frameworks" | "Tools" | "Databases" | "Cloud" | "Soft Skills" | "Other";
-  skill: string;
-  importance: number;
-}
-
 interface JDParsed {
   title: string;
-  skills: JDSkill[];
+  skills: Array<{ skill: string; importance: number }>;
   requirements: {
     education: string[];
     experience: string;
     soft_skills: string[];
     agreements: string[];
   };
-  winning_strategy: Array<{
-    title: string;
-    description: string;
-  }>;
+  winning_strategy: string[];
 }
 
 serve(async (req) => {
@@ -32,77 +22,63 @@ serve(async (req) => {
 
   try {
     const { jdText } = await req.json();
-    if (!jdText || typeof jdText !== "string" || jdText.trim().length < 20) {
-      return new Response(JSON.stringify({ error: "Please provide a valid job description (min 20 chars)." }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    if (!jdText) throw new Error("JD text is required");
 
-    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
-    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
-
-    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const geminiKey = Deno.env.get("GEMINI_API_KEY");
+    if (!geminiKey) throw new Error("GEMINI_API_KEY is not configured in Supabase Secrets");
 
     const prompt = `
-      You are an expert recruiter and career strategist. Analyze this job description thoroughly.
-      
-      JD Text:
+      Extract key job details and technical skills from this description.
+      Job Description:
       ${jdText}
-
-      INSTRUCTIONS:
-      1. TITLE: Extract the company and title (e.g. "Google - Data Scientist"). If not found, infer the best fit.
-      2. SKILLS: Extract skills into categories (Languages, Frameworks, Tools, Databases, Cloud, Soft Skills, Other).
-      3. STRATEGY: Provide exactly 3 actionable steps to be a top 0.1% candidate for THIS role.
-      4. COMPOSITE SKILLS: If the JD says "React or Angular", extract as a single skill: "React OR Angular". Do NOT split them.
-
-      RETURN JSON FORMAT:
+      
+      RETURN JSON FORMAT ONLY:
       {
-        "title": "...",
-        "skills": [{"category": "...", "skill": "...", "importance": 100}, ...],
+        "title": "Job Title",
+        "skills": [{"skill": "Skill Name", "importance": 0-100}],
         "requirements": {
-          "education": ["..."],
-          "experience": "...",
-          "soft_skills": ["..."],
-          "agreements": ["..."]
+          "education": ["Degree"],
+          "experience": "Description",
+          "soft_skills": ["Skill"],
+          "agreements": ["Specific requirement like 'Must have car'"]
         },
-        "winning_strategy": [{"title": "...", "description": "..."}]
+        "winning_strategy": ["3 actionable tips to win this role"]
       }
     `;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    // Direct fetch call to Gemini API - Ultra-Stable
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
     
-    // Robust JSON extraction: look for the first '{' and last '}'
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      console.error("Failed to find JSON in AI response:", text);
-      throw new Error("AI response was malformed. Please try again.");
+    const apiResponse = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          responseMimeType: "application/json",
+        },
+      }),
+    });
+
+    if (!apiResponse.ok) {
+      const errorData = await apiResponse.json();
+      throw new Error(`Gemini API Error: ${errorData.error?.message || apiResponse.statusText}`);
     }
 
-    try {
-      const parsed: JDParsed = JSON.parse(jsonMatch[0]);
-      
-      // Note: jd_vault insert was removed from here to be handled by the client 
-      // to ensure user_id is properly populated and RLS is respected.
+    const data = await apiResponse.json();
+    const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    
+    if (!resultText) throw new Error("AI returned an empty response");
 
-      return new Response(JSON.stringify(parsed), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    } catch (parseError) {
-      console.error("JSON Parse Error:", parseError, "Raw Text:", text);
-      throw new Error("Failed to parse AI strategy. The response was not valid JSON.");
-    }
+    const parsed: JDParsed = JSON.parse(resultText);
+
+    return new Response(JSON.stringify(parsed), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (e) {
     console.error("decode-jd error:", e);
-    const errorMessage = e instanceof Error ? e.message : "Unknown error";
-    
-    // Return a 200 status even on error so the client can read the JSON body
-    // instead of Supabase throwing a generic "non-2xx" error.
-    return new Response(JSON.stringify({ error: errorMessage }), {
-      status: 200,
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
+      status: 200, // Return 200 so client can see the JSON error message
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

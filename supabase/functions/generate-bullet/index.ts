@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.1.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -10,34 +9,57 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { gapReason, resumeContext, jobTitle } = await req.json();
-    if (!gapReason) {
-      return new Response(JSON.stringify({ error: "Gap reason is required." }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    const { experience, missingSkill, jobTitle } = await req.json();
+    if (!experience || !missingSkill) throw new Error("Experience and missing skill are required");
 
     const geminiKey = Deno.env.get("GEMINI_API_KEY");
-    if (!geminiKey) throw new Error("GEMINI_API_KEY is not configured");
+    if (!geminiKey) throw new Error("GEMINI_API_KEY is not configured in Supabase Secrets");
 
-    const genAI = new GoogleGenerativeAI(geminiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const prompt = `
+      Create a high-impact, quantified professional bullet point for a resume.
+      Role: ${jobTitle || 'selected role'}
+      Experience Background: ${experience}
+      Skill to Highlight: ${missingSkill}
 
-    // ... prompt and generation code ...
+      RETURN JSON FORMAT ONLY:
+      {
+        "bullet": "Action-oriented bullet point with a metric...",
+        "explanation": "Why this works for ATS..."
+      }
+    `;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const bullet = response.text().trim();
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
+    
+    const apiResponse = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          responseMimeType: "application/json",
+        },
+      }),
+    });
 
-    return new Response(JSON.stringify({ bullet }), {
+    if (!apiResponse.ok) {
+      const errorData = await apiResponse.json();
+      throw new Error(`Gemini API Error: ${errorData.error?.message || apiResponse.statusText}`);
+    }
+
+    const data = await apiResponse.json();
+    const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    
+    if (!resultText) throw new Error("AI returned an empty response");
+
+    const resultJson = JSON.parse(resultText);
+
+    return new Response(JSON.stringify(resultJson), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (e) {
-    console.error("generate-bullet error:", e);
-    const errorMessage = e instanceof Error ? e.message : "Unknown error";
-    return new Response(JSON.stringify({ error: errorMessage }), {
-      status: 500,
+  } catch (err) {
+    console.error("generate-bullet error:", err);
+    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }), {
+      status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

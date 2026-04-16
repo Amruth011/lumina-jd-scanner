@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.12.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -13,47 +12,49 @@ serve(async (req) => {
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
 
-    if (!file) {
-      return new Response(JSON.stringify({ error: "No file uploaded." }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    if (!file) throw new Error("No file uploaded.");
 
-    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
-    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
-
-    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    // Using Pro for maximum accuracy in resume parsing
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    const geminiKey = Deno.env.get("GEMINI_API_KEY");
+    if (!geminiKey) throw new Error("GEMINI_API_KEY is not configured in Supabase Secrets");
 
     const arrayBuffer = await file.arrayBuffer();
     const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
 
-    const result = await model.generateContent([
-      {
-        inlineData: {
-          data: base64,
-          mimeType: file.type || "application/pdf"
-        }
-      },
-      "Extract ALL text content from this document. Return ONLY the raw text, preserving the structure perfectly. Do not add any commentary."
-    ]);
+    // Direct fetch call to Gemini Pro (better for file parsing) - Zero-Dependency
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${geminiKey}`;
+    
+    const apiResponse = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{
+          parts: [
+            { inlineData: { data: base64, mimeType: file.type || "application/pdf" } },
+            { text: "Extract ALL text content from this document. Return ONLY the raw text, preserving the structure perfectly. Do not add any commentary." }
+          ]
+        }]
+      }),
+    });
 
-    const response = await result.response;
-    const text = response.text();
+    if (!apiResponse.ok) {
+      const errorData = await apiResponse.json();
+      throw new Error(`Gemini API (Pro) Error: ${errorData.error?.message || apiResponse.statusText}`);
+    }
 
-    if (!text.trim()) {
+    const data = await apiResponse.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    
+    if (!text || !text.trim()) {
       throw new Error("Could not extract text from the uploaded file.");
     }
 
     return new Response(JSON.stringify({ text }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (e) {
-    console.error("parse-resume-file error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
-      status: 500,
+  } catch (err) {
+    console.error("parse-resume-file error:", err);
+    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }), {
+      status: 200, // Return 200 for client diagnostics
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
