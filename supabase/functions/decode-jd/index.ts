@@ -75,19 +75,34 @@ serve(async (req) => {
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
-    const cleanJson = text.replace(/```json/g, "").replace(/```/g, "").trim();
-    const parsed: JDParsed = JSON.parse(cleanJson);
+    
+    // Robust JSON extraction: look for the first '{' and last '}'
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      console.error("Failed to find JSON in AI response:", text);
+      throw new Error("AI response was malformed. Please try again.");
+    }
 
-    // Note: jd_vault insert was removed from here to be handled by the client 
-    // to ensure user_id is properly populated and RLS is respected.
+    try {
+      const parsed: JDParsed = JSON.parse(jsonMatch[0]);
+      
+      // Note: jd_vault insert was removed from here to be handled by the client 
+      // to ensure user_id is properly populated and RLS is respected.
 
-    return new Response(JSON.stringify(parsed), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+      return new Response(JSON.stringify(parsed), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    } catch (parseError) {
+      console.error("JSON Parse Error:", parseError, "Raw Text:", text);
+      throw new Error("Failed to parse AI strategy. The response was not valid JSON.");
+    }
   } catch (e) {
     console.error("decode-jd error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
-      status: 500,
+    const errorMessage = e instanceof Error ? e.message : "Unknown error";
+    
+    // Return a structured error response that the client can display
+    return new Response(JSON.stringify({ error: errorMessage }), {
+      status: errorMessage.includes("configured") || errorMessage.includes("malformed") ? 400 : 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

@@ -86,14 +86,27 @@ serve(async (req) => {
     const response = await result.response;
     const text = response.text();
     
-    const jsonStr = text.replace(/```json/g, "").replace(/```/g, "").trim();
-    const resultJson = JSON.parse(jsonStr);
+    // Robust JSON extraction: look for the first '{' and last '}'
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      console.error("Failed to find JSON in AI response:", text);
+      throw new Error("AI response was malformed. Please try again.");
+    }
 
-    return new Response(JSON.stringify(resultJson), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    try {
+      const resultJson = JSON.parse(jsonMatch[0]);
+      return new Response(JSON.stringify(resultJson), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    } catch (parseError) {
+      console.error("JSON Parse Error:", parseError, "Raw Text:", text);
+      throw new Error("Failed to parse tailored resume. The response was not valid JSON.");
+    }
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
+    console.error("tailor-resume error:", err);
+    const errorMessage = err instanceof Error ? err.message : "Unknown error";
+
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

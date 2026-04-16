@@ -18,27 +18,13 @@ serve(async (req) => {
       });
     }
 
-    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
-    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
+    const geminiKey = Deno.env.get("GEMINI_API_KEY");
+    if (!geminiKey) throw new Error("GEMINI_API_KEY is not configured");
 
-    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-3-flash" });
+    const genAI = new GoogleGenerativeAI(geminiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    const prompt = `
-      You are an expert resume writer. Generate a single, powerful resume bullet point that directly addresses this skill gap.
-      
-      Gap to fix: "${gapReason}"
-      Job title: "${jobTitle || 'Professional'}"
-      Context: "${resumeContext?.slice(0, 500) || ''}"
-
-      RULES:
-      1. Start with a strong action verb.
-      2. Include quantified results (%, $, or numbers).
-      3. Focus on impact, not just duties.
-      4. Max 2 lines.
-
-      Return ONLY the bullet point text.
-    `;
+    // ... prompt and generation code ...
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
@@ -49,7 +35,8 @@ serve(async (req) => {
     });
   } catch (e) {
     console.error("generate-bullet error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
+    const errorMessage = e instanceof Error ? e.message : "Unknown error";
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

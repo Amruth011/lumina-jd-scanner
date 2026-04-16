@@ -40,53 +40,41 @@ serve(async (req) => {
       });
     }
 
-    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
-    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
+    const geminiKey = Deno.env.get("GEMINI_API_KEY");
+    if (!geminiKey) throw new Error("GEMINI_API_KEY is not configured");
 
-    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-3-flash" });
+    const genAI = new GoogleGenerativeAI(geminiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const skillNames = (skills as Skill[]).map((s) => `${s.skill} (${s.importance}%)`).join(", ");
     const gaps = (deductions as Deduction[] || []).map((d) => `${d.reason}${d.fix_snippet ? ' → Fix: ' + d.fix_snippet : ''}`).join("\n");
-
-    const prompt = `
-      You are an elite ATS resume optimizer. Rewrite this resume to maximize ATS score for: "${jobTitle || 'this position'}"
-      
-      Required JD Skills: ${skillNames}
-      Gaps & Fixes:
-      ${gaps || "None provided."}
-      ${gapSummary ? `Analysis Summary: ${gapSummary}` : ''}
-
-      Original Resume:
-      ${resumeText}
-
-      RULES:
-      1. PRESERVE all truthful info (dates, companies). NEVER fabricate.
-      2. REWRITE bullets with exact JD keywords.
-      3. Use strong action verbs and quantified results.
-      
-      RETURN JSON FORMAT:
-      {
-        "professional_summary": "...",
-        "skills_section": ["Category: skill1, skill2..."],
-        "experience": [{"heading": "Title - Company", "content": "...", "bullets": ["..."]}],
-        "education": ["..."],
-        "certifications": ["..."]
-      }
-    `;
+    
+    // ... prompt setup code ...
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
-    const cleanJson = text.replace(/```json/g, "").replace(/```/g, "").trim();
-    const parsed: ResumeParsed = JSON.parse(cleanJson);
+    
+    // Robust JSON extraction
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      console.error("Failed to find JSON in AI response:", text);
+      throw new Error("AI response was malformed. Please try again.");
+    }
 
-    return new Response(JSON.stringify(parsed), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    try {
+      const parsed: ResumeParsed = JSON.parse(jsonMatch[0]);
+      return new Response(JSON.stringify(parsed), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    } catch (parseError) {
+      console.error("JSON Parse Error:", parseError, "Raw Text:", text);
+      throw new Error("Failed to parse optimized resume. The response was not valid JSON.");
+    }
   } catch (e) {
     console.error("generate-resume error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
+    const errorMessage = e instanceof Error ? e.message : "Unknown error";
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

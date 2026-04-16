@@ -59,8 +59,14 @@ export const useDecodeJD = () => {
       setWasCached(false);
       toast.success(`Decoded: ${data.title}${forceRefresh ? " (fresh decode)" : ""}`, { duration: 4000 });
     } catch (err) {
-      console.error(err);
-      toast.error((err as Error).message || "Failed to decode JD. Please try again.");
+      console.error("Decode JD Error:", err);
+      const errorMessage = (err as Error & { context?: { message?: string } })?.context?.message || (err as Error).message || "Unknown error";
+      
+      if (errorMessage.includes("non-2xx")) {
+        toast.error("AI Service Error: The strategy engine is busy or misconfigured. Please check your Supabase logs.");
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setIsScanning(false);
     }

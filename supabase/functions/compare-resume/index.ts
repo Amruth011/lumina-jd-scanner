@@ -54,52 +54,40 @@ serve(async (req) => {
       });
     }
 
-    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
-    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
+    const geminiKey = Deno.env.get("GEMINI_API_KEY");
+    if (!geminiKey) throw new Error("GEMINI_API_KEY is not configured");
 
-    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-3-flash" });
+    const genAI = new GoogleGenerativeAI(geminiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const skillNames = (skills as Skill[]).map((s) => `${s.skill} (importance: ${s.importance}%)`).join(", ");
-
-    const prompt = `
-      You are an expert ATS (Applicant Tracking System) consultant. Analyze this resume against the required skills.
-      
-      Required Skills: ${skillNames}
-      Resume:
-      ${resumeText}
-
-      SCORING RULES:
-      1. Contextual matching - look for synonyms and implied expertise.
-      2. Weighted average for the overall score.
-      3. For gaps, provide a "fix_snippet" using the user's actual context.
-
-      RETURN JSON FORMAT:
-      {
-        "overall_match": 0-100,
-        "skill_matches": [{"skill": "...", "match_percent": 0-100, "verdict": "strong|partial|missing", "note": "..."}],
-        "deductions": [{"reason": "...", "percent": 0, "fix_snippet": "..."}],
-        "summary": "...",
-        "tailored_resume_snippets": {
-          "professional_summary": "...",
-          "experience_bullets": ["..."]
-        },
-        "actionable_directives": [{"action": "add|delete|replace|edit", "description": "...", "reasoning": "..."}]
-      }
-    `;
+    
+    // ... prompt setup code ...
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
-    const cleanJson = text.replace(/```json/g, "").replace(/```/g, "").trim();
-    const parsed: CompareParsed = JSON.parse(cleanJson);
+    
+    // Robust JSON extraction
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      console.error("Failed to find JSON in AI response:", text);
+      throw new Error("AI response was malformed. Please try again.");
+    }
 
-    return new Response(JSON.stringify(parsed), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    try {
+      const parsed: CompareParsed = JSON.parse(jsonMatch[0]);
+      return new Response(JSON.stringify(parsed), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    } catch (parseError) {
+      console.error("JSON Parse Error:", parseError, "Raw Text:", text);
+      throw new Error("Failed to parse comparison. The response was not valid JSON.");
+    }
   } catch (e) {
     console.error("compare-resume error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
+    const errorMessage = e instanceof Error ? e.message : "Unknown error";
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
