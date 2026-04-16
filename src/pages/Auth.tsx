@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Sparkles, Mail, Loader2, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
-type AuthMode = "select" | "email";
+type AuthMode = "select" | "email" | "reset" | "update_password";
 type AuthAction = "login" | "signup";
 
 const Auth = () => {
@@ -15,6 +15,16 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // Check if user arrived via a password reset link
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY") {
+        setMode("update_password");
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleEmailAuth = async () => {
     if (!email.trim() || password.length < 6) {
@@ -46,6 +56,38 @@ const Auth = () => {
     }
   };
 
+  const handleResetPassword = async () => {
+    if (!email.trim()) return toast.error("Enter your email first.");
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: window.location.origin + "/auth",
+      });
+      if (error) throw error;
+      toast.success("Password reset link sent! Check your email.");
+      setMode("email");
+    } catch (err) {
+      toast.error((err as Error).message || "Failed to send reset link.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdatePassword = async () => {
+    if (password.length < 6) return toast.error("Password must be at least 6 characters.");
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ password });
+      if (error) throw error;
+      toast.success("Password updated successfully!");
+      navigate("/");
+    } catch (err) {
+      toast.error((err as Error).message || "Failed to update password.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const reset = () => {
     setMode("select");
     setPassword("");
@@ -68,16 +110,16 @@ const Auth = () => {
           </div>
 
           <h2 className="font-display font-semibold text-xl text-foreground text-center mb-1">
-            Sign in to continue
+            {mode === "reset" ? "Reset Password" : mode === "update_password" ? "New Password" : "Sign in to continue"}
           </h2>
           <p className="text-sm text-muted-foreground text-center mb-6">
-            Track your applications and save your analyses
+            {mode === "reset" ? "Enter your email to receive a reset link" : mode === "update_password" ? "Enter your new strong password" : "Track your applications and save your analyses"}
           </p>
 
           {/* Back button */}
-          {mode !== "select" && (
+          {mode !== "select" && mode !== "update_password" && (
             <button
-              onClick={reset}
+              onClick={() => mode === 'reset' ? setMode('email') : reset()}
               className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground mb-4 transition-colors"
             >
               <ArrowLeft className="w-3 h-3" /> Back
@@ -132,6 +174,18 @@ const Auth = () => {
                 className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                 onKeyDown={(e) => e.key === "Enter" && handleEmailAuth()}
               />
+              
+              {action === "login" && (
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => setMode("reset")}
+                    className="text-xs text-primary hover:underline"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+              )}
+
               <button
                 onClick={handleEmailAuth}
                 disabled={loading}
@@ -140,6 +194,54 @@ const Auth = () => {
                 <div className="liquid-water-layer opacity-20" />
                 {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                 {action === "login" ? "Sign In" : "Create Account"}
+              </button>
+            </div>
+          )}
+
+          {/* Reset Password */}
+          {mode === "reset" && (
+            <div className="space-y-4">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                autoFocus
+                onKeyDown={(e) => e.key === "Enter" && handleResetPassword()}
+              />
+              <button
+                onClick={handleResetPassword}
+                disabled={loading}
+                className="relative overflow-hidden w-full py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-sm tracking-tight hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2 liquid-glass-refraction premium-button-glow shadow-md shadow-primary/20"
+              >
+                <div className="liquid-water-layer opacity-20" />
+                {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+                Send Reset Link
+              </button>
+            </div>
+          )}
+
+          {/* Update Password */}
+          {mode === "update_password" && (
+            <div className="space-y-4">
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter new password"
+                className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                autoFocus
+                onKeyDown={(e) => e.key === "Enter" && handleUpdatePassword()}
+              />
+              <button
+                onClick={handleUpdatePassword}
+                disabled={loading}
+                className="relative overflow-hidden w-full py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-sm tracking-tight hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2 liquid-glass-refraction premium-button-glow shadow-md shadow-primary/20"
+              >
+                <div className="liquid-water-layer opacity-20" />
+                {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+                Update Password
               </button>
             </div>
           )}
