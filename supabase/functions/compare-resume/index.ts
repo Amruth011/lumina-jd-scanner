@@ -42,7 +42,7 @@ serve(async (req) => {
     for (const modelName of models) {
       try {
         console.log(`True Resilience: Attempting with ${modelName}...`);
-        const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${geminiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${geminiKey}`;
         
         const apiResponse = await fetch(url, {
           method: "POST",
