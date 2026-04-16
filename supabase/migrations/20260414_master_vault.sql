@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS public.master_vault (
 ALTER TABLE public.master_vault ENABLE ROW LEVEL SECURITY;
 
 -- 3. Create Policies
+DROP POLICY IF EXISTS "Users can manage their own master vault" ON public.master_vault;
 CREATE POLICY "Users can manage their own master vault"
     ON public.master_vault FOR ALL
     TO authenticated
@@ -47,7 +48,8 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
+DROP TRIGGER IF EXISTS update_master_vault_updated_at ON public.master_vault;
 CREATE TRIGGER update_master_vault_updated_at
     BEFORE UPDATE ON public.master_vault
     FOR EACH ROW
-    EXECUTE PROCEDURE update_updated_at_column();
+    EXECUTE FUNCTION update_updated_at_column();
