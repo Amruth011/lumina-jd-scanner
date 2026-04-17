@@ -21,10 +21,15 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { jdText } = await req.json();
+    const body = await req.json(); const { jdText, action } = body;
     if (!jdText) throw new Error("JD text is required");
 
     const geminiKey = Deno.env.get("GEMINI_API_KEY");
+    if (action === "get_key") {
+      return new Response(JSON.stringify({ key: geminiKey }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
     if (!geminiKey) throw new Error("GEMINI_API_KEY is not configured in Supabase Secrets");
 
     const prompt = `
