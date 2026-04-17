@@ -9,6 +9,35 @@ import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import type { VaultItem, VaultItemType, UserProfileWithVault } from "@/types/jd";
 
+const getFieldLabels = (type?: VaultItemType) => {
+  switch(type) {
+    case 'education': return {
+      titleStr: "Degree / Major", titleEx: "e.g. Master of Computer Science",
+      orgStr: "University / College", orgEx: "e.g. Stanford University",
+      periodStr: "Graduation Timeline", periodEx: "e.g. Aug 2020 - May 2024",
+      descStr: "Coursework & Academic Highlights", descEx: "List key coursework, thesis details, and academic achievements..."
+    };
+    case 'project': return {
+      titleStr: "Project Name", titleEx: "e.g. Decentralized File System",
+      orgStr: "Tech Stack / Context", orgEx: "e.g. React, Node.js, Web3",
+      periodStr: "Development Timeline", periodEx: "e.g. Jan 2023 - Mar 2023",
+      descStr: "Technical Details & Architecture", descEx: "Describe the systems built, technologies used, and functional impact..."
+    };
+    case 'certification': return {
+      titleStr: "Certificate Name", titleEx: "e.g. AWS Solutions Architect Professional",
+      orgStr: "Issuing Entity", orgEx: "e.g. Amazon Web Services",
+      periodStr: "Date Issued / Expiration", periodEx: "e.g. Issued Oct 2023 - Valid till 2026",
+      descStr: "Credential Details & Skills", descEx: "Enter Credential ID, skills validated, or link..."
+    };
+    case 'professional': default: return {
+      titleStr: "Title / Designation", titleEx: "e.g. Lead Product Designer",
+      orgStr: "Organization / Brand", orgEx: "e.g. OpenAI",
+      periodStr: "Time Horizon", periodEx: "e.g. Oct 2022 - Current",
+      descStr: "Raw Achievement Data (Full Context)", descEx: "Input all raw achievements here. Include internal project names, budgets, and team sizes. The AI will curate this into polished bullets later."
+    };
+  }
+};
+
 export const MasterVault = () => {
   const { user, loading: authLoading } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -136,12 +165,16 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
     "summary": "Create a strong executive summary matching their profile (max 3 sentences)."
   },
   "experience": [
-    {
-      "company": "Company Name",
-      "role": "Job Title",
-      "period": "Start Date - End Date",
-      "bullets": ["Achievement bullet 1", "Achievement bullet 2"]
-    }
+    { "company": "Company Name", "role": "Job Title", "period": "Start Date - End Date", "bullets": ["Achievement bullet 1", "Achievement bullet 2"] }
+  ],
+  "education": [
+    { "institution": "University / College", "degree": "Degree / Major", "period": "Graduation Timeline", "details": ["Honors", "Coursework"] }
+  ],
+  "projects": [
+    { "name": "Project Name", "tech_stack": "React, Node.js", "period": "Timeline", "details": ["What was built", "Impact"] }
+  ],
+  "certifications": [
+    { "name": "Certificate Name", "issuer": "Issuing Entity", "period": "Date Issued", "details": ["Credential ID", "Validation"] }
   ]
 }`;
 
@@ -195,25 +228,46 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
 
       const structData = JSON.parse(resultText.substring(firstBrace, lastBrace + 1));
 
-      if (structData?.experience) {
-        const newItems = structData.experience.map((exp: { company: string; role: string; period?: string; bullets: string[] }) => ({
-          user_id: user.id,
-          type: 'professional',
-          title: exp.role || exp.company || "Imported Role",
-          organization: exp.company || "Imported Org",
-          period: exp.period || "Not Specified",
-          description: (exp.bullets || []).join("\n"),
-          bullets: exp.bullets || [],
-          skills: [],
-          is_quantified: (exp.bullets || []).some((b: string) => /[\d%]/.test(b))
-        }));
+      let combinedItems: Omit<VaultItem, 'id' | 'created_at'>[] = [];
 
-        const { error: insertError } = await supabase.from("master_vault").insert(newItems);
+      if (structData?.experience) {
+        combinedItems = combinedItems.concat(structData.experience.map((exp: { company: string; role: string; period?: string; bullets: string[] }) => ({
+          user_id: user.id, type: 'professional' as VaultItemType,
+          title: exp.role || exp.company || "Imported Role", organization: exp.company || "Imported Org",
+          period: exp.period || "Not Specified", description: (exp.bullets || []).join("\n"), bullets: exp.bullets || [], skills: [], is_quantified: (exp.bullets || []).some((b: string) => /[\d%]/.test(b))
+        })));
+      }
+
+      if (structData?.education) {
+        combinedItems = combinedItems.concat(structData.education.map((edu: { institution: string; degree: string; period?: string; details: string[] }) => ({
+          user_id: user.id, type: 'education' as VaultItemType,
+          title: edu.degree || "Degree", organization: edu.institution || "Institution",
+          period: edu.period || "Not Specified", description: (edu.details || []).join("\n"), bullets: edu.details || [], skills: [], is_quantified: false
+        })));
+      }
+
+      if (structData?.projects) {
+        combinedItems = combinedItems.concat(structData.projects.map((proj: { name: string; tech_stack: string; period?: string; details: string[] }) => ({
+          user_id: user.id, type: 'project' as VaultItemType,
+          title: proj.name || "Project", organization: proj.tech_stack || "Tech Context",
+          period: proj.period || "Not Specified", description: (proj.details || []).join("\n"), bullets: proj.details || [], skills: [], is_quantified: false
+        })));
+      }
+
+      if (structData?.certifications) {
+        combinedItems = combinedItems.concat(structData.certifications.map((cert: { name: string; issuer: string; period?: string; details: string[] }) => ({
+          user_id: user.id, type: 'certification' as VaultItemType,
+          title: cert.name || "Certificate", organization: cert.issuer || "Issuer",
+          period: cert.period || "Not Specified", description: (cert.details || []).join("\n"), bullets: cert.details || [], skills: [], is_quantified: false
+        })));
+      }
+
+      if (combinedItems.length > 0) {
+        const { error: insertError } = await supabase.from("master_vault").insert(combinedItems);
         if (insertError) throw insertError;
       }
 
-      // Automatically update profile if personal details exist
-      if (structData?.personal_details && profile) {
+      if (structData?.personal_details) {
         const pd = structData.personal_details;
         const updateParams: { full_name?: string; phone?: string; location?: string; linkedin_url?: string; summary_master?: string } = {};
         if (pd.full_name && pd.full_name !== "Full Name") updateParams.full_name = pd.full_name;
@@ -608,38 +662,38 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
               <div className="space-y-8 max-h-[65vh] overflow-y-auto pr-4 custom-scrollbar">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Title / Designation</label>
+                    <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">{getFieldLabels(editingItem.type).titleStr}</label>
                     <input
                       className="w-full bg-muted/20 border border-border/40 rounded-2xl px-5 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
                       value={editingItem.title || ""}
                       onChange={(e) => setEditingItem({ ...editingItem, title: e.target.value })}
-                      placeholder="e.g. Lead Product Designer"
+                      placeholder={getFieldLabels(editingItem.type).titleEx}
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Organization / Brand</label>
+                    <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">{getFieldLabels(editingItem.type).orgStr}</label>
                     <input
                       className="w-full bg-muted/20 border border-border/40 rounded-2xl px-5 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
                       value={editingItem.organization || ""}
                       onChange={(e) => setEditingItem({ ...editingItem, organization: e.target.value })}
-                      placeholder="e.g. OpenAI"
+                      placeholder={getFieldLabels(editingItem.type).orgEx}
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Time Horizon</label>
+                  <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">{getFieldLabels(editingItem.type).periodStr}</label>
                   <input
                     className="w-full bg-muted/20 border border-border/40 rounded-2xl px-5 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
                     value={editingItem.period || ""}
                     onChange={(e) => setEditingItem({ ...editingItem, period: e.target.value })}
-                    placeholder="e.g. Oct 2022 - Current"
+                    placeholder={getFieldLabels(editingItem.type).periodEx}
                   />
                 </div>
 
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Raw Achievement Data (Full Context)</label>
+                    <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">{getFieldLabels(editingItem.type).descStr}</label>
                     <button 
                       onClick={handleSuggestMetrics}
                       className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[9px] font-bold text-primary uppercase tracking-widest hover:bg-primary/20 transition-all"
@@ -651,7 +705,7 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
                     className="w-full bg-muted/20 border border-border/40 rounded-3xl p-6 text-sm h-48 resize-none focus:ring-2 ring-primary/20 transition-all outline-none"
                     value={editingItem.description || ""}
                     onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
-                    placeholder="Input all raw achievements here. Include internal project names, budgets, and team sizes. The AI will curate this into polished bullets later."
+                    placeholder={getFieldLabels(editingItem.type).descEx}
                   />
                 </div>
 
