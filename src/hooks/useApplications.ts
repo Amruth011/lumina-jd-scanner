@@ -30,7 +30,7 @@ export const useApplications = () => {
     
     const { data, error } = await supabase
       .from("user_applications")
-      .select("*")
+      .select("id, company, role, match_percent, current_match_percent, status, created_at, updated_at")
       .order("created_at", { ascending: false });
 
     if (error) {

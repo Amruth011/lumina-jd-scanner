@@ -141,36 +141,43 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
   ]
 }`;
 
-      // Direct Gemini call with Multi-Model Fallback — bypasses Supabase 5-second limit
-      const models = ["gemini-1.5-flash-latest", "gemini-1.5-flash", "gemini-1.5-pro-latest", "gemini-1.5-pro", "gemini-pro"];
+      // Direct Gemini call with Dual-Path Multi-Model Fallback — bypasses Supabase 5-second limit
+      const apiVersions = ["v1beta", "v1"];
+      const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.0-pro"];
       let lastAiError = "";
       let resultText = "";
 
-      for (const modelName of models) {
-        try {
-          console.log(`Smart Sync: Attempting with ${modelName}...`);
-          const apiResponse = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${geminiKey}`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                contents: [{ parts: [{ text: syncPrompt }] }],
-              }),
+      for (const version of apiVersions) {
+        if (resultText) break;
+        for (const modelName of models) {
+          try {
+            console.log(`Smart Sync: Attempting with ${version}/${modelName}...`);
+            const apiResponse = await fetch(
+              `https://generativelanguage.googleapis.com/${version}/models/${modelName}:generateContent?key=${geminiKey}`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  contents: [{ parts: [{ text: syncPrompt }] }],
+                }),
+              }
+            );
+
+            if (!apiResponse.ok) {
+              const errorData = await apiResponse.json().catch(() => ({}));
+              throw new Error(`AI Error: ${apiResponse.status} - ${errorData.error?.message || apiResponse.statusText}`);
             }
-          );
 
-          if (!apiResponse.ok) {
-            const errJson = await apiResponse.json().catch(() => ({}));
-            throw new Error(`AI Error ${apiResponse.status}: ${errJson.error?.message || apiResponse.statusText}`);
+            const rawData = await apiResponse.json();
+            resultText = rawData.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (resultText) {
+              console.log(`Smart Sync: Success with ${version}/${modelName}`);
+              break;
+            }
+          } catch (err) {
+            lastAiError = err instanceof Error ? err.message : String(err);
+            console.warn(`Smart Sync: ${version}/${modelName} failed, trying next...`, lastAiError);
           }
-
-          const rawApiData = await apiResponse.json();
-          resultText = rawApiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
-          if (resultText) break;
-        } catch (err) {
-          lastAiError = err instanceof Error ? err.message : String(err);
-          console.warn(`Smart Sync: ${modelName} failed, trying next...`, lastAiError);
         }
       }
 
