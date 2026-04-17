@@ -28,7 +28,15 @@ export const useDecodeJD = () => {
       if (!forceRefresh) {
         const cached = await getCachedDecode(jdText);
         if (cached) {
-          setResults(cached);
+          const normalizedWinningStrategy = Array.isArray(cached.winning_strategy) 
+            ? cached.winning_strategy.map((ws: any, idx: number) => 
+                typeof ws === 'string' 
+                  ? { title: `Strategy ${idx + 1}`, description: ws }
+                  : { title: ws?.title || `Strategy ${idx + 1}`, description: ws?.description || '' }
+              )
+            : [];
+            
+          setResults({ ...cached, winning_strategy: normalizedWinningStrategy });
           setWasCached(true);
           toast.success(`Decoded: ${cached.title} (cached — consistent score)`, { duration: 4000 });
           return;

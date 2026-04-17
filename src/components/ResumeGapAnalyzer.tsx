@@ -19,8 +19,9 @@ interface ResumeGapAnalyzerProps {
 
 async function extractPdfText(file: File): Promise<string> {
   const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
-
+  // Force main thread parsing (fake worker) to avoid Vercel bundler / cross-origin CDN errors
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "";
+  
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
   let fullText = "";
