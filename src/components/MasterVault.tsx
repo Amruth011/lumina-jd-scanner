@@ -121,13 +121,20 @@ export const MasterVault = () => {
       toast.loading("Smart Sync: Structure and tailoring experience via AI...", { id: toastId });
 
       // Migrated to Groq API exactly as requested
-      const syncPrompt = `You are an expert resume parser. Extract all professional experience from this resume text and structure it into clear job entries.
+      const syncPrompt = `You are an expert resume parser. Extract ALL professional experience AND the candidate's personal details from this resume text.
 
 Resume Text:
 ${rawText}
 
 RETURN JSON FORMAT ONLY (no markdown, no explanation):
 {
+  "personal_details": {
+    "full_name": "Full Name",
+    "phone": "Phone Number",
+    "location": "City, State",
+    "linkedin": "extracted linkedin url",
+    "summary": "Create a strong executive summary matching their profile (max 3 sentences)."
+  },
   "experience": [
     {
       "company": "Company Name",
@@ -203,6 +210,24 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
 
         const { error: insertError } = await supabase.from("master_vault").insert(newItems);
         if (insertError) throw insertError;
+      }
+
+      // Automatically update profile if personal details exist
+      if (structData?.personal_details && profile) {
+        const pd = structData.personal_details;
+        const updateParams: { full_name?: string; phone?: string; location?: string; linkedin_url?: string; summary_master?: string } = {};
+        if (pd.full_name && pd.full_name !== "Full Name") updateParams.full_name = pd.full_name;
+        if (pd.phone && pd.phone !== "Phone Number") updateParams.phone = pd.phone;
+        if (pd.location && pd.location !== "City, State") updateParams.location = pd.location;
+        if (pd.linkedin && pd.linkedin !== "extracted linkedin url") updateParams.linkedin_url = pd.linkedin;
+        if (pd.summary && pd.summary !== "Create a strong executive summary matching their profile (max 3 sentences).") {
+            updateParams.summary_master = pd.summary;
+        }
+
+        if (Object.keys(updateParams).length > 0) {
+            const { error: profileError } = await supabase.from("profiles").update(updateParams).eq("id", user.id);
+            if (profileError) console.error("Auto profile update failed:", profileError);
+        }
       }
 
       toast.success("Smart Sync complete: Experience structured into vault!", { id: toastId });

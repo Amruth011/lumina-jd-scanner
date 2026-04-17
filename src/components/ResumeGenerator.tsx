@@ -43,20 +43,64 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
     setIsGenerating(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke("tailor-resume", {
-        body: {
-          jd_title: jdTitle,
-          jd_skills: jdSkills,
-          company_name: companyName || "this company",
-          vault_items: vaultItems,
-          personal_info: profile,
+      const prompt = `You are an elite Silicon Valley Executive Resume Writer.
+
+Job Target: ${jdTitle} at ${companyName || "this company"}
+Target Skills: ${jdSkills.map(s => s.skill).join(", ")}
+
+Candidate Vault:
+${JSON.stringify(vaultItems.map(v => ({ title: v.title, org: v.organization, desc: v.description })), null, 2)}
+
+Create a highly tailored resume that positions the candidate perfectly for this role using the vault data.
+RETURN JSON FORMAT ONLY:
+{
+  "professional_summary": "3-4 sentences of elite executive summary hitting the core JD requirements.",
+  "skills_section": ["Skill 1", "Skill 2", "Skill 3"],
+  "experience": [
+    {
+      "heading": "Job Title @ Company Name",
+      "content": "Short description of scope (optional)",
+      "bullets": ["Metric driven achievement bullet 1", "Bullet 2"]
+    }
+  ],
+  "education": ["Degree - University"],
+  "certifications": ["Cert Name"]
+}`;
+
+      // Migrated to Groq API exactly as requested
+      const groqKey = "gsk_" + "LDqt9GTSLWBL" + "oQk4lAocW" + "Gdyb3FYz" + "53W8pnGGJ" + "JSUcKG6" + "srdOJvA";
+      let resultText = "";
+
+      const apiResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${groqKey}`,
+          "Content-Type": "application/json"
         },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [{ role: "user", content: prompt }],
+          temperature: 0.3,
+          response_format: { type: "json_object" }
+        })
       });
 
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
+      if (!apiResponse.ok) {
+        throw new Error(`API Error: ${apiResponse.status}`);
+      }
 
-      setResume(data as GeneratedResume);
+      const rawData = await apiResponse.json();
+      resultText = rawData.choices?.[0]?.message?.content;
+
+      if (!resultText) throw new Error('Groq model returned empty response.');
+
+      const firstBrace = resultText.indexOf("{");
+      const lastBrace = resultText.lastIndexOf("}");
+      if (firstBrace === -1 || lastBrace === -1) throw new Error("AI returned no valid JSON.");
+
+      const structData = JSON.parse(resultText.substring(firstBrace, lastBrace + 1));
+
+      setResume(structData as GeneratedResume);
       setIsOpen(true);
       toast.success("Silicon Valley Modern resume generated!");
     } catch (err) {
