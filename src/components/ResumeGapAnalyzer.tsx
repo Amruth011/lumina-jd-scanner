@@ -175,7 +175,15 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
 
       let aiResult: Partial<ResumeGapResult> | null = null;
       try {
-        const prompt = `Match analysis for ${jobTitle || "Role"}. Return JSON with summary, deductions, skill_matches, tailored_resume_snippets.`;
+        const prompt = `Match analysis for ${jobTitle || "Role"}. Return JSON with summary, deductions, skill_matches, tailored_resume_snippets, and actionable_directives. 
+        JSON Format:
+        {
+          "overall_match": 0-100,
+          "summary": "1 sentence",
+          "deductions": [{"reason": "reason", "percent": 5, "fix_snippet": "tip"}],
+          "skill_matches": [{"skill": "skill", "match_percent": 100, "verdict": "strong|missing"}],
+          "actionable_directives": [{"action": "Optimize", "description": "Tip", "reasoning": "Why"}]
+        }`;
           // Migrated to Groq API exactly as requested
           const groqKey = "gsk_" + "LDqt9GTSLWBL" + "oQk4lAocW" + "Gdyb3FYz" + "53W8pnGGJ" + "JSUcKG6" + "srdOJvA";
           let resultText = "";
@@ -276,13 +284,13 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
   const renderResults = () => {
     if (!result) return null;
     return (
-      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="grid grid-cols-1 md:grid-cols-[160px,1fr] gap-6">
-            <div className="premium-card rounded-3xl p-6 bg-white/5 border border-white/10 flex flex-col items-center justify-center text-center">
-                <span className="text-5xl font-black text-foreground">{result.overall_match}%</span>
-                <span className="text-[9px] font-black uppercase text-primary tracking-widest mt-2 block">Match</span>
+      <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="grid grid-cols-1 md:grid-cols-[120px,1fr] gap-4">
+            <div className="premium-card rounded-2xl p-4 bg-white/5 border border-white/10 flex flex-col items-center justify-center text-center">
+                <span className="text-4xl font-black text-foreground">{result.overall_match}%</span>
+                <span className="text-[9px] font-black uppercase text-primary tracking-widest mt-1 block">Match</span>
             </div>
-            <div className="premium-card rounded-3xl p-6 bg-white/5 border border-white/10 flex items-center">
+            <div className="premium-card rounded-2xl p-4 bg-white/5 border border-white/10 flex items-center">
                 <p className="text-sm font-medium text-foreground/80 leading-relaxed italic border-l-2 border-primary/20 pl-4">
                     "{result.summary}"
                 </p>
@@ -290,8 +298,8 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
         </div>
 
         {result.deductions && result.deductions.length > 0 && (
-          <div className="premium-card rounded-3xl p-6 border border-accent-red/20 bg-accent-red/5">
-            <h4 className="text-sm font-bold mb-4 flex items-center gap-2 uppercase tracking-widest text-accent-red">
+          <div className="premium-card rounded-2xl p-4 border border-accent-red/20 bg-accent-red/5">
+            <h4 className="text-xs font-bold mb-3 flex items-center gap-2 uppercase tracking-widest text-accent-red">
                 <Zap className="w-4 h-4" /> Gap Analysis
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -308,9 +316,9 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="premium-card rounded-3xl p-6 border border-white/5 bg-white/5">
-                <h4 className="font-bold mb-4 uppercase tracking-widest text-[10px] text-muted-foreground flex items-center gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="premium-card rounded-2xl p-4 border border-white/5 bg-white/5">
+                <h4 className="font-bold mb-3 uppercase tracking-widest text-[9px] text-muted-foreground flex items-center gap-2">
                     <ShieldCheck className="w-3.5 h-3.5 opacity-50" /> Skill Signatures
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -326,12 +334,12 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                 </div>
             </div>
 
-            <div className="premium-card rounded-3xl p-6 bg-accent-blue/5 border border-accent-blue/20">
-                <h4 className="font-bold mb-4 uppercase tracking-[0.15em] text-[10px] text-accent-blue flex items-center gap-2">
+            <div className="premium-card rounded-2xl p-4 bg-accent-blue/5 border border-accent-blue/20">
+                <h4 className="font-bold mb-3 uppercase tracking-[0.15em] text-[9px] text-accent-blue flex items-center gap-2">
                     <TrendingUp className="w-3.5 h-3.5" /> Action Roadmap
                 </h4>
                 <div className="space-y-3">
-                    {(result.actionable_directives || [
+                    {(result.actionable_directives?.length ? result.actionable_directives : [
                         { action: "Optimize", description: "Quantify your achievements in core skill areas." },
                         { action: "Inject", description: "Integrate JD keyword tokens into your professional summary." }
                     ]).map((d, i) => (

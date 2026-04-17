@@ -132,6 +132,7 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
     {
       "company": "Company Name",
       "role": "Job Title",
+      "period": "Start Date - End Date",
       "bullets": ["Achievement bullet 1", "Achievement bullet 2"]
     }
   ]
@@ -187,13 +188,13 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
 
       const structData = JSON.parse(resultText.substring(firstBrace, lastBrace + 1));
 
-      // Batch insert into vault
       if (structData?.experience) {
-        const newItems = structData.experience.map((exp: { company: string; role: string; bullets: string[] }) => ({
+        const newItems = structData.experience.map((exp: { company: string; role: string; period?: string; bullets: string[] }) => ({
           user_id: user.id,
           type: 'professional',
           title: exp.role || exp.company || "Imported Role",
           organization: exp.company || "Imported Org",
+          period: exp.period || "Not Specified",
           description: (exp.bullets || []).join("\n"),
           bullets: exp.bullets || [],
           skills: [],
