@@ -32,7 +32,7 @@ serve(async (req) => {
     `;
 
     // Final Shield: True Resilience Fallback Loop
-    const models = ['gemini-1.5-flash-latest', 'gemini-1.5-pro-latest', 'gemini-pro'];
+    const models = ['gemini-2.5-flash'];
     let lastError = "";
 
     for (const modelName of models) {
