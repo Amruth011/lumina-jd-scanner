@@ -82,8 +82,7 @@ export const MasterVault = () => {
   const extractTextFromPDF = async (file: File) => {
     const arrayBuffer = await file.arrayBuffer();
     const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
-    const workerSrc = await import("pdfjs-dist/legacy/build/pdf.worker.mjs?url");
-    pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc.default;
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
     
     const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
     let fullText = "";

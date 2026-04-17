@@ -19,8 +19,7 @@ interface ResumeGapAnalyzerProps {
 
 async function extractPdfText(file: File): Promise<string> {
   const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
-  const workerSrc = await import("pdfjs-dist/legacy/build/pdf.worker.mjs?url");
-  pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc.default;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
 
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
@@ -271,68 +270,70 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
   const renderResults = () => {
     if (!result) return null;
     return (
-      <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="premium-card rounded-[40px] p-12 bg-white/5 border border-white/10 relative overflow-hidden">
-            <div className="flex flex-col md:flex-row items-center gap-12 relative z-10">
-                <div className="w-48 h-48 rounded-full bg-primary/10 border-4 border-primary/20 flex flex-col items-center justify-center">
-                    <span className="text-6xl font-black text-foreground">{result.overall_match}%</span>
-                    <span className="text-[10px] font-black uppercase text-primary tracking-widest">Match</span>
-                </div>
-                <div className="flex-1 text-center md:text-left">
-                    <p className="text-xl md:text-2xl font-medium text-foreground/80 leading-relaxed italic pr-4">
-                        "{result.summary}"
-                    </p>
-                </div>
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="grid grid-cols-1 md:grid-cols-[160px,1fr] gap-6">
+            <div className="premium-card rounded-3xl p-6 bg-white/5 border border-white/10 flex flex-col items-center justify-center text-center">
+                <span className="text-5xl font-black text-foreground">{result.overall_match}%</span>
+                <span className="text-[9px] font-black uppercase text-primary tracking-widest mt-2 block">Match</span>
+            </div>
+            <div className="premium-card rounded-3xl p-6 bg-white/5 border border-white/10 flex items-center">
+                <p className="text-sm font-medium text-foreground/80 leading-relaxed italic border-l-2 border-primary/20 pl-4">
+                    "{result.summary}"
+                </p>
             </div>
         </div>
 
         {result.deductions && result.deductions.length > 0 && (
-          <div className="premium-card rounded-[40px] p-12 border border-accent-red/20 bg-accent-red/5">
-            <h4 className="text-2xl font-display font-bold mb-8 flex items-center gap-3">
-                <Zap className="w-6 h-6 text-accent-red" /> Gap Analysis
+          <div className="premium-card rounded-3xl p-6 border border-accent-red/20 bg-accent-red/5">
+            <h4 className="text-sm font-bold mb-4 flex items-center gap-2 uppercase tracking-widest text-accent-red">
+                <Zap className="w-4 h-4" /> Gap Analysis
             </h4>
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {result.deductions.map((d, i) => (
-                    <div key={i} className="p-6 rounded-2xl bg-background/50 border border-border/40 flex items-center justify-between">
+                    <div key={i} className="p-4 rounded-xl bg-background/50 border border-border/40 flex items-start justify-between gap-4">
                         <div>
-                            <span className="text-lg font-bold text-foreground block">{d.reason}</span>
-                            <span className="text-xs text-accent-red font-bold">-{d.percent}% Score Impact</span>
+                            <span className="text-xs font-bold text-foreground block mb-1">{d.reason}</span>
+                            <span className="text-[9px] text-accent-red font-bold px-2 py-0.5 rounded bg-accent-red/10 border border-accent-red/20">-{d.percent}% Impact</span>
                         </div>
-                        {d.fix_snippet && <button onClick={() => handleCopyBullet(d.fix_snippet!)} className="p-3 rounded-xl bg-accent-blue/10 text-accent-blue border border-accent-blue/20 hover:bg-accent-blue/20 transition-all"><Copy className="w-4 h-4" /></button>}
+                        {d.fix_snippet && <button onClick={() => handleCopyBullet(d.fix_snippet!)} className="p-2 rounded-lg bg-accent-blue/10 text-accent-blue hover:bg-accent-blue/20 transition-all shrink-0"><Copy className="w-3.5 h-3.5" /></button>}
                     </div>
                 ))}
             </div>
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="premium-card rounded-[40px] p-8 border border-white/5">
-                <h4 className="font-bold mb-6 uppercase tracking-widest text-[10px] text-muted-foreground">Skill Signatures</h4>
-                <div className="grid grid-cols-1 gap-3">
-                    {result.skill_matches?.slice(0, 8).map((sm, i) => (
-                        <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5">
-                            <div className="flex items-center gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="premium-card rounded-3xl p-6 border border-white/5 bg-white/5">
+                <h4 className="font-bold mb-4 uppercase tracking-widest text-[10px] text-muted-foreground flex items-center gap-2">
+                    <ShieldCheck className="w-3.5 h-3.5 opacity-50" /> Skill Signatures
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {(result.skill_matches || []).slice(0, 10).map((sm, i) => (
+                        <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-background/40 border border-border/40">
+                            <div className="flex items-center gap-2 overflow-hidden">
                                 {getVerdictIcon(sm.verdict)}
-                                <span className="text-sm font-medium">{sm.skill}</span>
+                                <span className="text-xs font-medium truncate">{sm.skill}</span>
                             </div>
-                            <span className="text-xs font-bold text-muted-foreground">{sm.match_percent}%</span>
+                            <span className="text-[10px] font-bold text-muted-foreground">{sm.match_percent}%</span>
                         </div>
                     ))}
                 </div>
             </div>
 
-            <div className="premium-card rounded-[40px] p-8 bg-accent-blue text-white">
-                <h4 className="font-bold mb-6 uppercase tracking-widest text-[10px]">Action Roadmap</h4>
-                <div className="space-y-6">
+            <div className="premium-card rounded-3xl p-6 bg-accent-blue/5 border border-accent-blue/20">
+                <h4 className="font-bold mb-4 uppercase tracking-[0.15em] text-[10px] text-accent-blue flex items-center gap-2">
+                    <TrendingUp className="w-3.5 h-3.5" /> Action Roadmap
+                </h4>
+                <div className="space-y-3">
                     {(result.actionable_directives || [
                         { action: "Optimize", description: "Quantify your achievements in core skill areas." },
                         { action: "Inject", description: "Integrate JD keyword tokens into your professional summary." }
                     ]).map((d, i) => (
-                        <div key={i} className="flex gap-4">
-                            <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-xs font-black">{i+1}</div>
+                        <div key={i} className="flex gap-3 items-start p-3 rounded-xl bg-background/40 border border-white/10">
+                            <div className="w-5 h-5 rounded flex-shrink-0 bg-accent-blue/10 flex items-center justify-center text-[10px] font-black text-accent-blue">{i+1}</div>
                             <div>
-                                <span className="text-xs font-black uppercase mb-1 block">{d.action}</span>
-                                <p className="text-[11px] opacity-70 leading-relaxed font-medium">{d.description}</p>
+                                <span className="text-[10px] font-black uppercase text-foreground block mb-0.5">{d.action}</span>
+                                <p className="text-xs text-muted-foreground leading-relaxed font-medium">{d.description}</p>
                             </div>
                         </div>
                     ))}

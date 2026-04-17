@@ -73,7 +73,7 @@ export const useDecodeJD = () => {
           "soft_skills": ["Skill"],
           "agreements": ["Specific requirement like 'Must have car'"]
         },
-        "winning_strategy": ["3 actionable tips to win this role"]
+        "winning_strategy": [{"title": "Short Strategy Name", "description": "1 clear actionable tip"}]
       }`;
 
         // Direct Fetch Bypassing Supabase Edge Limits with Dual-Path Multi-Model Fallback
@@ -127,7 +127,13 @@ export const useDecodeJD = () => {
         title: data.title,
         skills: data.skills,
         requirements: data.requirements || { education: [], experience: "", soft_skills: [], agreements: [] },
-        winning_strategy: data.winning_strategy || [],
+        winning_strategy: Array.isArray(data.winning_strategy) 
+          ? data.winning_strategy.map((ws: any, idx: number) => 
+              typeof ws === 'string' 
+                ? { title: `Strategy ${idx + 1}`, description: ws }
+                : { title: ws?.title || `Strategy ${idx + 1}`, description: ws?.description || '' }
+            )
+          : [],
       };
 
       // ── STORE IN CACHE ──
