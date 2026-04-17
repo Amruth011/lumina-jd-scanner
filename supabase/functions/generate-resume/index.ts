@@ -28,7 +28,7 @@ serve(async (req) => {
     `;
 
     // Final Shield: True Resilience Fallback Loop
-    const models = ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+    const models = ['gemini-2.5-flash', 'gemini-2.0-flash'];
     let lastError = "";
 
     for (const modelName of models) {
@@ -72,7 +72,7 @@ serve(async (req) => {
         const errorData = await apiResponse.json().catch(() => ({}));
         lastError = errorData.error?.message || apiResponse.statusText;
         console.warn(`True Resilience: Model ${modelName} failed (Status: ${apiResponse.status}). Error: ${lastError}`);
-        if (apiResponse.status === 401 || apiResponse.status === 403) break;
+        if (apiResponse.status >= 400 && apiResponse.status < 500 && apiResponse.status !== 429) break;
       } catch (err) {
         lastError = err instanceof Error ? err.message : "Unknown error";
         console.error(`True Resilience: Exception on ${modelName}:`, lastError);

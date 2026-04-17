@@ -34,7 +34,7 @@ serve(async (req) => {
     const base64 = arrayBufferToBase64(arrayBuffer);
 
     // Final Shield: True Resilience Fallback Loop
-    const models = ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+    const models = ['gemini-2.5-flash', 'gemini-2.0-flash'];
     let lastError = "";
 
     for (const modelName of models) {

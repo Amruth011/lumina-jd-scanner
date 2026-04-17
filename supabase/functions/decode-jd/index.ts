@@ -47,7 +47,7 @@ serve(async (req) => {
     `;
 
     // Final Shield: True Resilience Fallback Loop
-    const models = ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+    const models = ['gemini-2.5-flash', 'gemini-2.0-flash'];
     const errors = [];
     
     for (const modelName of models) {
@@ -94,7 +94,7 @@ serve(async (req) => {
         errors.push(`${modelName}: Status ${apiResponse.status} - ${lastError}`);
         
         // If it's a 401/403 (Auth), stop immediately. Otherwise, try next model.
-        if (apiResponse.status === 401 || apiResponse.status === 403) break;
+        if (apiResponse.status >= 400 && apiResponse.status < 500 && apiResponse.status !== 429) break;
       } catch (err) {
         errors.push(`${modelName}: Exception - ${err instanceof Error ? err.message : "Unknown"}`);
       }
