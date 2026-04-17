@@ -342,7 +342,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
             "actionable_directives": [{"action": "...", "description": "...", "reasoning": "..."}]
           }`;
 
-          const models = ["gemini-2.5-flash", "gemini-1.5-flash-latest", "gemini-1.5-pro-latest"];
+          const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash-exp"];
           let resultText = "";
 
           for (const modelName of models) {
@@ -370,7 +370,11 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
             const firstBrace = resultText.indexOf('{');
             const lastBrace = resultText.lastIndexOf('}');
             if (firstBrace !== -1 && lastBrace !== -1) {
-              aiResult = JSON.parse(resultText.substring(firstBrace, lastBrace + 1));
+              try {
+                aiResult = JSON.parse(resultText.substring(firstBrace, lastBrace + 1));
+              } catch (parseErr) {
+                console.warn("JSON parse failed for AI result:", parseErr);
+              }
             }
           }
         }
@@ -384,23 +388,26 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
             summary: aiResult.summary || baseResult.summary,
             deductions: baseResult.deductions.map((d) => {
               const keyword = d.reason.replace("Missing: ", "").replace("Partial match: ", "").split(" —")[0].toLowerCase();
-              const aiDed = aiResult!.deductions?.find((ad) => ad.reason?.toLowerCase().includes(keyword));
+              const aiDed = aiResult?.deductions?.find((ad) => ad && ad.reason?.toLowerCase().includes(keyword));
               return aiDed?.fix_snippet ? { ...d, fix_snippet: aiDed.fix_snippet } : d;
             }),
             tailored_resume_snippets: aiResult.tailored_resume_snippets || undefined,
             actionable_directives: aiResult.actionable_directives || undefined,
             skill_matches: baseResult.skill_matches.map((sm) => {
-              const aiSm = aiResult!.skill_matches?.find((a) => a.skill === sm.skill);
+              const aiSm = aiResult?.skill_matches?.find((a) => a && a.skill === sm.skill);
               return aiSm?.note ? { ...sm, note: aiSm.note } : sm;
             }),
           }
         : baseResult;
 
-      await setCachedResumeAnalysis(trimmedResume, skills, finalResult);
+      // ── SHOW RESULTS IMMEDIATELY (Non-blocking) ──
       setResult(finalResult);
       onResultChange?.(finalResult);
       setLastAnalyzedText(trimmedResume);
       toast.success(`Resume match: ${finalResult.overall_match}%`);
+
+      // ── PERSIST IN BACKGROUND (Blocking the UI here was causing empty screens) ──
+      void setCachedResumeAnalysis(trimmedResume, skills, finalResult).catch(e => console.warn("Caching failed:", e));
     } catch (err) {
       console.error(err);
       toast.error((err as Error).message || "Failed to analyze resume.");
