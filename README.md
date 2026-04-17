@@ -1,14 +1,14 @@
 <div align="center">
 
-# 💎 Lumina AI Engine
-### Silicon Valley Standard • Zero-Dependency • 100% Reliable
+# 💎 Lumina AI Career Engine
+### Silicon Valley Standard • Ultra-Low Latency • 100% Reliable
 
 [![Status](https://img.shields.io/badge/Status-Production_Stable-success?style=for-the-badge&logo=vercel)](https://lumina-jd-scanner.vercel.app/)
-[![AI](https://img.shields.io/badge/Engine-Gemini_1.5_Flash-blue?style=for-the-badge&logo=google-gemini)](https://ai.google.dev/)
-[![Arch](https://img.shields.io/badge/Arch-Zero_Dependency-orange?style=for-the-badge&logo=deno)](https://deno.com/)
+[![AI](https://img.shields.io/badge/Engine-Llama_3_70B_(Groq)-orange?style=for-the-badge&logo=meta)](https://groq.com)
+[![Arch](https://img.shields.io/badge/Arch-Client_Side_Inference-blue?style=for-the-badge&logo=react)](https://react.dev/)
 [![License](https://img.shields.io/badge/License-MIT-gray?style=for-the-badge)](LICENSE)
 
-**Lumina AI** is a high-performance career optimization platform designed to move job seekers into the top 1% of applicants. Built with a pristine **Luxury Liquid Glass** aesthetic and an ultra-hardened backend, it deconstructs complex Job Descriptions into actionable competitive advantages.
+**Lumina AI** is a high-performance career optimization platform designed to move job seekers into the top 1% of applicants. Built with a pristine **Luxury Liquid Glass** aesthetic and powered by ultra-low-latency Groq inference, it deconstructs complex Job Descriptions and perfectly structures your resume data to uncover your competitive advantage.
 
 [**Launch Terminal →**](https://lumina-jd-scanner.vercel.app/)
 
@@ -16,13 +16,13 @@
 
 ---
 
-## 🛡️ Engineered for Stability: "Zero-Dependency" Core
-Unlike traditional AI applications that rely on fragile third-party libraries, Lumina's **Strategy Engine** is built on a custom, zero-dependency architecture.
+## 🛡️ Engineered for Speed & Stability: The Groq Migration
+Lumina recently underwent a complete architectural overhaul, migrating away from cloud edge functions and rate-limited models to deliver a blazingly fast, "unbreakable" client-side inference pipeline.
 
-- **Native Fetch Integration:** Direct, high-speed connection to Google's Gemini v1 API. No middlemen to crash or fail.
-- **Region-Agnostic Failover:** Automatically optimized for global edge deployments via Supabase Edge Functions.
-- **Strict JSON Enforcement:** AI-level schema validation ensures 100% consistent data structure every single time.
-- **Smart Sync Architecture:** Local-first data vault with immediate Supabase synchronization for zero-latency resume management.
+- **Groq LPU Processing**: Powered by `llama-3.3-70b-versatile` on Groq's hardware, delivering near-instantaneous token generation.
+- **Client-Side AI Inference**: Bypasses slow serverless edge functions entirely. The browser talks directly to the AI, ensuring zero timeout errors and bypassing Vercel execution limits.
+- **Strict JSON Output Enforcement**: Llama 3 combined with Groq's `json_object` enforcement mathematically guarantees 100% consistent data structure every single time, without relying on unstable text scrapers.
+- **Native Browser PDF Parsing**: Utilizes Vite URL bundling and `pdfjs-dist` to securely parse and extract resume text entirely within the user's browser, eliminating external server memory crashes.
 
 ---
 
@@ -31,17 +31,17 @@ Unlike traditional AI applications that rely on fragile third-party libraries, L
 ### 🎨 Design Philosophy: Liquid Obsidian
 - **Glassmorphism 2.0:** Deep zinc backdrops, backdrop-blur saturation, and sub-pixel edge highlights.
 - **Editorial Typography:** A curated hierarchy of *Instrument Serif* for headings and *Inter* for surgical-grade body text.
-- **Motion Orchestration:** Framer Motion-powered transitions that feel like a native high-end dashboard.
+- **Compact UI/UX:** Responsive, dense, matrix-style data dashboards tuned for professional analytics.
 
 ### 🛠️ Strategic Modules
 
 | Capability | Technical Implementation | Core Value |
 | :--- | :--- | :--- |
-| **🔍 Smart Decoder** | Recursive NLP Entity Extraction | 100% JD requirement coverage |
-| **🎯 Gap Analyzer** | Multi-vector Semantic Comparison | Identify the exact 0.1% delta |
-| **🏗️ Bullet Architect** | Quantified Metric Generation | AI-written bullets that land interviews |
-| **🛡️ Resume Vault** | Local-First + Cloud Sync | Never lose your progress during entry |
-| **📑 ATS Exporter** | Single-Column Semantic PDF | Guaranteed to pass any ATS reader |
+| **🔍 Master Vault Sync** | Full Page Context Extraction | Pulls Name, Timeline, Edu, and Projects instantly |
+| **🎯 Resume Gap Analyzer** | Multi-vector Semantic Comparison | Identify the exact 0.1% delta and missing skills |
+| **🏗️ Tailored Gen Engine** | 70B Parameter Llama Generation | AI-written bullets that land interviews perfectly matched |
+| **🛡️ Dynamic Data Vault** | Local-First + Supabase Sync | Never lose your progress with dynamic entry forms |
+| **📑 ATS PDF Exporter** | Single-Column Semantic Renderer | Guaranteed to pass any ATS reader with zero formatting loss |
 
 ---
 
@@ -49,22 +49,21 @@ Unlike traditional AI applications that rely on fragile third-party libraries, L
 
 ```mermaid
 graph TD
-    User([User JD/Resume]) --> UI[React 18 / Framer Motion]
-    UI --> Vault[Local Draft Buffer]
-    Vault --> Sync[Supabase Cloud Sync]
-    UI --> API[Zero-Dep Edge Functions]
-    API --> Gemini[[Gemini 1.5 Flash - Stable v1]]
-    Gemini --> Parsing[Strict JSON Schema Parser]
-    Parsing --> UI
-    UI --> PDF[ATS-Clean PDF Gen]
+    User([User JD/Resume]) --> UI[React 18 / Framer]
+    UI --> PDF[Browser PDF.js Worker]
+    PDF --> Groq[[Groq LPU: Llama 3 70B]]
+    Groq --> Json[Strict JSON Enforcer]
+    Json --> UI
+    UI --> DB[(Supabase Cloud Sync)]
+    UI --> Export[ATS-Clean PDF Exporter]
 ```
 
 ### The Tech Stack
 - **Frontend:** React 18, TypeScript, Vite, Tailwind CSS (Glassmorphism)
-- **AI Intelligence:** Google Gemini 1.5 Flash (Surgical extraction)
-- **Infrastructure:** Supabase (Auth, DB, Deno Edge Functions)
+- **AI Intelligence:** Meta Llama 3 70B via Groq API (Instantaneous Generation)
+- **Data Layer:** Supabase (Auth, Postgres, Realtime Sync)
+- **Document Processing:** PDF.js (Client-side worker thread parsing via Vite Assets)
 - **Deployment:** Vercel Global Edge Network
-- **Reliability:** Custom Zero-Dependency HTTP Bridge
 
 ---
 
