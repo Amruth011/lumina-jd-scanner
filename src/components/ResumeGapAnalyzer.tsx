@@ -314,40 +314,47 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
       // ── OPTIMISTIC UI: Set deterministic result immediately so screen is NEVER empty ──
       setResult(baseResult);
       onResultChange?.(baseResult);
+      setIsOpen(true);
 
       let aiResult: Partial<ResumeGapResult> | null = null;
       try {
-        // Fetch Key securely
+        // Fetch Key securely via proxy
         const { data: keyData, error: keyError } = await supabase.functions.invoke("decode-jd", {
             body: { jdText: "bypass", action: "get_key" }
         });
         
         if (!keyError && keyData?.key) {
           const geminiKey = keyData.key;
-          const prompt = `Analyze this resume against these required skills.
-          Job: ${jobTitle || "Selected Role"}
+          const jobTitle = document.querySelector('h1')?.textContent || "Selected Role";
+          const prompt = `Analyze this resume against these required skills. 
+          Job: ${jobTitle}
           Skills: ${JSON.stringify(skills.map(s => s.skill))}
           Resume: ${trimmedResume}
-
-          RETURN JSON ONLY:
+          
+          Return JSON:
           {
-            "overall_match": 0-100,
-            "summary": "AI breakdown...",
-            "deductions": [{"reason": "Missing skill", "percent": 5, "fix_snippet": "Add this bullet..."}],
-            "skill_matches": [{"skill": "Skill", "note": "Detailed AI note..."}],
-            "tailored_resume_snippets": {
-              "professional_summary": "...",
-              "experience_bullets": ["..."]
-            },
+            "overall_match": ${deterministicResult.overall_match},
+            "summary": "Professional executive summary of match quality...",
+            "deductions": [{"reason": "Missing: skill", "percent": 5, "fix_snippet": "Resume bullet solution"}],
+            "skill_matches": [{"skill": "SkillName", "note": "Why it matches..."}],
+            "tailored_resume_snippets": [{"skill": "...", "bullet": "..."}],
             "actionable_directives": [{"action": "...", "description": "...", "reasoning": "..."}]
           }`;
 
-          const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash-exp"];
+          const models = ["gemini-1.5-flash-latest", "gemini-1.5-flash", "gemini-1.5-pro-latest", "gemini-1.5-pro", "gemini-pro"];
           let resultText = "";
+          const modelErrorDetails = "";
+
+          // ── WATCHDOG: Force-release "isAnalyzing" state after 25s no matter what ──
+          const watchdog = setTimeout(() => {
+            if (isAnalyzing) {
+              setIsAnalyzing(false);
+              toast.error("Deep AI Analysis taking too long. Using static score.");
+            }
+          }, 25000);
 
           for (const modelName of models) {
             try {
-              console.log(`Gap Analysis: Attempting with ${modelName}...`);
               const apiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${geminiKey}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -359,12 +366,16 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
               if (apiResponse.ok) {
                 const rawData = await apiResponse.json();
                 resultText = rawData.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (resultText) break;
+                if (resultText) {
+                  clearTimeout(watchdog);
+                  break;
+                }
               }
             } catch (err) {
-              console.warn(`Gap Analysis: ${modelName} failed:`, err);
+              console.warn(`Model ${modelName} failed:`, err);
             }
           }
+          clearTimeout(watchdog);
 
           if (resultText) {
             const firstBrace = resultText.indexOf('{');
@@ -373,13 +384,13 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
               try {
                 aiResult = JSON.parse(resultText.substring(firstBrace, lastBrace + 1));
               } catch (parseErr) {
-                console.warn("JSON parse failed for AI result:", parseErr);
+                console.warn("JSON parse failed:", parseErr);
               }
             }
           }
         }
       } catch (aiErr) {
-        console.warn("AI analysis loop failed, sticking with deterministic result:", aiErr);
+        console.warn("AI loop error:", aiErr);
       }
 
       const finalResult: ResumeGapResult = aiResult
@@ -387,7 +398,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
             ...baseResult,
             summary: aiResult.summary || baseResult.summary,
             deductions: baseResult.deductions.map((d) => {
-              const keyword = d.reason.replace("Missing: ", "").replace("Partial match: ", "").split(" —")[0].toLowerCase();
+              const keyword = (d.reason || "").replace("Missing: ", "").replace("Partial match: ", "").split(" —")[0].toLowerCase();
               const aiDed = aiResult?.deductions?.find((ad) => ad && ad.reason?.toLowerCase().includes(keyword));
               return aiDed?.fix_snippet ? { ...d, fix_snippet: aiDed.fix_snippet } : d;
             }),
@@ -400,13 +411,12 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
           }
         : baseResult;
 
-      // ── SHOW RESULTS IMMEDIATELY (Non-blocking) ──
       setResult(finalResult);
       onResultChange?.(finalResult);
       setLastAnalyzedText(trimmedResume);
-      toast.success(`Resume match: ${finalResult.overall_match}%`);
+      setIsAnalyzing(false);
+      toast.success(`Analysis ready: ${finalResult.overall_match}%`);
 
-      // ── PERSIST IN BACKGROUND (Blocking the UI here was causing empty screens) ──
       void setCachedResumeAnalysis(trimmedResume, skills, finalResult).catch(e => console.warn("Caching failed:", e));
     } catch (err) {
       console.error(err);

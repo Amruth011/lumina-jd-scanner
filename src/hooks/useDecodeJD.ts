@@ -77,7 +77,7 @@ export const useDecodeJD = () => {
       }`;
 
         // Direct Fetch Bypassing Supabase Edge Limits with Multi-Model Fallback
-        const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash-exp"];
+        const models = ["gemini-1.5-flash-latest", "gemini-1.5-flash", "gemini-1.5-pro-latest", "gemini-1.5-pro", "gemini-pro"];
         let lastAiError = "";
         let resultText = "";
 
