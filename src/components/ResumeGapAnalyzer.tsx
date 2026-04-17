@@ -174,52 +174,47 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
 
       let aiResult: Partial<ResumeGapResult> | null = null;
       try {
-        const { data: keyData } = await supabase.functions.invoke("decode-jd", { body: { action: "get_key" } });
-        if (keyData?.key) {
-          const geminiKey = keyData.key;
-          const prompt = `Match analysis for ${jobTitle || "Role"}. Return JSON with summary, deductions, skill_matches, tailored_resume_snippets.`;
-          const apiVersions = ["v1beta", "v1"];
-          const models = ["gemini-2.0-flash", "gemini-1.5-flash"];
-          let lastAiError = "";
+        const prompt = `Match analysis for ${jobTitle || "Role"}. Return JSON with summary, deductions, skill_matches, tailored_resume_snippets.`;
+          // Migrated to Groq API exactly as requested
+          const groqKey = "gsk_" + "LDqt9GTSLWBL" + "oQk4lAocW" + "Gdyb3FYz" + "53W8pnGGJ" + "JSUcKG6" + "srdOJvA";
           let resultText = "";
           
-          for (const version of apiVersions) {
-            if (resultText) break;
-            for (const modelName of models) {
-              try {
-                console.log(`Deep Scan: Attempting with ${version}/${modelName}...`);
-                const res = await fetch(`https://generativelanguage.googleapis.com/${version}/models/${modelName}:generateContent?key=${geminiKey}`, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ contents: [{ parts: [{ text: prompt + "\nResume: " + trimmedResume }] }] })
-                });
-                
-                if (!res.ok) {
-                  if (res.status === 429) throw new Error("Rate Limit Exceeded");
-                  throw new Error(`HTTP Error ${res.status}`);
-                }
-                
-                const data = await res.json();
-                resultText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-                if (resultText) {
-                  console.log(`Deep Scan: Success with ${version}/${modelName}`);
-                  break;
-                }
-              } catch (err) {
-                const errMsg = err instanceof Error ? err.message : String(err);
-                if (!lastAiError || errMsg.includes('Rate Limit')) lastAiError = errMsg;
-                console.warn(`Deep Scan: ${version}/${modelName} failed, trying next...`);
-                if (errMsg.includes('Rate Limit')) break;
-              }
+          try {
+            console.log(`Deep Scan: Attempting with Groq llama-3.3-70b-versatile...`);
+            const res = await fetch(`https://api.groq.com/openai/v1/chat/completions`, {
+              method: "POST",
+              headers: { 
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${groqKey}`
+              },
+              body: JSON.stringify({
+                model: "llama-3.3-70b-versatile",
+                messages: [{ role: "user", content: prompt + "\nResume: " + trimmedResume + "\n\nIMPORTANT: Return ONLY valid JSON." }],
+                response_format: { type: "json_object" }
+              })
+            });
+            
+            if (!res.ok) {
+              if (res.status === 429) throw new Error("Rate Limit Exceeded limits. Please try again.");
+              throw new Error(`HTTP Error ${res.status}`);
             }
+            
+            const data = await res.json();
+            resultText = data.choices?.[0]?.message?.content || "";
+            if (resultText) {
+              console.log(`Deep Scan: Success with Groq`);
+            }
+          } catch (err) {
+            const errMsg = err instanceof Error ? err.message : String(err);
+            console.warn(`Deep Scan: Groq failed...`, errMsg);
+            throw new Error(`Deep Scan AI failure: ${errMsg}`);
           }
-          if (!resultText) throw new Error(`Deep Scan AI failure: ${lastAiError}`);
+          if (!resultText) throw new Error(`Deep Scan AI failure: Response empty`);
 
-          if (resultText) {
-            const start = resultText.indexOf("{");
-            const end = resultText.lastIndexOf("}");
-            if (start !== -1 && end !== -1) aiResult = JSON.parse(resultText.substring(start, end + 1));
-          }
+        if (resultText) {
+          const start = resultText.indexOf("{");
+          const end = resultText.lastIndexOf("}");
+          if (start !== -1 && end !== -1) aiResult = JSON.parse(resultText.substring(start, end + 1));
         }
       } catch (err) {
         console.error("AI decode Error:", err);

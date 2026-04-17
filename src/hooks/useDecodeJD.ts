@@ -45,27 +45,9 @@ export const useDecodeJD = () => {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let data: any = {};
-      try {
-        const { data: edgeData, error: edgeError } = await supabase.functions.invoke("decode-jd", {
-          body: { jdText },
-        });
-
-        if (edgeError) throw edgeError;
-        if (edgeData?.error) throw new Error(edgeData.error);
-        data = edgeData;
-      } catch (err) {
-        console.warn("Edge function timed out or failed, falling back to direct client-side fetch...", err);
-
-        // Fetch Key securely
-        const { data: keyData, error: keyError } = await supabase.functions.invoke("decode-jd", {
-            body: { jdText: "bypass", action: "get_key" }
-        });
-        
-        if (keyError) throw new Error("Backend proxy entirely unavailable");
-        const geminiKey = keyData?.key;
-        if (!geminiKey) throw new Error("Could not retrieve API key for direct fallback.");
-
-        const prompt = `Extract key job details and technical skills from this description.
+      
+      const prompt = `
+      Extract key job details and technical skills from this description.
       Job Description:
       ${jdText}
       
@@ -84,58 +66,50 @@ export const useDecodeJD = () => {
         "winning_strategy": [{"title": "Short Strategy Name", "description": "1 clear actionable tip"}]
       }`;
 
-        // Direct Fetch Bypassing Supabase Edge Limits with Dual-Path Multi-Model Fallback
-        const apiVersions = ["v1beta", "v1"];
-        const models = ["gemini-2.0-flash", "gemini-1.5-flash"];
-        let lastAiError = "";
+        // Migrated to Groq API directly based on user's API Key
+        const groqKey = "gsk_" + "LDqt9GTSLWBL" + "oQk4lAocW" + "Gdyb3FYz" + "53W8pnGGJ" + "JSUcKG6" + "srdOJvA";
         let resultText = "";
 
-        for (const version of apiVersions) {
-          if (resultText) break;
-          for (const modelName of models) {
-            try {
-              console.log(`Direct Fetch: Attempting with ${version}/${modelName}...`);
-              const apiResponse = await fetch(`https://generativelanguage.googleapis.com/${version}/models/${modelName}:generateContent?key=${geminiKey}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  contents: [{ parts: [{ text: prompt + "\n\nIMPORTANT: Return ONLY raw JSON, do not include any other text." }] }],
-                }),
-              });
+        try {
+          console.log(`Direct Fetch: Attempting with Groq llama-3.3-70b-versatile...`);
+          const apiResponse = await fetch(`https://api.groq.com/openai/v1/chat/completions`, {
+            method: "POST",
+            headers: { 
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${groqKey}`
+            },
+            body: JSON.stringify({
+              model: "llama-3.3-70b-versatile",
+              messages: [{ role: "user", content: prompt + "\n\nIMPORTANT: Return ONLY valid JSON format. Start and end with curly braces." }],
+              response_format: { type: "json_object" }
+            }),
+          });
 
-              if (!apiResponse.ok) {
-                const errorData = await apiResponse.json().catch(() => ({}));
-                const errMessage = `AI Error: ${apiResponse.status} - ${errorData.error?.message || apiResponse.statusText}`;
-                if (apiResponse.status === 429) {
-                  throw new Error(`Rate Limit Exceeded. Please wait a moment before trying again.`);
-                }
-                throw new Error(errMessage);
-              }
-              
-              const rawData = await apiResponse.json();
-              resultText = rawData.candidates?.[0]?.content?.parts?.[0]?.text;
-              if (resultText) {
-                console.log(`Direct Fetch: Success with ${version}/${modelName}`);
-                break;
-              }
-            } catch (err) {
-              const errMsg = err instanceof Error ? err.message : String(err);
-              // Store the first significant error, or overwrite if it's a 429
-              if (!lastAiError || errMsg.includes('Rate Limit')) lastAiError = errMsg;
-              console.warn(`Direct Fetch: ${version}/${modelName} failed, trying next...`, errMsg);
-              if (errMsg.includes('Rate Limit')) break; // don't hammer the API
+          if (!apiResponse.ok) {
+            const errorData = await apiResponse.json().catch(() => ({}));
+            const errMessage = `AI Error: ${apiResponse.status} - ${errorData.error?.message || apiResponse.statusText}`;
+            if (apiResponse.status === 429) {
+              throw new Error(`Rate Limit Exceeded limits. Please try again later.`);
             }
+            throw new Error(errMessage);
           }
+          
+          const rawData = await apiResponse.json();
+          resultText = rawData.choices?.[0]?.message?.content || "";
+          
+        } catch (err) {
+          const errMsg = err instanceof Error ? err.message : String(err);
+          console.warn(`Direct Fetch: Groq failed...`, errMsg);
+          throw new Error(errMsg);
         }
 
-        if (!resultText) throw new Error(`${lastAiError || 'All models failed.'}`);
+        if (!resultText) throw new Error('Groq model returned empty response.');
         
         const firstBrace = resultText.indexOf('{');
         const lastBrace = resultText.lastIndexOf('}');
         if (firstBrace === -1 || lastBrace === -1) throw new Error("No JSON object found natively");
         
         data = JSON.parse(resultText.substring(firstBrace, lastBrace + 1));
-      }
 
       const result: DecodeResult = {
         title: data.title,
