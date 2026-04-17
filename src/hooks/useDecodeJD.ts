@@ -76,22 +76,37 @@ export const useDecodeJD = () => {
         "winning_strategy": ["3 actionable tips to win this role"]
       }`;
 
-        // Direct Fetch Bypassing Supabase Edge Limits
-        const apiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt + "\\n\\nIMPORTANT: Return ONLY raw JSON, do not include any other text." }] }],
-          }),
-        });
+        // Direct Fetch Bypassing Supabase Edge Limits with Multi-Model Fallback
+        const models = ["gemini-2.5-flash", "gemini-1.5-flash-latest", "gemini-1.5-pro-latest"];
+        let lastAiError = "";
+        let resultText = "";
 
-        if (!apiResponse.ok) {
-           const errorData = await apiResponse.json().catch(() => ({}));
-           throw new Error(`AI Error: ${apiResponse.status} - ${errorData.error?.message || apiResponse.statusText}`);
+        for (const modelName of models) {
+          try {
+            console.log(`Direct Fetch: Attempting with ${modelName}...`);
+            const apiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${geminiKey}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt + "\n\nIMPORTANT: Return ONLY raw JSON, do not include any other text." }] }],
+              }),
+            });
+
+            if (!apiResponse.ok) {
+              const errorData = await apiResponse.json().catch(() => ({}));
+              throw new Error(`AI Error: ${apiResponse.status} - ${errorData.error?.message || apiResponse.statusText}`);
+            }
+            
+            const rawData = await apiResponse.json();
+            resultText = rawData.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (resultText) break;
+          } catch (err) {
+            lastAiError = err instanceof Error ? err.message : String(err);
+            console.warn(`Direct Fetch: ${modelName} failed, trying next...`, lastAiError);
+          }
         }
-        
-        const rawData = await apiResponse.json();
-        const resultText = rawData.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (!resultText) throw new Error(`All AI models failed. Last error: ${lastAiError}`);
         
         const firstBrace = resultText.indexOf('{');
         const lastBrace = resultText.lastIndexOf('}');

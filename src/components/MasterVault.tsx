@@ -141,25 +141,41 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
   ]
 }`;
 
-      // Direct Gemini call — bypasses Supabase 5-second limit
-      const apiResponse = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: syncPrompt }] }],
-          }),
-        }
-      );
+      // Direct Gemini call with Multi-Model Fallback — bypasses Supabase 5-second limit
+      const models = ["gemini-2.5-flash", "gemini-1.5-flash-latest", "gemini-1.5-pro-latest"];
+      let lastAiError = "";
+      let resultText = "";
 
-      if (!apiResponse.ok) {
-        const errJson = await apiResponse.json().catch(() => ({}));
-        throw new Error(`AI Error ${apiResponse.status}: ${errJson.error?.message || apiResponse.statusText}`);
+      for (const modelName of models) {
+        try {
+          console.log(`Smart Sync: Attempting with ${modelName}...`);
+          const apiResponse = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${geminiKey}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: syncPrompt }] }],
+              }),
+            }
+          );
+
+          if (!apiResponse.ok) {
+            const errJson = await apiResponse.json().catch(() => ({}));
+            throw new Error(`AI Error ${apiResponse.status}: ${errJson.error?.message || apiResponse.statusText}`);
+          }
+
+          const rawApiData = await apiResponse.json();
+          resultText = rawApiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+          if (resultText) break;
+        } catch (err) {
+          lastAiError = err instanceof Error ? err.message : String(err);
+          console.warn(`Smart Sync: ${modelName} failed, trying next...`, lastAiError);
+        }
       }
 
-      const rawApiData = await apiResponse.json();
-      const resultText = rawApiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      if (!resultText) throw new Error(`All AI models failed. Last error: ${lastAiError}`);
+
       const firstBrace = resultText.indexOf("{");
       const lastBrace = resultText.lastIndexOf("}");
       if (firstBrace === -1 || lastBrace === -1) throw new Error("AI returned no valid JSON.");

@@ -296,18 +296,6 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
       }
 
       const deterministicResult = computeDeterministicScore(trimmedResume, skills);
-      let aiResult: Partial<ResumeGapResult> | null = null;
-      try {
-        const { data, error } = await supabase.functions.invoke("compare-resume", {
-          body: { resumeText: trimmedResume, skills },
-        });
-        if (!error && !data?.error) {
-          aiResult = data;
-        }
-      } catch (aiErr) {
-        console.warn("AI analysis failed, using deterministic scoring only:", aiErr);
-      }
-
       const baseResult: ResumeGapResult = {
         overall_match: deterministicResult.overall_match,
         skill_matches: deterministicResult.skill_matches.map((sm) => ({
@@ -323,19 +311,86 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
         summary: `Your resume matches ${deterministicResult.overall_match}% of the required skills. ${deterministicResult.skill_matches.filter((s) => s.verdict === "missing").length} skills are missing and ${deterministicResult.skill_matches.filter((s) => s.verdict === "partial").length} need stronger evidence.`,
       };
 
+      // ── OPTIMISTIC UI: Set deterministic result immediately so screen is NEVER empty ──
+      setResult(baseResult);
+      onResultChange?.(baseResult);
+
+      let aiResult: Partial<ResumeGapResult> | null = null;
+      try {
+        // Fetch Key securely
+        const { data: keyData, error: keyError } = await supabase.functions.invoke("decode-jd", {
+            body: { jdText: "bypass", action: "get_key" }
+        });
+        
+        if (!keyError && keyData?.key) {
+          const geminiKey = keyData.key;
+          const prompt = `Analyze this resume against these required skills.
+          Job: ${jobTitle || "Selected Role"}
+          Skills: ${JSON.stringify(skills.map(s => s.skill))}
+          Resume: ${trimmedResume}
+
+          RETURN JSON ONLY:
+          {
+            "overall_match": 0-100,
+            "summary": "AI breakdown...",
+            "deductions": [{"reason": "Missing skill", "percent": 5, "fix_snippet": "Add this bullet..."}],
+            "skill_matches": [{"skill": "Skill", "note": "Detailed AI note..."}],
+            "tailored_resume_snippets": {
+              "professional_summary": "...",
+              "experience_bullets": ["..."]
+            },
+            "actionable_directives": [{"action": "...", "description": "...", "reasoning": "..."}]
+          }`;
+
+          const models = ["gemini-2.5-flash", "gemini-1.5-flash-latest", "gemini-1.5-pro-latest"];
+          let resultText = "";
+
+          for (const modelName of models) {
+            try {
+              console.log(`Gap Analysis: Attempting with ${modelName}...`);
+              const apiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${geminiKey}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  contents: [{ parts: [{ text: prompt + "\n\nIMPORTANT: Return ONLY raw JSON, do not include any other text." }] }],
+                }),
+              });
+
+              if (apiResponse.ok) {
+                const rawData = await apiResponse.json();
+                resultText = rawData.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (resultText) break;
+              }
+            } catch (err) {
+              console.warn(`Gap Analysis: ${modelName} failed:`, err);
+            }
+          }
+
+          if (resultText) {
+            const firstBrace = resultText.indexOf('{');
+            const lastBrace = resultText.lastIndexOf('}');
+            if (firstBrace !== -1 && lastBrace !== -1) {
+              aiResult = JSON.parse(resultText.substring(firstBrace, lastBrace + 1));
+            }
+          }
+        }
+      } catch (aiErr) {
+        console.warn("AI analysis loop failed, sticking with deterministic result:", aiErr);
+      }
+
       const finalResult: ResumeGapResult = aiResult
         ? {
             ...baseResult,
             summary: aiResult.summary || baseResult.summary,
             deductions: baseResult.deductions.map((d) => {
               const keyword = d.reason.replace("Missing: ", "").replace("Partial match: ", "").split(" —")[0].toLowerCase();
-              const aiDed = aiResult.deductions?.find((ad) => ad.reason?.toLowerCase().includes(keyword));
+              const aiDed = aiResult!.deductions?.find((ad) => ad.reason?.toLowerCase().includes(keyword));
               return aiDed?.fix_snippet ? { ...d, fix_snippet: aiDed.fix_snippet } : d;
             }),
             tailored_resume_snippets: aiResult.tailored_resume_snippets || undefined,
             actionable_directives: aiResult.actionable_directives || undefined,
             skill_matches: baseResult.skill_matches.map((sm) => {
-              const aiSm = aiResult.skill_matches?.find((a) => a.skill === sm.skill);
+              const aiSm = aiResult!.skill_matches?.find((a) => a.skill === sm.skill);
               return aiSm?.note ? { ...sm, note: aiSm.note } : sm;
             }),
           }
