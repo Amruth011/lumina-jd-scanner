@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+// Important: Use static import with ?url so Vite bundler properly packages the worker file for Vercel
+import pdfWorkerUrl from "pdfjs-dist/legacy/build/pdf.worker.mjs?url";
 import { motion, AnimatePresence } from "framer-motion";
 import { FileText, Loader2, ArrowRight, Upload, PlusCircle as PlusCircleIcon, AlertTriangle, CheckCircle2, XCircle, Sparkles, Copy, ShieldCheck, Edit3, Trash2, Plus, Download, BarChart3, Zap, TrendingUp, CloudUpload } from "lucide-react";
 import { toast } from "sonner";
@@ -19,8 +21,7 @@ interface ResumeGapAnalyzerProps {
 
 async function extractPdfText(file: File): Promise<string> {
   const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
-  // Force main thread parsing (fake worker) to avoid Vercel bundler / cross-origin CDN errors
-  pdfjsLib.GlobalWorkerOptions.workerSrc = "";
+  pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
   
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;

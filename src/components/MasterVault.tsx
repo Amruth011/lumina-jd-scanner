@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+// Important: Use static import with ?url so Vite bundler properly packages the worker file for Vercel
+import pdfWorkerUrl from "pdfjs-dist/legacy/build/pdf.worker.mjs?url";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Briefcase, Code, GraduationCap, Award, Trash2, Edit3, Save, X, Loader2, Sparkles, User, Globe, Linkedin, Mail, Phone, MapPin, Github, Import, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -84,7 +86,7 @@ export const MasterVault = () => {
   const extractTextFromPDF = async (file: File) => {
     const arrayBuffer = await file.arrayBuffer();
     const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
-    pdfjsLib.GlobalWorkerOptions.workerSrc = "";
+    pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
     
     const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
     let fullText = "";
