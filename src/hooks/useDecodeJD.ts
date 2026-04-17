@@ -29,10 +29,10 @@ export const useDecodeJD = () => {
         const cached = await getCachedDecode(jdText);
         if (cached) {
           const normalizedWinningStrategy = Array.isArray(cached.winning_strategy) 
-            ? cached.winning_strategy.map((ws: any, idx: number) => 
+            ? cached.winning_strategy.map((ws: unknown, idx: number) => 
                 typeof ws === 'string' 
                   ? { title: `Strategy ${idx + 1}`, description: ws }
-                  : { title: ws?.title || `Strategy ${idx + 1}`, description: ws?.description || '' }
+                  : { title: (ws as { title?: string })?.title || `Strategy ${idx + 1}`, description: (ws as { description?: string })?.description || '' }
               )
             : [];
             
@@ -86,7 +86,7 @@ export const useDecodeJD = () => {
 
         // Direct Fetch Bypassing Supabase Edge Limits with Dual-Path Multi-Model Fallback
         const apiVersions = ["v1beta", "v1"];
-        const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.0-pro"];
+        const models = ["gemini-2.0-flash", "gemini-1.5-flash"];
         let lastAiError = "";
         let resultText = "";
 
@@ -105,7 +105,11 @@ export const useDecodeJD = () => {
 
               if (!apiResponse.ok) {
                 const errorData = await apiResponse.json().catch(() => ({}));
-                throw new Error(`AI Error: ${apiResponse.status} - ${errorData.error?.message || apiResponse.statusText}`);
+                const errMessage = `AI Error: ${apiResponse.status} - ${errorData.error?.message || apiResponse.statusText}`;
+                if (apiResponse.status === 429) {
+                  throw new Error(`Rate Limit Exceeded. Please wait a moment before trying again.`);
+                }
+                throw new Error(errMessage);
               }
               
               const rawData = await apiResponse.json();
@@ -115,14 +119,16 @@ export const useDecodeJD = () => {
                 break;
               }
             } catch (err) {
-              lastAiError = err instanceof Error ? err.message : String(err);
-              console.warn(`Direct Fetch: ${version}/${modelName} failed, trying next...`, lastAiError);
-              // If it's not a 404, we might want to retry. But 404 is the main trigger for next.
+              const errMsg = err instanceof Error ? err.message : String(err);
+              // Store the first significant error, or overwrite if it's a 429
+              if (!lastAiError || errMsg.includes('Rate Limit')) lastAiError = errMsg;
+              console.warn(`Direct Fetch: ${version}/${modelName} failed, trying next...`, errMsg);
+              if (errMsg.includes('Rate Limit')) break; // don't hammer the API
             }
           }
         }
 
-        if (!resultText) throw new Error(`All AI models failed. Last error: ${lastAiError}`);
+        if (!resultText) throw new Error(`${lastAiError || 'All models failed.'}`);
         
         const firstBrace = resultText.indexOf('{');
         const lastBrace = resultText.lastIndexOf('}');
@@ -136,10 +142,10 @@ export const useDecodeJD = () => {
         skills: data.skills,
         requirements: data.requirements || { education: [], experience: "", soft_skills: [], agreements: [] },
         winning_strategy: Array.isArray(data.winning_strategy) 
-          ? data.winning_strategy.map((ws: any, idx: number) => 
+          ? data.winning_strategy.map((ws: unknown, idx: number) => 
               typeof ws === 'string' 
                 ? { title: `Strategy ${idx + 1}`, description: ws }
-                : { title: ws?.title || `Strategy ${idx + 1}`, description: ws?.description || '' }
+                : { title: (ws as { title?: string })?.title || `Strategy ${idx + 1}`, description: (ws as { description?: string })?.description || '' }
             )
           : [],
       };

@@ -30,6 +30,7 @@ export const MasterVault = () => {
         setIsLoading(false);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, authLoading]);
 
   // Persistence for Profile Summary
@@ -61,6 +62,7 @@ export const MasterVault = () => {
         }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const fetchData = async () => {
@@ -140,9 +142,8 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
   ]
 }`;
 
-      // Direct Gemini call with Dual-Path Multi-Model Fallback — bypasses Supabase 5-second limit
       const apiVersions = ["v1beta", "v1"];
-      const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.0-pro"];
+      const models = ["gemini-2.0-flash", "gemini-1.5-flash"];
       let lastAiError = "";
       let resultText = "";
 
@@ -164,7 +165,11 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
 
             if (!apiResponse.ok) {
               const errorData = await apiResponse.json().catch(() => ({}));
-              throw new Error(`AI Error: ${apiResponse.status} - ${errorData.error?.message || apiResponse.statusText}`);
+              const errMessage = `AI Error: ${apiResponse.status} - ${errorData.error?.message || apiResponse.statusText}`;
+              if (apiResponse.status === 429) {
+                throw new Error(`Rate Limit Exceeded. Please try again later.`);
+              }
+              throw new Error(errMessage);
             }
 
             const rawData = await apiResponse.json();
@@ -174,13 +179,15 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
               break;
             }
           } catch (err) {
-            lastAiError = err instanceof Error ? err.message : String(err);
-            console.warn(`Smart Sync: ${version}/${modelName} failed, trying next...`, lastAiError);
+            const errMsg = err instanceof Error ? err.message : String(err);
+            if (!lastAiError || errMsg.includes('Rate Limit')) lastAiError = errMsg;
+            console.warn(`Smart Sync: ${version}/${modelName} failed, trying next...`, errMsg);
+            if (errMsg.includes('Rate Limit')) break;
           }
         }
       }
 
-      if (!resultText) throw new Error(`All AI models failed. Last error: ${lastAiError}`);
+      if (!resultText) throw new Error(`${lastAiError || 'All AI models failed.'}`);
 
       const firstBrace = resultText.indexOf("{");
       const lastBrace = resultText.lastIndexOf("}");

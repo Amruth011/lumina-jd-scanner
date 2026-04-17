@@ -179,9 +179,10 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
           const geminiKey = keyData.key;
           const prompt = `Match analysis for ${jobTitle || "Role"}. Return JSON with summary, deductions, skill_matches, tailored_resume_snippets.`;
           const apiVersions = ["v1beta", "v1"];
-          const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.0-pro"];
-          
+          const models = ["gemini-2.0-flash", "gemini-1.5-flash"];
+          let lastAiError = "";
           let resultText = "";
+          
           for (const version of apiVersions) {
             if (resultText) break;
             for (const modelName of models) {
@@ -192,19 +193,27 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({ contents: [{ parts: [{ text: prompt + "\nResume: " + trimmedResume }] }] })
                 });
-                if (res.ok) {
-                  const data = await res.json();
-                  resultText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-                  if (resultText) {
-                    console.log(`Deep Scan: Success with ${version}/${modelName}`);
-                    break;
-                  }
+                
+                if (!res.ok) {
+                  if (res.status === 429) throw new Error("Rate Limit Exceeded");
+                  throw new Error(`HTTP Error ${res.status}`);
+                }
+                
+                const data = await res.json();
+                resultText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+                if (resultText) {
+                  console.log(`Deep Scan: Success with ${version}/${modelName}`);
+                  break;
                 }
               } catch (err) {
+                const errMsg = err instanceof Error ? err.message : String(err);
+                if (!lastAiError || errMsg.includes('Rate Limit')) lastAiError = errMsg;
                 console.warn(`Deep Scan: ${version}/${modelName} failed, trying next...`);
+                if (errMsg.includes('Rate Limit')) break;
               }
             }
           }
+          if (!resultText) throw new Error(`Deep Scan AI failure: ${lastAiError}`);
 
           if (resultText) {
             const start = resultText.indexOf("{");
