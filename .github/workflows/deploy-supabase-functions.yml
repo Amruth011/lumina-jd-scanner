@@ -20,11 +20,12 @@ jobs:
 
       - name: Deploy Edge Functions
         run: |
-          supabase functions deploy decode-jd --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
-          supabase functions deploy tailor-resume --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
-          supabase functions deploy generate-resume --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
-          supabase functions deploy compare-resume --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
-          supabase functions deploy generate-bullet --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
-          supabase functions deploy parse-resume-file --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
+          supabase functions deploy decode-jd --no-verify-jwt --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
+          supabase functions deploy tailor-resume --no-verify-jwt --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
+          supabase functions deploy generate-resume --no-verify-jwt --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
+          supabase functions deploy compare-resume --no-verify-jwt --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
+          supabase functions deploy generate-bullet --no-verify-jwt --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
+          supabase functions deploy parse-resume-file --no-verify-jwt --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
