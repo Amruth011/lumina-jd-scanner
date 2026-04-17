@@ -117,20 +117,54 @@ export const MasterVault = () => {
       
       toast.loading("Smart Sync: Structure and tailoring experience via AI...", { id: toastId });
 
-      // After parsing text locally, we use Gemini to structure it into vault items
-      const { data: structData, error: structError } = await supabase.functions.invoke('tailor-resume', {
-        body: {
-          jd_title: "Structure all experience",
-          jd_skills: [],
-          vault_items: [],
-          personal_info: {},
-          resumeText: rawText, // Explicitly pass it as 'resumeText' which tailor-resume expects!
-          mode: 'import'
-        }
+      // Get Gemini key securely from edge function
+      const { data: keyData, error: keyError } = await supabase.functions.invoke("decode-jd", {
+        body: { jdText: "bypass", action: "get_key" }
       });
+      if (keyError) throw new Error(`Key fetch failed: ${keyError.message || String(keyError)}`);
+      const geminiKey = keyData?.key;
+      if (!geminiKey) throw new Error("Could not retrieve API key.");
 
-      if (structError) throw structError;
-      if (structData?.error) throw new Error(`Tailor Error: ${structData.error}`);
+      const syncPrompt = `You are an expert resume parser. Extract all professional experience from this resume text and structure it into clear job entries.
+
+Resume Text:
+${rawText}
+
+RETURN JSON FORMAT ONLY (no markdown, no explanation):
+{
+  "experience": [
+    {
+      "company": "Company Name",
+      "role": "Job Title",
+      "bullets": ["Achievement bullet 1", "Achievement bullet 2"]
+    }
+  ]
+}`;
+
+      // Direct Gemini call — bypasses Supabase 5-second limit
+      const apiResponse = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: syncPrompt }] }],
+          }),
+        }
+      );
+
+      if (!apiResponse.ok) {
+        const errJson = await apiResponse.json().catch(() => ({}));
+        throw new Error(`AI Error ${apiResponse.status}: ${errJson.error?.message || apiResponse.statusText}`);
+      }
+
+      const rawApiData = await apiResponse.json();
+      const resultText = rawApiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      const firstBrace = resultText.indexOf("{");
+      const lastBrace = resultText.lastIndexOf("}");
+      if (firstBrace === -1 || lastBrace === -1) throw new Error("AI returned no valid JSON.");
+
+      const structData = JSON.parse(resultText.substring(firstBrace, lastBrace + 1));
 
       // Batch insert into vault
       if (structData?.experience) {
@@ -153,7 +187,8 @@ export const MasterVault = () => {
       fetchData();
     } catch (err) {
       console.error(err);
-      toast.error(`Smart Sync failed: ${err instanceof Error ? err.message : String(err)}`, { id: toastId, duration: 8000 });
+      const msg = err instanceof Error ? err.message : (typeof err === "object" ? JSON.stringify(err) : String(err));
+      toast.error(`Smart Sync failed: ${msg}`, { id: toastId, duration: 8000 });
     } finally {
       setIsSyncing(false);
     }

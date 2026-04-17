@@ -192,7 +192,8 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
         setAddedToTracker(false);
         setResumeText(text);
         onResumeTextChange?.(text);
-        toast.success("Resume parsed successfully — previous results cleared.");
+        setIsOpen(true); // Auto-open panel so user sees the analysis spinner (not a blank page)
+        toast.success("Resume parsed successfully — analyzing now...");
       }
     } catch (err) {
       console.error("File parse error:", err);
