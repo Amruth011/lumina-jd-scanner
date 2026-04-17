@@ -21,6 +21,8 @@ serve(async (req) => {
       Context: ${jdContext || 'General role'}
       Focus Keywords: ${focusKeywords?.join(", ") || 'Action verbs, impact'}
 
+      CRITICAL: Keep all text responses EXTREMELY concise (max 1 sentence per array item) to ensure fast processing.
+
       RETURN JSON FORMAT ONLY:
       {
         "bullet": "The optimized high-impact bullet point",
@@ -30,7 +32,7 @@ serve(async (req) => {
     `;
 
     // Final Shield: True Resilience Fallback Loop
-    const models = ['gemini-1.5-flash'];
+    const models = ['gemini-1.5-flash-latest', 'gemini-1.5-pro-latest', 'gemini-pro'];
     let lastError = "";
 
     for (const modelName of models) {

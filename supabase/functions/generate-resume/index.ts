@@ -20,6 +20,8 @@ serve(async (req) => {
       Data:
       ${JSON.stringify(tailoredData)}
 
+      CRITICAL: Keep all text responses EXTREMELY concise (max 1 sentence per array item) to ensure fast processing.
+
       RETURN JSON FORMAT ONLY:
       {
         "content": "The formatted resume text in markdown or plain text",
@@ -28,7 +30,7 @@ serve(async (req) => {
     `;
 
     // Final Shield: True Resilience Fallback Loop
-    const models = ['gemini-1.5-flash'];
+    const models = ['gemini-1.5-flash-latest', 'gemini-1.5-pro-latest', 'gemini-pro'];
     let lastError = "";
 
     for (const modelName of models) {

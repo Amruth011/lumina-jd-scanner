@@ -32,6 +32,8 @@ serve(async (req) => {
       Job Description:
       ${jdText}
       
+      CRITICAL: Keep all text responses EXTREMELY concise (max 1 sentence per array item) to ensure fast processing.
+
       RETURN JSON FORMAT ONLY:
       {
         "title": "Job Title",
@@ -47,7 +49,7 @@ serve(async (req) => {
     `;
 
     // Final Shield: True Resilience Fallback Loop
-    const models = ['gemini-1.5-flash'];
+    const models = ['gemini-1.5-flash-latest', 'gemini-1.5-pro-latest', 'gemini-pro'];
     const errors = [];
     
     for (const modelName of models) {
