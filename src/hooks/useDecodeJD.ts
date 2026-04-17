@@ -35,8 +35,8 @@ export const useDecodeJD = () => {
         }
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any`n      let data: any = {};
-      
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let data: any = {};
       try {
         const { data: edgeData, error: edgeError } = await supabase.functions.invoke("decode-jd", {
           body: { jdText },
