@@ -380,84 +380,234 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
   };
 
   return (
-    <div className="glass-strong rounded-[40px] p-8 md:p-12 border border-white/10 glow-border">
-      <div className="flex items-center justify-between mb-12">
-        <div className="flex items-center gap-6">
-          <div className="w-16 h-16 rounded-3xl bg-foreground/5 flex items-center justify-center border border-foreground/5 shadow-inner">
-            <FileText className="w-8 h-8 text-foreground/20" />
+    <div className="glass-panel rounded-[3rem] p-10 lg:p-14 border border-white/5 relative overflow-hidden bg-gradient-to-br from-white/[0.02] to-transparent">
+      {/* Visual Background Pulse */}
+      <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
+      
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10 mb-16 relative z-10">
+        <div className="flex items-center gap-8">
+          <div className="w-20 h-20 rounded-[2rem] bg-foreground/5 flex items-center justify-center border border-white/10 shadow-inner group-hover:scale-105 transition-transform duration-500">
+            <FileText className="w-10 h-10 text-primary/40" />
           </div>
           <div>
-            <h3 className="font-display font-black text-3xl text-foreground tracking-tighter">Resume Intelligence</h3>
-            <p className="text-[10px] uppercase tracking-[0.4em] font-black text-muted-foreground/40 mt-1">Cross-Reference Resume vs JD Signature</p>
+            <h3 className="font-serif italic text-4xl text-foreground tracking-tight">Resume Intelligence</h3>
+            <p className="text-xs uppercase tracking-[0.3em] font-black text-muted-foreground/50 mt-2">Cross-Reference Resume vs JD Signature</p>
           </div>
         </div>
         {!isOpen && (
           <button
             onClick={() => setIsOpen(true)}
-            className="px-8 py-4 rounded-full bg-foreground text-background text-xs font-black uppercase tracking-widest hover:scale-105 transition-all shadow-2xl"
+            className="px-10 py-5 rounded-full bg-foreground text-background text-[13px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-[0_20px_40px_rgba(0,0,0,0.2)] active:scale-95"
           >
-            Launch Scan
+            Launch Diagnostic Scan
           </button>
         )}
       </div>
 
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {isOpen && (
-          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-            <div className="grid grid-cols-1 md:grid-cols-[1fr,300px] gap-8 mb-12">
+          <motion.div 
+            initial={{ height: 0, opacity: 0 }} 
+            animate={{ height: "auto", opacity: 1 }} 
+            exit={{ height: 0, opacity: 0 }} 
+            className="overflow-hidden space-y-12"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-6">
                 <div
                     onClick={() => fileInputRef.current?.click()}
-                    className={`h-64 border-2 border-dashed rounded-[40px] flex flex-col items-center justify-center gap-4 transition-all cursor-pointer ${
-                        isParsing ? "bg-accent-blue/5 border-accent-blue/40 animate-pulse" : "border-border hover:border-accent-blue/40 hover:bg-accent-blue/5"
+                    className={`md:col-span-8 h-72 border-2 border-dashed rounded-[3rem] flex flex-col items-center justify-center gap-6 transition-all duration-700 cursor-pointer group/upload relative overflow-hidden ${
+                        isParsing ? "bg-primary/5 border-primary/40 animate-pulse" : "border-white/10 hover:border-primary/40 hover:bg-primary/[0.02]"
                     }`}
                 >
-                    {isParsing ? <Loader2 className="w-12 h-12 text-accent-blue animate-spin" /> : <CloudUpload className="w-12 h-12 text-muted-foreground/30" />}
-                    <div className="text-center">
-                        <p className="text-lg font-bold">{fileName || "Inject Resume Signal"}</p>
-                        <p className="text-xs text-muted-foreground mt-1">PDF or Plain Text Signature</p>
+                    <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover/upload:opacity-100 transition-opacity duration-700 blur-3xl" />
+                    {isParsing ? <Loader2 className="w-16 h-16 text-primary animate-spin" /> : <CloudUpload className="w-16 h-16 text-muted-foreground/20 group-hover/upload:text-primary/40 transition-colors" />}
+                    <div className="text-center relative z-10">
+                        <p className="text-xl font-display font-bold text-foreground/90">{fileName || "Inject Resume Signal"}</p>
+                        <p className="text-xs text-muted-foreground mt-2 font-medium tracking-wide">PDF or Semantic Textual Signature</p>
                     </div>
                     <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept=".pdf" className="hidden" />
                 </div>
 
-                <div className="space-y-4">
-                    <div className="p-6 rounded-[32px] bg-secondary/50 border border-border">
-                        <div className="flex items-center gap-3 mb-2">
-                            <ShieldCheck className="w-4 h-4 text-accent-emerald" />
-                            <span className="text-[10px] font-black uppercase tracking-widest">Secure Scan</span>
+                <div className="md:col-span-4 space-y-6">
+                    <div className="p-8 rounded-[2.5rem] bg-white/5 border border-white/5 space-y-4">
+                        <div className="flex items-center gap-3">
+                            <ShieldCheck className="w-5 h-5 text-accent-emerald" />
+                            <span className="text-xs font-black uppercase tracking-widest text-foreground/70">Secure Buffer</span>
                         </div>
-                        <p className="text-[11px] text-muted-foreground leading-relaxed">Intelligence processing is localized and fully non-custodial.</p>
+                        <p className="text-[13px] text-muted-foreground leading-relaxed font-medium">Intelligence processing is strictly localized and non-custodial.</p>
                     </div>
-                    <div className="flex items-center gap-3 px-6 py-4 rounded-[32px] bg-background border border-border">
-                        <input type="checkbox" checked={isAutoRunEnabled} onChange={(e) => setIsAutoRunEnabled(e.target.checked)} className="w-4 h-4 accent-accent-emerald" />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Auto-Run Engine</span>
+                    <div className="flex items-center gap-4 px-8 py-5 rounded-[2.5rem] bg-white/5 border border-white/5 hover:bg-white/10 transition-colors cursor-pointer" onClick={() => setIsAutoRunEnabled(!isAutoRunEnabled)}>
+                        <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${isAutoRunEnabled ? 'bg-accent-emerald border-accent-emerald' : 'border-white/20'}`}>
+                            {isAutoRunEnabled && <CheckCircle2 className="w-3.5 h-3.5 text-background" />}
+                        </div>
+                        <span className="text-xs font-black uppercase tracking-widest text-foreground/80">Auto-Run Diagnostic</span>
                     </div>
                 </div>
             </div>
 
-            <textarea
-                value={resumeText}
-                onChange={(e) => setResumeText(e.target.value)}
-                placeholder="Paste raw intent here..."
-                className="w-full h-40 bg-foreground/5 border border-white/5 rounded-[40px] p-8 text-sm outline-none focus:border-accent-blue/40 transition-all resize-none mb-12 font-medium"
-            />
+            <div className="relative group">
+              <div className="absolute inset-0 bg-primary/5 rounded-[3rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+              <textarea
+                  value={resumeText}
+                  onChange={(e) => setResumeText(e.target.value)}
+                  placeholder="Paste raw intent here for a deep-tissue semantic scan..."
+                  className="w-full h-48 bg-white/5 border border-white/10 rounded-[3rem] p-10 text-[15px] outline-none focus:border-primary/40 transition-all resize-none relative z-10 font-medium placeholder:text-muted-foreground/30 shadow-inner"
+              />
+            </div>
 
             {isAnalyzing && (
-                <div className="py-32 text-center space-y-8 premium-card rounded-[40px] border border-accent-blue/20 bg-accent-blue/5 relative overflow-hidden">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,var(--accent-blue)_0%,transparent_70%)] opacity-5 animate-pulse" />
-                    <Loader2 className="w-16 h-16 text-accent-blue animate-spin mx-auto scale-150 mb-4" />
-                    <h4 className="text-3xl font-display font-black tracking-tighter italic">Processing Intelligence Pulse...</h4>
+                <div className="py-24 text-center space-y-10 glass-panel rounded-[3rem] border border-primary/20 bg-primary/5 relative overflow-hidden mt-12">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,var(--primary)_0%,transparent_70%)] opacity-10 animate-pulse" />
+                    <Loader2 className="w-20 h-20 text-primary animate-spin mx-auto opacity-40" />
+                    <div className="space-y-3">
+                      <h4 className="text-4xl font-serif italic text-foreground tracking-tight">Processing Intelligence Pulse</h4>
+                      <p className="text-xs uppercase font-black tracking-[0.4em] text-primary/40">Aligning experience vs job requirements</p>
+                    </div>
                 </div>
             )}
 
-            {renderResults()}
+            {!isAnalyzing && result && (
+              <div className="space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+                {/* ── CINEMATIC SCORE OVERVIEW ── */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+                    <div className="md:col-span-4 glass-panel p-10 rounded-[2.5rem] border-white/5 flex flex-col items-center justify-center text-center relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-3xl" />
+                        <span className="text-6xl font-display font-black tracking-tighter text-foreground relative z-10">{result.overall_match}%</span>
+                        <span className="text-xs font-black uppercase text-primary tracking-[0.4em] mt-3 relative z-10 opacity-60">Intelligence Match</span>
+                        
+                        <div className="w-full h-1.5 bg-white/5 rounded-full mt-8 relative z-10 overflow-hidden">
+                            <motion.div 
+                              initial={{ width: 0 }}
+                              animate={{ width: `${result.overall_match}%` }}
+                              transition={{ duration: 1.5, ease: "easeOut" }}
+                              className="h-full bg-primary" 
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="md:col-span-8 glass-panel p-10 rounded-[2.5rem] border-white/5 flex flex-col justify-center relative overflow-hidden">
+                         <div className="flex items-center gap-3 mb-4 opacity-30">
+                            <MessageSquareQuote size={18} />
+                            <span className="text-[11px] font-black uppercase tracking-widest">Executive Summary</span>
+                         </div>
+                         <p className="text-[17px] font-medium text-foreground/90 leading-relaxed font-serif italic">
+                            &ldquo;{result.summary}&rdquo;
+                         </p>
+                    </div>
+                </div>
 
-            {result && !isAnalyzing && (
-              <div className="mt-16 flex flex-col items-center gap-6">
-                <button onClick={handleAddToTracker} disabled={addedToTracker} className="px-12 py-6 rounded-full bg-accent-blue text-white font-black uppercase tracking-[0.3em] text-[10px] shadow-2xl shadow-accent-blue/30 hover:scale-105 transition-all flex items-center gap-4">
-                  {addedToTracker ? <CheckCircle2 className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
-                  {addedToTracker ? "Successfully Tracked" : "Initiate Pipeline Tracking"}
-                </button>
-                <button onClick={handleExportPDF} className="text-[9px] font-black uppercase tracking-[0.4em] text-muted-foreground hover:text-foreground transition-colors">Export Strategy PDF</button>
+                {/* ── GAP DIAGNOSTIC ── */}
+                {result.deductions && result.deductions.length > 0 && (
+                  <div className="glass-panel p-10 lg:p-12 rounded-[3.5rem] border-red-500/10 bg-red-500/[0.02] space-y-10">
+                    <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2.5 rounded-2xl bg-red-500/10 text-red-500">
+                                <Zap size={20} />
+                            </div>
+                            <h4 className="text-3xl font-serif italic text-foreground">Critical Misalignments</h4>
+                        </div>
+                        <p className="text-xs uppercase font-black tracking-widest text-red-500/50">Semantic Gaps & Priority Fixes</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {result.deductions.map((d, i) => (
+                            <div key={i} className="p-8 rounded-[2.5rem] bg-background/40 border border-white/5 flex flex-col justify-between group hover:border-red-500/20 transition-all duration-500 min-h-[160px]">
+                                <div className="space-y-3">
+                                    <div className="flex justify-between items-start">
+                                        <span className="text-[14px] font-bold text-foreground pr-4">{d.reason}</span>
+                                        <span className="text-[11px] text-red-400 font-black px-3 py-1 rounded-xl bg-red-400/10 border border-red-400/20 whitespace-nowrap">-{d.percent}%</span>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground leading-relaxed font-medium">This deficit weakens your overall probability of advancing to clinical interviews.</p>
+                                </div>
+                                
+                                {d.fix_snippet && (
+                                  <div className="mt-6 pt-6 border-t border-white/5 flex items-center justify-between group/fix">
+                                      <span className="text-[11px] font-black uppercase text-accent-blue tracking-widest opacity-60">Strategic Counter</span>
+                                      <button 
+                                        onClick={() => handleCopyBullet(d.fix_snippet!)} 
+                                        className="flex items-center gap-2 text-xs font-bold text-accent-blue hover:text-white transition-colors"
+                                      >
+                                          Copy Injection <Copy size={14} />
+                                      </button>
+                                  </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* ── DETAIL GRIDS ── */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+                    {/* Skills Breakdown */}
+                    <div className="md:col-span-7 glass-panel p-10 rounded-[3rem] border-white/5 space-y-8 bg-gradient-to-br from-white/[0.01] to-transparent">
+                        <div className="flex items-center justify-between">
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-3 text-accent-emerald">
+                                    <ShieldCheck size={18} />
+                                    <span className="text-xs uppercase font-black tracking-widest opacity-80">Skill Signature Match</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {(result.skill_matches || []).slice(0, 10).map((sm, i) => (
+                                <div key={i} className="flex flex-col gap-2.5 p-5 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all duration-500">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[13px] font-bold text-foreground/90 truncate">{sm.skill}</span>
+                                        {getVerdictIcon(sm.verdict)}
+                                    </div>
+                                    <div className="flex items-end justify-between">
+                                      <div className="flex-1 mr-4 h-1 bg-white/5 rounded-full overflow-hidden">
+                                        <div className="h-full bg-accent-emerald/40" style={{ width: `${sm.match_percent}%` }} />
+                                      </div>
+                                      <span className="text-[11px] font-black text-white/20">{sm.match_percent}%</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Action Roadmap */}
+                    <div className="md:col-span-5 glass-panel p-10 rounded-[3rem] bg-accent-blue/[0.02] border-accent-blue/10 space-y-10">
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-3 text-accent-blue">
+                                <TrendingUp size={20} />
+                                <h4 className="text-2xl font-serif italic text-foreground">Action Roadmap</h4>
+                            </div>
+                            <p className="text-xs uppercase font-black tracking-widest text-accent-blue/40">Strategic directives for 100% match</p>
+                        </div>
+                        
+                        <div className="space-y-6">
+                            {(result.actionable_directives?.length ? result.actionable_directives : [
+                                { action: "Optimize", description: "Quantify your achievements in core skill areas with hard metrics." },
+                                { action: "Inject", description: "Integrate specific JD keyword tokens into your professional summary." }
+                            ]).map((d, i) => (
+                                <div key={i} className="flex gap-6 items-start p-6 rounded-[2rem] bg-white/5 border border-white/5 hover:bg-white/10 transition-all duration-500">
+                                    <div className="w-8 h-8 rounded-xl bg-accent-blue/10 flex items-center justify-center text-[13px] font-black text-accent-blue border border-accent-blue/20">{i+1}</div>
+                                    <div className="space-y-1.5 pt-1">
+                                        <span className="text-xs font-black uppercase text-foreground tracking-widest block">{d.action}</span>
+                                        <p className="text-[14px] text-muted-foreground leading-relaxed font-medium">{d.description}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* ── FINAL ACTIONS ── */}
+                <div className="mt-20 flex flex-col items-center gap-10">
+                    <button 
+                      onClick={handleAddToTracker} 
+                      disabled={addedToTracker} 
+                      className="px-16 py-7 rounded-full bg-primary text-background font-black uppercase tracking-[0.4em] text-[13px] shadow-[0_25px_60px_rgba(var(--primary-rgb),0.3)] hover:scale-105 active:scale-95 transition-all flex items-center gap-5 group"
+                    >
+                      {addedToTracker ? <CheckCircle2 className="w-6 h-6" /> : <Plus className="w-6 h-6 group-hover:rotate-90 transition-transform" />}
+                      {addedToTracker ? "Application Tracked" : "Initiate Pipeline Tracking"}
+                    </button>
+                    <button onClick={handleExportPDF} className="text-xs font-black uppercase tracking-[0.5em] text-muted-foreground hover:text-foreground transition-all duration-500 pb-1 border-b border-transparent hover:border-muted-foreground/30">
+                      Download Intelligence Strategy
+                    </button>
+                </div>
               </div>
             )}
           </motion.div>
