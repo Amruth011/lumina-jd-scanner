@@ -32,20 +32,20 @@ export const LuminaTimeline = ({ data }: LuminaTimelineProps) => {
           {/* Node */}
           <div className="absolute -left-[33px] top-1.5 w-4 h-4 rounded-full bg-background border-2 border-primary shadow-[0_0_10px_rgba(var(--primary-rgb),0.3)] z-10" />
           
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-3">
-              <span className="text-[10px] font-black tracking-widest text-primary/60 flex items-center gap-1.5 uppercase">
-                <Clock size={10} />
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-4">
+              <span className="text-[11px] font-black tracking-[0.2em] text-primary flex items-center gap-2 uppercase">
+                <Clock size={12} />
                 {item.time}
               </span>
-              <div className="h-[1px] flex-1 bg-white/5" />
+              <div className="h-[1px] flex-1 bg-white/10" />
             </div>
             
-            <div className="glass-panel p-6 rounded-3xl border-white/5 group hover:border-primary/20 transition-all duration-500">
-               <h4 className="text-sm font-display font-black text-foreground mb-2 group-hover:translate-x-1 transition-transform">
+            <div className="glass-panel p-8 rounded-[2rem] border-white/5 group hover:border-primary/20 transition-all duration-700 bg-gradient-to-br from-white/[0.02] to-transparent">
+               <h4 className="text-[17px] font-display font-bold text-foreground mb-3 group-hover:translate-x-1 transition-transform">
                   {item.task}
                </h4>
-               <p className="text-xs font-serif italic text-muted-foreground leading-relaxed">
+               <p className="text-[14px] font-medium text-muted-foreground leading-relaxed">
                   {item.description}
                </p>
             </div>
