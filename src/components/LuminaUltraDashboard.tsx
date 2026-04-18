@@ -31,82 +31,98 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
   };
 
   return (
-    <div className="space-y-24 pb-32">
-      {/* ── PHASE 1: 3-COLUMN TACTICAL HEADER ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-         {/* Total Score */}
-         <div className="lg:col-span-3 glass-panel p-8 rounded-[2.5rem] border-white/5 flex flex-col items-center justify-center relative overflow-hidden group">
+    <div className="space-y-16 pb-32">
+      {/* ── PHASE 1: ELITE TACTICAL HEADER ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+         {/* Total Score Card */}
+         <div className="lg:col-span-4 glass-panel p-10 rounded-[2.5rem] border-white/5 flex flex-col items-center justify-center relative overflow-hidden group min-h-[320px]">
             <div className="absolute inset-0 bg-primary/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             <LuminaGauge 
                 value={grade.score} 
-                label="Total Score" 
-                size={180} 
+                label="Aggregate Score" 
+                size={200} 
                 color="var(--primary)" 
             />
-            <span className="text-[10px] font-black uppercase text-primary/60 mt-4 tracking-widest">Performance Potential</span>
+            <div className="mt-8 text-center">
+              <span className="text-xs font-black uppercase text-primary/60 tracking-widest block">Intelligence Index</span>
+              <p className="text-[11px] text-muted-foreground mt-1 max-w-[200px] leading-relaxed">Composite measure of clarity, risk, and compensation competitiveness.</p>
+            </div>
          </div>
 
          {/* Required vs Preferred Skills */}
-         <div className="lg:col-span-6 glass-panel p-8 rounded-[2.5rem] border-white/5 space-y-6">
-            <div className="flex items-center justify-between">
+         <div className="lg:col-span-5 glass-panel p-10 rounded-[2.5rem] border-white/5 space-y-8 flex flex-col justify-between">
+            <div className="space-y-2">
                 <div className="flex items-center gap-3">
-                    <Target size={16} className="text-accent-gold" />
-                    <span className="text-[10px] uppercase font-black tracking-widest text-foreground/60">Required vs Preferred</span>
+                    <Target size={18} className="text-accent-gold" />
+                    <span className="text-xs uppercase font-black tracking-widest text-foreground/70">Skill Criticality Spectrum</span>
                 </div>
+                <p className="text-[11px] text-muted-foreground">Highest priority requirements extracted from JD semantics.</p>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            
+            <div className="grid grid-cols-2 gap-3">
                 {(results?.skills || []).slice(0, 8).map((s, i) => (
-                    <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
-                        <span className="text-[11px] font-medium text-foreground/80 truncate pr-2">{s.skill}</span>
-                        <span className={`flex-shrink-0 px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-tighter ${
-                            s.importance > 80 ? 'bg-red-400/10 text-red-400 border border-red-400/20' : 
-                            s.importance > 50 ? 'bg-accent-gold/10 text-accent-gold border border-accent-gold/20' :
-                            'bg-accent-blue/10 text-accent-blue border border-accent-blue/20'
-                        }`}>
-                            {s.importance > 80 ? 'Required' : s.importance > 50 ? 'Preferred' : 'Nice to have'}
-                        </span>
+                    <div key={i} className="flex flex-col gap-1 p-3.5 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
+                        <span className="text-[13px] font-display font-bold text-foreground/90 truncate">{s.skill}</span>
+                        <div className="flex items-center justify-between mt-1">
+                          <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-tighter ${
+                              s.importance > 80 ? 'bg-red-400/10 text-red-400 border border-red-400/20' : 
+                              s.importance > 50 ? 'bg-accent-gold/10 text-accent-gold border border-accent-gold/20' :
+                              'bg-accent-blue/10 text-accent-blue border border-accent-blue/20'
+                          }`}>
+                              {s.importance > 80 ? 'High Impact' : s.importance > 50 ? 'Strategic' : 'Support'}
+                          </span>
+                          <span className="text-[10px] font-black opacity-30">{s.importance}%</span>
+                        </div>
                     </div>
                 ))}
             </div>
          </div>
 
-         {/* Work Mode Gauge */}
-         <div className="lg:col-span-3 glass-panel p-8 rounded-[2.5rem] border-white/5 flex flex-col items-center justify-center">
+         {/* Seniority & Logistics Overlay */}
+         <div className="lg:col-span-3 glass-panel p-10 rounded-[2.5rem] border-white/5 flex flex-col items-center justify-between">
             <LuminaGauge 
                 value={results?.qualifiers?.seniority_level ?? 0} 
-                label="Seniority Fit" 
+                label="Seniority Bar" 
                 size={160} 
                 color="var(--accent-emerald)" 
-                subLabel={(results?.qualifiers?.seniority_level ?? 0) > 70 ? "Senior" : (results?.qualifiers?.seniority_level ?? 0) > 40 ? "Mid-Level" : "Junior"}
+                subLabel={(results?.qualifiers?.seniority_level ?? 0) > 70 ? "Executive" : (results?.qualifiers?.seniority_level ?? 0) > 40 ? "Mid-Senior" : "Entry-Mid"}
             />
-            <div className="mt-4 flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-accent-emerald shadow-[0_0_8px_var(--accent-emerald)]" />
-                <span className="text-[10px] uppercase font-black text-foreground/80 tracking-widest">
-                    {results?.logistics?.work_arrangement?.remote_friendly === 'yes' ? 'Full Remote' : results?.logistics?.work_arrangement?.remote_friendly === 'partial' ? 'Hybrid' : 'On-Site'}
+            
+            <div className="w-full space-y-4 mt-8">
+              <div className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5">
+                <span className="text-xs font-bold text-muted-foreground">Work Mode</span>
+                <span className="text-xs font-black uppercase text-accent-emerald tracking-tight">
+                  {results?.logistics?.work_arrangement?.remote_friendly === 'yes' ? 'Full Remote' : results?.logistics?.work_arrangement?.remote_friendly === 'partial' ? 'Hybrid' : 'On-Site'}
                 </span>
+              </div>
+              <div className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5">
+                <span className="text-xs font-bold text-muted-foreground">Market Comp</span>
+                <span className="text-xs font-black uppercase text-accent-gold tracking-tight">Targeting 1%</span>
+              </div>
             </div>
          </div>
       </div>
 
-      {/* ── PHASE 2: PLAIN ENGLISH SUMMARY ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-         <div className="lg:col-span-8 space-y-8">
-            <div className="glass-panel p-10 rounded-[3rem] border-white/5 space-y-8 relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-8 opacity-5">
-                    <MessageSquareQuote size={120} />
+      {/* ── PHASE 2: VERDICT & INTELLIGENCE ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+         <div className="lg:col-span-8 flex flex-col">
+            <div className="glass-panel p-10 lg:p-14 rounded-[3.5rem] border-white/5 space-y-10 relative overflow-hidden flex-1 h-full font-display">
+                <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
+                    <MessageSquareQuote size={180} />
                 </div>
-                <div className="space-y-2">
-                    <h2 className="text-3xl font-serif italic text-foreground tracking-tight">JD Decoded — Plain English Summary</h2>
-                    <p className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground opacity-50">Here's what this job description actually means, stripped of the corporate speak.</p>
+                <div className="space-y-3 relative z-10">
+                    <h2 className="text-4xl font-serif italic text-foreground tracking-tight">The Professional Verdict</h2>
+                    <p className="text-xs uppercase font-black tracking-[0.2em] text-muted-foreground opacity-60">High-fidelity analysis of technical and cultural expectations.</p>
                 </div>
-                <div className="space-y-6">
-                    {(grade.plain_english_summary || []).map((point, i) => (
-                        <div key={i} className="flex gap-6 group items-start">
-                            <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary text-xs font-black flex items-center justify-center border border-primary/20 group-hover:scale-110 group-hover:bg-primary group-hover:text-background transition-all duration-500">
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 relative z-10">
+                    {(grade.plain_english_summary || []).slice(0, 6).map((point, i) => (
+                        <div key={i} className="flex gap-6 group">
+                            <span className="flex-shrink-0 w-10 h-10 rounded-2xl bg-primary/5 text-primary text-sm font-black flex items-center justify-center border border-primary/10 group-hover:bg-primary group-hover:text-background transition-all duration-500 transform group-hover:rotate-6">
                                 {i + 1}
                             </span>
-                            <p className="text-[15px] font-medium text-foreground/90 leading-relaxed font-display transition-colors group-hover:text-foreground">
-                                {point.split('**').map((part, idx) => idx % 2 === 1 ? <strong key={idx} className="text-primary font-black uppercase tracking-tight mx-1">{part}</strong> : part)}
+                            <p className="text-[15px] font-medium text-foreground/90 leading-relaxed group-hover:text-foreground">
+                                {point.split('**').map((part, idx) => idx % 2 === 1 ? <strong key={idx} className="text-primary font-black uppercase tracking-tight mx-0.5">{part}</strong> : part)}
                             </p>
                         </div>
                     ))}
@@ -119,95 +135,97 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
          </div>
       </div>
 
-      {/* ── PHASE 3/4: RED FLAGS & STRATEGIC BREAKDOWN ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-         {/* Red Flags: What they wrote vs what they meant */}
-         <div className="lg:col-span-5 glass-panel p-10 rounded-[3rem] border-white/5 space-y-10 border-l-red-500/20">
-             <div className="space-y-2">
+      {/* ── PHASE 3/4: RISK & REWARDS ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+         {/* Strategic Insights Section */}
+         <div className="lg:col-span-5 glass-panel p-10 rounded-[3.5rem] border-white/5 space-y-12 bg-gradient-to-br from-red-500/[0.03] to-transparent">
+             <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                    <ShieldAlert size={20} className="text-red-400" />
-                    <h3 className="text-2xl font-serif italic text-foreground">Red Flags Decoded</h3>
+                    <div className="p-2 rounded-xl bg-red-500/10 text-red-500">
+                      <ShieldAlert size={20} />
+                    </div>
+                    <h3 className="text-3xl font-serif italic text-foreground">Critical Vulnerabilities</h3>
                 </div>
-                <p className="text-[10px] uppercase font-black tracking-widest text-red-400/60">What they wrote vs. what they meant</p>
+                <p className="text-xs uppercase font-black tracking-widest text-red-500/50">Language deconstruction & hidden risks</p>
              </div>
              
-             <div className="space-y-8">
+             <div className="space-y-10">
                 {(results?.red_flags || []).map((flag, i) => (
-                    <div key={i} className="space-y-4 group">
-                        <div className="flex items-center gap-4">
-                            <div className="px-3 py-1.5 rounded-xl bg-red-400/10 border border-red-400/20 text-red-400 text-xs font-bold font-display italic">
+                    <div key={i} className="space-y-4 group relative">
+                        <div className="flex items-center justify-between">
+                            <div className="px-4 py-2 rounded-2xl bg-red-400/10 border border-red-400/20 text-red-400 text-sm font-display font-medium italic">
                                 &ldquo;{flag.phrase}&rdquo;
                             </div>
-                            <ArrowRight size={14} className="text-muted-foreground/30 group-hover:translate-x-1 transition-transform" />
-                        </div>
-                        <div className="flex gap-4">
-                            <div className="w-1 bg-red-400/40 rounded-full h-auto" />
-                            <div className="space-y-1">
-                                <p className="text-sm font-medium text-foreground group-hover:text-red-400 transition-colors">
-                                    {flag.note}
-                                </p>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-[9px] uppercase font-black text-red-400/40">Risk Intensity</span>
-                                    <div className="h-1 w-20 bg-white/5 rounded-full overflow-hidden">
-                                        <div className="h-full bg-red-400" style={{ width: `${flag.intensity}%` }} />
-                                    </div>
-                                </div>
+                            <div className="text-right">
+                              <span className="text-[10px] uppercase font-black text-red-400/40 block mb-1">Impact</span>
+                              <span className="text-sm font-black text-red-400">{flag.intensity}%</span>
                             </div>
+                        </div>
+                        <div className="pl-4 border-l-2 border-red-400/20">
+                            <p className="text-sm font-medium text-foreground/80 leading-relaxed">
+                                {flag.note}
+                            </p>
                         </div>
                     </div>
                 ))}
              </div>
          </div>
 
-         <div className="lg:col-span-7 space-y-8">
-             {/* Salary Range & Work Arrangement */}
-             <div className="glass-panel p-10 rounded-[3rem] border-white/5 space-y-8">
-                <div className="flex justify-between items-end">
-                    <div className="space-y-2">
-                        <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground opacity-50">Estimated Salary Range</span>
+         <div className="lg:col-span-7 space-y-6 flex flex-col">
+             {/* Salary Range Card */}
+             <div className="glass-panel p-10 rounded-[3rem] border-white/5 space-y-8 bg-gradient-to-br from-accent-emerald/[0.03] to-transparent flex-1">
+                <div className="flex justify-between items-start">
+                    <div className="space-y-4">
+                        <span className="text-xs uppercase font-black tracking-widest text-muted-foreground opacity-60">Projected Value Range</span>
                         <div className="flex items-baseline gap-4">
-                            <span className="text-5xl font-display font-black tracking-tighter">
+                            <span className="text-5xl lg:text-6xl font-display font-black tracking-tighter text-foreground">
                                 {results?.logistics?.salary_range?.currency === 'INR' ? '₹' : '$'}
                                 {(results?.logistics?.salary_range?.min ?? 0).toLocaleString()}
                             </span>
-                            <span className="text-2xl text-muted-foreground/30 font-black">/</span>
-                            <span className="text-5xl font-display font-black text-accent-emerald tracking-tighter">
+                            <span className="text-3xl text-muted-foreground/20 font-black">-</span>
+                            <span className="text-5xl lg:text-6xl font-display font-black text-accent-emerald tracking-tighter">
                                 {(results?.logistics?.salary_range?.max ?? 0).toLocaleString()}
                             </span>
                         </div>
                     </div>
-                    <div className="text-right space-y-1">
-                        <span className="text-[9px] font-black uppercase text-accent-gold">Market Confidence</span>
-                        <div className="flex gap-1">
+                    <div className="p-4 rounded-3xl bg-accent-gold/10 border border-accent-gold/20 text-right">
+                        <span className="text-[10px] font-black uppercase text-accent-gold block mb-2">Confidence Score</span>
+                        <div className="flex gap-1.5 justify-end">
                             {[1, 2, 3, 4, 5].map(i => (
-                                <div key={i} className={`w-3 h-1 rounded-full ${i <= 3 ? 'bg-accent-gold' : 'bg-white/5'}`} />
+                                <div key={i} className={`w-4 h-1.5 rounded-full ${i <= 4 ? 'bg-accent-gold' : 'bg-white/10'}`} />
                             ))}
                         </div>
                     </div>
                 </div>
 
-                {/* Salary Visualization Bar */}
-                <div className="space-y-2">
-                    <div className="h-4 w-full bg-white/5 rounded-2xl p-1 border border-white/5">
-                        <div className="h-full bg-gradient-to-r from-primary/40 via-accent-emerald to-primary/40 rounded-xl relative">
-                            <div className="absolute top-1/2 left-[10%] -translate-y-1/2 w-0.5 h-6 bg-white/20" />
-                            <div className="absolute top-1/2 right-[10%] -translate-y-1/2 w-0.5 h-6 bg-white/20" />
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-white border-4 border-accent-emerald shadow-lg" />
+                <div className="space-y-4 pt-4">
+                    <div className="h-5 w-full bg-white/5 rounded-2xl p-1 border border-white/5 relative">
+                        <div className="h-full bg-gradient-to-r from-primary/40 via-accent-emerald to-primary/40 rounded-xl">
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-white border-2 border-accent-emerald shadow-[0_0_15px_rgba(var(--accent-emerald-rgb),0.5)] z-20" />
                         </div>
                     </div>
-                    <div className="flex justify-between px-2">
-                        <span className="text-[8px] font-black uppercase text-muted-foreground">Market Low</span>
-                        <span className="text-[8px] font-black uppercase text-foreground">Competitive Median</span>
-                        <span className="text-[8px] font-black uppercase text-muted-foreground">Top 1% Tier</span>
+                    <div className="grid grid-cols-3 gap-4 px-2">
+                        <div className="space-y-1">
+                          <span className="text-[10px] font-black uppercase text-muted-foreground opacity-50 block">Market Floor</span>
+                          <span className="text-xs font-bold">Standard</span>
+                        </div>
+                        <div className="space-y-1 text-center font-display">
+                          <span className="text-[10px] font-black uppercase text-foreground block">Competitiveness</span>
+                          <span className="text-xs font-bold text-accent-emerald">Top Tier</span>
+                        </div>
+                        <div className="space-y-1 text-right">
+                          <span className="text-[10px] font-black uppercase text-muted-foreground opacity-50 block">Market Ceiling</span>
+                          <span className="text-xs font-bold">Aggressive</span>
+                        </div>
                     </div>
                 </div>
              </div>
 
-             {/* Dimensions Radar & Iceberg */}
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="glass-panel p-8 rounded-[2.5rem] flex flex-col items-center justify-center space-y-4">
-                     <span className="text-[10px] uppercase font-black text-muted-foreground opacity-50 self-start">Responsibility Breakdown</span>
-                     <div className="relative w-48 h-48 flex items-center justify-center">
+             {/* Secondary Visualization Grid */}
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="glass-panel p-10 rounded-[2.5rem] flex flex-col items-center justify-between space-y-8">
+                     <span className="text-xs uppercase font-black text-muted-foreground opacity-50 self-start tracking-widest">Time Allocation Mix</span>
+                     <div className="relative w-44 h-44 flex items-center justify-center">
                         <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
                             {(results?.logistics?.responsibility_mix || []).reduce((acc, item, i) => {
                                 const offset = acc.total;
@@ -218,7 +236,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                                         cx="50" cy="50" r="40"
                                         fill="transparent"
                                         stroke={i === 0 ? 'var(--primary)' : i === 1 ? 'var(--accent-emerald)' : i === 2 ? 'var(--accent-gold)' : 'var(--accent-blue)'}
-                                        strokeWidth="12"
+                                        strokeWidth="14"
                                         strokeDasharray={`${item.percent * 2.51} 251`}
                                         strokeDashoffset={-offset * 2.51}
                                         className="transition-all duration-1000 ease-out"
@@ -228,81 +246,78 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                             }, { total: 0, elements: [] as React.ReactNode[] }).elements}
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                            <span className="text-2xl font-black font-display tracking-tighter">100%</span>
-                            <span className="text-[8px] font-black uppercase text-muted-foreground">Focus</span>
+                            <span className="text-3xl font-black font-display tracking-tighter">100%</span>
+                            <span className="text-[10px] font-black uppercase text-muted-foreground opacity-60">Focus</span>
                         </div>
                      </div>
-                     <div className="grid grid-cols-2 gap-x-6 gap-y-2 w-full pt-4">
+                     <div className="grid grid-cols-1 gap-2 w-full pt-4">
                         {(results?.logistics?.responsibility_mix || []).map((item, i) => (
-                            <div key={i} className="flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: i === 0 ? 'var(--primary)' : i === 1 ? 'var(--accent-emerald)' : i === 2 ? 'var(--accent-gold)' : 'var(--accent-blue)' }} />
-                                <span className="text-[9px] font-medium text-foreground/80 truncate">{item.label}</span>
-                                <span className="text-[9px] font-black ml-auto">{item.percent}%</span>
+                            <div key={i} className="flex items-center gap-3 p-2 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all">
+                                <div className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ backgroundColor: i === 0 ? 'var(--primary)' : i === 1 ? 'var(--accent-emerald)' : i === 2 ? 'var(--accent-gold)' : 'var(--accent-blue)' }} />
+                                <span className="text-xs font-bold text-foreground/80 truncate">{item.label}</span>
+                                <span className="text-xs font-black ml-auto">{item.percent}%</span>
                             </div>
                         ))}
                      </div>
                 </div>
-                <div className="space-y-6">
-                    <IcebergAnalysis reality={results?.role_reality} archetype={results?.logistics?.archetype?.label} />
-                </div>
+                <IcebergAnalysis reality={results?.role_reality} archetype={results?.logistics?.archetype?.label} />
              </div>
          </div>
       </div>
 
-      {/* ── PHASE 5: TIMELINES & CULTURE ── */}
-      <div className="space-y-12">
-        <div className="flex items-center gap-4">
-            <h2 className="text-3xl font-serif italic">Operational Deep Dive</h2>
-            <div className="h-px flex-1 bg-white/5" />
+      {/* ── PHASE 5: OPERATIONAL DEEP DIVE ── */}
+      <div className="space-y-10">
+        <div className="flex items-center gap-6">
+            <h2 className="text-3xl font-serif italic whitespace-nowrap">The Execution Layer</h2>
+            <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <div className="lg:col-span-8 glass-panel p-10 rounded-[3rem] border-white/5 space-y-8">
-                <div className="flex items-center gap-3">
-                    <Clock size={16} className="text-accent-blue" />
-                    <span className="text-[10px] uppercase font-black tracking-widest text-foreground/60">A Typical Day (Draft Simulation)</span>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-8 glass-panel p-10 lg:p-12 rounded-[3.5rem] border-white/5 space-y-10">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <Clock size={20} className="text-accent-blue" />
+                        <span className="text-xs uppercase font-black tracking-widest text-foreground/70">JD Narrative Simulation (Day-in-Life)</span>
+                    </div>
                 </div>
                 <LuminaTimeline data={results?.deep_dive?.day_in_life || []} />
             </div>
 
-            <div className="lg:col-span-4 space-y-8">
-                <div className="glass-panel p-8 rounded-[2.5rem] space-y-6">
+            <div className="lg:col-span-4 space-y-6">
+                <div className="glass-panel p-10 rounded-[3rem] space-y-8">
                     <div className="flex items-center gap-3">
-                        <Heart size={16} className="text-red-400" />
-                        <span className="text-[10px] uppercase font-black tracking-widest text-foreground/60">Cultural DNA Check</span>
+                        <Heart size={18} className="text-red-400" />
+                        <span className="text-xs uppercase font-black tracking-widest text-foreground/70">Cultural DNA Calibration</span>
                     </div>
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                         {Object.entries(results?.deep_dive?.culture_radar || {}).map(([key, val]) => (
-                            <div key={key} className="space-y-2">
+                            <div key={key} className="space-y-3">
                                 <div className="flex justify-between items-end">
-                                    <span className="text-[10px] font-medium text-foreground capitalize">{key.replace('_', ' ')}</span>
-                                    <span className="text-xs font-black">{(val as number)}%</span>
+                                    <span className="text-xs font-bold text-foreground capitalize">{key.replace('_', ' ')}</span>
+                                    <span className="text-xs font-black text-primary">{(val as number)}%</span>
                                 </div>
-                                <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                                    <div className="h-full bg-primary" style={{ width: `${(val as number)}%` }} />
+                                <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden p-0.5 border border-white/5">
+                                    <div className="h-full bg-primary rounded-full shadow-[0_0_8px_rgba(var(--primary-rgb),0.3)]" style={{ width: `${(val as number)}%` }} />
                                 </div>
                             </div>
                         ))}
                     </div>
                 </div>
 
-                <div className="glass-panel p-8 rounded-[2.5rem] bg-accent-blue/5 border-accent-blue/10">
+                <div className="glass-panel p-10 rounded-[3rem] bg-accent-blue/5 border-accent-blue/10">
                     <RecruiterLens insights={results?.recruiter_lens || []} />
                 </div>
             </div>
         </div>
       </div>
 
-      {/* ── SECTION I: BONUS PULSE ── */}
-      <div className="space-y-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-           <BonusCard icon={Ghost} label="Ghost Job Risk" value={results?.bonus_pulse?.ghost_job_probability ?? 0} sub="Probability" color="red-400" />
-           <BonusCard icon={Scale} label="Desperation Meter" value={results?.bonus_pulse?.desperation_meter ?? 0} sub="They Eagerly Need You" color="var(--accent-emerald)" />
-           <BonusCard icon={Star} label="Difficulty" value={results?.bonus_pulse?.interview_difficulty ?? 0} sub="Hardcore Mode" color="var(--accent-gold)" />
-           <BonusCard icon={TrendingUp} label="Skill Rarity" value={results?.bonus_pulse?.skill_rarity ?? 0} sub="The 1% Elite" color="var(--accent-blue)" />
-        </div>
+      {/* ── PHASE 6: BONUS INTELLIGENCE ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+         <BonusCard icon={Ghost} label="Ghost Job Risk" value={results?.bonus_pulse?.ghost_job_probability ?? 0} sub="Entity Score" color="red-400" />
+         <BonusCard icon={Scale} label="Desperation Meter" value={results?.bonus_pulse?.desperation_meter ?? 0} sub="Urgency Ratio" color="var(--accent-emerald)" />
+         <BonusCard icon={Star} label="Entry Friction" value={results?.bonus_pulse?.interview_difficulty ?? 0} sub="Hardcore Mode" color="var(--accent-gold)" />
+         <BonusCard icon={TrendingUp} label="Rarity Premium" value={results?.bonus_pulse?.skill_rarity ?? 0} sub="Skill Arbitrage" color="var(--accent-blue)" />
       </div>
-
     </div>
   );
 };
