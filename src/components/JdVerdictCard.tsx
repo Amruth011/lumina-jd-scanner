@@ -40,38 +40,37 @@ export const JdVerdictCard = ({ grade }: JdVerdictCardProps) => {
     >
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-primary/5 rounded-full blur-3xl -mt-24 pointer-events-none" />
       
-      <div className="text-center space-y-2 relative z-10">
-        <span className="text-[10px] uppercase font-black tracking-[0.3em] text-muted-foreground opacity-50 block">Letter Grade</span>
-        <div className={`text-9xl font-serif italic font-black transition-all duration-700 ${getGradeColor(grade.letter)}`}>
+      <div className="text-center space-y-3 relative z-10">
+        <span className="text-xs uppercase font-black tracking-[0.3em] text-muted-foreground opacity-60 block">Global Verdict</span>
+        <div className={`text-9xl font-serif italic font-black transition-all duration-700 ${getGradeColor(grade.letter)} drop-shadow-2xl`}>
           {grade.letter}
         </div>
       </div>
 
-      <div className="space-y-6 w-full relative z-10">
-        <div className="h-px w-full bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+      <div className="space-y-8 w-full relative z-10">
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
         
-        <p className="text-center text-sm font-medium text-muted-foreground leading-relaxed italic">
+        <p className="text-center text-[15px] font-medium text-foreground leading-relaxed italic px-2">
           &ldquo;{grade.summary}&rdquo;
         </p>
 
-        <div className="grid grid-cols-2 gap-4 pt-2">
+        <div className="grid grid-cols-2 gap-4 pt-4">
           {Object.entries(grade?.breakdown || {}).slice(0, 4).map(([key, value], idx) => {
             const Icon = getSectionIcon(key);
             const val = (value as number);
             const max = key === "clarity" ? 20 : key === "benefits" || key === "growth" ? 10 : 15;
-            const percent = (val / max) * 100;
             
             return (
-              <div key={key} className="space-y-1.5 p-3 rounded-2xl bg-white/5 border border-white/5">
-                <div className="flex items-center gap-2">
-                  <Icon size={10} className="text-primary/60" />
-                  <span className="text-[8px] uppercase font-black tracking-widest text-muted-foreground truncate">
+              <div key={key} className="space-y-2.5 p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all">
+                <div className="flex items-center gap-2.5">
+                  <Icon size={14} className="text-primary/60" />
+                  <span className="text-[11px] uppercase font-black tracking-widest text-muted-foreground/80 truncate">
                     {key.replace("_", " ")}
                   </span>
                 </div>
                 <div className="flex items-end justify-between">
-                  <span className="text-xs font-display font-bold">{value}</span>
-                  <span className="text-[8px] text-muted-foreground opacity-40">/{max}</span>
+                  <span className="text-sm font-display font-black text-foreground">{value}</span>
+                  <span className="text-[10px] uppercase font-black text-muted-foreground opacity-30">/ {max}</span>
                 </div>
               </div>
             );
