@@ -41,14 +41,14 @@ export const JdVerdictCard = ({ grade }: JdVerdictCardProps) => {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-primary/5 rounded-full blur-3xl -mt-24 pointer-events-none" />
       
       <div className="text-center space-y-3 relative z-10">
-        <span className="text-xs uppercase font-black tracking-[0.3em] text-muted-foreground opacity-60 block">Global Verdict</span>
+        <span className="text-[12px] uppercase font-black tracking-[0.3em] text-muted-foreground opacity-80 block">Global Verdict</span>
         <div className={`text-9xl font-serif italic font-black transition-all duration-700 ${getGradeColor(grade.letter)} drop-shadow-2xl`}>
           {grade.letter}
         </div>
       </div>
 
       <div className="space-y-8 w-full relative z-10">
-        <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-foreground/10 to-transparent" />
         
         <p className="text-center text-[15px] font-medium text-foreground leading-relaxed italic px-2">
           &ldquo;{grade.summary}&rdquo;
@@ -61,16 +61,16 @@ export const JdVerdictCard = ({ grade }: JdVerdictCardProps) => {
             const max = key === "clarity" ? 20 : key === "benefits" || key === "growth" ? 10 : 15;
             
             return (
-              <div key={key} className="space-y-2.5 p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all">
+              <div key={key} className="space-y-2.5 p-4 rounded-2xl bg-foreground/5 border border-foreground/5 hover:bg-foreground/10 transition-all">
                 <div className="flex items-center gap-2.5">
                   <Icon size={14} className="text-primary/60" />
-                  <span className="text-[11px] uppercase font-black tracking-widest text-muted-foreground/80 truncate">
+                  <span className="text-[12px] uppercase font-black tracking-widest text-muted-foreground/80 truncate">
                     {key.replace("_", " ")}
                   </span>
                 </div>
                 <div className="flex items-end justify-between">
                   <span className="text-sm font-display font-black text-foreground">{value}</span>
-                  <span className="text-[10px] uppercase font-black text-muted-foreground opacity-30">/ {max}</span>
+                  <span className="text-[12px] uppercase font-black text-muted-foreground opacity-40">/ {max}</span>
                 </div>
               </div>
             );

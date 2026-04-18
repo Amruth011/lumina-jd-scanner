@@ -36,7 +36,7 @@ export const GlobalNavbar = () => {
               <a
                 key={item.name}
                 href={item.href}
-                className="px-5 py-2 text-muted-foreground hover:text-foreground hover:bg-white/10 rounded-full text-[12px] font-bold transition-all tracking-tight"
+                className="px-5 py-2 text-foreground/70 hover:text-foreground hover:bg-foreground/5 rounded-full text-[12px] font-bold transition-all tracking-tight"
                 onClick={(e) => {
                   if (item.href.startsWith("#")) {
                     e.preventDefault();
@@ -54,8 +54,8 @@ export const GlobalNavbar = () => {
           {user ? (
             <div className="flex items-center gap-3 px-4">
               <div className="flex flex-col items-end">
-                <span className="text-[10px] text-foreground font-black uppercase tracking-widest leading-none">Strategist</span>
-                <span className="text-[9px] text-muted-foreground font-medium truncate max-w-[80px]">
+                <span className="text-[12px] text-foreground font-black uppercase tracking-widest leading-none">Strategist</span>
+                <span className="text-[12px] text-muted-foreground font-semibold truncate max-w-[120px]">
                   {user.email?.split('@')[0]}
                 </span>
               </div>

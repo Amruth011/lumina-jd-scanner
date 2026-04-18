@@ -44,7 +44,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                 color="var(--primary)" 
             />
             <div className="mt-8 text-center relative z-10">
-              <span className="text-xs font-black uppercase text-primary/60 tracking-widest block">Intelligence Index</span>
+              <span className="text-[12px] font-black uppercase text-primary/60 tracking-widest block">Intelligence Index</span>
               <p className="text-[13px] text-muted-foreground mt-2 max-w-[240px] leading-relaxed font-medium">Composite measure of clarity, risk, and compensation competitiveness.</p>
             </div>
          </div>
@@ -64,14 +64,14 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                     <div key={i} className="flex flex-col gap-1.5 p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all duration-500">
                         <span className="text-[14px] font-display font-bold text-foreground/90 truncate">{s.skill}</span>
                         <div className="flex items-center justify-between mt-1">
-                          <span className={`px-2.5 py-1 rounded-lg text-[11px] font-black uppercase tracking-widest ${
+                          <span className={`px-2.5 py-1 rounded-lg text-[12px] font-black uppercase tracking-widest ${
                               s.importance > 80 ? 'bg-red-400/10 text-red-400 border border-red-400/20' : 
                               s.importance > 50 ? 'bg-accent-gold/10 text-accent-gold border border-accent-gold/20' :
                               'bg-accent-blue/10 text-accent-blue border border-accent-blue/20'
                           }`}>
                               {s.importance > 80 ? 'Impact' : s.importance > 50 ? 'Strategic' : 'Support'}
                           </span>
-                          <span className="text-xs font-black text-white/20">{s.importance}%</span>
+                          <span className="text-xs font-black text-foreground/20">{s.importance}%</span>
                         </div>
                     </div>
                 ))}
@@ -120,10 +120,10 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 relative z-10">
                     {(grade.plain_english_summary || []).slice(0, 6).map((point, i) => (
                         <div key={i} className="flex gap-6 group">
-                            <span className="flex-shrink-0 w-10 h-10 rounded-2xl bg-primary/5 text-primary text-[13px] font-black flex items-center justify-center border border-primary/10 group-hover:bg-primary group-hover:text-background transition-all duration-700 transform group-hover:rotate-6">
+                            <span className="flex-shrink-0 w-10 h-10 rounded-2xl bg-primary/5 text-primary text-[13px] font-black flex items-center justify-center border border-primary/10 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-700 transform group-hover:rotate-6">
                                 {i + 1}
                             </span>
-                            <p className="text-[15px] font-medium text-foreground/90 leading-relaxed group-hover:text-white transition-colors">
+                            <p className="text-[15px] font-medium text-foreground/90 leading-relaxed group-hover:text-foreground transition-colors">
                                 {point.split('**').map((part, idx) => idx % 2 === 1 ? <strong key={idx} className="text-primary font-black uppercase tracking-[0.05em] mx-0.5">{part}</strong> : part)}
                             </p>
                         </div>
@@ -159,8 +159,8 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                                 &ldquo;{flag.phrase}&rdquo;
                             </div>
                             <div className="text-right">
-                              <span className="text-[11px] uppercase font-black text-red-400/30 block mb-1">Impact</span>
-                              <span className="text-sm font-black text-red-400">{flag.intensity}%</span>
+                              <span className="text-[12px] uppercase font-black text-red-500/60 block mb-1">Impact</span>
+                              <span className="text-sm font-black text-red-500">{flag.intensity}%</span>
                             </div>
                         </div>
                         <div className="pl-5 border-l-2 border-red-400/20">
@@ -180,7 +180,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                     <div className="space-y-4">
                         <span className="text-xs uppercase font-black tracking-widest text-muted-foreground opacity-60">Projected Value Range</span>
                         <div className="flex items-baseline gap-4">
-                            <span className="text-5xl lg:text-7xl font-display font-black tracking-tighter text-white">
+                            <span className="text-5xl lg:text-7xl font-display font-black tracking-tighter text-foreground">
                                 {results?.logistics?.salary_range?.currency === 'INR' ? '₹' : '$'}
                                 {(results?.logistics?.salary_range?.min ?? 0).toLocaleString()}
                             </span>
@@ -248,7 +248,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                             }, { total: 0, elements: [] as React.ReactNode[] }).elements}
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                            <span className="text-4xl font-black font-display tracking-tighter text-white">100%</span>
+                            <span className="text-4xl font-black font-display tracking-tighter text-foreground">100%</span>
                             <span className="text-xs font-black uppercase text-primary/40 tracking-widest">Focus</span>
                         </div>
                      </div>
@@ -257,7 +257,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                             <div key={i} className="flex items-center gap-4 p-3 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all cursor-crosshair">
                                 <div className="w-3 h-3 rounded-full shadow-[0_0_10px_rgba(currentColor,0.5)]" style={{ backgroundColor: i === 0 ? 'var(--primary)' : i === 1 ? 'var(--accent-emerald)' : i === 2 ? 'var(--accent-gold)' : 'var(--accent-blue)' }} />
                                 <span className="text-xs font-black uppercase tracking-widest text-foreground/80 truncate">{item.label}</span>
-                                <span className="text-xs font-black ml-auto text-white/40">{item.percent}%</span>
+                                <span className="text-xs font-black ml-auto text-foreground/40">{item.percent}%</span>
                             </div>
                         ))}
                      </div>
@@ -299,7 +299,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                         {Object.entries(results?.deep_dive?.culture_radar || {}).map(([key, val]) => (
                             <div key={key} className="space-y-4">
                                 <div className="flex justify-between items-end">
-                                    <span className="text-xs font-black uppercase tracking-widest text-white/60 capitalize">{key.replace('_', ' ')}</span>
+                                    <span className="text-xs font-black uppercase tracking-widest text-foreground/60 capitalize">{key.replace('_', ' ')}</span>
                                     <span className="text-xs font-black text-primary">{(val as number)}%</span>
                                 </div>
                                 <div className="h-2.5 w-full bg-white/5 rounded-full overflow-hidden p-0.5 border border-white/5">
@@ -345,14 +345,14 @@ const SectionHeader = ({ icon: Icon, title, sub }: { icon: LucideIcon, title: st
 const BonusCard = ({ icon: Icon, label, value, sub, color }: { icon: LucideIcon, label: string, value: number, sub: string, color: string }) => (
   <div className="glass-panel p-8 rounded-[2.5rem] border-white/5 space-y-6 flex flex-col justify-between hover:bg-white/5 transition-all duration-700 min-h-[180px]">
       <div className="flex items-start justify-between">
-        <div className="w-12 h-12 rounded-[1.2rem] bg-white/5 border border-white/10 flex items-center justify-center text-white/40 group-hover:text-primary transition-colors" style={{ color: color.startsWith('var') ? color : '' }}>
+        <div className="w-12 h-12 rounded-[1.2rem] bg-foreground/5 border border-foreground/10 flex items-center justify-center text-foreground/40 group-hover:text-primary transition-colors" style={{ color: color.startsWith('var') ? color : '' }}>
             <Icon size={20} className={!color.startsWith('var') ? `text-${color}` : ''} />
         </div>
         <div className="text-right">
             <div className="flex items-baseline justify-end gap-1.5">
-                <span className="text-4xl font-display font-black tracking-tighter text-white">{value}%</span>
+                <span className="text-4xl font-display font-black tracking-tighter text-foreground">{value}%</span>
             </div>
-            <h4 className="text-xs font-black uppercase text-muted-foreground tracking-[0.2em] mt-1 opacity-50">{sub}</h4>
+            <h4 className="text-[12px] font-black uppercase text-muted-foreground tracking-[0.2em] mt-1 opacity-60">{sub}</h4>
         </div>
       </div>
       

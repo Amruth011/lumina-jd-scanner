@@ -40,9 +40,10 @@ export const LuminaRadar = ({ data, size = 300, color = "var(--accent-blue)" }: 
             cy={center}
             r={radius * r}
             fill="none"
-            stroke="white"
-            strokeOpacity="0.05"
+            stroke="currentColor"
+            strokeOpacity="0.1"
             strokeWidth="1"
+            className="text-foreground"
           />
         ))}
 
@@ -56,9 +57,10 @@ export const LuminaRadar = ({ data, size = 300, color = "var(--accent-blue)" }: 
               y1={center}
               x2={x}
               y2={y}
-              stroke="white"
-              strokeOpacity="0.05"
+              stroke="currentColor"
+              strokeOpacity="0.1"
               strokeWidth="1"
+              className="text-foreground"
             />
           );
         })}
@@ -99,7 +101,7 @@ export const LuminaRadar = ({ data, size = 300, color = "var(--accent-blue)" }: 
               x={x}
               y={y}
               textAnchor="middle"
-              className="text-[9px] uppercase font-black tracking-widest fill-muted-foreground transition-all duration-300"
+              className="text-[12px] uppercase font-bold tracking-widest fill-muted-foreground transition-all duration-300"
             >
               {d.label}
             </text>

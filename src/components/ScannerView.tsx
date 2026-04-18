@@ -29,7 +29,7 @@ import type { DecodeResult, ResumeGapResult } from "@/types/jd";
 
 const ApplicationTracker = lazy(() => import("@/components/ApplicationTracker").then(module => ({ default: module.ApplicationTracker })));
 
-type Tab = "decode" | "vault" | "applications";
+type Tab = "decode" | "analysis" | "generator" | "vault" | "applications" | "guide";
 
 const stagger = {
   animate: { transition: { staggerChildren: 0.08 } }
@@ -101,19 +101,22 @@ export const ScannerView = () => {
     <div className="w-full max-w-7xl mx-auto px-4 md:px-8 pb-24">
       {/* Tab Navigation Internal */}
       <div className="flex justify-center mb-12">
-        <nav className="flex items-center gap-1.5 bg-muted/30 p-1.5 rounded-3xl backdrop-blur-3xl border border-white/5 shadow-2xl shadow-black/10">
+        <nav className="flex items-center gap-1.5 bg-muted/40 p-2 rounded-3xl backdrop-blur-3xl border border-foreground/10 shadow-2xl shadow-black/10 overflow-x-auto max-w-full no-scrollbar">
           {[
             { key: "decode" as Tab, icon: Search, label: "JD Decoder" },
+            { key: "analysis" as Tab, icon: ShieldCheck, label: "Resume Analysis" },
+            { key: "generator" as Tab, icon: Zap, label: "Resume Generator" },
             { key: "vault" as Tab, icon: LayoutDashboard, label: "Master Vault" },
             { key: "applications" as Tab, icon: Briefcase, label: "Pipeline" },
+            { key: "guide" as Tab, icon: Info, label: "How It Works" },
           ].map((tab) => (
             <button 
               key={tab.key} 
               onClick={() => handleTabSwitch(tab.key)} 
-              className={`relative flex items-center gap-2 px-6 py-2.5 rounded-2xl text-xs font-display font-bold transition-all duration-500 ${
+              className={`relative flex items-center gap-2 px-6 py-3 rounded-2xl text-[12px] font-display font-bold transition-all duration-500 whitespace-nowrap ${
                 activeTab === tab.key
                   ? "text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                  : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
               }`}
             >
               {activeTab === tab.key && (
@@ -125,7 +128,7 @@ export const ScannerView = () => {
               )}
               <span className="relative z-10 flex items-center gap-2">
                 <tab.icon className={`w-3.5 h-3.5 ${activeTab === tab.key ? 'text-background' : 'text-primary/40'}`} />
-                <span className="hidden sm:inline tracking-tight">{tab.label}</span>
+                <span className="hidden lg:inline tracking-tight">{tab.label}</span>
               </span>
             </button>
           ))}
@@ -175,7 +178,7 @@ export const ScannerView = () => {
                       transition={{ delay: 0.1, type: "spring", stiffness: 150 }}
                     >
                       <div className="flex justify-center mb-6">
-                        <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${
+                        <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-[12px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${
                           wasCached 
                             ? "bg-accent-blue/10 border-accent-blue/20 text-accent-blue shadow-[0_0_15px_rgba(var(--accent-blue-rgb),0.1)]"
                             : "bg-accent-emerald/10 border-accent-emerald/20 text-accent-emerald shadow-[0_0_15px_rgba(var(--accent-emerald-rgb),0.1)]"
@@ -202,36 +205,14 @@ export const ScannerView = () => {
                     >
                       <LuminaUltraDashboard results={results} />
                       
-                      <div className="section-divider max-w-sm mx-auto opacity-20" />
-
-                      <div className="space-y-16">
-                        <ResumeGapAnalyzer
-                          skills={results.skills}
-                          jobTitle={results.title}
-                          onResumeTextChange={setUserResumeText}
-                          onResultChange={setGapResult}
-                        />
-
-                        {gapResult && (
-                          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                            <ATSScoreSimulator result={gapResult} />
-                          </motion.div>
-                        )}
-
-                        <ResumeGenerator
-                          jdTitle={results.title}
-                          jdSkills={results.skills}
-                        />
-
-                        {gapResult && (
-                          <ResumeEnhancer
-                            resumeText={userResumeText}
-                            skills={results.skills}
-                            deductions={gapResult.deductions}
-                            jobTitle={results.title}
-                            gapResult={gapResult}
-                          />
-                        )}
+                      <div className="flex flex-col items-center gap-8 py-20">
+                         <div className="section-divider max-w-sm w-full opacity-20" />
+                         <button 
+                           onClick={() => setActiveTab("analysis")}
+                           className="group flex items-center gap-4 px-12 py-6 rounded-full bg-foreground text-background text-[13px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-2xl"
+                         >
+                           Continue to Resume Analysis <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
+                         </button>
                       </div>
                     </motion.div>
                   )}
@@ -239,17 +220,125 @@ export const ScannerView = () => {
               )}
             </AnimatePresence>
           </motion.div>
+        ) : activeTab === "analysis" ? (
+          <motion.div
+            key="analysis"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            className="space-y-16"
+          >
+            {results ? (
+              <>
+                <ResumeGapAnalyzer
+                  skills={results.skills}
+                  jobTitle={results.title}
+                  onResumeTextChange={setUserResumeText}
+                  onResultChange={setGapResult}
+                />
+                {gapResult && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                    <ATSScoreSimulator result={gapResult} />
+                    <div className="flex justify-center mt-12">
+                      <button 
+                        onClick={() => setActiveTab("generator")}
+                        className="group flex items-center gap-4 px-12 py-6 rounded-full bg-accent-blue text-white text-[13px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-2xl"
+                      >
+                        Generate Tailored Resume <Zap size={18} className="animate-pulse" />
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </>
+            ) : (
+              <div className="py-24 text-center glass-panel rounded-[3rem] border border-dashed border-foreground/10">
+                <Search size={48} className="mx-auto text-muted-foreground/20 mb-6" />
+                <h3 className="text-3xl font-serif italic mb-4">Intelligence Required</h3>
+                <p className="text-muted-foreground max-w-md mx-auto mb-8">You must decode a Job Description before activating the Resume Intelligence engine.</p>
+                <button 
+                  onClick={() => setActiveTab("decode")}
+                  className="px-8 py-4 rounded-full bg-foreground text-background text-[12px] font-black uppercase tracking-widest"
+                >
+                  Return to Decoder
+                </button>
+              </div>
+            )}
+          </motion.div>
+        ) : activeTab === "generator" ? (
+          <motion.div
+            key="generator"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            className="space-y-16"
+          >
+            {results ? (
+              <>
+                <ResumeGenerator
+                  jdTitle={results.title}
+                  jdSkills={results.skills}
+                />
+                {gapResult && (
+                  <ResumeEnhancer
+                    resumeText={userResumeText}
+                    skills={results.skills}
+                    deductions={gapResult.deductions}
+                    jobTitle={results.title}
+                    gapResult={gapResult}
+                  />
+                )}
+              </>
+            ) : (
+              <div className="py-24 text-center glass-panel rounded-[3rem] border border-dashed border-foreground/10">
+                <Zap size={48} className="mx-auto text-muted-foreground/20 mb-6" />
+                <h3 className="text-3xl font-serif italic mb-4">Signal Lost</h3>
+                <p className="text-muted-foreground max-w-md mx-auto mb-8">The Resume Generator requires a Job Description signal to structure its outputs.</p>
+                <button 
+                  onClick={() => setActiveTab("decode")}
+                  className="px-8 py-4 rounded-full bg-foreground text-background text-[12px] font-black uppercase tracking-widest"
+                >
+                  Return to Decoder
+                </button>
+              </div>
+            )}
+          </motion.div>
         ) : activeTab === "applications" ? (
           <motion.div
             key="applications"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
           >
             <Suspense fallback={<div className="flex justify-center p-12"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
               <ApplicationTracker />
             </Suspense>
+          </motion.div>
+        ) : activeTab === "guide" ? (
+          <motion.div
+            key="guide"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            className="space-y-20 pb-20"
+          >
+            <div className="glass-panel p-10 lg:p-20 rounded-[4rem] border border-foreground/5 bg-gradient-to-br from-primary/5 to-transparent">
+              <h2 className="text-5xl font-serif italic text-foreground mb-4">Tactical Operations Guide</h2>
+              <p className="text-muted-foreground text-lg max-w-2xl mb-12">Learn how to leverage Lumina's total intelligence engine to secure your next career milestone.</p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {[
+                  { title: "JD Deconstruction", desc: "Our engine deconstructs generic job text into high-fidelity tactical requirements and hidden risks." },
+                  { title: "Resume Alignment", desc: "The gap analyzer performs a semantic cross-reference to identify exactly where your experience misaligns." },
+                  { title: "Generative Export", desc: "Generate a Silicon Valley grade resume tailored specifically to the decoded JD signatures." },
+                ].map((item, i) => (
+                  <div key={i} className="p-8 rounded-[2.5rem] bg-background/50 border border-foreground/10 hover:border-primary/40 transition-colors">
+                    <span className="text-[40px] font-serif italic text-primary/20 block mb-4">0{i+1}</span>
+                    <h4 className="text-xl font-display font-bold mb-3">{item.title}</h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </motion.div>
         ) : (
           <motion.div
@@ -257,7 +346,6 @@ export const ScannerView = () => {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
           >
             <MasterVault />
           </motion.div>

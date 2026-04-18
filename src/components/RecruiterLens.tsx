@@ -17,7 +17,7 @@ export const RecruiterLens = ({ insights }: RecruiterLensProps) => {
         </div>
         <div>
           <h3 className="text-2xl font-serif italic text-foreground tracking-tight">Recruiter Lens</h3>
-          <p className="text-xs uppercase font-black tracking-[0.3em] text-muted-foreground mt-1.5 opacity-40">Jargon Decoding & Reality Checks</p>
+          <p className="text-[12px] uppercase font-black tracking-[0.3em] text-muted-foreground mt-1.5 opacity-60">Jargon Decoding & Reality Checks</p>
         </div>
       </div>
 
@@ -33,8 +33,8 @@ export const RecruiterLens = ({ insights }: RecruiterLensProps) => {
               <div className="space-y-5">
                 <div className="flex items-start justify-between gap-6">
                   <div className="space-y-2">
-                    <span className="text-xs uppercase font-black tracking-widest text-muted-foreground/40 block mb-1">Corporate Logic</span>
-                    <p className="font-display font-bold text-[15px] text-foreground/80 leading-relaxed group-hover:text-white transition-colors italic">
+                    <span className="text-[12px] uppercase font-black tracking-widest text-muted-foreground/60 block mb-1">Corporate Logic</span>
+                    <p className="font-display font-bold text-[15px] text-foreground/80 leading-relaxed group-hover:text-foreground transition-colors italic">
                       &ldquo;{item.jargon}&rdquo;
                     </p>
                   </div>
@@ -44,7 +44,7 @@ export const RecruiterLens = ({ insights }: RecruiterLensProps) => {
                 <div className="space-y-3 pt-5 border-t border-white/5">
                   <div className="flex items-center gap-3">
                     <ShieldAlert size={16} className="text-accent-blue/60" />
-                    <span className="text-xs font-black uppercase tracking-[0.2em] text-accent-blue">Elite Realism</span>
+                    <span className="text-[12px] font-black uppercase tracking-[0.2em] text-accent-blue">Elite Realism</span>
                   </div>
                   <p className="font-serif italic text-[17px] text-foreground/90 leading-relaxed font-medium">
                     {item.reality}

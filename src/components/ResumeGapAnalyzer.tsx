@@ -309,7 +309,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
         <div className="grid grid-cols-1 md:grid-cols-[120px,1fr] gap-4">
             <div className="premium-card rounded-2xl p-4 bg-white/5 border border-white/10 flex flex-col items-center justify-center text-center">
                 <span className="text-4xl font-black text-foreground">{result.overall_match}%</span>
-                <span className="text-[9px] font-black uppercase text-primary tracking-widest mt-1 block">Match</span>
+                <span className="text-[12px] font-black uppercase text-primary tracking-widest mt-1 block">Match</span>
             </div>
             <div className="premium-card rounded-2xl p-4 bg-white/5 border border-white/10 flex items-center">
                 <p className="text-sm font-medium text-foreground/80 leading-relaxed italic border-l-2 border-primary/20 pl-4">
@@ -473,7 +473,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                     <div className="md:col-span-4 glass-panel p-10 rounded-[2.5rem] border-white/5 flex flex-col items-center justify-center text-center relative overflow-hidden group">
                         <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-3xl" />
                         <span className="text-6xl font-display font-black tracking-tighter text-foreground relative z-10">{result.overall_match}%</span>
-                        <span className="text-xs font-black uppercase text-primary tracking-[0.4em] mt-3 relative z-10 opacity-60">Intelligence Match</span>
+                        <span className="text-[12px] font-black uppercase text-primary tracking-[0.4em] mt-3 relative z-10 opacity-70">Intelligence Match</span>
                         
                         <div className="w-full h-1.5 bg-white/5 rounded-full mt-8 relative z-10 overflow-hidden">
                             <motion.div 
@@ -486,9 +486,9 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                     </div>
                     
                     <div className="md:col-span-8 glass-panel p-10 rounded-[2.5rem] border-white/5 flex flex-col justify-center relative overflow-hidden">
-                         <div className="flex items-center gap-3 mb-4 opacity-30">
+                         <div className="flex items-center gap-3 mb-4 opacity-40">
                             <MessageSquareQuote size={18} />
-                            <span className="text-[11px] font-black uppercase tracking-widest">Executive Summary</span>
+                            <span className="text-[12px] font-black uppercase tracking-widest">Executive Summary</span>
                          </div>
                          <p className="text-[17px] font-medium text-foreground/90 leading-relaxed font-serif italic">
                             &ldquo;{result.summary}&rdquo;
@@ -506,7 +506,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                             </div>
                             <h4 className="text-3xl font-serif italic text-foreground">Critical Misalignments</h4>
                         </div>
-                        <p className="text-xs uppercase font-black tracking-widest text-red-500/50">Semantic Gaps & Priority Fixes</p>
+                        <p className="text-[12px] uppercase font-black tracking-widest text-red-500/70">Semantic Gaps & Priority Fixes</p>
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -515,14 +515,14 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                                 <div className="space-y-3">
                                     <div className="flex justify-between items-start">
                                         <span className="text-[14px] font-bold text-foreground pr-4">{d.reason}</span>
-                                        <span className="text-[11px] text-red-400 font-black px-3 py-1 rounded-xl bg-red-400/10 border border-red-400/20 whitespace-nowrap">-{d.percent}%</span>
+                                        <span className="text-[12px] text-red-500 font-black px-3 py-1 rounded-xl bg-red-500/10 border border-red-500/20 whitespace-nowrap">-{d.percent}%</span>
                                     </div>
-                                    <p className="text-xs text-muted-foreground leading-relaxed font-medium">This deficit weakens your overall probability of advancing to clinical interviews.</p>
+                                    <p className="text-[12px] text-muted-foreground leading-relaxed font-medium">This deficit weakens your overall probability of advancing to clinical interviews.</p>
                                 </div>
                                 
                                 {d.fix_snippet && (
                                   <div className="mt-6 pt-6 border-t border-white/5 flex items-center justify-between group/fix">
-                                      <span className="text-[11px] font-black uppercase text-accent-blue tracking-widest opacity-60">Strategic Counter</span>
+                                      <span className="text-[12px] font-black uppercase text-accent-blue tracking-widest opacity-80">Strategic Counter</span>
                                       <button 
                                         onClick={() => handleCopyBullet(d.fix_snippet!)} 
                                         className="flex items-center gap-2 text-xs font-bold text-accent-blue hover:text-white transition-colors"
@@ -557,10 +557,10 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                                         {getVerdictIcon(sm.verdict)}
                                     </div>
                                     <div className="flex items-end justify-between">
-                                      <div className="flex-1 mr-4 h-1 bg-white/5 rounded-full overflow-hidden">
+                                      <div className="flex-1 mr-4 h-1 bg-foreground/5 rounded-full overflow-hidden">
                                         <div className="h-full bg-accent-emerald/40" style={{ width: `${sm.match_percent}%` }} />
                                       </div>
-                                      <span className="text-[11px] font-black text-white/20">{sm.match_percent}%</span>
+                                      <span className="text-[12px] font-black text-foreground/30">{sm.match_percent}%</span>
                                     </div>
                                 </div>
                             ))}

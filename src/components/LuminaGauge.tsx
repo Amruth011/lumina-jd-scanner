@@ -30,13 +30,13 @@ export const LuminaGauge = ({
       <div className="relative" style={{ width: size, height: size / 1.5 }}>
         <svg width={size} height={size / 1.5} viewBox={`0 0 ${size} ${size / 1.5}`} className="overflow-visible">
           {/* Background Track */}
-          <path
+            <path
             d={`M ${size * 0.1} ${size * 0.6} A ${radius} ${radius} 0 0 1 ${size * 0.9} ${size * 0.6}`}
             fill="none"
             stroke="currentColor"
             strokeWidth={strokeWidth}
             strokeLinecap="round"
-            className="text-white/5"
+            className="text-foreground/10"
           />
           {/* Progress Fill */}
           <motion.path
@@ -65,7 +65,7 @@ export const LuminaGauge = ({
             x={size / 2} 
             y={size * 0.68} 
             textAnchor="middle" 
-            className="text-[10px] uppercase font-black tracking-widest fill-muted-foreground opacity-50"
+            className="text-[12px] uppercase font-black tracking-widest fill-muted-foreground opacity-60"
           >
             {subLabel || "Score"}
           </text>
@@ -73,8 +73,8 @@ export const LuminaGauge = ({
 
         {/* Min/Max Labels */}
         <div className="absolute bottom-0 inset-x-0 flex justify-between px-2">
-            <span className="text-[9px] uppercase font-black tracking-widest text-muted-foreground opacity-30">{minLabel}</span>
-            <span className="text-[9px] uppercase font-black tracking-widest text-muted-foreground opacity-30">{maxLabel}</span>
+            <span className="text-[12px] uppercase font-black tracking-widest text-muted-foreground opacity-40">{minLabel}</span>
+            <span className="text-[12px] uppercase font-black tracking-widest text-muted-foreground opacity-40">{maxLabel}</span>
         </div>
       </div>
       
