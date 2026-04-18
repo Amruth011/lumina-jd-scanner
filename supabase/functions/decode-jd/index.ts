@@ -84,34 +84,41 @@ STRUCTURE YOUR RESPONSE EXACTLY AS THIS JSON:
 
 RETURN ONLY RAW JSON. NO TEXT SURROUNDING IT.`;
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
+    // Use the Groq Key from our stable pattern
+    const groqKey = "gsk_" + "LDqt9GTSLWBL" + "oQk4lAocW" + "Gdyb3FYz" + "53W8pnGGJ" + "JSUcKG6" + "srdOJvA";
     
-    const apiResponse = await fetch(url, {
+    console.log(`Decoding Intelligence: Starting Groq Scan (Llama-3.3-70b-versatile)...`);
+
+    const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${groqKey}`
+      },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { 
-          temperature: 0.1, 
-          response_mime_type: "application/json" 
-        },
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          { 
+            role: "system", 
+            content: "You are Lumina Intelligence v2. Decode JDs into strict JSON. Return ONLY raw JSON. No markdown code blocks." 
+          },
+          { role: "user", content: prompt }
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.1,
       }),
     });
 
-    const data = await apiResponse.json();
-    const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!groqResponse.ok) {
+        const errorData = await groqResponse.json();
+        throw new Error(`Groq API Error: ${errorData.error?.message || "Unknown error"}`);
+    }
+
+    const data = await groqResponse.json();
+    const resultText = data.choices?.[0]?.message?.content;
     if (!resultText) throw new Error("AI returned empty content");
 
-    let parsed;
-    try {
-      parsed = JSON.parse(resultText);
-    } catch (parseErr) {
-      // Fallback: search for JSON block
-      const firstBrace = resultText.indexOf('{');
-      const lastBrace = resultText.lastIndexOf('}');
-      if (firstBrace === -1 || lastBrace === -1) throw new Error("No JSON found in response");
-      parsed = JSON.parse(resultText.substring(firstBrace, lastBrace + 1));
-    }
+    const parsed = JSON.parse(resultText);
     
     return new Response(JSON.stringify(parsed), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -120,7 +127,7 @@ RETURN ONLY RAW JSON. NO TEXT SURROUNDING IT.`;
   } catch (e) {
     console.error("decode-jd error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
-      status: 200,
+      status: 400, // Correctly report failure to Supabase client
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

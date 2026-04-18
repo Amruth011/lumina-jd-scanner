@@ -20,7 +20,7 @@ export const LuminaTimeline = ({ data }: LuminaTimelineProps) => {
       {/* Central Line */}
       <div className="absolute left-[3px] top-4 bottom-4 w-[2px] bg-gradient-to-b from-primary/40 via-primary/10 to-transparent" />
 
-      {data.map((item, idx) => (
+      {(data || []).map((item, idx) => (
         <motion.div
           key={idx}
           initial={{ opacity: 0, x: -20 }}

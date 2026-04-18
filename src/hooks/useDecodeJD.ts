@@ -41,6 +41,13 @@ export const useDecodeJD = () => {
 
       if (error) throw error;
       if (!data) throw new Error("AI Engine returned empty data");
+      if (data.error) throw new Error(data.error);
+
+      // Explicit schema validation
+      if (!data.grade || !data.skills) {
+        console.error("Malformed AI Response:", data);
+        throw new Error("Intelligence Engine returned an incomplete scan. Please try again.");
+      }
 
       // Normalize winning strategy if needed (safety check)
       const normalizedWinningStrategy = Array.isArray(data.winning_strategy) 

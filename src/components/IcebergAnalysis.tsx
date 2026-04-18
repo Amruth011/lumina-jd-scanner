@@ -4,9 +4,10 @@ import type { RoleReality } from "@/types/jd";
 
 interface IcebergAnalysisProps {
   reality?: RoleReality;
+  archetype?: string;
 }
 
-export const IcebergAnalysis = ({ reality }: IcebergAnalysisProps) => {
+export const IcebergAnalysis = ({ reality, archetype }: IcebergAnalysisProps) => {
   if (!reality) return null;
 
   return (
@@ -36,7 +37,7 @@ export const IcebergAnalysis = ({ reality }: IcebergAnalysisProps) => {
                  <Zap size={14} className="text-accent-blue" />
                  <span className="text-[10px] uppercase font-black tracking-widest text-accent-blue">Above the Surface</span>
                </div>
-               {reality.iceberg_above.map((item, i) => (
+               {(reality.iceberg_above || []).map((item, i) => (
                    <motion.div 
                      key={i}
                      initial={{ opacity: 0, scale: 0.9 }}
@@ -55,7 +56,7 @@ export const IcebergAnalysis = ({ reality }: IcebergAnalysisProps) => {
                  <AlertTriangle size={14} className="text-red-400" />
                  <span className="text-[10px] uppercase font-black tracking-widest text-red-400">Hidden Realities</span>
                </div>
-               {reality.iceberg_below.map((item, i) => (
+               {(reality.iceberg_below || []).map((item, i) => (
                    <motion.div 
                      key={i}
                      initial={{ opacity: 0, scale: 1.1 }}
@@ -75,7 +76,7 @@ export const IcebergAnalysis = ({ reality }: IcebergAnalysisProps) => {
                 <Layers size={16} className="text-accent-blue" />
                 <div className="flex flex-col">
                     <span className="text-[8px] uppercase font-black tracking-widest text-accent-blue opacity-70">Role Archetype</span>
-                    <span className="text-sm font-serif italic text-foreground leading-none">{reality.archetype}</span>
+                    <span className="text-sm font-serif italic text-foreground leading-none">{archetype || 'Specialist'}</span>
                 </div>
             </div>
         </div>

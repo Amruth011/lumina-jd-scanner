@@ -55,10 +55,11 @@ export const JdVerdictCard = ({ grade }: JdVerdictCardProps) => {
         </p>
 
         <div className="grid grid-cols-2 gap-4 pt-2">
-          {Object.entries(grade.breakdown).slice(0, 4).map(([key, value], idx) => {
+          {Object.entries(grade?.breakdown || {}).slice(0, 4).map(([key, value], idx) => {
             const Icon = getSectionIcon(key);
+            const val = (value as number);
             const max = key === "clarity" ? 20 : key === "benefits" || key === "growth" ? 10 : 15;
-            const percent = (value / max) * 100;
+            const percent = (val / max) * 100;
             
             return (
               <div key={key} className="space-y-1.5 p-3 rounded-2xl bg-white/5 border border-white/5">

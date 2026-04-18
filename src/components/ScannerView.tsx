@@ -77,10 +77,10 @@ export const ScannerView = () => {
     setActiveTab(tab);
   };
 
-  const filteredSkills = results ? priorityFilter ? results.skills.filter((s) => s.importance > 80) : results.skills : [];
+  const filteredSkills = results?.skills ? (priorityFilter ? results.skills.filter((s) => s.importance > 80) : results.skills) : [];
 
-  const getAiInsight = (skills: DecodeResult["skills"]) => {
-    const critical = skills.filter((s) => s.importance > 80).slice(0, 3).map((s) => s.skill);
+  const getAiInsight = (skills: DecodeResult["skills"] = []) => {
+    const critical = (skills || []).filter((s) => s.importance > 80).slice(0, 3).map((s) => s.skill);
     if (critical.length === 0) return "All skills have moderate importance — a well-rounded generalist role.";
     return `Focus on ${critical.join(", ")} for this role; the rest are secondary infrastructure skills.`;
   };
@@ -234,16 +234,6 @@ export const ScannerView = () => {
                         )}
                       </div>
                     </motion.div>
-                  )}
-
-                  {gapResult && (
-                    <ResumeEnhancer
-                      resumeText={userResumeText}
-                      skills={results.skills}
-                      deductions={gapResult.deductions}
-                      jobTitle={results.title}
-                      gapResult={gapResult}
-                    />
                   )}
                 </motion.div>
               )}
