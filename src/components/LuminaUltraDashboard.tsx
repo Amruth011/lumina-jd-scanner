@@ -273,36 +273,36 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
       <div className="space-y-8">
         <div className="flex items-center gap-8 pl-4">
             <h2 className="text-3xl font-serif italic whitespace-nowrap text-foreground/90">The Execution Layer</h2>
-            <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
+            <div className="h-px flex-1 bg-gradient-to-r from-foreground/10 to-transparent" />
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-            <div className="lg:col-span-8 glass-panel p-10 lg:p-12 rounded-[3.5rem] border-white/5 space-y-10 flex flex-col h-full">
+            <div className="lg:col-span-8 glass-panel p-8 lg:p-10 rounded-[3rem] border-foreground/10 space-y-8 flex flex-col h-full bg-white/[0.02]">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <Clock size={22} className="text-accent-blue" />
-                        <span className="text-xs uppercase font-black tracking-[0.3em] text-foreground/70">Day-in-Life Simulation</span>
+                        <Clock size={20} className="text-accent-blue" />
+                        <span className="text-[12px] uppercase font-black tracking-[0.3em] text-foreground/70">Day-in-Life Simulation</span>
                     </div>
                 </div>
-                <div className="flex-1 flex flex-col justify-center">
+                <div className="flex-1 flex flex-col justify-start">
                     <LuminaTimeline data={results?.deep_dive?.day_in_life || []} />
                 </div>
             </div>
 
             <div className="lg:col-span-4 space-y-6 flex flex-col h-full">
-                <div className="glass-panel p-10 rounded-[3rem] space-y-10 flex-1 border-white/5">
+                <div className="glass-panel p-8 rounded-[2.5rem] space-y-8 flex-1 border-foreground/10 bg-white/[0.02]">
                     <div className="flex items-center gap-4">
                         <Heart size={20} className="text-red-400" />
-                        <span className="text-xs uppercase font-black tracking-[0.3em] text-foreground/70">Cultural DNA Radar</span>
+                        <span className="text-[12px] uppercase font-black tracking-[0.3em] text-foreground/70">Cultural DNA Radar</span>
                     </div>
-                    <div className="space-y-8">
+                    <div className="space-y-6">
                         {Object.entries(results?.deep_dive?.culture_radar || {}).map(([key, val]) => (
-                            <div key={key} className="space-y-4">
+                            <div key={key} className="space-y-3">
                                 <div className="flex justify-between items-end">
-                                    <span className="text-xs font-black uppercase tracking-widest text-foreground/60 capitalize">{key.replace('_', ' ')}</span>
-                                    <span className="text-xs font-black text-primary">{(val as number)}%</span>
+                                    <span className="text-[12px] font-black uppercase tracking-widest text-foreground/60 capitalize">{key.replace('_', ' ')}</span>
+                                    <span className="text-[12px] font-black text-primary">{(val as number)}%</span>
                                 </div>
-                                <div className="h-2.5 w-full bg-white/5 rounded-full overflow-hidden p-0.5 border border-white/5">
+                                <div className="h-2 w-full bg-foreground/5 rounded-full overflow-hidden p-0.5 border border-foreground/5">
                                     <div className="h-full bg-primary rounded-full shadow-[0_0_12px_rgba(var(--primary-rgb),0.5)]" style={{ width: `${(val as number)}%` }} />
                                 </div>
                             </div>
@@ -310,7 +310,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                     </div>
                 </div>
 
-                <div className="glass-panel p-10 rounded-[3rem] bg-accent-blue/5 border-accent-blue/10 flex flex-col justify-center">
+                <div className="glass-panel p-8 rounded-[2.5rem] bg-accent-blue/5 border-accent-blue/20 flex flex-col justify-center">
                     <RecruiterLens insights={results?.recruiter_lens || []} />
                 </div>
             </div>
