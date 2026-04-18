@@ -33,9 +33,9 @@ export const IcebergAnalysis = ({ reality, archetype }: IcebergAnalysisProps) =>
         </div>
       </div>
 
-      <div className="relative glass-panel p-8 md:p-12 rounded-[2.5rem] border-white/5 flex flex-col min-h-[550px] gap-12 overflow-hidden">
+      <div className="relative glass-panel p-6 md:p-8 rounded-[2.5rem] border-white/5 flex flex-col min-h-[450px] gap-8 overflow-hidden">
         {/* Above Water */}
-        <div className="space-y-6 z-10 flex-1">
+        <div className="space-y-4 z-10 flex-1">
           <div className="flex items-center gap-3 mb-4">
             <Zap size={18} className="text-accent-blue/60" />
             <span className="text-[12px] uppercase font-black tracking-widest text-accent-blue/60">Surface Level</span>
@@ -46,7 +46,7 @@ export const IcebergAnalysis = ({ reality, archetype }: IcebergAnalysisProps) =>
                 key={i}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="px-6 py-5 rounded-2xl bg-white/[0.03] border border-white/5 text-[12px] font-display font-bold text-foreground/80 shadow-sm hover:bg-white/5 transition-all hover:scale-[1.01]"
+                className="px-5 py-4 rounded-2xl bg-white/[0.03] border border-white/5 text-[12px] font-display font-bold text-foreground/80 shadow-sm hover:bg-white/5 transition-all hover:scale-[1.01]"
                 transition={{ delay: i * 0.1 }}
               >
                 {item}
@@ -56,7 +56,7 @@ export const IcebergAnalysis = ({ reality, archetype }: IcebergAnalysisProps) =>
         </div>
 
         {/* The Water Line */}
-        <div className="relative w-full z-20 py-10 flex items-center justify-end">
+        <div className="relative w-full z-20 py-6 flex items-center justify-end">
           <div className="absolute left-0 right-0 h-[1.5px] bg-accent-blue/20" />
           <div className="relative text-[10px] uppercase font-black tracking-[0.25em] text-accent-blue bg-background/80 backdrop-blur-md px-5 py-1.5 rounded-full border border-accent-blue/20 shadow-lg z-30">
             The Water Line (Stated)
@@ -64,7 +64,7 @@ export const IcebergAnalysis = ({ reality, archetype }: IcebergAnalysisProps) =>
         </div>
 
         {/* Below Water */}
-        <div className="space-y-6 z-10 flex-1">
+        <div className="space-y-4 z-10 flex-1">
           <div className="flex items-center gap-3 mb-4">
             <AlertTriangle size={18} className="text-red-500/60" />
             <span className="text-[12px] uppercase font-black tracking-widest text-red-500/60">Hidden Reality</span>
@@ -75,7 +75,7 @@ export const IcebergAnalysis = ({ reality, archetype }: IcebergAnalysisProps) =>
                 key={i}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="px-6 py-5 rounded-2xl bg-foreground/5 border border-foreground/10 text-[12px] font-display font-extrabold text-foreground italic shadow-sm backdrop-blur-md hover:bg-foreground/10 transition-all hover:scale-[1.01]"
+                className="px-5 py-4 rounded-2xl bg-foreground/5 border border-foreground/10 text-[12px] font-display font-extrabold text-foreground italic shadow-sm backdrop-blur-md hover:bg-foreground/10 transition-all hover:scale-[1.01]"
                 transition={{ delay: 0.5 + (i * 0.1) }}
               >
                 {item}

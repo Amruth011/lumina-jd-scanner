@@ -140,7 +140,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
       {/* ── PHASE 3/4: RISK & REWARDS ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
          {/* Strategic Insights Section */}
-          <div className="lg:col-span-5 glass-panel p-8 rounded-[3rem] space-y-8 bg-gradient-to-br from-red-500/[0.03] to-transparent flex flex-col">
+          <div className="lg:col-span-5 glass-panel p-6 rounded-[3rem] space-y-5 bg-gradient-to-br from-red-500/[0.03] to-transparent flex flex-col">
              <div className="space-y-3">
                 <div className="flex items-center gap-3">
                     <div className="p-2.5 rounded-2xl bg-red-500/10 text-red-500">
@@ -151,19 +151,19 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                 <p className="text-xs uppercase font-black tracking-widest text-red-500/50">Language deconstruction & hidden risks</p>
              </div>
              
-             <div className="space-y-8 flex-1">
+             <div className="space-y-4 flex-1">
                 {(results?.red_flags || []).map((flag, i) => (
-                    <div key={i} className="space-y-4 group relative">
+                    <div key={i} className="space-y-1.5 group relative">
                         <div className="flex items-center justify-between">
-                            <div className="px-5 py-2.5 rounded-2xl bg-red-400/10 border border-red-400/20 text-red-400 text-[14px] font-serif italic">
+                            <div className="px-4 py-2 rounded-2xl bg-red-400/10 border border-red-400/20 text-red-400 text-[14px] font-serif italic">
                                 &ldquo;{flag.phrase}&rdquo;
                             </div>
                             <div className="text-right">
-                              <span className="text-[12px] uppercase font-black text-red-500/60 block mb-1">Impact</span>
+                              <span className="text-[10px] uppercase font-black text-red-500/60 block mb-1">Impact</span>
                               <span className="text-sm font-black text-red-500">{flag.intensity}%</span>
                             </div>
                         </div>
-                        <div className="pl-5 border-l-2 border-red-400/20">
+                        <div className="pl-4 border-l-2 border-red-400/20">
                             <p className="text-[14px] font-medium text-foreground/70 leading-relaxed italic">
                                 {flag.note}
                             </p>
@@ -225,9 +225,9 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
 
              {/* Secondary Visualization Grid - Asymmetrical Split (40/60) */}
              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-                  <div className="md:col-span-4 glass-panel p-6 rounded-[2.5rem] flex flex-col items-center justify-between space-y-4 h-full">
+                  <div className="md:col-span-4 glass-panel p-5 rounded-[2.5rem] flex flex-col items-center justify-between space-y-2.5 h-full">
                       <span className="text-[11px] uppercase font-black text-muted-foreground opacity-50 self-start tracking-[0.2em]">Operational Distribution</span>
-                      <div className="relative w-36 h-36 flex items-center justify-center scale-95">
+                      <div className="relative w-32 h-32 flex items-center justify-center scale-95">
                         <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
                             {(results?.logistics?.responsibility_mix || []).reduce((acc, item, i) => {
                                 const offset = acc.total;
@@ -252,7 +252,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                             <span className="text-[10px] font-black uppercase text-primary/40 tracking-widest">Focus</span>
                         </div>
                       </div>
-                      <div className="grid grid-cols-1 gap-1.5 w-full pt-2">
+                      <div className="grid grid-cols-1 gap-1 w-full pt-1">
                         {(results?.logistics?.responsibility_mix || []).map((item, i) => (
                             <div key={i} className="flex items-center gap-3 p-2 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all cursor-crosshair">
                                 <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: i === 0 ? 'var(--primary)' : i === 1 ? 'var(--accent-emerald)' : i === 2 ? 'var(--accent-gold)' : 'var(--accent-blue)' }} />
