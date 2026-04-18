@@ -154,6 +154,20 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
     setIsAnalyzing(true);
     setResult(null);
     try {
+      console.log(`Intelligence Scan: Starting for "${fileName}" (${trimmedResume.length} chars)`);
+      
+      // 1. Check Cache first for absolute consistency
+      const cached = await getCachedResumeAnalysis(trimmedResume, skills);
+      if (cached) {
+        console.log("Intelligence Scan: Cache Hit (Restoring consistent result)");
+        setResult(cached);
+        setLastAnalyzedText(trimmedResume);
+        setIsAnalyzing(false);
+        toast.success("Intelligence Scan Complete (Cached)");
+        return;
+      }
+
+      // 2. Run Deterministic Keyword Base
       const deterministicResult = computeDeterministicScore(trimmedResume, skills);
       const baseResult: ResumeGapResult = {
         overall_match: deterministicResult.overall_match,
@@ -231,14 +245,14 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
         console.error("AI decode Error:", err);
       }
  
+      // Scoring Logic: AI has final authority (can increase or decrease based on semantic understanding)
       const final: ResumeGapResult = aiResult ? {
         ...baseResult,
-        overall_match: (aiResult.overall_match && aiResult.overall_match > baseResult.overall_match) 
+        overall_match: (typeof aiResult.overall_match === 'number') 
           ? aiResult.overall_match 
           : baseResult.overall_match,
         summary: aiResult.summary || baseResult.summary,
         deductions: (baseResult.deductions || []).map(d => {
-            // Guard against AI hallucinating non-array for deductions
             const safeAiDeductions = Array.isArray(aiResult?.deductions) ? aiResult.deductions : [];
             const aiD = safeAiDeductions.find((ad: { reason: string; fix_snippet?: string }) => ad.reason?.includes(d.reason));
             return aiD?.fix_snippet ? { ...d, fix_snippet: aiD.fix_snippet } : d;
@@ -248,6 +262,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
       } : baseResult;
 
       setResult(final);
+      await setCachedResumeAnalysis(trimmedResume, skills, final);
       setLastAnalyzedText(trimmedResume);
       toast.success("Intelligence Scan Complete");
     } catch (err) {

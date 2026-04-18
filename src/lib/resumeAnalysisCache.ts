@@ -12,10 +12,12 @@ interface CacheEntry {
 const memoryCache = new Map<string, ResumeGapResult>();
 
 function normalizeText(text: string): string {
+  if (!text) return "";
   return text
+    .normalize("NFKC") // Normalize unicode forms
+    .replace(/[\u200B-\u200D\uFEFF]/g, "") // Strip zero-width spaces
+    .replace(/[\s\u00A0\u1680\u180E\u2000-\u200B\u202F\u205F\u3000]+/g, " ") // Normalize ALL types of whitespace to single space
     .toLowerCase()
-    .replace(/[\r\n]+/g, " ")
-    .replace(/\s+/g, " ")
     .trim();
 }
 
