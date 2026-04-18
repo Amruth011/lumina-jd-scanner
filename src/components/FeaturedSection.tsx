@@ -2,15 +2,16 @@ import { motion } from "framer-motion";
 
 export const FeaturedSection = () => {
   return (
-    <section className="bg-transparent pt-10 pb-24 px-6 overflow-hidden">
+    <div className="bg-transparent py-4 px-2">
       <div className="max-w-6xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="rounded-[40px] overflow-hidden premium-card aspect-video container relative border-white/5 shadow-2xl shadow-black/10 transition-all duration-700"
+           initial={{ opacity: 0, y: 60 }}
+           whileInView={{ opacity: 1, y: 0 }}
+           viewport={{ once: true }}
+           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+           className="rounded-[40px] overflow-hidden premium-card aspect-video container relative border-white/5 shadow-2xl shadow-black/10 transition-all duration-700"
         >
+          {/* ... content ... */}
           {/* Mock UI Visualization */}
           <div className="absolute inset-0 p-8 flex gap-8">
             {/* Left panel: Skill Radar */}
@@ -83,6 +84,6 @@ export const FeaturedSection = () => {
           </div>
         </motion.div>
       </div>
-    </section>
+    </div>
   );
 };

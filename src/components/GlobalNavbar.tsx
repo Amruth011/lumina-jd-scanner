@@ -1,22 +1,43 @@
 import { motion } from "framer-motion";
-import { Sparkles, LogOut, LogIn, User } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Sparkles, LogOut, LogIn, User, Search, ShieldCheck, LayoutDashboard, Zap, Info } from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import type { Tab } from "./ScannerView";
 
-export const GlobalNavbar = () => {
+interface GlobalNavbarProps {
+  activeTab?: Tab;
+  onTabChange?: (tab: Tab) => void;
+}
+
+export const GlobalNavbar = ({ activeTab, onTabChange }: GlobalNavbarProps) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
 
-  const navLinks = [
-    { name: "Features", href: "#features" },
-    { name: "How It Works", href: "#how-it-works" },
-    { name: "Master Vault", href: "#master-vault" },
-    { name: "AI Scanner", href: "#scanner" },
+  const handleTabClick = (tabKey: Tab) => {
+    if (onTabChange) {
+      onTabChange(tabKey);
+      if (isHomePage) {
+        document.querySelector("#scanner")?.scrollIntoView({ behavior: "smooth" });
+      } else {
+        navigate("/#scanner");
+      }
+    }
+  };
+
+  const tabs = [
+    { key: "decode" as Tab, icon: Search, label: "JD Decode" },
+    { key: "analysis" as Tab, icon: ShieldCheck, label: "Analysis" },
+    { key: "vault" as Tab, icon: LayoutDashboard, label: "Vault" },
+    { key: "generator" as Tab, icon: Zap, label: "Generator" },
+    { key: "guide" as Tab, icon: Info, label: "Guide" },
+    { key: "featured" as Tab, icon: Sparkles, label: "Featured" },
   ];
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-[100] px-6 py-8 w-full pointer-events-none">
-      <div className="rounded-full max-w-6xl mx-auto px-1 py-1 flex items-center justify-between pointer-events-auto relative">
+      <div className="rounded-full max-w-7xl mx-auto px-1 py-1 flex items-center justify-between pointer-events-auto relative">
         {/* The Glasspill Backdrop */}
         <div className="absolute inset-0 rounded-full liquid-glass-refractive border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.12)] -z-10" />
         
@@ -30,32 +51,41 @@ export const GlobalNavbar = () => {
             </div>
             <span className="text-foreground font-display font-black text-xl tracking-tighter">Lumina</span>
           </Link>
-          
-          <div className="hidden md:flex items-center gap-1 ml-12 bg-white/5 rounded-full p-1 border border-white/5">
-            {navLinks.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="px-5 py-2 text-foreground/70 hover:text-foreground hover:bg-foreground/5 rounded-full text-[12px] font-bold transition-all tracking-tight"
-                onClick={(e) => {
-                  if (item.href.startsWith("#")) {
-                    e.preventDefault();
-                    document.querySelector(item.href)?.scrollIntoView({ behavior: "smooth" });
-                  }
-                }}
-              >
-                {item.name}
-              </a>
-            ))}
-          </div>
+        </div>
+
+        {/* Global Tactical Tabs */}
+        <div className="hidden lg:flex items-center gap-1.5 bg-white/5 p-1 rounded-full border border-white/5 shadow-inner">
+          {tabs.map((tab) => (
+            <button 
+              key={tab.key} 
+              onClick={() => handleTabClick(tab.key)} 
+              className={`relative flex items-center gap-2 px-5 py-2.5 rounded-full text-[12px] font-display font-bold transition-all duration-500 whitespace-nowrap ${
+                activeTab === tab.key
+                  ? "text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
+              }`}
+            >
+              {activeTab === tab.key && (
+                <motion.div
+                  layoutId="globalActiveTab"
+                  className="absolute inset-0 bg-foreground rounded-full shadow-lg"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
+              <span className="relative z-10 flex items-center gap-2">
+                <tab.icon size={14} className={activeTab === tab.key ? 'text-background' : 'text-primary/40'} />
+                <span className="tracking-tight">{tab.label}</span>
+              </span>
+            </button>
+          ))}
         </div>
 
         <div className="flex items-center gap-2 pr-1 py-1">
           {user ? (
-            <div className="flex items-center gap-3 px-4">
+            <div className="hidden sm:flex items-center gap-3 px-4">
               <div className="flex flex-col items-end">
-                <span className="text-[12px] text-foreground font-black uppercase tracking-widest leading-none">Strategist</span>
-                <span className="text-[12px] text-muted-foreground font-semibold truncate max-w-[120px]">
+                <span className="text-[10px] text-foreground font-black uppercase tracking-widest leading-none">Strategist</span>
+                <span className="text-[12px] text-muted-foreground font-semibold truncate max-w-[100px]">
                   {user.email?.split('@')[0]}
                 </span>
               </div>
@@ -81,12 +111,12 @@ export const GlobalNavbar = () => {
             onClick={(e) => {
               if (user) {
                 e.preventDefault();
-                document.querySelector("#scanner")?.scrollIntoView({ behavior: "smooth" });
+                handleTabClick("decode");
               }
             }}
-            className="group relative rounded-full px-8 py-3.5 bg-foreground text-background text-[12px] font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95 shadow-2xl shadow-black/20 overflow-hidden"
+            className="group relative rounded-full px-8 py-3.5 bg-foreground text-background text-[11px] font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95 shadow-2xl shadow-black/20 overflow-hidden"
           >
-            <span className="relative z-10">{user ? "Analyze Job" : "Get Started"}</span>
+            <span className="relative z-10">{user ? "Intelligence" : "Get Started"}</span>
             <div className="absolute inset-0 bg-accent-blue translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
           </Link>
         </div>

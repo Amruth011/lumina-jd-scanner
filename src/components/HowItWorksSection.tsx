@@ -27,7 +27,7 @@ const steps = [
 
 export const HowItWorksSection = () => {
   return (
-    <section className="bg-transparent pt-32 pb-20 px-6 overflow-hidden">
+    <div className="bg-transparent py-4 px-2">
       <div className="max-w-6xl mx-auto">
         <motion.span
           initial={{ opacity: 0, y: 20 }}
@@ -73,6 +73,6 @@ export const HowItWorksSection = () => {
           ))}
         </div>
       </div>
-    </section>
+    </div>
   );
 };

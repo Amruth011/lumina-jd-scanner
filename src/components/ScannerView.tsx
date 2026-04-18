@@ -25,11 +25,18 @@ import { RoleDistribution } from "@/components/RoleDistribution";
 import { InterviewCoach } from "@/components/InterviewCoach";
 import { BonusInsights } from "@/components/BonusInsights";
 import { IcebergAnalysis } from "@/components/IcebergAnalysis";
+import { HowItWorksSection } from "@/components/HowItWorksSection";
+import { FeaturedSection } from "@/components/FeaturedSection";
 import type { DecodeResult, ResumeGapResult } from "@/types/jd";
 
 const ApplicationTracker = lazy(() => import("@/components/ApplicationTracker").then(module => ({ default: module.ApplicationTracker })));
 
-type Tab = "decode" | "analysis" | "vault" | "generator" | "guide" | "featured";
+export type Tab = "decode" | "analysis" | "vault" | "generator" | "guide" | "featured";
+
+interface ScannerViewProps {
+  activeTab?: Tab;
+  onTabChange?: (tab: Tab) => void;
+}
 
 const stagger = {
   animate: { transition: { staggerChildren: 0.08 } }
@@ -39,11 +46,10 @@ const fadeUp = {
   animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const } }
 };
 
-export const ScannerView = () => {
+export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewProps) => {
   const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const { isScanning, results, decodeJD, wasCached } = useDecodeJD();
-  const [activeTab, setActiveTab] = useState<Tab>("decode");
   const [jdText, setJdText] = useState("");
   const [priorityFilter, setPriorityFilter] = useState(false);
   const [savingJd, setSavingJd] = useState(false);
@@ -74,7 +80,7 @@ export const ScannerView = () => {
       navigate("/auth");
       return;
     }
-    setActiveTab(tab);
+    if (onTabChange) onTabChange(tab);
   };
 
   const filteredSkills = results?.skills ? (priorityFilter ? results.skills.filter((s) => s.importance > 80) : results.skills) : [];
@@ -99,42 +105,6 @@ export const ScannerView = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 md:px-8 pb-24">
-      {/* Tab Navigation Internal */}
-      <div className="flex justify-center mb-12">
-        <nav className="flex items-center gap-1.5 bg-muted/40 p-2 rounded-3xl backdrop-blur-3xl border border-foreground/10 shadow-2xl shadow-black/10 overflow-x-auto max-w-full no-scrollbar">
-          {[
-            { key: "decode" as Tab, icon: Search, label: "JD Decode" },
-            { key: "analysis" as Tab, icon: ShieldCheck, label: "Resume Analysis" },
-            { key: "vault" as Tab, icon: LayoutDashboard, label: "Master Vault" },
-            { key: "generator" as Tab, icon: Zap, label: "Resume Generate" },
-            { key: "guide" as Tab, icon: Info, label: "How It Works" },
-            { key: "featured" as Tab, icon: Sparkles, label: "Featured" },
-          ].map((tab) => (
-            <button 
-              key={tab.key} 
-              onClick={() => handleTabSwitch(tab.key)} 
-              className={`relative flex items-center gap-2 px-6 py-3 rounded-2xl text-[12px] font-display font-bold transition-all duration-500 whitespace-nowrap ${
-                activeTab === tab.key
-                  ? "text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
-              }`}
-            >
-              {activeTab === tab.key && (
-                <motion.div
-                  layoutId="activeTabScanner"
-                  className="absolute inset-0 bg-foreground rounded-2xl shadow-lg"
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                />
-              )}
-              <span className="relative z-10 flex items-center gap-2">
-                <tab.icon className={`w-3.5 h-3.5 ${activeTab === tab.key ? 'text-background' : 'text-primary/40'}`} />
-                <span className="hidden lg:inline tracking-tight">{tab.label}</span>
-              </span>
-            </button>
-          ))}
-        </nav>
-      </div>
-
       <AnimatePresence mode="wait">
         {activeTab === "decode" ? (
           <motion.div
@@ -208,7 +178,7 @@ export const ScannerView = () => {
                       <div className="flex flex-col items-center gap-8 py-20">
                          <div className="section-divider max-w-sm w-full opacity-20" />
                          <button 
-                           onClick={() => setActiveTab("analysis")}
+                           onClick={() => handleTabSwitch("analysis")}
                            className="group flex items-center gap-4 px-12 py-6 rounded-full bg-foreground text-background text-[13px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-2xl"
                          >
                            Continue to Resume Analysis <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
@@ -241,7 +211,7 @@ export const ScannerView = () => {
                     <ATSScoreSimulator result={gapResult} />
                     <div className="flex justify-center mt-12">
                       <button 
-                        onClick={() => setActiveTab("generator")}
+                        onClick={() => handleTabSwitch("generator")}
                         className="group flex items-center gap-4 px-12 py-6 rounded-full bg-accent-blue text-white text-[13px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-2xl"
                       >
                         Generate Tailored Resume <Zap size={18} className="animate-pulse" />
@@ -256,7 +226,7 @@ export const ScannerView = () => {
                 <h3 className="text-3xl font-serif italic mb-4">Intelligence Required</h3>
                 <p className="text-muted-foreground max-w-md mx-auto mb-8">You must decode a Job Description before activating the Resume Intelligence engine.</p>
                 <button 
-                  onClick={() => setActiveTab("decode")}
+                  onClick={() => handleTabSwitch("decode")}
                   className="px-8 py-4 rounded-full bg-foreground text-background text-[12px] font-black uppercase tracking-widest"
                 >
                   Return to Decoder
@@ -294,7 +264,7 @@ export const ScannerView = () => {
                 <h3 className="text-3xl font-serif italic mb-4">Signal Lost</h3>
                 <p className="text-muted-foreground max-w-md mx-auto mb-8">The Resume Generator requires a Job Description signal to structure its outputs.</p>
                 <button 
-                  onClick={() => setActiveTab("decode")}
+                  onClick={() => handleTabSwitch("decode")}
                   className="px-8 py-4 rounded-full bg-foreground text-background text-[12px] font-black uppercase tracking-widest"
                 >
                   Return to Decoder
@@ -318,7 +288,7 @@ export const ScannerView = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
           >
-            <div className="glass-panel p-10 lg:p-20 rounded-[4rem] border-foreground/10 bg-white/[0.02]">
+            <div className="glass-panel p-6 lg:p-10 rounded-[4rem] border-foreground/10 bg-white/[0.02]">
               <HowItWorksSection />
             </div>
           </motion.div>
@@ -329,7 +299,7 @@ export const ScannerView = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
           >
-            <div className="glass-panel p-10 lg:p-20 rounded-[4rem] border-foreground/10 bg-white/[0.02]">
+            <div className="glass-panel p-6 lg:p-10 rounded-[4rem] border-foreground/10 bg-white/[0.02]">
               <FeaturedSection />
             </div>
           </motion.div>

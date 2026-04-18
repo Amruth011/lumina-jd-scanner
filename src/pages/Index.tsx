@@ -1,18 +1,22 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Sparkles, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
 import { GlobalNavbar } from "@/components/GlobalNavbar";
 import { ScannerView } from "@/components/ScannerView";
-import { HowItWorksSection } from "@/components/HowItWorksSection";
-import { FeaturedSection } from "@/components/FeaturedSection";
-import { PhilosophySection } from "@/components/PhilosophySection";
-import { ServicesSection } from "@/components/ServicesSection";
-import { MasterVault } from "@/components/MasterVault";
+
+export type Tab = "decode" | "analysis" | "vault" | "generator" | "guide" | "featured";
 
 const Index = () => {
+  const [activeTab, setActiveTab] = useState<Tab>("decode");
+
+  const scrollToScanner = (tab?: Tab) => {
+    if (tab) setActiveTab(tab);
+    document.querySelector("#scanner")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <div className="min-h-screen bg-background dot-grid-bg grain-overlay font-sans text-foreground">
-      <GlobalNavbar />
+      <GlobalNavbar activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* ── SECTION 1 — HERO ── */}
       <section className="min-h-[70vh] relative flex flex-col overflow-hidden">
@@ -40,7 +44,7 @@ const Index = () => {
             {/* Dual CTA */}
             <div className="flex gap-4 mt-10 justify-center flex-wrap">
               <button
-                onClick={() => document.querySelector("#scanner")?.scrollIntoView({ behavior: "smooth" })}
+                onClick={() => scrollToScanner("decode")}
                 className="bg-accent-blue hover:opacity-90 text-white rounded-full px-10 py-5 text-base font-semibold flex items-center gap-2 transition-all shadow-xl shadow-accent-blue/20 group"
               >
                 Analyze My JD Free
@@ -53,15 +57,7 @@ const Index = () => {
 
       {/* ── SECTION 2 — SCANNER (The Total Tactical Hub) ── */}
       <section id="scanner" className="relative py-12 bg-background/30 backdrop-blur-sm border-t border-border/40 min-h-screen">
-        <div className="max-w-7xl mx-auto text-center mb-16 px-6">
-          <h2 className="text-5xl md:text-7xl text-foreground tracking-[-0.05em] font-serif mb-6 leading-[0.95]">
-            Total <em className="italic text-accent-blue">Intelligence</em> Hub
-          </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto font-medium">
-            Everything you need to dominate the application pipeline, unified in one tactical interface.
-          </p>
-        </div>
-        <ScannerView />
+        <ScannerView activeTab={activeTab} onTabChange={setActiveTab} />
       </section>
 
       {/* Footer */}
