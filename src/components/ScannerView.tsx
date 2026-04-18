@@ -18,6 +18,12 @@ import { ATSScoreSimulator } from "@/components/ATSScoreSimulator";
 import { ResumeEnhancer } from "@/components/ResumeEnhancer";
 import { MasterVault } from "@/components/MasterVault";
 import { ResumeGenerator } from "@/components/ResumeGenerator";
+import { JdVerdictCard } from "@/components/JdVerdictCard";
+import { RecruiterLens } from "@/components/RecruiterLens";
+import { RoleDistribution } from "@/components/RoleDistribution";
+import { InterviewCoach } from "@/components/InterviewCoach";
+import { BonusInsights } from "@/components/BonusInsights";
+import { IcebergAnalysis } from "@/components/IcebergAnalysis";
 import type { DecodeResult, ResumeGapResult } from "@/types/jd";
 
 const ApplicationTracker = lazy(() => import("@/components/ApplicationTracker").then(module => ({ default: module.ApplicationTracker })));
@@ -167,7 +173,7 @@ export const ScannerView = () => {
                             : "bg-accent-emerald/10 border-accent-emerald/20 text-accent-emerald shadow-[0_0_15px_rgba(var(--accent-emerald-rgb),0.1)]"
                         }`}>
                           <Shield size={10} className={wasCached ? "animate-pulse" : ""} />
-                          {wasCached ? "Consistency Verified (Cached)" : "Deterministic High-Precision Active"}
+                          {wasCached ? "Consistency Verified (Cached)" : "Lumina 2.0 Ultra-Intelligence Active"}
                         </div>
                       </div>
                       <h3 className="font-serif italic text-4xl md:text-5xl lg:text-7xl text-foreground tracking-[-0.04em] leading-[0.9] max-w-5xl mx-auto px-4 mt-4 text-balance">
@@ -207,44 +213,64 @@ export const ScannerView = () => {
                     </div>
                   </div>
 
-                  {/* Priority Filter */}
-                  <div className="flex justify-center pt-4">
-                    <motion.button
-                      whileHover={{ scale: 1.02, y: -1 }}
-                      whileTap={{ scale: 0.98, y: 1 }}
-                      onClick={() => setPriorityFilter(!priorityFilter)}
-                      className={`relative overflow-hidden flex items-center gap-3 px-8 py-3.5 rounded-2xl text-[10px] uppercase font-black tracking-[0.2em] transition-all duration-500 border shadow-2xl ${
-                        priorityFilter
-                          ? "bg-foreground text-background border-transparent"
-                          : "bg-muted/30 text-muted-foreground border-white/5 hover:text-foreground hover:bg-muted/50"
-                      }`}
-                    >
-                      <div className="liquid-water-layer opacity-10" />
-                      <Filter className={`w-3.5 h-3.5 ${priorityFilter ? '' : 'text-primary/40'}`} />
-                      Critical Skills Only
-                      <div className={`inline-flex items-center w-8 h-4 rounded-full p-0.5 transition-colors duration-500 border ${
-                        priorityFilter ? "bg-accent-emerald border-accent-emerald/20" : "bg-black/10 border-white/5"
-                      }`}>
-                        <motion.span
-                          animate={{ x: priorityFilter ? 16 : 0 }}
-                          transition={{ type: "spring", stiffness: 600, damping: 30 }}
-                          className={`w-2.5 h-2.5 rounded-full ${priorityFilter ? "bg-white shadow-md" : "bg-muted-foreground/30"} shadow-sm`}
-                        />
+                  {/* ── SECTION A: THE VERDICT ── */}
+                  <JdVerdictCard grade={results.grade} />
+
+                  {/* ── SECTION G: RECRUITER LENS ── */}
+                  <RecruiterLens insights={results.recruiter_lens} />
+
+                  {/* ── SKILLS DASHBOARD ── */}
+                  <div className="space-y-8">
+                      <div className="flex justify-center">
+                        <motion.button
+                          whileHover={{ scale: 1.02, y: -1 }}
+                          whileTap={{ scale: 0.98, y: 1 }}
+                          onClick={() => setPriorityFilter(!priorityFilter)}
+                          className={`relative overflow-hidden flex items-center gap-3 px-8 py-3.5 rounded-2xl text-[10px] uppercase font-black tracking-[0.2em] transition-all duration-500 border shadow-2xl ${
+                            priorityFilter
+                              ? "bg-foreground text-background border-transparent"
+                              : "bg-muted/30 text-muted-foreground border-white/5 hover:text-foreground hover:bg-muted/50"
+                          }`}
+                        >
+                          <div className="liquid-water-layer opacity-10" />
+                          <Filter className={`w-3.5 h-3.5 ${priorityFilter ? '' : 'text-primary/40'}`} />
+                          Critical Skills Pulse
+                        </motion.button>
                       </div>
-                    </motion.button>
+
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <SkillRadarChart skills={filteredSkills} />
+                        <SkillProgressBars skills={filteredSkills} priorityMode={priorityFilter} />
+                      </div>
+
+                      <ATSKeywordScanner skills={filteredSkills} aiInsight={getAiInsight(results.skills)} />
                   </div>
 
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <SkillRadarChart skills={filteredSkills} />
-                    <SkillProgressBars skills={filteredSkills} priorityMode={priorityFilter} />
-                  </div>
+                  {/* ── SECTION C: ROLE DISTRIBUTION ── */}
+                  <RoleDistribution distribution={results.time_distribution} />
 
-                  <ATSKeywordScanner skills={filteredSkills} aiInsight={getAiInsight(results.skills)} />
+                  {/* ── SECTION D: THE ICEBERG ── */}
+                  <IcebergAnalysis reality={results.role_reality} />
 
-                  <div className="space-y-6">
+                  {/* ── STRATEGIC REQUIREMENTS ── */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <CriticalRequirements requirements={results.requirements} />
                     <WinningStrategy steps={results.winning_strategy} />
                   </div>
+
+                  {/* ── SECTION E: INTERVIEW COACH ── */}
+                  <InterviewCoach 
+                    questions={results.interview_prep?.questions} 
+                    interviewerQuestions={results.interview_prep?.interviewer_questions} 
+                  />
+
+                  {/* ── SECTION I: BONUS INSIGHTS ── */}
+                  <BonusInsights 
+                    insights={results.bonus_insights} 
+                    salary={results.salary_estimate} 
+                  />
+
+                  <div className="section-divider max-w-sm mx-auto opacity-20" />
 
                   <ResumeGapAnalyzer
                     skills={results.skills}

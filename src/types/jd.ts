@@ -23,30 +23,48 @@ export interface SkillMatch {
   note: string;
 }
 
-export interface Deduction {
-  reason: string;
+// ── NEW: Lumina 2.0 Ultra-Intelligence Types ──
+
+export interface RecruiterInsight {
+  jargon: string;
+  reality: string;
+}
+
+export interface TimeAllocation {
+  task: string;
   percent: number;
-  fix_snippet?: string;
 }
 
-export interface TailoredSnippet {
-  professional_summary: string;
-  experience_bullets: string[];
-}
-
-export interface ActionableDirective {
-  action: "add" | "delete" | "replace" | "edit";
-  description: string;
-  reasoning: string;
-}
-
-export interface ResumeGapResult {
-  overall_match: number;
-  skill_matches: SkillMatch[];
-  deductions: Deduction[];
+export interface JdGrade {
+  score: number;
+  letter: string;
   summary: string;
-  tailored_resume_snippets?: TailoredSnippet;
-  actionable_directives?: ActionableDirective[];
+  breakdown: {
+    clarity: number;
+    realistic: number;
+    compensation: number;
+    red_flags: number;
+    benefits: number;
+    growth: number;
+  };
+}
+
+export interface InterviewQuestion {
+  question: string;
+  type: "technical" | "behavioral" | "situational";
+  target_answer?: string;
+}
+
+export interface RoleReality {
+  iceberg_above: string[];
+  iceberg_below: string[];
+  archetype: string;
+  dimensions: {
+    technical_depth: number;
+    research_autonomy: number;
+    client_interaction: number;
+    strategic_impact: number;
+  };
 }
 
 export interface DecodeResult {
@@ -54,6 +72,27 @@ export interface DecodeResult {
   skills: Skill[];
   requirements: JdRequirements;
   winning_strategy: WinningStep[];
+  // Phase 2: Ultra Insights
+  grade?: JdGrade;
+  recruiter_lens?: RecruiterInsight[];
+  time_distribution?: TimeAllocation[];
+  role_reality?: RoleReality;
+  interview_prep?: {
+    questions: InterviewQuestion[];
+    interviewer_questions: string[];
+  };
+  salary_estimate?: {
+    min: number;
+    max: number;
+    currency: string;
+    source_note: string;
+  };
+  bonus_insights?: {
+    ghost_job_probability: number;
+    desperation_meter: number;
+    skill_rarity: number;
+    career_growth: string[];
+  };
 }
 
 export interface JdVaultEntry {

@@ -63,14 +63,23 @@ function persistCache(entries: CacheEntry[]): void {
   }
 }
 
-async function getCacheKey(resumeText: string, skills: Skill[]): Promise<string> {
-  const normalizedResume = normalizeText(resumeText);
-  const normalizedSkills = normalizeSkills(skills);
-  return hashText(`${normalizedResume}\n---\n${normalizedSkills}`);
+export function clearResumeAnalysisCache(): void {
+  memoryCache.clear();
+  localStorage.removeItem(CACHE_STORAGE_KEY);
 }
 
-export async function getCachedResumeAnalysis(resumeText: string, skills: Skill[]): Promise<ResumeGapResult | null> {
-  const key = await getCacheKey(resumeText, skills);
+// Internal version to force cache bust if we change logic
+const CACHE_VERSION = "v2_dynamic";
+
+async function getCacheKey(resumeText: string, skills: Skill[], jobTitle: string = ""): Promise<string> {
+  const normalizedResume = normalizeText(resumeText);
+  const normalizedSkills = normalizeSkills(skills);
+  const normalizedTitle = jobTitle.toLowerCase().trim();
+  return hashText(`${CACHE_VERSION}\n${normalizedTitle}\n${normalizedResume}\n---\n${normalizedSkills}`);
+}
+
+export async function getCachedResumeAnalysis(resumeText: string, skills: Skill[], jobTitle: string = ""): Promise<ResumeGapResult | null> {
+  const key = await getCacheKey(resumeText, skills, jobTitle);
 
   const memoryHit = memoryCache.get(key);
   if (memoryHit) return memoryHit;
@@ -83,8 +92,8 @@ export async function getCachedResumeAnalysis(resumeText: string, skills: Skill[
   return found.result;
 }
 
-export async function setCachedResumeAnalysis(resumeText: string, skills: Skill[], result: ResumeGapResult): Promise<void> {
-  const key = await getCacheKey(resumeText, skills);
+export async function setCachedResumeAnalysis(resumeText: string, skills: Skill[], result: ResumeGapResult, jobTitle: string = ""): Promise<void> {
+  const key = await getCacheKey(resumeText, skills, jobTitle);
   memoryCache.set(key, result);
 
   const entries = loadPersistedCache().filter((entry) => entry.hash !== key);

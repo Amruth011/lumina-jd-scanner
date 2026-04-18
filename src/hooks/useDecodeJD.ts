@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { DecodeResult } from "@/types/jd";
 import { getCachedDecode, setCachedDecode, clearDecodeCache } from "@/lib/jdCache";
+import { clearResumeAnalysisCache } from "@/lib/resumeAnalysisCache";
 
 export const useDecodeJD = () => {
   const [isScanning, setIsScanning] = useState(false);
@@ -130,6 +131,9 @@ export const useDecodeJD = () => {
       // Next time the same JD is decoded, we'll get the exact same skills
       // → exact same deterministic score
       await setCachedDecode(jdText, result);
+
+      // Success: Clear resume analysis cache to ensure fresh start for new JD
+      clearResumeAnalysisCache();
 
       setResults(result);
       setWasCached(false);

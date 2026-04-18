@@ -157,9 +157,9 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
       console.log(`Intelligence Scan: Starting for "${fileName}" (${trimmedResume.length} chars)`);
       
       // 1. Check Cache first for absolute consistency
-      const cached = await getCachedResumeAnalysis(trimmedResume, skills);
+      const cached = await getCachedResumeAnalysis(trimmedResume, skills, jobTitle);
       if (cached) {
-        console.log("Intelligence Scan: Cache Hit (Restoring consistent result)");
+        console.log(`Intelligence Scan: Cache Hit for "${jobTitle}" (Restoring consistent result)`);
         setResult(cached);
         setLastAnalyzedText(trimmedResume);
         setIsAnalyzing(false);
@@ -262,7 +262,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
       } : baseResult;
 
       setResult(final);
-      await setCachedResumeAnalysis(trimmedResume, skills, final);
+      await setCachedResumeAnalysis(trimmedResume, skills, final, jobTitle);
       setLastAnalyzedText(trimmedResume);
       toast.success("Intelligence Scan Complete");
     } catch (err) {
@@ -270,7 +270,8 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
     } finally {
       setIsAnalyzing(false);
     }
-  }, [resumeText, skills, jobTitle]);
+  }, [resumeText, skills, jobTitle, fileName]);
+
 
   useEffect(() => {
     if (isAutoRunEnabled && resumeText && resumeText !== lastAnalyzedText && !isAnalyzing && !isParsing) {
