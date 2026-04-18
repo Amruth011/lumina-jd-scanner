@@ -21,7 +21,7 @@ interface LuminaUltraDashboardProps {
 }
 
 export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => {
-  if (!results.grade) return null;
+  const grade = results.grade || { score: 0, letter: '?', summary: 'Analyzing...', breakdown: {}, plain_english_summary: [] };
 
   return (
     <div className="space-y-24 pb-32">
@@ -31,7 +31,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
          <div className="lg:col-span-3 glass-panel p-8 rounded-[2.5rem] border-white/5 flex flex-col items-center justify-center relative overflow-hidden group">
             <div className="absolute inset-0 bg-primary/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             <LuminaGauge 
-                value={results.grade.score} 
+                value={grade.score} 
                 label="Total Score" 
                 size={180} 
                 color="var(--primary)" 
@@ -93,7 +93,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                     <p className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground opacity-50">Here's what this job description actually means, stripped of the corporate speak.</p>
                 </div>
                 <div className="space-y-6">
-                    {results.grade.plain_english_summary.map((point, i) => (
+                    {grade.plain_english_summary.map((point, i) => (
                         <div key={i} className="flex gap-6 group items-start">
                             <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary text-xs font-black flex items-center justify-center border border-primary/20 group-hover:scale-110 group-hover:bg-primary group-hover:text-background transition-all duration-500">
                                 {i + 1}
@@ -108,7 +108,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
          </div>
 
          <div className="lg:col-span-4">
-            <JdVerdictCard grade={results.grade} />
+            <JdVerdictCard grade={grade} />
          </div>
       </div>
 

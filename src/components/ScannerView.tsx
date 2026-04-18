@@ -190,35 +190,6 @@ export const ScannerView = () => {
                       <div className="section-divider w-24 mx-auto mt-10 opacity-60" />
                     </motion.div>
 
-                    <div className="flex items-center justify-center gap-4 flex-wrap">
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={handleForceRedecode}
-                        disabled={isScanning}
-                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-[11px] font-display font-bold uppercase tracking-[0.1em] bg-muted/40 text-muted-foreground border border-border/40 hover:text-foreground hover:bg-muted/60 transition-all disabled:opacity-40"
-                      >
-                        <RefreshCw className={`w-3.5 h-3.5 ${isScanning ? 'animate-spin' : ''}`} />
-                        Engine Reboot
-                      </motion.button>
-
-                      <motion.button
-                        whileHover={{ scale: 1.02, y: -2 }}
-                        whileTap={{ scale: 0.98, y: 0 }}
-                        onClick={handleSaveJd}
-                        disabled={savingJd || !!savedJdId}
-                        className={`relative overflow-hidden inline-flex items-center justify-center gap-3 px-10 py-4 rounded-2xl text-[11px] font-display font-black uppercase tracking-[0.2em] transition-all shadow-2xl ${
-                          savedJdId
-                            ? "bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/20 shadow-inner"
-                            : "bg-foreground text-background hover:scale-[1.05] shadow-foreground/20"
-                        } disabled:opacity-50`}
-                      >
-                        <div className="liquid-water-layer opacity-10" />
-                        <div className="shimmer-sweep" />
-                        {savingJd ? <Loader2 className="w-4 h-4 animate-spin" /> : savedJdId ? <BookmarkCheck className="w-4 h-4" /> : <Save className="w-4 h-4" />}
-                        {savedJdId ? "Archived" : "Archive Intelligence"}
-                      </motion.button>
-                    </div>
                   </div>
 
                   {/* ── INTELLIGENCE ENGINE: THE DASHBOARD ── */}
