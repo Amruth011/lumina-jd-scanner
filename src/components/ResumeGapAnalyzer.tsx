@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 // Important: Use static import with ?url so Vite bundler properly packages the worker file for Vercel
 import pdfWorkerUrl from "pdfjs-dist/legacy/build/pdf.worker.mjs?url";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, Loader2, ArrowRight, Upload, PlusCircle as PlusCircleIcon, AlertTriangle, CheckCircle2, XCircle, Sparkles, Copy, ShieldCheck, Edit3, Trash2, Plus, Download, BarChart3, Zap, TrendingUp, CloudUpload, MessageSquareQuote } from "lucide-react";
+import { FileText, Loader2, ArrowRight, Upload, PlusCircle as PlusCircleIcon, AlertTriangle, CheckCircle2, XCircle, Sparkles, Copy, ShieldCheck, Edit3, Trash2, Plus, Download, BarChart3, Zap, TrendingUp, CloudUpload, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { saveApplication, type TrackedApplication } from "@/hooks/useApplications";
@@ -453,7 +453,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                     
                     <div className="md:col-span-8 glass-panel p-10 rounded-[2.5rem] border-white/5 flex flex-col justify-center relative overflow-hidden">
                          <div className="flex items-center gap-3 mb-4 opacity-40">
-                            <MessageSquareQuote size={18} />
+                            <MessageSquare size={18} />
                             <span className="text-[12px] font-black uppercase tracking-widest">Executive Summary</span>
                          </div>
                          <p className="text-[17px] font-medium text-foreground/90 leading-relaxed font-serif italic">

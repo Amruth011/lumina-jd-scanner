@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { MessageSquareQuote, ShieldAlert, ArrowRightLeft } from "lucide-react";
+import { MessageSquare, ShieldAlert, ArrowRightLeft } from "lucide-react";
 import type { RecruiterInsight } from "@/types/jd";
 
 interface RecruiterLensProps {
@@ -13,7 +13,7 @@ export const RecruiterLens = ({ insights }: RecruiterLensProps) => {
     <div className="space-y-5">
       <div className="flex items-center gap-4 px-4">
         <div className="p-2.5 rounded-2xl bg-accent-blue/10 border border-accent-blue/20">
-          <MessageSquareQuote size={20} className="text-accent-blue" />
+          <MessageSquare size={20} className="text-accent-blue" />
         </div>
         <div>
           <h3 className="text-2xl font-serif italic text-foreground tracking-tight">Recruiter Lens</h3>

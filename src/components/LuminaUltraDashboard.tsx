@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { 
   ShieldAlert, Target, TrendingUp, Clock, Ghost, Scale, 
-  BrainCircuit, Star, Zap, UserCheck, MessageSquareQuote,
+  BrainCircuit, Star, Zap, UserCheck, MessageSquare,
   LayoutDashboard, Heart, SearchCheck, Briefcase, ArrowRight,
   ShieldCheck, Info
 } from "lucide-react";
@@ -110,7 +110,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
           <div className="lg:col-span-8 flex flex-col">
             <div className="glass-panel p-8 lg:p-12 rounded-[3rem] space-y-8 relative overflow-hidden flex-1 font-display bg-gradient-to-br from-white/[0.01] to-transparent">
                 <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
-                    <MessageSquareQuote size={180} />
+                    <MessageSquare size={180} />
                 </div>
                 <div className="space-y-3 relative z-10">
                     <h2 className="text-4xl font-serif italic text-foreground tracking-tight">The Professional Verdict</h2>
