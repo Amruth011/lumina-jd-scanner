@@ -220,30 +220,30 @@ RETURN JSON FORMAT ONLY:
   };
 
   return (
-    <div className="premium-card p-10 relative overflow-hidden group">
-      <div className="absolute top-0 right-0 p-12 opacity-5 scale-150 group-hover:opacity-10 transition-opacity pointer-events-none">
-        <Sparkles className="w-64 h-64 rotate-12" />
+    <div className="glass-panel rounded-[3rem] p-10 lg:p-14 relative overflow-hidden group bg-gradient-to-br from-white/[0.02] to-transparent border border-white/5">
+      <div className="absolute top-0 right-0 p-16 opacity-5 scale-150 group-hover:opacity-10 transition-opacity duration-1000 pointer-events-none">
+        <Sparkles className="w-80 h-80 rotate-12" />
       </div>
 
-      <div className="relative z-10 flex flex-col xl:flex-row items-center justify-between gap-10">
-        <div className="space-y-4 text-center xl:text-left">
-          <div className="flex items-center justify-center xl:justify-start gap-4">
-            <div className="w-12 h-12 rounded-[20px] bg-primary/10 flex items-center justify-center border border-primary/20 shadow-inner">
-              <Wand2 className="w-6 h-6 text-primary" />
+      <div className="relative z-10 flex flex-col xl:flex-row items-center justify-between gap-12">
+        <div className="space-y-6 text-center xl:text-left">
+          <div className="flex items-center justify-center xl:justify-start gap-5">
+            <div className="w-14 h-14 rounded-[22px] bg-primary/10 flex items-center justify-center border border-primary/20 shadow-inner">
+              <Wand2 className="w-8 h-8 text-primary" />
             </div>
-            <h3 className="text-2xl font-display font-bold">Resonating Resume Generator</h3>
+            <h3 className="text-3xl font-serif italic text-foreground tracking-tight">Candidacy Synthesizer</h3>
           </div>
-          <p className="text-base text-muted-foreground max-w-xl">
-            Our <span className="text-foreground font-semibold">Silicon Valley Modern</span> engine crafts a high-impact, ATS-optimized resume using only your most relevant experiences.
+          <p className="text-[17px] text-muted-foreground max-w-xl font-medium leading-relaxed font-serif italic opacity-80">
+            Our <span className="text-foreground font-semibold not-italic">Silicon Valley Modern</span> engine crafts a high-impact, ATS-optimized signature using only your most relevant tactical experiences.
           </p>
-          <div className="flex flex-wrap justify-center xl:justify-start gap-3 pt-2">
+          <div className="flex flex-wrap justify-center xl:justify-start gap-4 pt-3">
             {[
               "Metric-First bullets",
               "ATS-Gold Template",
-              "Keyword Infusion"
+              "Semantic Gap Injection"
             ].map((feature, i) => (
-              <div key={feature} className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/5 border border-primary/10 text-xs font-bold text-primary italic lowercase tracking-wider">
-                <CheckCircle2 className="w-3.5 h-3.5" />
+              <div key={feature} className="flex items-center gap-2.5 px-5 py-2 rounded-full bg-white/5 border border-white/10 text-xs font-black text-primary tracking-widest uppercase opacity-70">
+                <CheckCircle2 className="w-4 h-4 text-accent-emerald" />
                 {feature}
               </div>
             ))}
@@ -253,104 +253,110 @@ RETURN JSON FORMAT ONLY:
         <button
           onClick={handleGenerate}
           disabled={isGenerating}
-          className="relative overflow-hidden group/btn flex items-center gap-4 px-12 py-6 rounded-[32px] text-base font-bold bg-foreground text-background hover:scale-105 transition-all duration-300 shadow-[0_20px_50px_rgba(0,0,0,0.15)] active:scale-95 disabled:opacity-50"
+          className="relative overflow-hidden group/btn flex items-center gap-5 px-14 py-7 rounded-full text-[13px] font-black uppercase tracking-[0.3em] bg-foreground text-background hover:scale-105 transition-all duration-500 shadow-[0_30px_60px_rgba(0,0,0,0.3)] active:scale-95 disabled:opacity-50"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-primary to-transparent opacity-0 group-hover/btn:opacity-20 transition-opacity" />
           {isGenerating ? (
-            <><Loader2 className="w-6 h-6 animate-spin" /> Distilling Success...</>
+            <><Loader2 className="w-6 h-6 animate-spin" /> Synthesizing Intelligence...</>
           ) : (
-            <><Sparkles className="w-6 h-6" /> Generate Tailored Resume</>
+            <><Sparkles className="w-6 h-6" /> Generate Tactical Resume</>
           )}
         </button>
       </div>
 
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {isOpen && resume && (
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 30 }}
-            className="mt-16 pt-16 border-t border-white/5 space-y-12"
+            exit={{ opacity: 0, y: 40 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="mt-20 pt-20 border-t border-white/5 space-y-16"
           >
-            <div className="flex flex-col md:flex-row justify-between items-center bg-muted/20 backdrop-blur-md p-8 rounded-[40px] border border-white/5 gap-6">
-              <div className="space-y-2 text-center md:text-left">
-                <div className="flex items-center gap-2 justify-center md:justify-start">
-                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                  <span className="text-[10px] font-bold text-green-500 uppercase tracking-widest">Optimized for humans & bots</span>
+            <div className="flex flex-col lg:flex-row justify-between items-center bg-white/[0.02] backdrop-blur-3xl p-10 rounded-[3rem] border border-white/5 gap-8">
+              <div className="space-y-3 text-center lg:text-left">
+                <div className="flex items-center gap-3 justify-center lg:justify-start">
+                  <div className="w-2.5 h-2.5 rounded-full bg-accent-emerald animate-pulse" />
+                  <span className="text-xs font-black text-accent-emerald uppercase tracking-[0.2em]">0.1% Candidacy Blueprint Ready</span>
                 </div>
-                <p className="text-lg text-foreground/90 font-bold">Generation Complete. Previewing your 0.1% candidacy.</p>
+                <p className="text-xl text-foreground/90 font-serif italic">Generation Complete. Strategically aligned for human & bot review.</p>
               </div>
               <div className="flex gap-4">
                 <button
                   onClick={handleDownloadPDF}
-                  className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-foreground text-background text-sm font-bold transition-all hover:shadow-2xl hover:shadow-foreground/20 active:scale-95"
+                  className="flex items-center gap-4 px-10 py-5 rounded-2xl bg-foreground text-background text-xs font-black uppercase tracking-[0.2em] transition-all hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)] active:scale-95"
                 >
-                  <Download className="w-5 h-5" /> Export Modern PDF
+                  <Download className="w-5 h-5" /> Export Premium PDF
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-4 rounded-2xl bg-muted/40 hover:bg-muted text-muted-foreground transition-all"
+                  className="p-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-muted-foreground transition-all"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-6 h-6" />
                 </button>
               </div>
             </div>
 
-            {/* SIDE-BY-SIDE PREVIEW SIMULATION */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-[700px]">
-              {/* SOURCE VAULT DATA (Brief) */}
-              <div className="bg-muted/10 rounded-[40px] p-8 border border-white/5 overflow-hidden flex flex-col">
-                <div className="flex items-center gap-2 mb-6">
-                  <ArchiveBox className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Selected From Vault</span>
+            {/* PREVIEW CONTAINER */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
+              {/* SOURCE VAULT DATA (Left Panel) */}
+              <div className="md:col-span-4 glass-panel rounded-[3rem] p-10 border-white/5 overflow-hidden flex flex-col bg-white/[0.01]">
+                <div className="flex items-center gap-3 mb-8">
+                  <ArchiveBox className="w-5 h-5 text-muted-foreground opacity-40" />
+                  <span className="text-xs font-black text-muted-foreground/60 uppercase tracking-[0.2em]">Vault Intelligence Inputs</span>
                 </div>
-                <div className="space-y-6 overflow-y-auto custom-scrollbar flex-1 pr-2 opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500">
-                  {vaultItems.filter(v => v.type === 'professional').slice(0, 3).map((v, i) => (
-                    <div key={i} className="space-y-2">
-                       <h5 className="font-bold text-xs uppercase">{v.title} at {v.organization}</h5>
-                       <p className="text-[11px] text-muted-foreground leading-relaxed italic line-clamp-2">"{v.description}"</p>
+                <div className="space-y-8 overflow-y-auto custom-scrollbar flex-1 pr-4 opacity-40 hover:opacity-100 transition-all duration-700">
+                  {vaultItems.filter(v => v.type === 'professional').slice(0, 4).map((v, i) => (
+                    <div key={i} className="space-y-3 border-l-2 border-white/5 pl-5 hover:border-primary/40 transition-colors">
+                       <h5 className="font-bold text-[13px] uppercase tracking-wide text-foreground/80">{v.title} at {v.organization}</h5>
+                       <p className="text-[14px] text-muted-foreground leading-relaxed italic line-clamp-2">&ldquo;{v.description}&rdquo;</p>
                     </div>
                   ))}
-                  <div className="p-4 rounded-2xl bg-primary/5 border border-dashed border-primary/20 text-center text-[10px] text-primary/60 font-medium">
-                    + Tailoring engine distilling more accomplishments...
+                  <div className="p-6 rounded-[2rem] bg-primary/[0.02] border border-dashed border-primary/20 text-center text-xs text-primary/60 font-medium italic">
+                    + Advanced parser distilling metrics from deep vault...
                   </div>
                 </div>
               </div>
 
-              {/* TAILORED RESULT PREVIEW (Silicon Valley Modern) */}
-              <div className="bg-background rounded-[40px] p-10 border border-white/10 shadow-3xl overflow-y-auto custom-scrollbar flex flex-col gap-8">
-                {/* Visual Resume Simulation */}
-                <div className="text-center space-y-2 mb-4">
-                  <h1 className="text-2xl font-bold uppercase tracking-tight">{profile?.full_name}</h1>
-                   <div className="flex justify-center gap-3 text-[9px] text-muted-foreground font-bold uppercase tracking-widest">
+              {/* TACTICAL RESULT PREVIEW (The Document) */}
+              <div className="md:col-span-8 bg-zinc-950 rounded-[3.5rem] p-16 border border-white/10 shadow-[0_50px_100px_rgba(0,0,0,0.5)] overflow-y-auto max-h-[1000px] custom-scrollbar flex flex-col gap-14 group/resume">
+                <div className="text-center space-y-4">
+                  <h1 className="text-4xl font-display font-black uppercase tracking-tight text-white">{profile?.full_name}</h1>
+                   <div className="flex items-center justify-center gap-5 text-xs text-muted-foreground/60 font-black uppercase tracking-[0.3em] font-display">
                      <span>{profile?.location}</span>
-                     <span>•</span>
+                     <span className="w-1 h-1 rounded-full bg-white/20" />
                      <span>{profile?.email}</span>
                    </div>
                 </div>
 
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <h4 className="text-[11px] font-bold text-primary uppercase tracking-[0.2em] border-b border-white/5 pb-1">Professional Summary</h4>
-                    <p className="text-[12px] leading-relaxed text-foreground/80">{resume.professional_summary}</p>
+                <div className="space-y-12">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <h4 className="text-xs font-black text-primary uppercase tracking-[0.4em] whitespace-nowrap">Professional Summary</h4>
+                      <div className="h-[1px] w-full bg-white/5" />
+                    </div>
+                    <p className="text-[17px] leading-relaxed text-foreground/90 font-serif italic text-justify">&ldquo;{resume.professional_summary}&rdquo;</p>
                   </div>
                   
-                  <div className="space-y-4">
-                    <h4 className="text-[11px] font-bold text-primary uppercase tracking-[0.2em] border-b border-white/5 pb-1">Experience</h4>
-                    <div className="space-y-8">
+                  <div className="space-y-8">
+                    <div className="flex items-center gap-4">
+                      <h4 className="text-xs font-black text-primary uppercase tracking-[0.4em] whitespace-nowrap">Tactical Experience</h4>
+                      <div className="h-[1px] w-full bg-white/5" />
+                    </div>
+                    <div className="space-y-12">
                       {resume.experience.map((exp, i) => (
-                        <div key={i} className="space-y-3">
-                          <div className="flex justify-between items-baseline">
-                            <h5 className="font-bold text-sm tracking-tight">{exp.heading}</h5>
+                        <div key={i} className="space-y-5">
+                          <div className="flex justify-between items-baseline border-b border-white/5 pb-2">
+                            <h5 className="font-bold text-lg tracking-tight text-white/90">{exp.heading}</h5>
+                            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/20">Operational Horizon</span>
                           </div>
-                          <ul className="space-y-2.5">
+                          <ul className="space-y-4">
                             {exp.bullets?.map((bullet, j) => (
-                              <li key={j} className="text-[12px] text-foreground/70 flex gap-4">
-                                <span className="text-primary mt-2 w-1.5 h-1.5 rounded-full bg-current shrink-0 shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
-                                <span className="leading-relaxed">
-                                  {/* Visual highlight for numbers to show the Quantifier Engine worked */}
+                              <li key={j} className="text-[15px] text-foreground/80 flex gap-5 group/list">
+                                <span className="text-primary mt-2.5 w-1.5 h-1.5 rounded-full bg-current shrink-0 shadow-[0_0_15px_rgba(var(--primary-rgb),0.8)] opacity-40 group-hover/list:opacity-100 transition-opacity" />
+                                <span className="leading-relaxed font-medium">
                                   {bullet.split(/(\d+%?)/).map((part, k) => 
-                                    /(\d+%?)/.test(part) ? <span key={k} className="text-foreground font-black underline decoration-primary/30 decoration-2 underline-offset-2">{part}</span> : part
+                                    /(\d+%?)/.test(part) ? <span key={k} className="text-white font-black underline decoration-primary/40 decoration-2 underline-offset-4 bg-primary/5 px-1">{part}</span> : part
                                   )}
                                 </span>
                               </li>
@@ -359,6 +365,34 @@ RETURN JSON FORMAT ONLY:
                         </div>
                       ))}
                     </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-4">
+                        <h4 className="text-xs font-black text-primary uppercase tracking-[0.4em] whitespace-nowrap">Architecture</h4>
+                        <div className="h-[1px] w-full bg-white/5" />
+                      </div>
+                      <div className="flex flex-wrap gap-2 pt-2">
+                        {resume.skills_section.map((skill, k) => (
+                          <span key={k} className="px-4 py-1.5 rounded-lg bg-white/5 border border-white/10 text-[13px] font-bold text-foreground/70 uppercase tracking-widest">{skill}</span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {resume.education.length > 0 && (
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-4">
+                          <h4 className="text-xs font-black text-primary uppercase tracking-[0.4em] whitespace-nowrap">Credentials</h4>
+                          <div className="h-[1px] w-full bg-white/5" />
+                        </div>
+                        <ul className="space-y-3">
+                           {resume.education.map((edu, idx) => (
+                             <li key={idx} className="text-sm font-bold text-foreground/80 italic">{edu}</li>
+                           ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
