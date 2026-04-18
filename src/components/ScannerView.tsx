@@ -85,8 +85,15 @@ export const ScannerView = () => {
     return `Focus on ${critical.join(", ")} for this role; the rest are secondary infrastructure skills.`;
   };
 
-  const handleDecode = async () => { await decodeJD(jdText); };
-  const handleForceRedecode = async () => { await decodeJD(jdText, true); };
+  const handleDecode = async () => { 
+    console.log("Decoding started for Lumina 2.0...");
+    await decodeJD(jdText); 
+  };
+  
+  const handleForceRedecode = async () => { 
+    console.log("Force rebooting Total Intelligence engine...");
+    await decodeJD(jdText, true); 
+  };
 
   const displayName = user?.email || user?.phone || "User";
 
@@ -174,7 +181,7 @@ export const ScannerView = () => {
                             : "bg-accent-emerald/10 border-accent-emerald/20 text-accent-emerald shadow-[0_0_15px_rgba(var(--accent-emerald-rgb),0.1)]"
                         }`}>
                           <Shield size={10} className={wasCached ? "animate-pulse" : ""} />
-                          {wasCached ? "Consistency Verified (Cached)" : "Lumina 2.0 Ultra-Intelligence Active"}
+                          {wasCached ? "Consistency Verified (Cached)" : "Strategic Intelligence Active"}
                         </div>
                       </div>
                       <h3 className="font-serif italic text-4xl md:text-5xl lg:text-7xl text-foreground tracking-[-0.04em] leading-[0.9] max-w-5xl mx-auto px-4 mt-4 text-balance">
@@ -215,7 +222,7 @@ export const ScannerView = () => {
                   </div>
 
                   {/* ── INTELLIGENCE ENGINE: THE DASHBOARD ── */}
-                  {results && results.grade ? (
+                  {results && (
                     <motion.div
                       initial={{ opacity: 0, y: 40 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -223,28 +230,6 @@ export const ScannerView = () => {
                     >
                       <LuminaUltraDashboard results={results} />
                     </motion.div>
-                  ) : results && (
-                    <div className="glass-panel p-20 rounded-[3rem] border-white/5 text-center flex flex-col items-center gap-6">
-                      <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center animate-pulse">
-                        <BrainCircuit size={32} className="text-primary" />
-                      </div>
-                      <div className="space-y-12">
-                         <div className="space-y-4">
-                            <h3 className="text-3xl font-serif italic">Engine Initializing...</h3>
-                            <p className="text-sm text-muted-foreground font-display max-w-sm">
-                              The Lumina 2.0 Ultra-Intelligence engine is ready. Please click "Engine Reboot" or re-scan to generate the new 9-section strategic report.
-                            </p>
-                         </div>
-                         <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={handleForceRedecode}
-                            className="px-8 py-3 rounded-2xl bg-primary text-primary-foreground font-black text-[11px] uppercase tracking-widest shadow-[0_0_30px_rgba(var(--primary-rgb),0.3)]"
-                          >
-                            Activate Total Intelligence
-                          </motion.button>
-                      </div>
-                    </div>
                   )}
 
                   {/* ── SECTION E: INTERVIEW COACH ── */}

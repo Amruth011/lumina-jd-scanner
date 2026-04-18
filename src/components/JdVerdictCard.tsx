@@ -46,7 +46,7 @@ export const JdVerdictCard = ({ grade }: JdVerdictCardProps) => {
               {grade.letter}
             </div>
             <div className="mt-2 text-[10px] uppercase font-black tracking-[0.3em] text-muted-foreground opacity-50">
-              Lumina Verdict
+              Verdict
             </div>
         </div>
 
