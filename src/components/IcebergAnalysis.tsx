@@ -24,37 +24,36 @@ export const IcebergAnalysis = ({ reality, archetype }: IcebergAnalysisProps) =>
         </div>
 
         {/* Repositioned Archetype Badge (Header Integrated) */}
-        <div className="glass-panel px-4 py-2 rounded-xl border-accent-blue/20 bg-accent-blue/5 flex items-center gap-2.5">
-            <Layers size={14} className="text-accent-blue/60" />
+        <div className="glass-panel px-4 py-3 rounded-2xl border-accent-blue/20 bg-accent-blue/5 flex items-center gap-3">
+            <Layers size={16} className="text-accent-blue/40" />
             <div className="flex flex-col">
-                <span className="text-[9px] uppercase font-black tracking-widest text-accent-blue opacity-50">Archetype</span>
-                <span className="text-xs font-serif italic text-foreground leading-none">{archetype || 'Specialist'}</span>
+                <span className="text-xs uppercase font-black tracking-widest text-accent-blue/40">Archetype</span>
+                <span className="text-[13px] font-serif italic text-foreground leading-none">{archetype || 'Specialist'}</span>
             </div>
         </div>
       </div>
 
-      <div className="relative glass-panel p-0 rounded-[3rem] border-white/5 overflow-hidden min-h-[440px]">
+      <div className="relative glass-panel p-0 rounded-[2.5rem] border-white/5 overflow-hidden min-h-[400px]">
         {/* The Water Line */}
-        <div className="absolute top-[40%] left-0 w-full h-[1px] bg-accent-blue/40 z-20">
-            <div className="absolute right-6 -top-3.5 text-[10px] uppercase font-black tracking-widest text-accent-blue/80 bg-background/80 backdrop-blur-md px-3 py-1 rounded-full border border-accent-blue/20 shadow-sm">
+        <div className="absolute top-[42%] left-0 w-full h-[1px] bg-accent-blue/30 z-20">
+            <div className="absolute right-6 -top-4 text-xs uppercase font-black tracking-widest text-accent-blue/80 bg-background/80 backdrop-blur-md px-4 py-1.5 rounded-full border border-accent-blue/20 shadow-lg">
                 The Water Line (Stated)
             </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 h-full absolute inset-0">
             {/* Above Water */}
-            <div className="p-10 space-y-4 bg-accent-blue/[0.03] flex flex-col justify-start pt-14">
-               <div className="flex items-center gap-2.5 mb-2">
-                 <Zap size={16} className="text-accent-blue" />
-                 <span className="text-xs uppercase font-black tracking-widest text-accent-blue/70">Surface Requirements</span>
+            <div className="p-8 space-y-3 bg-accent-blue/[0.03] flex flex-col justify-start pt-12">
+               <div className="flex items-center gap-3 mb-2">
+                 <Zap size={18} className="text-accent-blue/60" />
+                 <span className="text-xs uppercase font-black tracking-widest text-accent-blue/60">Surface Level</span>
                </div>
                {(reality.iceberg_above || []).map((item, i) => (
                    <motion.div 
                      key={i}
                      initial={{ opacity: 0, y: 10 }}
                      animate={{ opacity: 1, y: 0 }}
-                     transition={{ delay: i * 0.1 }}
-                     className="px-5 py-3.5 rounded-2xl bg-white/60 border border-white/20 text-[13px] font-display font-bold text-foreground/80 shadow-sm"
+                     className="px-5 py-4 rounded-2xl bg-white/[0.03] border border-white/5 text-[14px] font-display font-bold text-foreground/80 shadow-sm hover:bg-white/5 transition-colors"
                    >
                        {item}
                    </motion.div>
@@ -62,18 +61,17 @@ export const IcebergAnalysis = ({ reality, archetype }: IcebergAnalysisProps) =>
             </div>
 
             {/* Below Water */}
-            <div className="p-10 space-y-4 bg-accent-blue/[0.06] flex flex-col justify-end pb-14">
-               <div className="flex items-center gap-2.5 mb-2">
-                 <AlertTriangle size={16} className="text-red-400" />
-                 <span className="text-xs uppercase font-black tracking-widest text-red-400/70">Hidden Realities</span>
+            <div className="p-8 space-y-3 bg-accent-blue/[0.08] flex flex-col justify-end pb-12">
+               <div className="flex items-center gap-3 mb-2">
+                 <AlertTriangle size={18} className="text-red-400/60" />
+                 <span className="text-xs uppercase font-black tracking-widest text-red-400/60">Hidden Reality</span>
                </div>
                {(reality.iceberg_below || []).map((item, i) => (
                    <motion.div 
                      key={i}
                      initial={{ opacity: 0, y: 10 }}
                      animate={{ opacity: 1, y: 0 }}
-                     transition={{ delay: 0.5 + i * 0.1 }}
-                     className="px-5 py-3.5 rounded-2xl bg-black/10 border border-white/10 text-[13px] font-display font-extrabold text-foreground italic shadow-xl backdrop-blur-sm"
+                     className="px-5 py-4 rounded-2xl bg-black/20 border border-white/5 text-[14px] font-display font-extrabold text-foreground italic shadow-2xl backdrop-blur-md hover:bg-black/30 transition-all"
                    >
                        {item}
                    </motion.div>
