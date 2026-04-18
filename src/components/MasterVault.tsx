@@ -65,6 +65,7 @@ const calculateCompletion = (profile: UserProfileWithVault | null, items: VaultI
 };
 
 export const MasterVault = () => {
+  // Version: 1.0.1 - Force build to resolve production ReferenceError
   const { user, loading: authLoading } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState<VaultItemType | 'profile'>('profile');

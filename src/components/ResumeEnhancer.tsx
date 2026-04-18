@@ -15,6 +15,7 @@ interface ResumeEnhancerProps {
 }
 
 export const ResumeEnhancer = ({ resumeText, skills, deductions, jobTitle, gapResult }: ResumeEnhancerProps) => {
+  // Version: 1.0.1 - Force build to resolve production ReferenceError
   const [isGenerating, setIsGenerating] = useState(false);
   const [resume, setResume] = useState<GeneratedResume | null>(null);
   const [isOpen, setIsOpen] = useState(false);
