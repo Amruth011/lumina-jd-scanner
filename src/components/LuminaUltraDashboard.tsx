@@ -31,11 +31,11 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
   };
 
   return (
-    <div className="space-y-10 pb-20">
+    <div className="space-y-6 pb-12">
       {/* ── PHASE 1: ELITE TACTICAL HEADER ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
          {/* Total Score Card */}
-         <div className="lg:col-span-4 glass-panel p-10 rounded-[2.5rem] border-white/5 flex flex-col items-center justify-center relative overflow-hidden group h-full">
+          <div className="lg:col-span-4 glass-panel p-8 rounded-[2.5rem] flex flex-col items-center justify-center relative overflow-hidden group">
             <div className="absolute inset-0 bg-primary/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             <LuminaGauge 
                 value={grade.score} 
@@ -50,7 +50,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
          </div>
 
          {/* Required vs Preferred Skills */}
-         <div className="lg:col-span-5 glass-panel p-10 rounded-[2.5rem] border-white/5 space-y-6 flex flex-col justify-between h-full bg-gradient-to-br from-white/[0.01] to-transparent">
+          <div className="lg:col-span-5 glass-panel p-8 rounded-[2.5rem] space-y-6 flex flex-col justify-between bg-gradient-to-br from-white/[0.01] to-transparent">
             <div className="space-y-2">
                 <div className="flex items-center gap-3">
                     <Target size={18} className="text-accent-gold" />
@@ -79,7 +79,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
          </div>
 
          {/* Seniority & Logistics Overlay */}
-         <div className="lg:col-span-3 glass-panel p-10 rounded-[2.5rem] border-white/5 flex flex-col items-center justify-between h-full">
+          <div className="lg:col-span-3 glass-panel p-8 rounded-[2.5rem] flex flex-col items-center justify-between">
             <div className="flex-1 flex items-center">
                 <LuminaGauge 
                     value={results?.qualifiers?.seniority_level ?? 0} 
@@ -107,8 +107,8 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
 
       {/* ── PHASE 2: VERDICT & INTELLIGENCE ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-         <div className="lg:col-span-8 flex flex-col">
-            <div className="glass-panel p-10 lg:p-14 rounded-[3rem] border-white/5 space-y-10 relative overflow-hidden flex-1 font-display bg-gradient-to-br from-white/[0.01] to-transparent">
+          <div className="lg:col-span-8 flex flex-col">
+            <div className="glass-panel p-8 lg:p-12 rounded-[3rem] space-y-8 relative overflow-hidden flex-1 font-display bg-gradient-to-br from-white/[0.01] to-transparent">
                 <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
                     <MessageSquareQuote size={180} />
                 </div>
@@ -140,7 +140,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
       {/* ── PHASE 3/4: RISK & REWARDS ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
          {/* Strategic Insights Section */}
-         <div className="lg:col-span-5 glass-panel p-10 rounded-[3rem] border-white/5 space-y-10 bg-gradient-to-br from-red-500/[0.03] to-transparent flex flex-col h-full">
+          <div className="lg:col-span-5 glass-panel p-8 rounded-[3rem] space-y-8 bg-gradient-to-br from-red-500/[0.03] to-transparent flex flex-col">
              <div className="space-y-3">
                 <div className="flex items-center gap-3">
                     <div className="p-2.5 rounded-2xl bg-red-500/10 text-red-500">
@@ -175,7 +175,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
 
          <div className="lg:col-span-7 space-y-6 flex flex-col">
              {/* Salary Range Card */}
-             <div className="glass-panel p-10 rounded-[3rem] border-white/5 space-y-8 bg-gradient-to-br from-accent-emerald/[0.03] to-transparent flex-1 flex flex-col justify-center">
+              <div className="glass-panel p-8 rounded-[3rem] space-y-8 bg-gradient-to-br from-accent-emerald/[0.03] to-transparent flex-1 flex flex-col justify-center">
                 <div className="flex justify-between items-start">
                     <div className="space-y-4">
                         <span className="text-xs uppercase font-black tracking-widest text-muted-foreground opacity-60">Projected Value Range</span>
@@ -225,7 +225,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
 
              {/* Secondary Visualization Grid */}
              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-                <div className="glass-panel p-10 rounded-[2.5rem] flex flex-col items-center justify-between space-y-10 h-full border-white/5">
+                 <div className="glass-panel p-8 rounded-[2.5rem] flex flex-col items-center justify-between space-y-8 h-full">
                      <span className="text-xs uppercase font-black text-muted-foreground opacity-50 self-start tracking-[0.2em]">Operational Distribution</span>
                      <div className="relative w-40 h-40 flex items-center justify-center">
                         <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
@@ -277,7 +277,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-            <div className="lg:col-span-8 glass-panel p-8 lg:p-10 rounded-[3rem] border-foreground/10 space-y-8 flex flex-col h-full bg-white/[0.02]">
+            <div className="lg:col-span-8 glass-panel p-6 lg:p-8 rounded-[3rem] space-y-6 flex flex-col bg-white/[0.02]">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Clock size={20} className="text-accent-blue" />
@@ -310,7 +310,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                     </div>
                 </div>
 
-                <div className="glass-panel p-8 rounded-[2.5rem] bg-accent-blue/5 border-accent-blue/20 flex flex-col justify-center">
+                <div className="glass-panel p-8 rounded-[2.5rem] bg-accent-blue/5 flex flex-col justify-center shadow-xl shadow-accent-blue/5">
                     <RecruiterLens insights={results?.recruiter_lens || []} />
                 </div>
             </div>

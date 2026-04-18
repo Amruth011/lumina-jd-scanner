@@ -29,7 +29,7 @@ import type { DecodeResult, ResumeGapResult } from "@/types/jd";
 
 const ApplicationTracker = lazy(() => import("@/components/ApplicationTracker").then(module => ({ default: module.ApplicationTracker })));
 
-type Tab = "decode" | "analysis" | "generator" | "vault" | "applications" | "guide";
+type Tab = "decode" | "analysis" | "vault" | "generator" | "guide" | "featured";
 
 const stagger = {
   animate: { transition: { staggerChildren: 0.08 } }
@@ -69,8 +69,8 @@ export const ScannerView = () => {
   };
 
   const handleTabSwitch = (tab: Tab) => {
-    if ((tab === "applications" || tab === "vault") && !user) {
-      toast.info(`Sign in to access your ${tab === "vault" ? "Master Vault" : "application tracker"}.`);
+    if (tab === "vault" && !user) {
+      toast.info(`Sign in to access your Master Vault.`);
       navigate("/auth");
       return;
     }
@@ -103,12 +103,12 @@ export const ScannerView = () => {
       <div className="flex justify-center mb-12">
         <nav className="flex items-center gap-1.5 bg-muted/40 p-2 rounded-3xl backdrop-blur-3xl border border-foreground/10 shadow-2xl shadow-black/10 overflow-x-auto max-w-full no-scrollbar">
           {[
-            { key: "decode" as Tab, icon: Search, label: "JD Decoder" },
+            { key: "decode" as Tab, icon: Search, label: "JD Decode" },
             { key: "analysis" as Tab, icon: ShieldCheck, label: "Resume Analysis" },
-            { key: "generator" as Tab, icon: Zap, label: "Resume Generator" },
             { key: "vault" as Tab, icon: LayoutDashboard, label: "Master Vault" },
-            { key: "applications" as Tab, icon: Briefcase, label: "Pipeline" },
+            { key: "generator" as Tab, icon: Zap, label: "Resume Generate" },
             { key: "guide" as Tab, icon: Info, label: "How It Works" },
+            { key: "featured" as Tab, icon: Sparkles, label: "Featured" },
           ].map((tab) => (
             <button 
               key={tab.key} 
@@ -302,45 +302,7 @@ export const ScannerView = () => {
               </div>
             )}
           </motion.div>
-        ) : activeTab === "applications" ? (
-          <motion.div
-            key="applications"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-          >
-            <Suspense fallback={<div className="flex justify-center p-12"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>}>
-              <ApplicationTracker />
-            </Suspense>
-          </motion.div>
-        ) : activeTab === "guide" ? (
-          <motion.div
-            key="guide"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            className="space-y-20 pb-20"
-          >
-            <div className="glass-panel p-10 lg:p-20 rounded-[4rem] border border-foreground/5 bg-gradient-to-br from-primary/5 to-transparent">
-              <h2 className="text-5xl font-serif italic text-foreground mb-4">Tactical Operations Guide</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mb-12">Learn how to leverage Lumina's total intelligence engine to secure your next career milestone.</p>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {[
-                  { title: "JD Deconstruction", desc: "Our engine deconstructs generic job text into high-fidelity tactical requirements and hidden risks." },
-                  { title: "Resume Alignment", desc: "The gap analyzer performs a semantic cross-reference to identify exactly where your experience misaligns." },
-                  { title: "Generative Export", desc: "Generate a Silicon Valley grade resume tailored specifically to the decoded JD signatures." },
-                ].map((item, i) => (
-                  <div key={i} className="p-8 rounded-[2.5rem] bg-background/50 border border-foreground/10 hover:border-primary/40 transition-colors">
-                    <span className="text-[40px] font-serif italic text-primary/20 block mb-4">0{i+1}</span>
-                    <h4 className="text-xl font-display font-bold mb-3">{item.title}</h4>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        ) : (
+        ) : activeTab === "vault" ? (
           <motion.div
             key="vault"
             initial={{ opacity: 0, y: 12 }}
@@ -348,6 +310,28 @@ export const ScannerView = () => {
             exit={{ opacity: 0, y: -12 }}
           >
             <MasterVault />
+          </motion.div>
+        ) : activeTab === "guide" ? (
+          <motion.div
+            key="guide"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+          >
+            <div className="glass-panel p-10 lg:p-20 rounded-[4rem] border-foreground/10 bg-white/[0.02]">
+              <HowItWorksSection />
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="featured"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+          >
+            <div className="glass-panel p-10 lg:p-20 rounded-[4rem] border-foreground/10 bg-white/[0.02]">
+              <FeaturedSection />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

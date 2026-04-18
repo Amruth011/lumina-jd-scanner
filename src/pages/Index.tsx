@@ -15,9 +15,9 @@ const Index = () => {
       <GlobalNavbar />
 
       {/* ── SECTION 1 — HERO ── */}
-      <section className="min-h-screen relative flex flex-col overflow-hidden">
+      <section className="min-h-[70vh] relative flex flex-col overflow-hidden">
         {/* Hero Content */}
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-12 text-center -translate-y-[5%] md:-translate-y-[10%]">
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-12 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -46,72 +46,23 @@ const Index = () => {
                 Analyze My JD Free
                 <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
               </button>
-              <button className="liquid-glass-refractive rounded-full px-10 py-5 text-foreground text-sm font-display font-bold transition-all hover:bg-white/60 active:scale-95">
-                See a Sample Report
-              </button>
-            </div>
-
-            {/* Stats */}
-            <div className="flex justify-center gap-4 mt-12 flex-wrap">
-              {[
-                "50,000+ JDs Decoded",
-                "94% Interview Rate",
-                "ATS Bypass Playbook Included"
-              ].map((stat, i) => (
-                <div key={i} className="liquid-glass-refractive rounded-full px-6 py-3 text-muted-foreground text-[11px] font-display font-bold uppercase tracking-[0.15em] border-white/40">
-                  {stat}
-                </div>
-              ))}
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* ── SECTION 2 — SCANNER (The "Working" Part) ── */}
-      <section id="scanner" className="relative py-20 bg-background/30 backdrop-blur-sm border-y border-border/40">
+      {/* ── SECTION 2 — SCANNER (The Total Tactical Hub) ── */}
+      <section id="scanner" className="relative py-12 bg-background/30 backdrop-blur-sm border-t border-border/40 min-h-screen">
         <div className="max-w-7xl mx-auto text-center mb-16 px-6">
           <h2 className="text-5xl md:text-7xl text-foreground tracking-[-0.05em] font-serif mb-6 leading-[0.95]">
-            Ready to <em className="italic text-accent-blue">decode</em> your next role?
+            Total <em className="italic text-accent-blue">Intelligence</em> Hub
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto font-medium">
-            Our high-precision engine extracts the exact DNA of the job description to give you an unfair advantage.
+            Everything you need to dominate the application pipeline, unified in one tactical interface.
           </p>
         </div>
         <ScannerView />
       </section>
-
-      {/* ── SECTION 3 — MASTER VAULT (The Archive) ── */}
-      <section id="master-vault" className="relative py-32 bg-background overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-24">
-             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent-blue/10 border border-accent-blue/20 text-accent-blue text-[10px] font-black uppercase tracking-[0.3em] mb-6">
-               <ArrowRight size={10} /> Persistent Career Library
-             </div>
-             <h2 className="text-6xl md:text-8xl text-foreground tracking-[-0.05em] font-serif mb-8 leading-none">
-               Your <em className="italic text-accent-blue">Master Vault</em>
-             </h2>
-             <p className="text-muted-foreground text-xl max-w-2xl mx-auto font-medium leading-relaxed">
-               Sync your professional history once. Let our AI tailor your profile for every single opportunity, perfectly.
-             </p>
-          </div>
-          
-          <div className="p-1 rounded-[48px] bg-gradient-to-br from-white/10 to-transparent border border-white/10 shadow-3xl">
-             <div className="bg-background/80 backdrop-blur-3xl rounded-[44px] p-8 md:p-12 border border-white/5">
-                <MasterVault />
-             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Sections */}
-      <div id="how-it-works">
-        <HowItWorksSection />
-      </div>
-      <div id="features">
-        <FeaturedSection />
-      </div>
-      <PhilosophySection />
-      <ServicesSection />
 
       {/* Footer */}
       <footer className="bg-background border-t border-border/40 py-12 px-6">
