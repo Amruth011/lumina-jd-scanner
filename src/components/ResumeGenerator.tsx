@@ -37,21 +37,27 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
 
   const handleGenerate = async () => {
     if (vaultItems.length === 0) {
-      toast.error("Your Master Vault is empty! Sync your resume in the Vault tab first.");
+      toast.error("Your Tactical Profile is empty! Sync your resume in the Profile tab first.");
       return;
     }
     setIsGenerating(true);
 
     try {
       const prompt = `You are an elite Silicon Valley Executive Resume Writer.
+Your goal is to create a resume that is 100% ATS-friendly and passes machine parsers with a 99th percentile score.
 
 Job Target: ${jdTitle} at ${companyName || "this company"}
 Target Skills: ${jdSkills.map(s => s.skill).join(", ")}
 
-Candidate Vault:
+Candidate Profile:
 ${JSON.stringify(vaultItems.map(v => ({ title: v.title, org: v.organization, desc: v.description })), null, 2)}
 
-Create a highly tailored resume that positions the candidate perfectly for this role using the vault data.
+STRATEGY:
+1. Use standard resume headers (Professional Summary, Experience, Education).
+2. For experience, focus on HARD METRICS (%, $, #). 
+3. Avoid any special characters, icons, or complex formatting.
+4. Ensure every word is relevant to the Job Description skills.
+
 RETURN JSON FORMAT ONLY:
 {
   "professional_summary": "3-4 sentences of elite executive summary hitting the core JD requirements.",
@@ -303,7 +309,7 @@ RETURN JSON FORMAT ONLY:
               <div className="md:col-span-4 glass-panel rounded-[3rem] p-10 border-white/5 overflow-hidden flex flex-col bg-white/[0.01]">
                 <div className="flex items-center gap-3 mb-8">
                   <ArchiveBox className="w-5 h-5 text-muted-foreground opacity-40" />
-                  <span className="text-xs font-black text-muted-foreground/60 uppercase tracking-[0.2em]">Vault Intelligence Inputs</span>
+                  <span className="text-xs font-black text-muted-foreground/60 uppercase tracking-[0.2em]">Profile Intelligence Inputs</span>
                 </div>
                 <div className="space-y-8 overflow-y-auto custom-scrollbar flex-1 pr-4 opacity-40 hover:opacity-100 transition-all duration-700">
                   {vaultItems.filter(v => v.type === 'professional').slice(0, 4).map((v, i) => (
@@ -313,52 +319,49 @@ RETURN JSON FORMAT ONLY:
                     </div>
                   ))}
                   <div className="p-6 rounded-[2rem] bg-primary/[0.02] border border-dashed border-primary/20 text-center text-xs text-primary/60 font-medium italic">
-                    + Advanced parser distilling metrics from deep vault...
+                    + Advanced parser distilling metrics from tactical profile...
                   </div>
                 </div>
               </div>
 
               {/* TACTICAL RESULT PREVIEW (The Document) */}
-              <div className="md:col-span-8 bg-zinc-950 rounded-[3.5rem] p-16 border border-white/10 shadow-[0_50px_100px_rgba(0,0,0,0.5)] overflow-y-auto max-h-[1000px] custom-scrollbar flex flex-col gap-14 group/resume">
-                <div className="text-center space-y-4">
-                  <h1 className="text-4xl font-display font-black uppercase tracking-tight text-white">{profile?.full_name}</h1>
-                   <div className="flex items-center justify-center gap-5 text-xs text-muted-foreground/60 font-black uppercase tracking-[0.3em] font-display">
+              <div className="md:col-span-8 bg-white max-w-4xl mx-auto rounded-none p-12 border border-border shadow-2xl overflow-y-auto max-h-[1000px] custom-scrollbar flex flex-col gap-10 text-black">
+                <div className="text-center space-y-2">
+                  <h1 className="text-3xl font-bold uppercase tracking-tight text-black">{profile?.full_name}</h1>
+                   <div className="flex items-center justify-center gap-4 text-[11px] text-zinc-600 font-bold uppercase tracking-widest">
                      <span>{profile?.location}</span>
-                     <span className="w-1 h-1 rounded-full bg-white/20" />
+                     <span>•</span>
                      <span>{profile?.email}</span>
+                     <span>•</span>
+                     <span>{profile?.phone}</span>
                    </div>
                 </div>
 
                 <div className="space-y-12">
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     <div className="flex items-center gap-4">
-                      <h4 className="text-xs font-black text-primary uppercase tracking-[0.4em] whitespace-nowrap">Professional Summary</h4>
-                      <div className="h-[1px] w-full bg-white/5" />
+                      <h4 className="text-[11px] font-black text-black uppercase tracking-[0.2em] whitespace-nowrap">Professional Summary</h4>
+                      <div className="h-[0.5px] w-full bg-zinc-200" />
                     </div>
-                    <p className="text-[17px] leading-relaxed text-foreground/90 font-serif italic text-justify">&ldquo;{resume.professional_summary}&rdquo;</p>
+                    <p className="text-[14px] leading-relaxed text-zinc-900 font-medium text-justify">{resume.professional_summary}</p>
                   </div>
                   
-                  <div className="space-y-8">
+                  <div className="space-y-6">
                     <div className="flex items-center gap-4">
-                      <h4 className="text-xs font-black text-primary uppercase tracking-[0.4em] whitespace-nowrap">Tactical Experience</h4>
-                      <div className="h-[1px] w-full bg-white/5" />
+                      <h4 className="text-[11px] font-black text-black uppercase tracking-[0.2em] whitespace-nowrap">Professional Experience</h4>
+                      <div className="h-[0.5px] w-full bg-zinc-200" />
                     </div>
-                    <div className="space-y-12">
+                    <div className="space-y-8">
                       {resume.experience.map((exp, i) => (
-                        <div key={i} className="space-y-5">
-                          <div className="flex justify-between items-baseline border-b border-white/5 pb-2">
-                            <h5 className="font-bold text-lg tracking-tight text-white/90">{exp.heading}</h5>
-                            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/20">Operational Horizon</span>
+                        <div key={i} className="space-y-3">
+                          <div className="flex justify-between items-baseline">
+                            <h5 className="font-bold text-[15px] text-black">{exp.heading}</h5>
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Tactical Horizon</span>
                           </div>
-                          <ul className="space-y-4">
+                          <ul className="space-y-2 list-disc pl-5">
                             {exp.bullets?.map((bullet, j) => (
-                              <li key={j} className="text-[15px] text-foreground/80 flex gap-5 group/list">
-                                <span className="text-primary mt-2.5 w-1.5 h-1.5 rounded-full bg-current shrink-0 shadow-[0_0_15px_rgba(var(--primary-rgb),0.8)] opacity-40 group-hover/list:opacity-100 transition-opacity" />
-                                <span className="leading-relaxed font-medium">
-                                  {bullet.split(/(\d+%?)/).map((part, k) => 
-                                    /(\d+%?)/.test(part) ? <span key={k} className="text-white font-black underline decoration-primary/40 decoration-2 underline-offset-4 bg-primary/5 px-1">{part}</span> : part
-                                  )}
-                                </span>
+                              <li key={j} className="text-[13px] text-zinc-800 leading-relaxed">
+                                {bullet}
                               </li>
                             ))}
                           </ul>
@@ -368,27 +371,23 @@ RETURN JSON FORMAT ONLY:
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       <div className="flex items-center gap-4">
-                        <h4 className="text-xs font-black text-primary uppercase tracking-[0.4em] whitespace-nowrap">Architecture</h4>
-                        <div className="h-[1px] w-full bg-white/5" />
+                        <h4 className="text-[11px] font-black text-black uppercase tracking-[0.2em] whitespace-nowrap">Technical Architecture</h4>
+                        <div className="h-[0.5px] w-full bg-zinc-200" />
                       </div>
-                      <div className="flex flex-wrap gap-2 pt-2">
-                        {resume.skills_section.map((skill, k) => (
-                          <span key={k} className="px-4 py-1.5 rounded-lg bg-white/5 border border-white/10 text-[13px] font-bold text-foreground/70 uppercase tracking-widest">{skill}</span>
-                        ))}
-                      </div>
+                      <p className="text-[13px] text-zinc-800 leading-relaxed">{resume.skills_section.join(", ")}</p>
                     </div>
 
                     {resume.education.length > 0 && (
-                      <div className="space-y-4">
+                      <div className="space-y-3">
                         <div className="flex items-center gap-4">
-                          <h4 className="text-xs font-black text-primary uppercase tracking-[0.4em] whitespace-nowrap">Credentials</h4>
-                          <div className="h-[1px] w-full bg-white/5" />
+                          <h4 className="text-[11px] font-black text-black uppercase tracking-[0.2em] whitespace-nowrap">Academic Pedigree</h4>
+                          <div className="h-[0.5px] w-full bg-zinc-200" />
                         </div>
-                        <ul className="space-y-3">
+                        <ul className="space-y-1">
                            {resume.education.map((edu, idx) => (
-                             <li key={idx} className="text-sm font-bold text-foreground/80 italic">{edu}</li>
+                             <li key={idx} className="text-[13px] text-zinc-800">{edu}</li>
                            ))}
                         </ul>
                       </div>

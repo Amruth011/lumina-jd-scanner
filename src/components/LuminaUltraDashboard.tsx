@@ -272,11 +272,45 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
       {/* ── PHASE 5: OPERATIONAL DEEP DIVE ── */}
       <div className="space-y-8">
         <div className="flex items-center gap-8 pl-4">
-            <h2 className="text-3xl font-serif italic whitespace-nowrap text-foreground/90">The Execution Layer</h2>
+            <h2 className="text-3xl font-serif italic whitespace-nowrap text-foreground/90">Tactical Optimization</h2>
             <div className="h-px flex-1 bg-gradient-to-r from-foreground/10 to-transparent" />
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            {/* NEW: STRATEGIC DEFICIT (Keyword Gap Analysis) */}
+            <div className="lg:col-span-12 glass-panel p-8 lg:p-12 rounded-[3.5rem] space-y-8 bg-gradient-to-br from-primary/[0.03] to-transparent">
+                <div className="flex items-center justify-between">
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-4">
+                            <Target size={24} className="text-primary" />
+                            <h3 className="text-3xl font-serif italic text-foreground">The Strategic Deficit</h3>
+                        </div>
+                        <p className="text-[11px] uppercase font-black tracking-[0.3em] text-muted-foreground opacity-50">High-priority keyword gaps detected between Resume and JD architecture.</p>
+                    </div>
+                    <div className="px-6 py-3 rounded-2xl bg-primary/10 border border-primary/20 text-center">
+                        <span className="text-[10px] font-black uppercase text-primary tracking-widest block">Gap Density</span>
+                        <span className="text-2xl font-black">{results?.resume_help?.keywords?.length || 0} GAPS</span>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    {(results?.resume_help?.keywords || []).map((keyword, i) => (
+                        <div key={i} className="group relative p-5 rounded-2xl bg-white/5 border border-white/5 hover:border-primary/40 transition-all duration-500 hover:-translate-y-1">
+                            <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <SearchCheck size={14} className="text-primary" />
+                            </div>
+                            <span className="text-[13px] font-bold text-foreground/80 tracking-tight block group-hover:text-primary transition-colors">{keyword}</span>
+                            <div className="mt-2 h-0.5 w-0 group-hover:w-full bg-primary/40 transition-all duration-700" />
+                        </div>
+                    ))}
+                    {(!results?.resume_help?.keywords || results.resume_help.keywords.length === 0) && (
+                        <div className="col-span-full py-10 text-center italic text-muted-foreground opacity-40">
+                            Zero strategic deficits detected. The architecture is fully aligned.
+                        </div>
+                    )}
+                </div>
+            </div>
+
             <div className="lg:col-span-8 glass-panel p-6 lg:p-8 rounded-[3rem] space-y-6 flex flex-col bg-white/[0.02]">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -290,21 +324,19 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
             </div>
 
             <div className="lg:col-span-4 space-y-6 flex flex-col h-full">
-                <div className="glass-panel p-8 rounded-[2.5rem] space-y-8 flex-1 border-foreground/10 bg-white/[0.02]">
-                    <div className="flex items-center gap-4">
-                        <Heart size={20} className="text-red-400" />
-                        <span className="text-[12px] uppercase font-black tracking-[0.3em] text-foreground/70">Cultural DNA Radar</span>
+                {/* NEW: OPTIMIZATION ROADMAP */}
+                <div className="glass-panel p-8 rounded-[2.5rem] bg-gradient-to-br from-accent-emerald/[0.05] to-transparent border border-accent-emerald/10">
+                    <div className="flex items-center gap-4 mb-8">
+                        <TrendingUp size={20} className="text-accent-emerald" />
+                        <span className="text-[12px] uppercase font-black tracking-[0.3em] text-accent-emerald">Optimization Roadmap</span>
                     </div>
                     <div className="space-y-6">
-                        {Object.entries(results?.deep_dive?.culture_radar || {}).map(([key, val]) => (
-                            <div key={key} className="space-y-3">
-                                <div className="flex justify-between items-end">
-                                    <span className="text-[12px] font-black uppercase tracking-widest text-foreground/60 capitalize">{key.replace('_', ' ')}</span>
-                                    <span className="text-[12px] font-black text-primary">{(val as number)}%</span>
-                                </div>
-                                <div className="h-2 w-full bg-foreground/5 rounded-full overflow-hidden p-0.5 border border-foreground/5">
-                                    <div className="h-full bg-primary rounded-full shadow-[0_0_12px_rgba(var(--primary-rgb),0.5)]" style={{ width: `${(val as number)}%` }} />
-                                </div>
+                        {(results?.resume_help?.bullets || []).slice(0, 4).map((step, i) => (
+                            <div key={i} className="flex gap-4 group">
+                                <div className="w-1.5 h-1.5 rounded-full bg-accent-emerald mt-2 group-hover:scale-150 transition-transform shadow-[0_0_10px_rgba(var(--accent-emerald-rgb),0.8)]" />
+                                <p className="text-[13px] font-medium text-foreground/70 leading-relaxed group-hover:text-foreground transition-colors italic">
+                                    {step}
+                                </p>
                             </div>
                         ))}
                     </div>

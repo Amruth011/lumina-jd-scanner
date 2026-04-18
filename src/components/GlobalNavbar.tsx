@@ -29,7 +29,7 @@ export const GlobalNavbar = ({ activeTab, onTabChange }: GlobalNavbarProps) => {
   const tabs = [
     { key: "decode" as Tab, icon: Search, label: "JD Decode" },
     { key: "analysis" as Tab, icon: ShieldCheck, label: "Analysis" },
-    { key: "vault" as Tab, icon: LayoutDashboard, label: "Vault" },
+    { key: "profile" as Tab, icon: User, label: "Profile" },
     { key: "generator" as Tab, icon: Zap, label: "Generator" },
     { key: "guide" as Tab, icon: Info, label: "Guide" },
     { key: "featured" as Tab, icon: Sparkles, label: "Featured" },

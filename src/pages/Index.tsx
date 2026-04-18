@@ -4,7 +4,7 @@ import { Sparkles, ArrowRight } from "lucide-react";
 import { GlobalNavbar } from "@/components/GlobalNavbar";
 import { ScannerView } from "@/components/ScannerView";
 
-export type Tab = "decode" | "analysis" | "vault" | "generator" | "guide" | "featured";
+export type Tab = "decode" | "analysis" | "profile" | "generator" | "guide" | "featured";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<Tab>("decode");

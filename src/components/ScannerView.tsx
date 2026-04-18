@@ -31,7 +31,7 @@ import type { DecodeResult, ResumeGapResult } from "@/types/jd";
 
 const ApplicationTracker = lazy(() => import("@/components/ApplicationTracker").then(module => ({ default: module.ApplicationTracker })));
 
-export type Tab = "decode" | "analysis" | "vault" | "generator" | "guide" | "featured";
+export type Tab = "decode" | "analysis" | "profile" | "generator" | "guide" | "featured";
 
 interface ScannerViewProps {
   activeTab?: Tab;
@@ -75,8 +75,8 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
   };
 
   const handleTabSwitch = (tab: Tab) => {
-    if (tab === "vault" && !user) {
-      toast.info(`Sign in to access your Master Vault.`);
+    if (tab === "profile" && !user) {
+      toast.info(`Sign in to access your Tactical Profile.`);
       navigate("/auth");
       return;
     }
@@ -272,9 +272,9 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
               </div>
             )}
           </motion.div>
-        ) : activeTab === "vault" ? (
+        ) : activeTab === "profile" ? (
           <motion.div
-            key="vault"
+            key="profile"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
