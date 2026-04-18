@@ -199,7 +199,9 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
               body: JSON.stringify({
                 model: "llama-3.3-70b-versatile",
                 messages: [{ role: "user", content: prompt + "\nResume: " + trimmedResume + "\n\nIMPORTANT: Return ONLY valid JSON." }],
-                response_format: { type: "json_object" }
+                response_format: { type: "json_object" },
+                temperature: 0,
+                top_p: 1
               })
             });
             
@@ -219,7 +221,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
             throw new Error(`Deep Scan AI failure: ${errMsg}`);
           }
           if (!resultText) throw new Error(`Deep Scan AI failure: Response empty`);
-
+ 
         if (resultText) {
           const start = resultText.indexOf("{");
           const end = resultText.lastIndexOf("}");
@@ -228,9 +230,12 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
       } catch (err) {
         console.error("AI decode Error:", err);
       }
-
+ 
       const final: ResumeGapResult = aiResult ? {
         ...baseResult,
+        overall_match: (aiResult.overall_match && aiResult.overall_match > baseResult.overall_match) 
+          ? aiResult.overall_match 
+          : baseResult.overall_match,
         summary: aiResult.summary || baseResult.summary,
         deductions: (baseResult.deductions || []).map(d => {
             // Guard against AI hallucinating non-array for deductions

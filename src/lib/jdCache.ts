@@ -25,8 +25,10 @@ const MAX_CACHE_ENTRIES = 50; // Prevent unbounded localStorage growth
 function normalizeJdText(text: string): string {
   return text
     .toLowerCase()
-    .replace(/[\r\n]+/g, " ")
-    .replace(/\s+/g, " ")
+    // Remove zero-width spaces and other invisible characters
+    .replace(/[\u200B-\u200D\uFEFF]/g, "")
+    // Normalize all whitespace (including tabs, newlines, non-breaking spaces) to single space
+    .replace(/[\s\xa0]+/g, " ")
     .trim();
 }
 

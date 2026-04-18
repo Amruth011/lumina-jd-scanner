@@ -81,7 +81,9 @@ export const useDecodeJD = () => {
             body: JSON.stringify({
               model: "llama-3.3-70b-versatile",
               messages: [{ role: "user", content: prompt + "\n\nIMPORTANT: Return ONLY valid JSON format. Start and end with curly braces." }],
-              response_format: { type: "json_object" }
+              response_format: { type: "json_object" },
+              temperature: 0,
+              top_p: 1
             }),
           });
 

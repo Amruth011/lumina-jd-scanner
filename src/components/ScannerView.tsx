@@ -160,6 +160,16 @@ export const ScannerView = () => {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.1, type: "spring", stiffness: 150 }}
                     >
+                      <div className="flex justify-center mb-6">
+                        <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${
+                          wasCached 
+                            ? "bg-accent-blue/10 border-accent-blue/20 text-accent-blue shadow-[0_0_15px_rgba(var(--accent-blue-rgb),0.1)]"
+                            : "bg-accent-emerald/10 border-accent-emerald/20 text-accent-emerald shadow-[0_0_15px_rgba(var(--accent-emerald-rgb),0.1)]"
+                        }`}>
+                          <Shield size={10} className={wasCached ? "animate-pulse" : ""} />
+                          {wasCached ? "Consistency Verified (Cached)" : "Deterministic High-Precision Active"}
+                        </div>
+                      </div>
                       <h3 className="font-serif italic text-4xl md:text-5xl lg:text-7xl text-foreground tracking-[-0.04em] leading-[0.9] max-w-5xl mx-auto px-4 mt-4 text-balance">
                         {results.title}
                       </h3>
