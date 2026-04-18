@@ -410,6 +410,12 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
       const { error } = await supabase.from("master_vault").delete().eq("id", id);
       if (error) throw error;
       toast.success("Item removed.");
+      const scrollToScanner = (tab?: Tab) => {
+        // Migration: ensure legacy 'vault' tab key maps to 'profile'
+        const cleanTab = tab === ("vault" as string) ? "profile" : tab;
+        if (cleanTab) setActiveTab(cleanTab as Tab);
+        document.querySelector("#scanner")?.scrollIntoView({ behavior: "smooth" });
+      };
       fetchData();
     } catch (err) {
       console.error(err);
@@ -417,43 +423,51 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
     }
   };
 
-  if (isLoading) return <div className="flex justify-center p-12"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
+    if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center p-24 text-center space-y-8 min-h-[60vh] animate-in fade-in duration-700">
+        <div className="relative">
+          <div className="w-16 h-16 rounded-full border-2 border-primary/10 border-t-primary animate-spin" />
+          <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-primary animate-pulse" />
+        </div>
+        <div className="space-y-2">
+          <h3 className="text-xl font-serif italic text-foreground">Initializing Tactical Library...</h3>
+          <p className="text-muted-foreground text-[10px] uppercase font-black tracking-widest">Securing Career Intelligence Signal</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!user) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 py-24 text-center space-y-6">
-        <div className="w-20 h-20 rounded-full bg-primary/5 flex items-center justify-center border border-primary/10">
-          <User className="w-8 h-8 text-primary/40" />
+      <div className="flex flex-col items-center justify-center p-12 py-24 text-center space-y-8 min-h-[60vh]">
+        <div className="w-24 h-24 rounded-full bg-primary/5 flex items-center justify-center border border-primary/10 shadow-inner">
+          <User className="w-10 h-10 text-primary/40" />
         </div>
-        <div className="space-y-2">
-          <h3 className="text-2xl font-display font-bold">Tactical Profile Restricted</h3>
-          <p className="text-muted-foreground text-sm max-w-xs">Please sign in to access your persistent career library and AI-sync features.</p>
+        <div className="space-y-4">
+          <h3 className="text-3xl font-display font-bold tracking-tight text-foreground">Tactical Profile Restricted</h3>
+          <p className="text-muted-foreground text-sm max-w-sm mx-auto leading-relaxed">Your persistent career library is securely encrypted. Sign in to access smart-sync and AI tailoring features.</p>
         </div>
-        <Link to="/auth" className="px-8 py-3 rounded-2xl bg-foreground text-background text-sm font-bold hover:scale-[1.02] transition-all shadow-xl shadow-foreground/10 active:scale-95">
-          Proceed to Secure Login
+        <Link to="/auth" className="group relative px-10 py-4 bg-foreground text-background rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-[1.05] active:scale-95 shadow-2xl overflow-hidden">
+          <span className="relative z-10">Proceed to Secure Login</span>
+          <div className="absolute inset-0 bg-accent-blue translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div>
-          <h2 className="text-4xl font-display font-bold tracking-tight mb-2 flex items-center gap-3">
-            Tactical Profile
-            <div className="px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-bold text-primary uppercase tracking-widest">Master</div>
-          </h2>
-          <div className="flex items-center gap-4 mt-1">
-            <div className="flex-1 h-1.5 w-48 bg-white/5 rounded-full overflow-hidden border border-white/5">
-              <motion.div 
-                initial={{ width: 0 }}
-                animate={{ width: `${calculateCompletion(profile, items)}%` }}
-                className="h-full bg-primary shadow-[0_0_10px_rgba(var(--primary-rgb),0.5)]"
-              />
-            </div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-primary">{calculateCompletion(profile, items)}% READINESS</span>
+    <div className="space-y-12 max-w-5xl mx-auto pb-24 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-2 h-2 rounded-full bg-accent-emerald animate-pulse" />
+            <span className="text-[10px] uppercase font-black tracking-[0.3em] text-accent-emerald">Signal Active</span>
           </div>
+          <h2 className="text-5xl font-display font-bold tracking-tighter text-foreground flex items-center gap-4">
+            Tactical Profile
+          </h2>
+          <p className="text-muted-foreground font-medium max-w-lg">Your master career dataset. Every achievement stored here powers the AI generation engine.</p>
         </div>
         
         <div className="flex flex-wrap items-center gap-4">
@@ -475,7 +489,20 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-12">
+      <div className="space-y-8">
+        <div className="flex items-center gap-4">
+          <div className="flex-1 h-1.5 w-full max-w-md bg-white/5 rounded-full overflow-hidden border border-white/5">
+            <motion.div 
+              initial={{ width: 0 }}
+              animate={{ width: `${calculateCompletion(profile, items)}%` }}
+              className="h-full bg-primary shadow-[0_0_10px_rgba(var(--primary-rgb),0.5)]"
+            />
+          </div>
+          <span className="text-[10px] font-black uppercase tracking-widest text-primary">{calculateCompletion(profile, items)}% READINESS SIGNAL</span>
+        </div>
+
+        <div className="grid grid-cols-1 gap-12 pt-8">
+
         {/* ── SECTION: IDENTITY ── */}
         <div className="space-y-6">
             <div className="flex items-center gap-4 pl-4">
@@ -493,7 +520,7 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
                     <input
                         className="w-full bg-background/40 border border-border/40 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
                         value={profile?.full_name || ""}
-                        onChange={(e) => setProfile({ ...profile!, full_name: e.target.value })}
+                        onChange={(e) => setProfile(prev => prev ? ({ ...prev, full_name: e.target.value }) : null)}
                         placeholder="Full Legal Name"
                     />
                     </div>
@@ -505,7 +532,7 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
                     <input
                         className="w-full bg-background/40 border border-border/40 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
                         value={profile?.location || ""}
-                        onChange={(e) => setProfile({ ...profile!, location: e.target.value })}
+                        onChange={(e) => setProfile(prev => prev ? ({ ...prev, location: e.target.value }) : null)}
                         placeholder="e.g. Bangalore, KA"
                     />
                     </div>
@@ -517,7 +544,7 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
                     <input
                         className="w-full bg-background/40 border border-border/40 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
                         value={profile?.phone || ""}
-                        onChange={(e) => setProfile({ ...profile!, phone: e.target.value })}
+                        onChange={(e) => setProfile(prev => prev ? ({ ...prev, phone: e.target.value }) : null)}
                         placeholder="+91 98765 43210"
                     />
                     </div>
@@ -529,7 +556,7 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
                     <input
                         className="w-full bg-background/40 border border-border/40 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
                         value={profile?.linkedin_url || ""}
-                        onChange={(e) => setProfile({ ...profile!, linkedin_url: e.target.value })}
+                        onChange={(e) => setProfile(prev => prev ? ({ ...prev, linkedin_url: e.target.value }) : null)}
                         placeholder="linkedin.com/in/username"
                     />
                     </div>
@@ -541,7 +568,7 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
                     <input
                         className="w-full bg-background/40 border border-border/40 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
                         value={profile?.github_url || ""}
-                        onChange={(e) => setProfile({ ...profile!, github_url: e.target.value })}
+                        onChange={(e) => setProfile(prev => prev ? ({ ...prev, github_url: e.target.value }) : null)}
                         placeholder="github.com/username"
                     />
                     </div>
@@ -553,7 +580,7 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
                     <input
                         className="w-full bg-background/40 border border-border/40 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
                         value={profile?.website_url || ""}
-                        onChange={(e) => setProfile({ ...profile!, website_url: e.target.value })}
+                        onChange={(e) => setProfile(prev => prev ? ({ ...prev, website_url: e.target.value }) : null)}
                         placeholder="portfolio.com"
                     />
                     </div>
@@ -565,7 +592,7 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
                     <textarea
                         className="w-full bg-background/40 border border-border/40 rounded-3xl p-6 text-sm focus:ring-2 ring-primary/20 transition-all h-40 resize-none outline-none"
                         value={profile?.summary_master || ""}
-                        onChange={(e) => setProfile({ ...profile!, summary_master: e.target.value })}
+                        onChange={(e) => setProfile(prev => prev ? ({ ...prev, summary_master: e.target.value }) : null)}
                         placeholder="Paste every achievement, skill, and mission statement here. The AI will distill the 0.1% strongest parts for every application."
                     />
                 </div>
@@ -853,6 +880,7 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
           </div>
         )}
       </AnimatePresence>
+      </div>
     </div>
   );
 };

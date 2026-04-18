@@ -57,7 +57,7 @@ export const LuminaGauge = ({
             x={size / 2} 
             y={size * 0.55} 
             textAnchor="middle" 
-            className="text-4xl font-display font-black fill-foreground tracking-tighter"
+            className="text-3xl font-display font-black fill-foreground tracking-tighter"
           >
             {value}
           </text>

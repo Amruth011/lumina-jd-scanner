@@ -272,7 +272,7 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
               </div>
             )}
           </motion.div>
-        ) : activeTab === "profile" ? (
+        ) : (activeTab === "profile" || (activeTab as string) === "vault") ? (
           <motion.div
             key="profile"
             initial={{ opacity: 0, y: 12 }}

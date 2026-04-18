@@ -49,7 +49,7 @@ export const GlobalNavbar = ({ activeTab, onTabChange }: GlobalNavbarProps) => {
             <div className="w-8 h-8 rounded-xl bg-accent-blue/10 flex items-center justify-center border border-accent-blue/20 transition-all group-hover:bg-accent-blue group-hover:border-accent-blue/50">
                <Sparkles size={18} className="text-accent-blue transition-colors group-hover:text-white" />
             </div>
-            <span className="text-foreground font-display font-black text-xl tracking-tighter">Lumina</span>
+            <span className="text-foreground font-display font-black text-xl tracking-tighter whitespace-nowrap">Lumina JD</span>
           </Link>
         </div>
 
@@ -85,7 +85,7 @@ export const GlobalNavbar = ({ activeTab, onTabChange }: GlobalNavbarProps) => {
             <div className="hidden sm:flex items-center gap-3 px-4">
               <div className="flex flex-col items-end">
                 <span className="text-[10px] text-foreground font-black uppercase tracking-widest leading-none">Strategist</span>
-                <span className="text-[12px] text-muted-foreground font-semibold truncate max-w-[100px]">
+                <span className="text-[12px] text-muted-foreground font-semibold truncate max-w-[150px]">
                   {user.email?.split('@')[0]}
                 </span>
               </div>
@@ -98,27 +98,22 @@ export const GlobalNavbar = ({ activeTab, onTabChange }: GlobalNavbarProps) => {
               </button>
             </div>
           ) : (
-            <Link 
-              to="/auth" 
-              className="px-6 py-2.5 text-foreground/60 hover:text-foreground text-[12px] font-bold transition-colors hidden sm:block tracking-tight"
-            >
-              Sign In
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link 
+                to="/auth" 
+                className="px-6 py-2.5 text-foreground/60 hover:text-foreground text-[12px] font-bold transition-colors hidden sm:block tracking-tight"
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/auth"
+                className="group relative rounded-full px-8 py-3.5 bg-foreground text-background text-[11px] font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95 shadow-2xl shadow-black/20 overflow-hidden"
+              >
+                <span className="relative z-10">Get Started</span>
+                <div className="absolute inset-0 bg-accent-blue translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+              </Link>
+            </div>
           )}
-
-          <Link
-            to={user ? "/#scanner" : "/auth"}
-            onClick={(e) => {
-              if (user) {
-                e.preventDefault();
-                handleTabClick("decode");
-              }
-            }}
-            className="group relative rounded-full px-8 py-3.5 bg-foreground text-background text-[11px] font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95 shadow-2xl shadow-black/20 overflow-hidden"
-          >
-            <span className="relative z-10">{user ? "Intelligence" : "Get Started"}</span>
-            <div className="absolute inset-0 bg-accent-blue translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-          </Link>
         </div>
       </div>
     </nav>

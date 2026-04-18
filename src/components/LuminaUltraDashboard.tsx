@@ -180,12 +180,12 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                     <div className="space-y-4">
                         <span className="text-xs uppercase font-black tracking-widest text-muted-foreground opacity-60">Projected Value Range</span>
                         <div className="flex items-baseline gap-4">
-                            <span className="text-5xl lg:text-7xl font-display font-black tracking-tighter text-foreground">
+                            <span className="text-3xl lg:text-4xl font-display font-black tracking-tighter text-foreground">
                                 {results?.logistics?.salary_range?.currency === 'INR' ? '₹' : '$'}
                                 {(results?.logistics?.salary_range?.min ?? 0).toLocaleString()}
                             </span>
-                            <span className="text-3xl text-muted-foreground/20 font-black">-</span>
-                            <span className="text-5xl lg:text-7xl font-display font-black text-accent-emerald tracking-tighter">
+                            <span className="text-xl text-muted-foreground/20 font-black">-</span>
+                            <span className="text-3xl lg:text-4xl font-display font-black text-accent-emerald tracking-tighter">
                                 {(results?.logistics?.salary_range?.max ?? 0).toLocaleString()}
                             </span>
                         </div>
@@ -223,11 +223,11 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                 </div>
              </div>
 
-             {/* Secondary Visualization Grid */}
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-                 <div className="glass-panel p-8 rounded-[2.5rem] flex flex-col items-center justify-between space-y-8 h-full">
-                     <span className="text-xs uppercase font-black text-muted-foreground opacity-50 self-start tracking-[0.2em]">Operational Distribution</span>
-                     <div className="relative w-40 h-40 flex items-center justify-center">
+             {/* Secondary Visualization Grid - Asymmetrical Split (40/60) */}
+             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+                  <div className="md:col-span-5 glass-panel p-6 rounded-[2.5rem] flex flex-col items-center justify-between space-y-4 h-full">
+                      <span className="text-[11px] uppercase font-black text-muted-foreground opacity-50 self-start tracking-[0.2em]">Operational Distribution</span>
+                      <div className="relative w-36 h-36 flex items-center justify-center scale-95">
                         <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
                             {(results?.logistics?.responsibility_mix || []).reduce((acc, item, i) => {
                                 const offset = acc.total;
@@ -251,18 +251,18 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                             <span className="text-4xl font-black font-display tracking-tighter text-foreground">100%</span>
                             <span className="text-xs font-black uppercase text-primary/40 tracking-widest">Focus</span>
                         </div>
-                        <div className="grid grid-cols-1 gap-2.5 w-full pt-4">
-                            {(results?.logistics?.responsibility_mix || []).map((item, i) => (
-                                <div key={i} className="flex items-center gap-4 p-3 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all cursor-crosshair">
-                                    <div className="w-3 h-3 rounded-full shadow-[0_0_10px_rgba(var(--accent-blue-rgb),0.5)]" style={{ backgroundColor: i === 0 ? 'var(--primary)' : i === 1 ? 'var(--accent-emerald)' : i === 2 ? 'var(--accent-gold)' : 'var(--accent-blue)' }} />
-                                    <span className="text-xs font-black uppercase tracking-widest text-foreground/80 truncate">{item?.label || "Execution"}</span>
-                                    <span className="text-xs font-black ml-auto text-foreground/40">{item?.percent || 0}%</span>
-                                </div>
-                            ))}
-                        </div>
-                     </div>
+                      </div>
+                      <div className="grid grid-cols-1 gap-1.5 w-full pt-2">
+                        {(results?.logistics?.responsibility_mix || []).map((item, i) => (
+                            <div key={i} className="flex items-center gap-3 p-2 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all cursor-crosshair">
+                                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: i === 0 ? 'var(--primary)' : i === 1 ? 'var(--accent-emerald)' : i === 2 ? 'var(--accent-gold)' : 'var(--accent-blue)' }} />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-foreground/80 truncate">{item?.label || "Execution"}</span>
+                                <span className="text-[10px] font-black ml-auto text-foreground/40">{item?.percent || 0}%</span>
+                            </div>
+                        ))}
+                      </div>
                 </div>
-                <div className="flex flex-col h-full">
+                <div className="md:col-span-7 flex flex-col h-full">
                   <IcebergAnalysis reality={results?.role_reality} archetype={results?.logistics?.archetype?.label} />
                 </div>
              </div>

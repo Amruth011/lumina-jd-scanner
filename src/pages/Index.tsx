@@ -10,7 +10,9 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState<Tab>("decode");
 
   const scrollToScanner = (tab?: Tab) => {
-    if (tab) setActiveTab(tab);
+    // Migration: ensure legacy 'vault' tab key maps to 'profile'
+    const cleanTab = tab === ("vault" as string) ? "profile" : tab;
+    if (cleanTab) setActiveTab(cleanTab as Tab);
     document.querySelector("#scanner")?.scrollIntoView({ behavior: "smooth" });
   };
 

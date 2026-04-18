@@ -15,11 +15,10 @@ interface ResumeGeneratorProps {
 
 export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGeneratorProps) => {
   const { user } = useAuth();
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [resume, setResume] = useState<GeneratedResume | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const [vaultItems, setVaultItems] = useState<VaultItem[]>([]);
   const [profile, setProfile] = useState<UserProfileWithVault | null>(null);
+  const [summaryLines, setSummaryLines] = useState(3);
+  const [projectLines, setProjectLines] = useState(3);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -53,20 +52,29 @@ Candidate Profile:
 ${JSON.stringify(vaultItems.map(v => ({ title: v.title, org: v.organization, desc: v.description })), null, 2)}
 
 STRATEGY:
-1. Use standard resume headers (Professional Summary, Experience, Education).
+1. Use standard resume headers (Professional Summary, Experience, Projects, Education).
 2. For experience, focus on HARD METRICS (%, $, #). 
-3. Avoid any special characters, icons, or complex formatting.
-4. Ensure every word is relevant to the Job Description skills.
+3. PROFESSIONAL SUMMARY: Strictly exactly ${summaryLines} high-impact lines.
+4. PROJECTS: Include exactly 2-3 significant projects. Each project description must be exactly ${projectLines} lines, quantified and strictly aligned with JD skills.
+5. No extra vertical whitespace between sections.
+6. Avoid any special characters, icons, or complex formatting.
 
 RETURN JSON FORMAT ONLY:
 {
-  "professional_summary": "3-4 sentences of elite executive summary hitting the core JD requirements.",
+  "professional_summary": "Strictly exactly ${summaryLines} high-impact lines.",
   "skills_section": ["Skill 1", "Skill 2", "Skill 3"],
   "experience": [
     {
       "heading": "Job Title @ Company Name",
       "content": "Short description of scope (optional)",
       "bullets": ["Metric driven achievement bullet 1", "Bullet 2"]
+    }
+  ],
+  "projects": [
+    {
+      "heading": "Project Name",
+      "content": "Description exactly ${projectLines} lines long with metrics.",
+      "bullets": ["Technical achievement bullet 1"]
     }
   ],
   "education": ["Degree - University"],
@@ -181,40 +189,54 @@ RETURN JSON FORMAT ONLY:
       // Experience: The meat of the resume
       addText("EXPERIENCE", 10, true, [0, 0, 0]);
       pdf.line(margin, y, pageWidth - margin, y);
-      y += 4;
+      y += 3; // reduced space
       resume.experience.forEach(exp => {
         const [title, company] = exp.heading.split('@');
-        addText(title?.trim() || "", 10, true, [0, 0, 0]);
+        addText(title?.trim() || "", 9.5, true, [0, 0, 0]);
         y -= 3.5;
-        // Right align company/period if needed, or keeping it clean single column
-        addText(company?.trim() || "Organization", 9.5, true, [80, 80, 80]);
+        addText(company?.trim() || "Organization", 9, true, [80, 80, 80]);
         if (exp.content) {
-          addText(exp.content, 8.5, false, [100, 100, 100]);
+          addText(exp.content, 8, false, [100, 100, 100]);
         }
-        y += 1;
+        y += 0.5; // reduced space
         exp.bullets?.forEach(bullet => {
-          // Identify numbers/percentages for bolding? jsPDF doesn't support rich text inline easily
-          // We'll keep bullets clean and precise
-          addText(`•  ${bullet}`, 9.2, false, [40, 40, 40]);
+          addText(`•  ${bullet}`, 8.5, false, [40, 40, 40]);
         });
-        y += 4;
+        y += 2; // reduced space
       });
+
+      // Projects
+      if (resume.projects && resume.projects.length > 0) {
+        addText("KEY PROJECTS", 10, true, [0, 0, 0]);
+        pdf.line(margin, y, pageWidth - margin, y);
+        y += 3;
+        resume.projects.forEach(proj => {
+          addText(proj.heading, 9.5, true, [0, 0, 0]);
+          if (proj.content) {
+            addText(proj.content, 8.5, false, [40, 40, 40]);
+          }
+          proj.bullets?.forEach(bullet => {
+            addText(`•  ${bullet}`, 8.5, false, [40, 40, 40]);
+          });
+          y += 2;
+        });
+      }
 
       // Education
       if (resume.education.length > 0) {
         addText("EDUCATION", 10, true, [0, 0, 0]);
         pdf.line(margin, y, pageWidth - margin, y);
-        y += 4;
-        resume.education.forEach(edu => addText(edu, 9.5, false, [40, 40, 40]));
-        y += 4;
+        y += 3;
+        resume.education.forEach(edu => addText(edu, 9, false, [40, 40, 40]));
+        y += 2;
       }
 
       // Certifications
       if (resume.certifications && resume.certifications.length > 0) {
         addText("CERTIFICATIONS", 10, true, [0, 0, 0]);
         pdf.line(margin, y, pageWidth - margin, y);
-        y += 4;
-        resume.certifications.forEach(cert => addText(cert, 9.5, false, [40, 40, 40]));
+        y += 3;
+        resume.certifications.forEach(cert => addText(cert, 9, false, [40, 40, 40]));
       }
 
       pdf.save(`Lumina-AI-Resume-${profile?.full_name?.replace(/ /g, "_")}.pdf`);
@@ -253,6 +275,52 @@ RETURN JSON FORMAT ONLY:
                 {feature}
               </div>
             ))}
+          </div>
+
+          <div className="mt-8 p-6 rounded-[2rem] bg-white/[0.02] border border-white/5 space-y-4">
+            <button 
+              onClick={() => setShowSettings(!showSettings)}
+              className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors"
+            >
+              <Wand2 size={12} /> {showSettings ? "Hide Synthesis Parameters" : "Edit Synthesis Parameters"}
+            </button>
+            <AnimatePresence>
+              {showSettings && (
+                <motion.div 
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden space-y-4 pt-2"
+                >
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Summary Lines</label>
+                      <select 
+                        value={summaryLines} 
+                        onChange={(e) => setSummaryLines(Number(e.target.value))}
+                        className="w-full bg-background/40 border border-white/10 rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 ring-primary/40"
+                      >
+                        <option value={2}>2 Lines</option>
+                        <option value={3}>3 Lines</option>
+                        <option value={4}>4 Lines</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Project Density</label>
+                      <select 
+                        value={projectLines} 
+                        onChange={(e) => setProjectLines(Number(e.target.value))}
+                        className="w-full bg-background/40 border border-white/10 rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 ring-primary/40"
+                      >
+                        <option value={2}>2 Lines (Concise)</option>
+                        <option value={3}>3 Lines (Standard)</option>
+                        <option value={5}>5 Lines (Senior)</option>
+                      </select>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 
@@ -325,42 +393,41 @@ RETURN JSON FORMAT ONLY:
               </div>
 
               {/* TACTICAL RESULT PREVIEW (The Document) */}
-              <div className="md:col-span-8 bg-white max-w-4xl mx-auto rounded-none p-12 border border-border shadow-2xl overflow-y-auto max-h-[1000px] custom-scrollbar flex flex-col gap-10 text-black">
-                <div className="text-center space-y-2">
-                  <h1 className="text-3xl font-bold uppercase tracking-tight text-black">{profile?.full_name}</h1>
-                   <div className="flex items-center justify-center gap-4 text-[11px] text-zinc-600 font-bold uppercase tracking-widest">
+              <div className="md:col-span-8 bg-white max-w-4xl mx-auto rounded-none p-8 border border-zinc-200 shadow-2xl overflow-y-auto max-h-[1100px] flex flex-col gap-6 text-black print:p-0 print:shadow-none">
+                <div className="text-center space-y-1">
+                  <h1 className="text-2xl font-bold uppercase tracking-tight text-black">{profile?.full_name}</h1>
+                   <div className="flex items-center justify-center gap-3 text-[10px] text-zinc-700 font-bold uppercase tracking-wider">
                      <span>{profile?.location}</span>
-                     <span>•</span>
+                     <span>|</span>
                      <span>{profile?.email}</span>
-                     <span>•</span>
+                     <span>|</span>
                      <span>{profile?.phone}</span>
                    </div>
                 </div>
 
-                <div className="space-y-12">
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-4">
-                      <h4 className="text-[11px] font-black text-black uppercase tracking-[0.2em] whitespace-nowrap">Professional Summary</h4>
-                      <div className="h-[0.5px] w-full bg-zinc-200" />
+                <div className="space-y-8">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                      <h4 className="text-[10px] font-black text-black uppercase tracking-widest whitespace-nowrap">Professional Summary</h4>
+                      <div className="h-[0.5px] w-full bg-zinc-300" />
                     </div>
-                    <p className="text-[14px] leading-relaxed text-zinc-900 font-medium text-justify">{resume.professional_summary}</p>
+                    <p className="text-[12px] leading-relaxed text-zinc-900 font-medium">{resume.professional_summary}</p>
                   </div>
                   
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-4">
-                      <h4 className="text-[11px] font-black text-black uppercase tracking-[0.2em] whitespace-nowrap">Professional Experience</h4>
-                      <div className="h-[0.5px] w-full bg-zinc-200" />
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <h4 className="text-[10px] font-black text-black uppercase tracking-widest whitespace-nowrap">Professional Experience</h4>
+                      <div className="h-[0.5px] w-full bg-zinc-300" />
                     </div>
-                    <div className="space-y-8">
+                    <div className="space-y-5">
                       {resume.experience.map((exp, i) => (
-                        <div key={i} className="space-y-3">
+                        <div key={i} className="space-y-1">
                           <div className="flex justify-between items-baseline">
-                            <h5 className="font-bold text-[15px] text-black">{exp.heading}</h5>
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Tactical Horizon</span>
+                            <h5 className="font-bold text-[13px] text-black">{exp.heading}</h5>
                           </div>
-                          <ul className="space-y-2 list-disc pl-5">
+                          <ul className="space-y-0.5 list-disc pl-4">
                             {exp.bullets?.map((bullet, j) => (
-                              <li key={j} className="text-[13px] text-zinc-800 leading-relaxed">
+                              <li key={j} className="text-[11px] text-zinc-800 leading-snug font-medium">
                                 {bullet}
                               </li>
                             ))}
@@ -370,24 +437,48 @@ RETURN JSON FORMAT ONLY:
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-4">
-                        <h4 className="text-[11px] font-black text-black uppercase tracking-[0.2em] whitespace-nowrap">Technical Architecture</h4>
-                        <div className="h-[0.5px] w-full bg-zinc-200" />
+                  {resume.projects && resume.projects.length > 0 && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <h4 className="text-[10px] font-black text-black uppercase tracking-widest whitespace-nowrap">Strategic Projects</h4>
+                      <div className="h-[0.5px] w-full bg-zinc-300" />
+                    </div>
+                    <div className="space-y-4">
+                      {resume.projects.map((proj, i) => (
+                        <div key={i} className="space-y-1">
+                          <h5 className="font-bold text-[13px] text-black">{proj.heading}</h5>
+                          <p className="text-[11px] text-zinc-900 leading-relaxed font-medium">{proj.content}</p>
+                          <ul className="space-y-0.5 list-disc pl-4">
+                            {proj.bullets?.map((bullet, j) => (
+                              <li key={j} className="text-[11px] text-zinc-800 leading-snug">
+                                {bullet}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3">
+                        <h4 className="text-[10px] font-black text-black uppercase tracking-widest whitespace-nowrap">Technical Stack</h4>
+                        <div className="h-[0.5px] w-full bg-zinc-300" />
                       </div>
-                      <p className="text-[13px] text-zinc-800 leading-relaxed">{resume.skills_section.join(", ")}</p>
+                      <p className="text-[12px] text-zinc-800 leading-relaxed">{resume.skills_section.join(", ")}</p>
                     </div>
 
                     {resume.education.length > 0 && (
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-4">
-                          <h4 className="text-[11px] font-black text-black uppercase tracking-[0.2em] whitespace-nowrap">Academic Pedigree</h4>
-                          <div className="h-[0.5px] w-full bg-zinc-200" />
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-3">
+                          <h4 className="text-[10px] font-black text-black uppercase tracking-widest whitespace-nowrap">Education</h4>
+                          <div className="h-[0.5px] w-full bg-zinc-300" />
                         </div>
-                        <ul className="space-y-1">
+                        <ul className="space-y-0.5">
                            {resume.education.map((edu, idx) => (
-                             <li key={idx} className="text-[13px] text-zinc-800">{edu}</li>
+                             <li key={idx} className="text-[12px] text-zinc-800">{edu}</li>
                            ))}
                         </ul>
                       </div>
