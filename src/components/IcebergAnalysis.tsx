@@ -24,11 +24,11 @@ export const IcebergAnalysis = ({ reality, archetype }: IcebergAnalysisProps) =>
         </div>
 
         {/* Repositioned Archetype Badge (Header Integrated) */}
-        <div className="glass-panel px-5 py-3 rounded-2xl border-accent-blue/20 bg-accent-blue/5 flex items-center gap-3 min-w-[160px] whitespace-nowrap shadow-sm">
-            <Layers size={16} className="text-accent-blue/40" />
+        <div className="glass-panel px-4 py-2.5 rounded-2xl border-accent-blue/20 bg-accent-blue/5 flex items-center gap-3 w-fit whitespace-nowrap shadow-sm">
+            <Layers size={14} className="text-accent-blue/40" />
             <div className="flex flex-col">
-                <span className="text-[12px] uppercase font-black tracking-widest text-accent-blue/60 leading-tight">Archetype</span>
-                <span className="text-[14px] font-serif italic text-foreground leading-none">{archetype || 'Specialist'}</span>
+                <span className="text-[10px] uppercase font-black tracking-widest text-accent-blue/60 leading-tight">Archetype</span>
+                <span className="text-[13px] font-serif italic text-foreground leading-none">{archetype || 'Specialist'}</span>
             </div>
         </div>
       </div>
@@ -46,7 +46,7 @@ export const IcebergAnalysis = ({ reality, archetype }: IcebergAnalysisProps) =>
                 key={i}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="px-6 py-5 rounded-2xl bg-white/[0.03] border border-white/5 text-[14px] font-display font-bold text-foreground/80 shadow-sm hover:bg-white/5 transition-all hover:scale-[1.01]"
+                className="px-6 py-5 rounded-2xl bg-white/[0.03] border border-white/5 text-[12px] font-display font-bold text-foreground/80 shadow-sm hover:bg-white/5 transition-all hover:scale-[1.01]"
                 transition={{ delay: i * 0.1 }}
               >
                 {item}
@@ -58,7 +58,7 @@ export const IcebergAnalysis = ({ reality, archetype }: IcebergAnalysisProps) =>
         {/* The Water Line */}
         <div className="relative w-full z-20 py-10 flex items-center justify-end">
           <div className="absolute left-0 right-0 h-[1.5px] bg-accent-blue/20" />
-          <div className="relative text-[11px] uppercase font-black tracking-[0.2em] text-accent-blue bg-background/90 backdrop-blur-xl px-6 py-2 rounded-full border border-accent-blue/30 shadow-[0_8px_32px_rgba(var(--accent-blue-rgb),0.15)] z-30">
+          <div className="relative text-[10px] uppercase font-black tracking-[0.25em] text-accent-blue bg-background/80 backdrop-blur-md px-5 py-1.5 rounded-full border border-accent-blue/20 shadow-lg z-30">
             The Water Line (Stated)
           </div>
         </div>
@@ -75,7 +75,7 @@ export const IcebergAnalysis = ({ reality, archetype }: IcebergAnalysisProps) =>
                 key={i}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="px-6 py-5 rounded-2xl bg-foreground/5 border border-foreground/10 text-[14px] font-display font-extrabold text-foreground italic shadow-sm backdrop-blur-md hover:bg-foreground/10 transition-all hover:scale-[1.01]"
+                className="px-6 py-5 rounded-2xl bg-foreground/5 border border-foreground/10 text-[12px] font-display font-extrabold text-foreground italic shadow-sm backdrop-blur-md hover:bg-foreground/10 transition-all hover:scale-[1.01]"
                 transition={{ delay: 0.5 + (i * 0.1) }}
               >
                 {item}

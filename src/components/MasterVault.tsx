@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 // Important: Use static import with ?url so Vite bundler properly packages the worker file for Vercel
 import pdfWorkerUrl from "pdfjs-dist/legacy/build/pdf.worker.mjs?url";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Briefcase, Code, GraduationCap, Award, Trash2, Edit3, Save, X, Loader2, Sparkles, User, Globe, Linkedin, Mail, Phone, MapPin, Github, Import, Zap } from "lucide-react";
+import { Plus, Briefcase, Code, GraduationCap, Award, Trash2, Edit3, Save, X, Loader2, Sparkles, User, Globe, Linkedin, Mail, Phone, MapPin, Github, Import, Zap, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -409,13 +409,6 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
     try {
       const { error } = await supabase.from("master_vault").delete().eq("id", id);
       if (error) throw error;
-      toast.success("Item removed.");
-      const scrollToScanner = (tab?: Tab) => {
-        // Migration: ensure legacy 'vault' tab key maps to 'profile'
-        const cleanTab = tab === ("vault" as string) ? "profile" : tab;
-        if (cleanTab) setActiveTab(cleanTab as Tab);
-        document.querySelector("#scanner")?.scrollIntoView({ behavior: "smooth" });
-      };
       fetchData();
     } catch (err) {
       console.error(err);

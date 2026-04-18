@@ -19,6 +19,11 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
   const [summaryLines, setSummaryLines] = useState(3);
   const [projectLines, setProjectLines] = useState(3);
   const [showSettings, setShowSettings] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [resume, setResume] = useState<GeneratedResume | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [vaultItems, setVaultItems] = useState<VaultItem[]>([]);
+
 
   useEffect(() => {
     if (user) {
@@ -56,8 +61,9 @@ STRATEGY:
 2. For experience, focus on HARD METRICS (%, $, #). 
 3. PROFESSIONAL SUMMARY: Strictly exactly ${summaryLines} high-impact lines.
 4. PROJECTS: Include exactly 2-3 significant projects. Each project description must be exactly ${projectLines} lines, quantified and strictly aligned with JD skills.
-5. No extra vertical whitespace between sections.
+5. Strictly white background, black text, and minimal vertical spacing to fit 1 page.
 6. Avoid any special characters, icons, or complex formatting.
+7. ALL bullet points must be quantified with metrics (%, $, #).
 
 RETURN JSON FORMAT ONLY:
 {
@@ -198,11 +204,11 @@ RETURN JSON FORMAT ONLY:
         if (exp.content) {
           addText(exp.content, 8, false, [100, 100, 100]);
         }
-        y += 0.5; // reduced space
+        y += 0.5; // tight spacing
         exp.bullets?.forEach(bullet => {
-          addText(`•  ${bullet}`, 8.5, false, [40, 40, 40]);
+          addText(`•  ${bullet}`, 8.5, false, [0, 0, 0]); // Pure black
         });
-        y += 2; // reduced space
+        y += 1.5; // tight spacing
       });
 
       // Projects

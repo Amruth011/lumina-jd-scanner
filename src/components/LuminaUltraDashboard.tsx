@@ -225,7 +225,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
 
              {/* Secondary Visualization Grid - Asymmetrical Split (40/60) */}
              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-                  <div className="md:col-span-5 glass-panel p-6 rounded-[2.5rem] flex flex-col items-center justify-between space-y-4 h-full">
+                  <div className="md:col-span-4 glass-panel p-6 rounded-[2.5rem] flex flex-col items-center justify-between space-y-4 h-full">
                       <span className="text-[11px] uppercase font-black text-muted-foreground opacity-50 self-start tracking-[0.2em]">Operational Distribution</span>
                       <div className="relative w-36 h-36 flex items-center justify-center scale-95">
                         <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
@@ -248,8 +248,8 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                             }, { total: 0, elements: [] as React.ReactNode[] }).elements}
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                            <span className="text-4xl font-black font-display tracking-tighter text-foreground">100%</span>
-                            <span className="text-xs font-black uppercase text-primary/40 tracking-widest">Focus</span>
+                            <span className="text-2xl font-black font-display tracking-tighter text-foreground">100%</span>
+                            <span className="text-[10px] font-black uppercase text-primary/40 tracking-widest">Focus</span>
                         </div>
                       </div>
                       <div className="grid grid-cols-1 gap-1.5 w-full pt-2">
@@ -262,7 +262,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                         ))}
                       </div>
                 </div>
-                <div className="md:col-span-7 flex flex-col h-full">
+                <div className="md:col-span-8 flex flex-col h-full">
                   <IcebergAnalysis reality={results?.role_reality} archetype={results?.logistics?.archetype?.label} />
                 </div>
              </div>
@@ -382,7 +382,7 @@ const BonusCard = ({ icon: Icon, label, value, sub, color }: { icon: LucideIcon,
         </div>
         <div className="text-right">
             <div className="flex items-baseline justify-end gap-1.5">
-                <span className="text-4xl font-display font-black tracking-tighter text-foreground">{value}%</span>
+                <span className="text-3xl font-display font-black tracking-tighter text-foreground">{value}%</span>
             </div>
             <h4 className="text-[12px] font-black uppercase text-muted-foreground tracking-[0.2em] mt-1 opacity-60">{sub}</h4>
         </div>
