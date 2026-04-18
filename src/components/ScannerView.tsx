@@ -227,38 +227,43 @@ export const ScannerView = () => {
                       initial={{ opacity: 0, y: 40 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.2, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                      className="space-y-32"
                     >
                       <LuminaUltraDashboard results={results} />
+                      
+                      <div className="section-divider max-w-sm mx-auto opacity-20" />
+
+                      <div className="space-y-16">
+                        <ResumeGapAnalyzer
+                          skills={results.skills}
+                          jobTitle={results.title}
+                          onResumeTextChange={setUserResumeText}
+                          onResultChange={setGapResult}
+                        />
+
+                        {gapResult && (
+                          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                            <ATSScoreSimulator result={gapResult} />
+                          </motion.div>
+                        )}
+
+                        <ResumeGenerator
+                          jdTitle={results.title}
+                          jdSkills={results.skills}
+                        />
+
+                        {gapResult && (
+                          <ResumeEnhancer
+                            resumeText={userResumeText}
+                            skills={results.skills}
+                            deductions={gapResult.deductions}
+                            jobTitle={results.title}
+                            gapResult={gapResult}
+                          />
+                        )}
+                      </div>
                     </motion.div>
                   )}
-
-                  {/* ── SECTION E: INTERVIEW COACH ── */}
-                  <InterviewCoach 
-                    questions={results.interview_prep?.questions} 
-                    interviewerQuestions={results.interview_prep?.interviewer_questions} 
-                  />
-
-                  {/* ── SECTION I: BONUS INSIGHTS ── */}
-                  <BonusInsights 
-                    insights={results.bonus_insights} 
-                    salary={results.salary_estimate} 
-                  />
-
-                  <div className="section-divider max-w-sm mx-auto opacity-20" />
-
-                  <ResumeGapAnalyzer
-                    skills={results.skills}
-                    jobTitle={results.title}
-                    onResumeTextChange={setUserResumeText}
-                    onResultChange={setGapResult}
-                  />
-
-                  {gapResult && <ATSScoreSimulator result={gapResult} />}
-
-                  <ResumeGenerator
-                    jdTitle={results.title}
-                    jdSkills={results.skills}
-                  />
 
                   {gapResult && (
                     <ResumeEnhancer
