@@ -17,7 +17,8 @@
 
 import type { DecodeResult } from "@/types/jd";
 
-const CACHE_STORAGE_KEY = "lumina_jd_decode_cache";
+const CACHE_VERSION = "v2_ultra";
+const CACHE_STORAGE_KEY = `lumina_jd_decode_cache_${CACHE_VERSION}`;
 const MAX_CACHE_ENTRIES = 50; // Prevent unbounded localStorage growth
 
 // ── Text Normalization ──
