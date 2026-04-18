@@ -62,16 +62,16 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
             <div className="grid grid-cols-2 gap-3">
                 {(results?.skills || []).slice(0, 8).map((s, i) => (
                     <div key={i} className="flex flex-col gap-1.5 p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all duration-500">
-                        <span className="text-[14px] font-display font-bold text-foreground/90 truncate">{s.skill}</span>
+                        <span className="text-[14px] font-display font-bold text-foreground/90 truncate">{s?.skill || "Focus Component"}</span>
                         <div className="flex items-center justify-between mt-1">
                           <span className={`px-2.5 py-1 rounded-lg text-[12px] font-black uppercase tracking-widest ${
-                              s.importance > 80 ? 'bg-red-400/10 text-red-400 border border-red-400/20' : 
-                              s.importance > 50 ? 'bg-accent-gold/10 text-accent-gold border border-accent-gold/20' :
+                              (s?.importance || 0) > 80 ? 'bg-red-400/10 text-red-400 border border-red-400/20' : 
+                              (s?.importance || 0) > 50 ? 'bg-accent-gold/10 text-accent-gold border border-accent-gold/20' :
                               'bg-accent-blue/10 text-accent-blue border border-accent-blue/20'
                           }`}>
-                              {s.importance > 80 ? 'Impact' : s.importance > 50 ? 'Strategic' : 'Support'}
+                              {(s?.importance || 0) > 80 ? 'Impact' : (s?.importance || 0) > 50 ? 'Strategic' : 'Support'}
                           </span>
-                          <span className="text-xs font-black text-foreground/20">{s.importance}%</span>
+                          <span className="text-xs font-black text-foreground/20">{s?.importance || 0}%</span>
                         </div>
                     </div>
                 ))}
@@ -118,13 +118,13 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 relative z-10">
-                    {(grade.plain_english_summary || []).slice(0, 6).map((point, i) => (
+                    {(grade?.plain_english_summary || []).slice(0, 6).map((point, i) => (
                         <div key={i} className="flex gap-6 group">
                             <span className="flex-shrink-0 w-10 h-10 rounded-2xl bg-primary/5 text-primary text-[13px] font-black flex items-center justify-center border border-primary/10 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-700 transform group-hover:rotate-6">
                                 {i + 1}
                             </span>
                             <p className="text-[15px] font-medium text-foreground/90 leading-relaxed group-hover:text-foreground transition-colors">
-                                {point.split('**').map((part, idx) => idx % 2 === 1 ? <strong key={idx} className="text-primary font-black uppercase tracking-[0.05em] mx-0.5">{part}</strong> : part)}
+                                {(point || "").split('**').map((part, idx) => idx % 2 === 1 ? <strong key={idx} className="text-primary font-black uppercase tracking-[0.05em] mx-0.5">{part}</strong> : part)}
                             </p>
                         </div>
                     ))}
@@ -251,15 +251,15 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                             <span className="text-4xl font-black font-display tracking-tighter text-foreground">100%</span>
                             <span className="text-xs font-black uppercase text-primary/40 tracking-widest">Focus</span>
                         </div>
-                     </div>
-                     <div className="grid grid-cols-1 gap-2.5 w-full pt-4">
-                        {(results?.logistics?.responsibility_mix || []).map((item, i) => (
-                            <div key={i} className="flex items-center gap-4 p-3 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all cursor-crosshair">
-                                <div className="w-3 h-3 rounded-full shadow-[0_0_10px_rgba(currentColor,0.5)]" style={{ backgroundColor: i === 0 ? 'var(--primary)' : i === 1 ? 'var(--accent-emerald)' : i === 2 ? 'var(--accent-gold)' : 'var(--accent-blue)' }} />
-                                <span className="text-xs font-black uppercase tracking-widest text-foreground/80 truncate">{item.label}</span>
-                                <span className="text-xs font-black ml-auto text-foreground/40">{item.percent}%</span>
-                            </div>
-                        ))}
+                        <div className="grid grid-cols-1 gap-2.5 w-full pt-4">
+                            {(results?.logistics?.responsibility_mix || []).map((item, i) => (
+                                <div key={i} className="flex items-center gap-4 p-3 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all cursor-crosshair">
+                                    <div className="w-3 h-3 rounded-full shadow-[0_0_10px_rgba(var(--accent-blue-rgb),0.5)]" style={{ backgroundColor: i === 0 ? 'var(--primary)' : i === 1 ? 'var(--accent-emerald)' : i === 2 ? 'var(--accent-gold)' : 'var(--accent-blue)' }} />
+                                    <span className="text-xs font-black uppercase tracking-widest text-foreground/80 truncate">{item?.label || "Execution"}</span>
+                                    <span className="text-xs font-black ml-auto text-foreground/40">{item?.percent || 0}%</span>
+                                </div>
+                            ))}
+                        </div>
                      </div>
                 </div>
                 <div className="flex flex-col h-full">

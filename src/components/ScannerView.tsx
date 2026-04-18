@@ -221,13 +221,13 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
                 )}
               </>
             ) : (
-              <div className="py-24 text-center glass-panel rounded-[3rem] border border-dashed border-foreground/10">
-                <Search size={48} className="mx-auto text-muted-foreground/20 mb-6" />
-                <h3 className="text-3xl font-serif italic mb-4">Intelligence Required</h3>
-                <p className="text-muted-foreground max-w-md mx-auto mb-8">You must decode a Job Description before activating the Resume Intelligence engine.</p>
+              <div className="py-16 text-center glass-panel rounded-[3rem] border border-dashed border-foreground/10">
+                <Search size={48} className="mx-auto text-primary/40 mb-6" />
+                <h3 className="text-3xl font-serif italic mb-4 text-foreground">Intelligence Required</h3>
+                <p className="text-muted-foreground max-w-md mx-auto mb-8 font-medium">You must decode a Job Description before activating the Resume Intelligence engine.</p>
                 <button 
                   onClick={() => handleTabSwitch("decode")}
-                  className="px-8 py-4 rounded-full bg-foreground text-background text-[12px] font-black uppercase tracking-widest"
+                  className="px-8 py-3 rounded-full bg-primary text-background text-xs font-black uppercase tracking-widest hover:scale-105 transition-all"
                 >
                   Return to Decoder
                 </button>
@@ -259,13 +259,13 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
                 )}
               </>
             ) : (
-              <div className="py-24 text-center glass-panel rounded-[3rem] border border-dashed border-foreground/10">
-                <Zap size={48} className="mx-auto text-muted-foreground/20 mb-6" />
-                <h3 className="text-3xl font-serif italic mb-4">Signal Lost</h3>
-                <p className="text-muted-foreground max-w-md mx-auto mb-8">The Resume Generator requires a Job Description signal to structure its outputs.</p>
+              <div className="py-16 text-center glass-panel rounded-[3rem] border border-dashed border-foreground/10">
+                <Zap size={48} className="mx-auto text-primary/40 mb-6" />
+                <h3 className="text-3xl font-serif italic mb-4 text-foreground">Signal Lost</h3>
+                <p className="text-muted-foreground max-w-md mx-auto mb-8 font-medium">The Resume Generator requires a Job Description signal to structure its outputs.</p>
                 <button 
                   onClick={() => handleTabSwitch("decode")}
-                  className="px-8 py-4 rounded-full bg-foreground text-background text-[12px] font-black uppercase tracking-widest"
+                  className="px-8 py-3 rounded-full bg-primary text-background text-xs font-black uppercase tracking-widest hover:scale-105 transition-all"
                 >
                   Return to Decoder
                 </button>

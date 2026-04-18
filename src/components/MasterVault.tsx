@@ -456,7 +456,7 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.98 }}
-            className="premium-card p-10 space-y-10 relative overflow-hidden"
+            className="premium-card p-6 lg:p-8 space-y-8 relative overflow-hidden"
           >
             <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
               <User className="w-64 h-64 -rotate-12" />

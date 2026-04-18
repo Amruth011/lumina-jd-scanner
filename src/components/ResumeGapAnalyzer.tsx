@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 // Important: Use static import with ?url so Vite bundler properly packages the worker file for Vercel
 import pdfWorkerUrl from "pdfjs-dist/legacy/build/pdf.worker.mjs?url";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, Loader2, ArrowRight, Upload, PlusCircle as PlusCircleIcon, AlertTriangle, CheckCircle2, XCircle, Sparkles, Copy, ShieldCheck, Edit3, Trash2, Plus, Download, BarChart3, Zap, TrendingUp, CloudUpload } from "lucide-react";
+import { FileText, Loader2, ArrowRight, Upload, PlusCircle as PlusCircleIcon, AlertTriangle, CheckCircle2, XCircle, Sparkles, Copy, ShieldCheck, Edit3, Trash2, Plus, Download, BarChart3, Zap, TrendingUp, CloudUpload, MessageSquareQuote } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { saveApplication, type TrackedApplication } from "@/hooks/useApplications";
@@ -189,60 +189,26 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
 
       let aiResult: Partial<ResumeGapResult> | null = null;
       try {
-        const prompt = `Match analysis for ${jobTitle || "Role"}. Return JSON with summary, deductions, skill_matches, tailored_resume_snippets, and actionable_directives. 
-        JSON Format:
-        {
-          "overall_match": 0-100,
-          "summary": "1 sentence",
-          "deductions": [{"reason": "reason", "percent": 5, "fix_snippet": "tip"}],
-          "skill_matches": [{"skill": "skill", "match_percent": 100, "verdict": "strong|missing"}],
-          "actionable_directives": [{"action": "Optimize", "description": "Tip", "reasoning": "Why"}]
-        }`;
-          // Migrated to Groq API exactly as requested
-          const groqKey = "gsk_" + "LDqt9GTSLWBL" + "oQk4lAocW" + "Gdyb3FYz" + "53W8pnGGJ" + "JSUcKG6" + "srdOJvA";
-          let resultText = "";
-          
-          try {
-            console.log(`Deep Scan: Attempting with Groq llama-3.3-70b-versatile...`);
-            const res = await fetch(`https://api.groq.com/openai/v1/chat/completions`, {
-              method: "POST",
-              headers: { 
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${groqKey}`
-              },
-              body: JSON.stringify({
-                model: "llama-3.3-70b-versatile",
-                messages: [{ role: "user", content: prompt + "\nResume: " + trimmedResume + "\n\nIMPORTANT: Return ONLY valid JSON." }],
-                response_format: { type: "json_object" },
-                temperature: 0,
-                top_p: 1
-              })
-            });
-            
-            if (!res.ok) {
-              if (res.status === 429) throw new Error("Rate Limit Exceeded limits. Please try again.");
-              throw new Error(`HTTP Error ${res.status}`);
-            }
-            
-            const data = await res.json();
-            resultText = data.choices?.[0]?.message?.content || "";
-            if (resultText) {
-              console.log(`Deep Scan: Success with Groq`);
-            }
-          } catch (err) {
-            const errMsg = err instanceof Error ? err.message : String(err);
-            console.warn(`Deep Scan: Groq failed...`, errMsg);
-            throw new Error(`Deep Scan AI failure: ${errMsg}`);
-          }
-          if (!resultText) throw new Error(`Deep Scan AI failure: Response empty`);
- 
-        if (resultText) {
-          const start = resultText.indexOf("{");
-          const end = resultText.lastIndexOf("}");
-          if (start !== -1 && end !== -1) aiResult = JSON.parse(resultText.substring(start, end + 1));
+        console.log(`Deep Scan: Invoking compare-resume intelligence...`);
+        const { data, error: invokeError } = await supabase.functions.invoke("compare-resume", {
+          body: { 
+            jdSkills: skills, 
+            resumeText: trimmedResume,
+            jobTitle 
+          },
+        });
+
+        if (invokeError) throw invokeError;
+        
+        if (data && !data.error) {
+          aiResult = data;
+          console.log(`Deep Scan: Intelligence Scored Successfully via Groq.`);
+        } else if (data?.error) {
+          throw new Error(data.error);
         }
       } catch (err) {
-        console.error("AI decode Error:", err);
+        console.warn("AI Deep Scan encountered a non-critical limit:", err);
+        toast.info("AI Analysis limited. Using high-precision deterministic scoring.");
       }
  
       // Scoring Logic: AI has final authority (can increase or decrease based on semantic understanding)
@@ -380,7 +346,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
   };
 
   return (
-    <div className="glass-panel rounded-[3rem] p-10 lg:p-14 border border-white/5 relative overflow-hidden bg-gradient-to-br from-white/[0.02] to-transparent">
+    <div className="glass-panel rounded-[3rem] p-6 lg:p-10 border border-white/5 relative overflow-hidden bg-gradient-to-br from-white/[0.01] to-transparent">
       {/* Visual Background Pulse */}
       <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
       

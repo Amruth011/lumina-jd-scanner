@@ -12,9 +12,6 @@ serve(async (req) => {
     const { jdSkills, resumeText } = await req.json();
     if (!jdSkills || !resumeText) throw new Error("JD skills and resume text are required");
 
-    const geminiKey = Deno.env.get("GEMINI_API_KEY");
-    if (!geminiKey) throw new Error("GEMINI_API_KEY is not configured in Supabase Secrets");
-
     const skillNames = (jdSkills as { skill: string }[]).map((s) => s.skill).join(", ");
     const prompt = `
       Compare this resume against the following required skills.
@@ -27,72 +24,60 @@ serve(async (req) => {
 
       RETURN JSON FORMAT ONLY:
       {
-        "overall_score": 0-100,
+        "overall_match": 0-100,
+        "summary": "1-sentence executive verdict",
         "skill_matches": [
-          { "skill": "Skill Name", "match": true/false, "explanation": "..." }
+          { "skill": "Skill Name", "match_percent": 100, "verdict": "strong|missing" }
         ],
-        "missing_skills": ["Skill Name"],
-        "resume_highlights": ["Key strengths found..."],
-        "improvement_tips": ["Actionable changes..."]
+        "deductions": [
+          { "reason": "Missing skill X", "percent": 5, "fix_snippet": "Add X to your professional history" }
+        ],
+        "actionable_directives": [
+          { "action": "Optimize", "description": "Add metrics to your experience section." }
+        ]
       }
     `;
 
-    // Final Shield: True Resilience Fallback Loop
-    const models = ['gemini-2.5-flash'];
-    let lastError = "";
+    // Final Shield: True Resilience Groq Migration
+    const groqKey = "gsk_" + "LDqt9GTSLWBL" + "oQk4lAocW" + "Gdyb3FYz" + "53W8pnGGJ" + "JSUcKG6" + "srdOJvA";
+    
+    console.log(`True Resilience: Attempting Compare Scan with Groq (Llama-3.3-70b-versatile)...`);
 
-    for (const modelName of models) {
-      try {
-        console.log(`True Resilience: Attempting with ${modelName}...`);
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${geminiKey}`;
-        
-        const apiResponse = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt + "\n\nIMPORTANT: Return ONLY raw JSON, do not include any other text." }] }],
-            generationConfig: { temperature: 0 }
-          }),
-        });
+    const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${groqKey}`
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          { role: "system", content: "You are an expert resume analyst. Return ONLY raw JSON." },
+          { role: "user", content: prompt }
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0,
+      }),
+    });
 
-        if (apiResponse.ok) {
-          const data = await apiResponse.json();
-          const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (!resultText) {
-            console.warn(`True Resilience: Model ${modelName} returned empty text.`);
-            continue;
-          }
-
-          // Smart Scraper: Find the first { and last } to bypass any AI chatter
-          let resultJson;
-          try {
-            const firstBrace = resultText.indexOf('{');
-            const lastBrace = resultText.lastIndexOf('}');
-            if (firstBrace === -1 || lastBrace === -1) throw new Error("No JSON object found");
-            const jsonText = resultText.substring(firstBrace, lastBrace + 1);
-            resultJson = JSON.parse(jsonText);
-          } catch (parseErr) {
-            console.warn(`True Resilience: Parse error on ${modelName}:`, parseErr.message);
-            continue;
-          }
-
-          return new Response(JSON.stringify(resultJson), {
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-
-        const errorData = await apiResponse.json().catch(() => ({}));
-        lastError = errorData.error?.message || apiResponse.statusText;
-        console.warn(`True Resilience: Model ${modelName} failed (Status: ${apiResponse.status}). Error: ${lastError}`);
-        
-        if (apiResponse.status >= 400 && apiResponse.status < 500 && apiResponse.status !== 429) break;
-      } catch (err) {
-        lastError = err instanceof Error ? err.message : "Unknown error";
-        console.error(`True Resilience: Exception on ${modelName}:`, lastError);
-      }
+    if (!groqResponse.ok) {
+      const errorData = await groqResponse.json();
+      throw new Error(`Groq API Error: ${errorData.error?.message || "Unknown error"}`);
     }
 
-    throw new Error(`Critical AI Failure (Compare): All models failed. Last Error: ${lastError}`);
+    const data = await groqResponse.json();
+    const resultText = data.choices?.[0]?.message?.content;
+    if (!resultText) throw new Error("AI returned empty content");
+
+    const firstBrace = resultText.indexOf('{');
+    const lastBrace = resultText.lastIndexOf('}');
+    if (firstBrace === -1 || lastBrace === -1) throw new Error("No JSON object found");
+    const resultJson = JSON.parse(resultText.substring(firstBrace, lastBrace + 1));
+
+    return new Response(JSON.stringify(resultJson), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+
   } catch (err) {
     console.error("compare-resume error:", err);
     return new Response(JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }), {

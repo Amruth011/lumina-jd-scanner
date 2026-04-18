@@ -220,7 +220,7 @@ RETURN JSON FORMAT ONLY:
   };
 
   return (
-    <div className="glass-panel rounded-[3rem] p-10 lg:p-14 relative overflow-hidden group bg-gradient-to-br from-white/[0.02] to-transparent border border-white/5">
+    <div className="glass-panel rounded-[3rem] p-6 lg:p-10 relative overflow-hidden group bg-gradient-to-br from-white/[0.01] to-transparent border border-white/5">
       <div className="absolute top-0 right-0 p-16 opacity-5 scale-150 group-hover:opacity-10 transition-opacity duration-1000 pointer-events-none">
         <Sparkles className="w-80 h-80 rotate-12" />
       </div>

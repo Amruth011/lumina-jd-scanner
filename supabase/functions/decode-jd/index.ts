@@ -12,8 +12,6 @@ serve(async (req) => {
     const { jdText } = await req.json();
     if (!jdText) throw new Error("JD text is required");
 
-    const geminiKey = Deno.env.get("GEMINI_API_KEY");
-    if (!geminiKey) throw new Error("GEMINI_API_KEY is not configured");
 
     const prompt = `You are Lumina Intelligence v2, the world's most advanced Recruiters and JD Analyst. Your goal is to decode this Job Description with 99.9% precision into the following JSON structure. BE EXTREMELY CRITICAL AND DEDUCTIVE. Look for hidden red flags, implied tasks, and market context.
 
@@ -118,7 +116,16 @@ RETURN ONLY RAW JSON. NO TEXT SURROUNDING IT.`;
     const resultText = data.choices?.[0]?.message?.content;
     if (!resultText) throw new Error("AI returned empty content");
 
-    const parsed = JSON.parse(resultText);
+    console.log(`Decoding Intelligence: Cleaning Groq Response Segment...`);
+    const firstBrace = resultText.indexOf('{');
+    const lastBrace = resultText.lastIndexOf('}');
+    if (firstBrace === -1 || lastBrace === -1) {
+      console.error("Malformed AI Response (No JSON found):", resultText);
+      throw new Error("Intelligence Engine returned invalid formatting. Please try again.");
+    }
+    
+    const cleanJsonText = resultText.substring(firstBrace, lastBrace + 1);
+    const parsed = JSON.parse(cleanJsonText);
     
     return new Response(JSON.stringify(parsed), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
