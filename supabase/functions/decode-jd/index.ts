@@ -15,45 +15,74 @@ serve(async (req) => {
     const geminiKey = Deno.env.get("GEMINI_API_KEY");
     if (!geminiKey) throw new Error("GEMINI_API_KEY is not configured");
 
-    const prompt = `You are a Tier-1 Executive Recruiter and Data Analyst. Decode the following Job Description into a high-precision strategic intelligence report.
-    
-    Job Description:
-    ${jdText}
-    
-    Return a valid JSON object matching this structure EXACTLY:
-    {
-      "title": "Exact Role Title",
-      "grade": {
-        "score": 0-100,
-        "letter": "S|A|B|C|D|F",
-        "summary": "1-sentence executive verdict",
-        "breakdown": { "clarity": 0-20, "realistic": 0-15, "compensation": 0-15, "red_flags": 0-15, "benefits": 0-10, "growth": 0-10 }
-      },
-      "skills": [{"category": "string", "skill": "string", "importance": 0-100}],
-      "requirements": { "education": ["string"], "experience": "string", "soft_skills": ["string"], "agreements": ["string"] },
-      "recruiter_lens": [{"jargon": "corporate phrase", "reality": "what it actually means"}],
-      "time_distribution": [{"task": "activity", "percent": 0-100}],
-      "role_reality": {
-        "iceberg_above": ["Stated tasks"],
-        "iceberg_below": ["Hidden/implied tasks"],
-        "archetype": "The Creator|The Optimizer|The Fixer|The Researcher",
-        "dimensions": { "technical_depth": 0-100, "research_autonomy": 0-100, "client_interaction": 0-100, "strategic_impact": 0-100 }
-      },
-      "winning_strategy": [{"title": "step", "description": "how to execute"}],
-      "interview_prep": {
-        "questions": [{"question": "string", "type": "technical|behavioral|situational", "target_answer": "tip"}],
-        "interviewer_questions": ["Strategic questions to ask them"]
-      },
-      "salary_estimate": { "min": number, "max": number, "currency": "INR|USD", "source_note": "market basis" },
-      "bonus_insights": {
-        "ghost_job_probability": 0-100,
-        "desperation_meter": 0-100,
-        "skill_rarity": 0-100,
-        "career_growth": ["future role names"]
-      }
-    }
-    
-    IMPORTANT: Be critical. Deduced hidden meanings. Total percent in time_distribution must be 100. Return raw JSON only.`;
+    const prompt = `You are Lumina Intelligence v2, the world's most advanced Recruiters and JD Analyst. Your goal is to decode this Job Description with 99.9% precision into the following JSON structure. BE EXTREMELY CRITICAL AND DEDUCTIVE. Look for hidden red flags, implied tasks, and market context.
+
+JD Text:
+${jdText}
+
+STRUCTURE YOUR RESPONSE EXACTLY AS THIS JSON:
+{
+  "title": "Exact Role Name",
+  "skills": [{"category": "string", "skill": "string", "importance": 0-100}],
+  "requirements": { "education": ["string"], "experience": "string", "soft_skills": ["string"], "agreements": ["string"] },
+  "winning_strategy": [{"title": "step", "description": "how to win"}],
+  
+  "grade": {
+    "score": 0-100,
+    "letter": "S|A|B|C|D|F",
+    "summary": "1-sentence executive verdict",
+    "breakdown": { "clarity": 0-20, "realistic": 0-15, "compensation": 0-15, "red_flags": 0-15, "benefits": 0-10, "growth": 0-10, "inclusivity": 0-10, "readability": 0-5 },
+    "plain_english_summary": ["5 concise summary points about the role"]
+  },
+  
+  "red_flags": [{"phrase": "text", "intensity": 0-100, "note": "why"}],
+  "recruiter_lens": [{"jargon": "corporate fluff", "reality": "the harsh truth"}],
+  
+  "qualifiers": {
+    "must_have_percent": number,
+    "nice_to_have_percent": number,
+    "seniority_level": 0-100,
+    "experience": { "professional": number, "project_proof": number },
+    "education": { "degree_required": boolean, "skills_first_percent": number }
+  },
+  
+  "logistics": {
+    "salary_range": { "min": number, "max": number, "currency": "INR|USD", "estimate": boolean, "note": "market context" },
+    "work_arrangement": { "remote_friendly": "yes|no|partial|unspecified", "office_presence": "none|occasional|full", "flexible_hours": boolean },
+    "responsibility_mix": [{"label": "task", "percent": number}],
+    "archetype": { "label": "archetype name", "description": "summary", "primary_focus": "string", "primary_tool": "string", "match_score": number },
+    "hard_soft_ratio": { "hard": number, "soft": number }
+  },
+  
+  "role_reality": {
+    "iceberg_above": ["Stated tasks"],
+    "iceberg_below": ["Hidden/implied hard tasks"],
+    "dimensions": { "technical_depth": 0-100, "research_autonomy": 0-100, "client_interaction": 0-100, "strategic_impact": 0-100, "legacy_maintenance": 0-100 }
+  },
+  
+  "deep_dive": {
+    "day_in_life": [{"time": "HH:MM", "task": "string", "description": "detail"}],
+    "health_radar": { "market_position": 0-100, "tech_innovation": 0-100, "transparency": 0-100, "client_quality": 0-100, "employee_benefits": 0-100 },
+    "bias_analysis": { "inclusivity_score": 0-100, "gender_meter": "masculine|neutral|feminine", "age_bias_graph": 0-100, "tonal_map": [{"category": "string", "tone": "string"}] },
+    "culture_radar": { "innovation": 0-100, "work_life_balance": 0-100, "collaboration": 0-100, "hierarchy": 0-100, "results_driven": 0-100, "stability": 0-100 }
+  },
+  
+  "bonus_pulse": {
+    "ghost_job_probability": 0-100,
+    "desperation_meter": 0-100,
+    "competition_estimate": number,
+    "skill_rarity": 0-100,
+    "interview_difficulty": 0-100,
+    "career_growth": { "trajectory": ["role names"], "potential_score": 0-100 },
+    "tech_stack_popularity": [{"name": "tech", "demand": "Standard|High|Extreme"}]
+  },
+  
+  "interview_kit": { "questions": [{"question": "text", "type": "technical|behavioral|situational", "tip": "tip"}], "reverse_questions": ["questions to ask them"] },
+  "resume_help": { "keywords": ["string"], "bullets": ["string"] },
+  "jd_rewrite": { "highlights": [{"text": "sentence", "color": "skill|leverage|caution"}] }
+}
+
+RETURN ONLY RAW JSON. NO TEXT SURROUNDING IT.`;
 
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
     
@@ -62,14 +91,12 @@ serve(async (req) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0, response_mime_type: "application/json" },
+        generationConfig: { 
+          temperature: 0.1, 
+          response_mime_type: "application/json" 
+        },
       }),
     });
-
-    if (!apiResponse.ok) {
-      const errorData = await apiResponse.json().catch(() => ({}));
-      throw new Error(`Gemini API error: ${apiResponse.status} - ${errorData.error?.message || apiResponse.statusText}`);
-    }
 
     const data = await apiResponse.json();
     const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -93,7 +120,7 @@ serve(async (req) => {
   } catch (e) {
     console.error("decode-jd error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
-      status: 200, // Keep 200 to handle gracefully in frontend
+      status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
 import { ShieldCheck, Target, TrendingUp, AlertCircle, Bookmark, Zap } from "lucide-react";
-import type { JdGrade } from "@/types/jd";
+import type { DetailedJdGrade } from "@/types/jd";
 
 interface JdVerdictCardProps {
-  grade?: JdGrade;
+  grade?: DetailedJdGrade;
 }
 
 export const JdVerdictCard = ({ grade }: JdVerdictCardProps) => {

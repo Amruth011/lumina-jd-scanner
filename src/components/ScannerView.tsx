@@ -1,13 +1,14 @@
 import { useState, useEffect, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Brain, Filter, LayoutDashboard, Search, LogOut, LogIn, Loader2, Save, BookmarkCheck, CheckCircle2, RefreshCw, ArrowRight, Shield, Zap, BarChart3, Briefcase } from "lucide-react";
+import { Sparkles, Brain, Filter, LayoutDashboard, Search, LogOut, LogIn, Loader2, Save, BookmarkCheck, CheckCircle2, RefreshCw, ArrowRight, Shield, Zap, BarChart3, Briefcase, BrainCircuit } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useDecodeJD } from "@/hooks/useDecodeJD";
 import { GlassTextArea } from "@/components/GlassTextArea";
 import { DecodeButton } from "@/components/DecodeButton";
+import { LuminaUltraDashboard } from "./LuminaUltraDashboard";
 import { SkillRadarChart } from "@/components/SkillRadarChart";
 import { SkillProgressBars } from "@/components/SkillProgressBars";
 import { CriticalRequirements } from "@/components/CriticalRequirements";
@@ -213,50 +214,38 @@ export const ScannerView = () => {
                     </div>
                   </div>
 
-                  {/* ── SECTION A: THE VERDICT ── */}
-                  <JdVerdictCard grade={results.grade} />
-
-                  {/* ── SECTION G: RECRUITER LENS ── */}
-                  <RecruiterLens insights={results.recruiter_lens} />
-
-                  {/* ── SKILLS DASHBOARD ── */}
-                  <div className="space-y-8">
-                      <div className="flex justify-center">
-                        <motion.button
-                          whileHover={{ scale: 1.02, y: -1 }}
-                          whileTap={{ scale: 0.98, y: 1 }}
-                          onClick={() => setPriorityFilter(!priorityFilter)}
-                          className={`relative overflow-hidden flex items-center gap-3 px-8 py-3.5 rounded-2xl text-[10px] uppercase font-black tracking-[0.2em] transition-all duration-500 border shadow-2xl ${
-                            priorityFilter
-                              ? "bg-foreground text-background border-transparent"
-                              : "bg-muted/30 text-muted-foreground border-white/5 hover:text-foreground hover:bg-muted/50"
-                          }`}
-                        >
-                          <div className="liquid-water-layer opacity-10" />
-                          <Filter className={`w-3.5 h-3.5 ${priorityFilter ? '' : 'text-primary/40'}`} />
-                          Critical Skills Pulse
-                        </motion.button>
+                  {/* ── INTELLIGENCE ENGINE: THE DASHBOARD ── */}
+                  {results && results.grade ? (
+                    <motion.div
+                      initial={{ opacity: 0, y: 40 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      <LuminaUltraDashboard results={results} />
+                    </motion.div>
+                  ) : results && (
+                    <div className="glass-panel p-20 rounded-[3rem] border-white/5 text-center flex flex-col items-center gap-6">
+                      <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center animate-pulse">
+                        <BrainCircuit size={32} className="text-primary" />
                       </div>
-
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <SkillRadarChart skills={filteredSkills} />
-                        <SkillProgressBars skills={filteredSkills} priorityMode={priorityFilter} />
+                      <div className="space-y-12">
+                         <div className="space-y-4">
+                            <h3 className="text-3xl font-serif italic">Engine Initializing...</h3>
+                            <p className="text-sm text-muted-foreground font-display max-w-sm">
+                              The Lumina 2.0 Ultra-Intelligence engine is ready. Please click "Engine Reboot" or re-scan to generate the new 9-section strategic report.
+                            </p>
+                         </div>
+                         <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={handleForceRedecode}
+                            className="px-8 py-3 rounded-2xl bg-primary text-primary-foreground font-black text-[11px] uppercase tracking-widest shadow-[0_0_30px_rgba(var(--primary-rgb),0.3)]"
+                          >
+                            Activate Total Intelligence
+                          </motion.button>
                       </div>
-
-                      <ATSKeywordScanner skills={filteredSkills} aiInsight={getAiInsight(results.skills)} />
-                  </div>
-
-                  {/* ── SECTION C: ROLE DISTRIBUTION ── */}
-                  <RoleDistribution distribution={results.time_distribution} />
-
-                  {/* ── SECTION D: THE ICEBERG ── */}
-                  <IcebergAnalysis reality={results.role_reality} />
-
-                  {/* ── STRATEGIC REQUIREMENTS ── */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <CriticalRequirements requirements={results.requirements} />
-                    <WinningStrategy steps={results.winning_strategy} />
-                  </div>
+                    </div>
+                  )}
 
                   {/* ── SECTION E: INTERVIEW COACH ── */}
                   <InterviewCoach 
