@@ -187,11 +187,13 @@ export const LuminaUltraDashboard = ({ results, resumeResults }: LuminaUltraDash
 
                 <div className="w-full grid grid-cols-1 gap-3 mt-8 relative z-10">
                     <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
-                        <div className="flex flex-col">
-                            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Practice</span>
-                            <span className="text-[11px] font-bold text-foreground">{results?.qualifiers?.experience?.professional ?? 0}yr+ Req.</span>
+                        <div className="flex flex-col text-balance">
+                            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 leading-none mb-1">Practice</span>
+                            <span className="text-[11px] font-bold text-foreground leading-tight">
+                                {(results?.qualifiers?.experience?.professional ?? 0) === 0 ? "Freshers / Entry Level" : `${results?.qualifiers?.experience?.professional}yr+ Req.`}
+                            </span>
                         </div>
-                        <Check size={14} className="text-accent-emerald opacity-40" />
+                        <Check size={14} className="text-accent-emerald opacity-40 shrink-0" />
                     </div>
                     <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
                         <div className="flex flex-col">
