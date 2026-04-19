@@ -149,8 +149,8 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
                       <div className="flex justify-center mb-6">
                         <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-[12px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${
                           wasCached 
-                            ? "bg-accent-blue/10 border-accent-blue/20 text-accent-blue shadow-[0_0_15px_rgba(var(--accent-blue-rgb),0.1)]"
-                            : "bg-accent-emerald/10 border-accent-emerald/20 text-accent-emerald shadow-[0_0_15px_rgba(var(--accent-emerald-rgb),0.1)]"
+                            ? "bg-accent-blue/10 border-accent-blue/20 text-accent-blue"
+                            : "bg-accent-emerald/10 border-accent-emerald/20 text-accent-emerald"
                         }`}>
                           <Shield size={10} className={wasCached ? "animate-pulse" : ""} />
                           {wasCached ? "Consistency Verified (Cached)" : "Strategic Intelligence Active"}
@@ -178,7 +178,7 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
                          <div className="section-divider max-w-sm w-full opacity-20" />
                          <button 
                            onClick={() => handleTabSwitch("analysis")}
-                           className="group flex items-center gap-4 px-12 py-6 rounded-full bg-foreground text-background text-[13px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-2xl"
+                           className="group flex items-center gap-4 px-12 py-6 rounded-full bg-foreground text-background text-[13px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all"
                          >
                            Continue to Resume Analysis <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
                          </button>
@@ -211,7 +211,7 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
                     <div className="flex justify-center mt-12">
                       <button 
                         onClick={() => handleTabSwitch("generator")}
-                        className="group flex items-center gap-4 px-12 py-6 rounded-full bg-accent-blue text-white text-[13px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-2xl"
+                        className="group flex items-center gap-4 px-12 py-6 rounded-full bg-accent-blue text-white text-[13px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all"
                       >
                         Generate Tailored Resume <Zap size={18} className="animate-pulse" />
                       </button>

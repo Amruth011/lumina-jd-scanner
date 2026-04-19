@@ -14,10 +14,10 @@ export const WinningStrategy = ({ steps }: WinningStrategyProps) => {
       transition={{ duration: 0.5, delay: 0.4 }}
       className="premium-card rounded-2xl p-6 relative overflow-hidden"
     >
-      <div className="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-border/40 to-transparent" />
+      <div className="absolute top-0 left-6 right-6 h-px bg-border/40" />
 
       <div className="flex items-center gap-4 mb-10">
-        <div className="w-11 h-11 rounded-xl bg-accent-blue/10 flex items-center justify-center border border-accent-blue/10 shadow-sm shadow-accent-blue/5">
+        <div className="w-11 h-11 rounded-xl bg-accent-blue/10 flex items-center justify-center border border-accent-blue/10">
           <Trophy className="w-5 h-5 text-accent-blue" />
         </div>
         <div>
@@ -35,7 +35,7 @@ export const WinningStrategy = ({ steps }: WinningStrategyProps) => {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 + i * 0.1, duration: 0.4 }}
-            className="group relative glass rounded-2xl p-6 flex flex-col gap-4 cursor-default transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-accent-blue/5 border-border/40"
+            className="group relative glass rounded-2xl p-6 flex flex-col gap-4 cursor-default transition-all duration-500 border-border/40"
           >
             <div className="flex items-center gap-3">
               <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-muted/20 flex items-center justify-center text-[10px] font-mono font-bold text-muted-foreground/40 group-hover:text-accent-blue group-hover:bg-accent-blue/10 transition-all border border-transparent group-hover:border-accent-blue/20">

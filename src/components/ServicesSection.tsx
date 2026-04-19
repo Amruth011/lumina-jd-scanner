@@ -27,7 +27,6 @@ const services = [
 export const ServicesSection = () => {
   return (
     <section className="bg-transparent py-28 md:py-40 px-6 overflow-hidden relative">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(59,130,246,0.02)_0%,_transparent_60%)] pointer-events-none" />
       
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="flex justify-between items-end mb-12">
@@ -62,23 +61,22 @@ export const ServicesSection = () => {
               className="premium-card rounded-[40px] overflow-hidden group border-white/5 bg-card/20 hover:scale-[1.02] transition-all duration-700"
             >
               {/* Visual Area */}
-              <div className={`aspect-video bg-gradient-to-br ${service.gradient} p-8 flex items-center justify-center relative overflow-hidden`}>
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(255,255,255,0.05)_0%,transparent_50%)]" />
+              <div className="aspect-video bg-secondary/5 p-8 flex items-center justify-center relative overflow-hidden">
                 
                 {service.type === "radar" ? (
                   <div className="relative w-40 h-40 flex items-center justify-center">
-                    <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-[0_0_15px_rgba(var(--accent-blue-rgb),0.2)]">
+                    <svg viewBox="0 0 100 100" className="w-full h-full">
                        <circle cx="50" cy="50" r="45" fill="none" className="stroke-accent-blue/5" strokeWidth="0.5" />
                        <circle cx="50" cy="50" r="35" fill="none" className="stroke-accent-blue/5" strokeWidth="0.5" />
                        <circle cx="50" cy="50" r="25" fill="none" className="stroke-accent-blue/5" strokeWidth="0.5" />
                        <path d="M 50 10 L 85 30 L 85 70 L 50 90 L 15 70 L 15 30 Z" className="fill-accent-blue/10 stroke-accent-blue" strokeWidth="2" />
                     </svg>
                     <div className="absolute flex flex-col items-center">
-                      <span className="text-3xl font-display font-bold text-foreground">89%</span>
+                      <span className="text-3xl font-display font-bold text-foreground font-mono">89%</span>
                     </div>
                   </div>
                 ) : (
-                  <div className="w-full max-w-[280px] bg-card/40 backdrop-blur-md p-6 rounded-2xl shadow-2xl border border-white/5 space-y-4">
+                  <div className="w-full max-w-[280px] bg-white border border-border/10 p-6 rounded-2xl space-y-4">
                     <div className="flex gap-3">
                       <div className="w-full h-3 bg-muted/20 rounded-full" />
                       <div className="w-16 h-3 bg-accent-blue/20 rounded-full" />
@@ -99,7 +97,7 @@ export const ServicesSection = () => {
                   <span className={`${service.tagClass} uppercase tracking-[0.4em] text-[10px] font-black`}>
                     {service.tag}
                   </span>
-                  <div className={`${service.iconBg} ${service.iconClass} rounded-2xl p-3 group-hover:rotate-45 transition-all duration-700 border border-current/10 shadow-2xl`}>
+                  <div className={`${service.iconBg} ${service.iconClass} rounded-2xl p-3 group-hover:rotate-45 transition-all duration-700 border border-current/10`}>
                     <ArrowUpRight size={22} />
                   </div>
                 </div>

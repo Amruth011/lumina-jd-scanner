@@ -489,10 +489,10 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
             <motion.div 
               initial={{ width: 0 }}
               animate={{ width: `${calculateCompletion(profile, items)}%` }}
-              className="h-full bg-primary shadow-[0_0_10px_rgba(var(--primary-rgb),0.5)]"
+              className="h-full bg-primary"
             />
           </div>
-          <span className="text-[10px] font-black uppercase tracking-widest text-primary">{calculateCompletion(profile, items)}% READINESS SIGNAL</span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-primary font-mono">{calculateCompletion(profile, items)}% READINESS SIGNAL</span>
         </div>
 
         <div className="grid grid-cols-1 gap-12 pt-8">

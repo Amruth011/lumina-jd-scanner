@@ -100,7 +100,7 @@ const Auth = () => {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md"
       >
-        <div className="glass-strong rounded-2xl p-8 glow-border">
+        <div className="glass-strong rounded-2xl p-8">
           {/* Logo */}
           <div className="flex items-center justify-center gap-2 mb-6">
             <Sparkles className="w-6 h-6 text-primary" />
@@ -131,9 +131,8 @@ const Auth = () => {
             <div className="space-y-3">
               <button
                 onClick={() => setMode("email")}
-                className="relative overflow-hidden w-full flex items-center gap-3 px-4 py-4 rounded-2xl border border-border bg-background hover:bg-muted/50 transition-all text-sm font-bold text-foreground liquid-glass-refraction premium-button-glow"
+                className="relative overflow-hidden w-full flex items-center gap-3 px-4 py-4 rounded-2xl border border-border bg-background hover:bg-muted/50 transition-all text-sm font-bold text-foreground"
               >
-                <div className="liquid-water-layer opacity-10" />
                 <Mail className="w-5 h-5 text-primary fill-current/10" />
                 Continue with Email & Password
               </button>
@@ -146,13 +145,13 @@ const Auth = () => {
               <div className="flex bg-muted/50 p-1 rounded-xl mb-4">
                 <button
                   onClick={() => setAction("login")}
-                  className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${action === "login" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${action === "login" ? "bg-background text-foreground" : "text-muted-foreground hover:text-foreground"}`}
                 >
                   Log In
                 </button>
                 <button
                   onClick={() => setAction("signup")}
-                  className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${action === "signup" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${action === "signup" ? "bg-background text-foreground" : "text-muted-foreground hover:text-foreground"}`}
                 >
                   Sign Up
                 </button>
@@ -189,9 +188,8 @@ const Auth = () => {
               <button
                 onClick={handleEmailAuth}
                 disabled={loading}
-                className="relative overflow-hidden w-full py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-sm tracking-tight hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2 liquid-glass-refraction premium-button-glow shadow-md shadow-primary/20 mt-2"
+                className="relative overflow-hidden w-full py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-sm tracking-tight hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2 mt-2"
               >
-                <div className="liquid-water-layer opacity-20" />
                 {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                 {action === "login" ? "Sign In" : "Create Account"}
               </button>
@@ -213,9 +211,8 @@ const Auth = () => {
               <button
                 onClick={handleResetPassword}
                 disabled={loading}
-                className="relative overflow-hidden w-full py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-sm tracking-tight hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2 liquid-glass-refraction premium-button-glow shadow-md shadow-primary/20"
+                className="relative overflow-hidden w-full py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-sm tracking-tight hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2"
               >
-                <div className="liquid-water-layer opacity-20" />
                 {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                 Send Reset Link
               </button>
@@ -237,9 +234,8 @@ const Auth = () => {
               <button
                 onClick={handleUpdatePassword}
                 disabled={loading}
-                className="relative overflow-hidden w-full py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-sm tracking-tight hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2 liquid-glass-refraction premium-button-glow shadow-md shadow-primary/20"
+                className="relative overflow-hidden w-full py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-sm tracking-tight hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2"
               >
-                <div className="liquid-water-layer opacity-20" />
                 {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                 Update Password
               </button>

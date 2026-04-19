@@ -284,7 +284,7 @@ RETURN JSON FORMAT ONLY:
   };
 
   return (
-    <div className="glass-panel rounded-[3rem] p-6 lg:p-10 relative overflow-hidden group bg-gradient-to-br from-white/[0.01] to-transparent border border-white/5">
+    <div className="glass-panel rounded-[3rem] p-6 lg:p-10 relative overflow-hidden group border border-white/5">
       <div className="absolute top-0 right-0 p-16 opacity-5 scale-150 group-hover:opacity-10 transition-opacity duration-1000 pointer-events-none">
         <Sparkles className="w-80 h-80 rotate-12" />
       </div>
@@ -292,7 +292,7 @@ RETURN JSON FORMAT ONLY:
       <div className="relative z-10 flex flex-col xl:flex-row items-center justify-between gap-12">
         <div className="space-y-6 text-center xl:text-left">
           <div className="flex items-center justify-center xl:justify-start gap-5">
-            <div className="w-14 h-14 rounded-[22px] bg-primary/10 flex items-center justify-center border border-primary/20 shadow-inner">
+            <div className="w-14 h-14 rounded-[22px] bg-primary/10 flex items-center justify-center border border-primary/20">
               <Wand2 className="w-8 h-8 text-primary" />
             </div>
             <h3 className="text-3xl font-serif italic text-foreground tracking-tight">Candidacy Synthesizer</h3>
@@ -390,9 +390,8 @@ RETURN JSON FORMAT ONLY:
         <button
           onClick={handleGenerate}
           disabled={isGenerating}
-          className="relative overflow-hidden group/btn flex items-center gap-5 px-14 py-7 rounded-full text-[13px] font-black uppercase tracking-[0.3em] bg-foreground text-background hover:scale-105 transition-all duration-500 shadow-[0_30px_60px_rgba(0,0,0,0.3)] active:scale-95 disabled:opacity-50"
+          className="relative overflow-hidden group/btn flex items-center gap-5 px-14 py-7 rounded-full text-[13px] font-black uppercase tracking-[0.3em] bg-primary text-primary-foreground hover:scale-105 transition-all duration-500 active:scale-95 disabled:opacity-50"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-primary to-transparent opacity-0 group-hover/btn:opacity-20 transition-opacity" />
           {isGenerating ? (
             <><Loader2 className="w-6 h-6 animate-spin" /> Synthesizing Intelligence...</>
           ) : (
@@ -410,7 +409,7 @@ RETURN JSON FORMAT ONLY:
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="mt-20 pt-20 border-t border-white/5 space-y-16"
           >
-            <div className="flex flex-col lg:flex-row justify-between items-center bg-white/[0.02] backdrop-blur-3xl p-10 rounded-[3rem] border border-white/5 gap-8">
+            <div className="flex flex-col lg:flex-row justify-between items-center premium-card p-10 gap-8">
               <div className="space-y-3 text-center lg:text-left">
                 <div className="flex items-center gap-3 justify-center lg:justify-start">
                   <div className="w-2.5 h-2.5 rounded-full bg-accent-emerald animate-pulse" />
@@ -432,7 +431,7 @@ RETURN JSON FORMAT ONLY:
                 </button>
                 <button
                   onClick={handleDownloadPDF}
-                  className="flex items-center gap-4 px-10 py-5 rounded-2xl bg-foreground text-background text-xs font-black uppercase tracking-[0.2em] transition-all hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)] active:scale-95"
+                  className="flex items-center gap-4 px-10 py-5 rounded-2xl bg-primary text-primary-foreground text-xs font-black uppercase tracking-[0.2em] transition-all active:scale-95"
                 >
                   <Download className="w-5 h-5" /> Export Premium PDF
                 </button>
@@ -448,7 +447,7 @@ RETURN JSON FORMAT ONLY:
             {/* PREVIEW CONTAINER */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
               {/* SOURCE VAULT DATA (Left Panel) */}
-              <div className="md:col-span-4 glass-panel rounded-[3rem] p-10 border-white/5 overflow-hidden flex flex-col bg-white/[0.01]">
+              <div className="md:col-span-4 glass-panel p-10 flex flex-col">
                 <div className="flex items-center gap-3 mb-8">
                   <ArchiveBox className="w-5 h-5 text-muted-foreground opacity-40" />
                   <span className="text-xs font-black text-muted-foreground/60 uppercase tracking-[0.2em]">Profile Intelligence Inputs</span>
@@ -468,7 +467,7 @@ RETURN JSON FORMAT ONLY:
 
               {/* TACTICAL RESULT PREVIEW (The Document) */}
               <div 
-                className="md:col-span-8 bg-white max-w-4xl mx-auto rounded-none p-8 border border-zinc-200 shadow-2xl overflow-y-auto max-h-[1100px] flex flex-col gap-6 text-black print:p-0 print:shadow-none"
+                className="md:col-span-8 bg-white max-w-4xl mx-auto rounded-none p-8 border border-zinc-200 overflow-y-auto max-h-[1100px] flex flex-col gap-6 text-black print:p-0 print:shadow-none"
                 style={{ fontFamily: fontFamily === 'Merriweather' ? 'serif' : 'sans-serif' }}
               >
                 <div className="text-center space-y-2">

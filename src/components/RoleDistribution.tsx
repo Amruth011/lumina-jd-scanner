@@ -10,12 +10,12 @@ export const RoleDistribution = ({ distribution }: RoleDistributionProps) => {
   if (!distribution || distribution.length === 0) return null;
 
   const colors = [
-    "bg-accent-blue", 
     "bg-accent-emerald", 
-    "bg-accent-gold", 
-    "bg-foreground/60",
+    "bg-primary", 
+    "bg-accent-blue", 
+    "bg-accent-amber",
     "bg-muted-foreground/40",
-    "bg-primary/20"
+    "bg-muted"
   ];
 
   return (
@@ -47,10 +47,10 @@ export const RoleDistribution = ({ distribution }: RoleDistributionProps) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-6 gap-x-8">
           {distribution.map((item, idx) => (
             <div key={idx} className="flex gap-4 items-start group">
-                <div className={`mt-1.5 w-2.5 h-2.5 rounded-full ${colors[idx % colors.length]} shadow-[0_0_10px_rgba(0,0,0,0.2)]`} />
+                <div className={`mt-1.5 w-2.5 h-2.5 rounded-full ${colors[idx % colors.length]}`} />
                 <div className="space-y-0.5">
                   <div className="flex items-baseline gap-2">
-                    <span className="text-xl font-display font-black leading-none">{item.percent}%</span>
+                    <span className="text-xl font-display font-black leading-none font-mono">{item.percent}%</span>
                     <span className="text-[9px] uppercase font-black tracking-widest text-muted-foreground opacity-50">Target</span>
                   </div>
                   <p className="text-xs font-display font-bold text-foreground group-hover:text-primary transition-colors">

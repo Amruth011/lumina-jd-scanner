@@ -49,7 +49,6 @@ export const LuminaGauge = ({
             strokeWidth={strokeWidth}
             strokeLinecap="round"
             strokeDasharray={circumference}
-            style={{ filter: `drop-shadow(0 0 8px ${color}44)` }}
           />
           
           {/* Text Labels inside Gauge */}
@@ -57,7 +56,7 @@ export const LuminaGauge = ({
             x={size / 2} 
             y={size * 0.55} 
             textAnchor="middle" 
-            className="text-3xl font-display font-black fill-foreground tracking-tighter"
+            className="text-3xl font-display font-black fill-foreground tracking-tighter font-mono"
           >
             {value}
           </text>

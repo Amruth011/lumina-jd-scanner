@@ -7,10 +7,10 @@ interface SkillProgressBarsProps {
 }
 
 const getSemanticTier = (importance: number) => {
-  if (importance > 85) return { gradient: "from-accent-blue to-accent-blue/60", label: "Critical", labelClass: "text-accent-blue bg-accent-blue/10 border-accent-blue/10" };
-  if (importance >= 70) return { gradient: "from-accent-emerald to-accent-emerald/60", label: "Core", labelClass: "text-accent-emerald bg-accent-emerald/10 border-accent-emerald/10" };
-  if (importance >= 50) return { gradient: "from-accent-violet to-accent-violet/60", label: "Supporting", labelClass: "text-accent-violet bg-accent-violet/10 border-accent-violet/10" };
-  return { gradient: "from-muted-foreground/40 to-muted-foreground/20", label: "", labelClass: "" };
+  if (importance > 85) return { color: "bg-accent-emerald", label: "Critical", labelClass: "text-accent-emerald bg-accent-emerald/10 border-accent-emerald/10" };
+  if (importance >= 70) return { color: "bg-accent-emerald/80", label: "Core", labelClass: "text-accent-emerald bg-accent-emerald/10 border-accent-emerald/10" };
+  if (importance >= 50) return { color: "bg-accent-emerald/60", label: "Supporting", labelClass: "text-accent-emerald bg-accent-emerald/10 border-accent-emerald/10" };
+  return { color: "bg-muted-foreground/20", label: "", labelClass: "" };
 };
 
 export const SkillProgressBars = ({ skills, priorityMode }: SkillProgressBarsProps) => {
@@ -53,7 +53,7 @@ export const SkillProgressBars = ({ skills, priorityMode }: SkillProgressBarsPro
                   initial={{ width: 0 }}
                   animate={{ width: `${skill.importance}%` }}
                   transition={{ duration: 0.8, delay: 0.08 * i, ease: "easeOut" }}
-                  className={`h-full rounded-full bg-gradient-to-r ${tier.gradient} shadow-[0_0_10px_rgba(0,0,0,0.05)]`}
+                  className={`h-full rounded-full ${tier.color}`}
                 />
               </div>
             </motion.div>

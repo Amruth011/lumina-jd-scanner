@@ -75,7 +75,6 @@ export const LuminaRadar = ({ data, size = 300, color = "var(--accent-blue)" }: 
           stroke={color}
           strokeWidth="2"
           className="transition-all duration-700"
-          style={{ filter: `drop-shadow(0 0 10px ${color}44)` }}
         />
 
         {/* Value Nodes */}

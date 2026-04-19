@@ -21,17 +21,17 @@ export const PhilosophySection = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="premium-card rounded-3xl p-10 aspect-[4/3] bg-card/5 flex flex-col justify-between hover-glow border-border/40 shadow-2xl shadow-accent-blue/5"
+            className="premium-card rounded-3xl p-10 aspect-[4/3] bg-white flex flex-col justify-between hover-glow"
           >
             <div className="flex flex-wrap gap-3">
               {[
                 { label: "Python", value: "100%", accent: "bg-accent-blue" },
                 { label: "MLOps", value: "80%", accent: "bg-accent-emerald" },
-                { label: "Docker", value: "60%", accent: "bg-accent-violet" }
+                { label: "Docker", value: "60%", accent: "bg-primary" }
               ].map((tag, i) => (
-                <div key={i} className="flex items-center gap-3 bg-background/60 px-5 py-2.5 rounded-full text-[11px] font-bold text-foreground/70 shadow-sm border border-border/20 backdrop-blur-md tracking-tight">
-                  <span className={`w-2.5 h-2.5 rounded-full ${tag.accent} shadow-[0_0_8px_rgba(var(--accent-blue-rgb),0.2)]`} />
-                  {tag.label}: {tag.value}
+                <div key={i} className="flex items-center gap-3 bg-secondary/5 px-5 py-2.5 rounded-full text-[11px] font-bold text-foreground/70 border border-border/20 tracking-tight">
+                  <span className={`w-2.5 h-2.5 rounded-full ${tag.accent}`} />
+                  {tag.label}: <span className="font-mono">{tag.value}</span>
                 </div>
               ))}
             </div>
@@ -39,7 +39,7 @@ export const PhilosophySection = () => {
             <div className="space-y-2">
               <span className="text-muted-foreground/60 text-[10px] font-bold uppercase tracking-[0.3em]">Strategic Match</span>
               <div className="flex items-baseline gap-4">
-                <span className="text-7xl md:text-8xl font-display font-bold text-accent-blue tracking-tighter drop-shadow-[0_0_15px_rgba(var(--accent-blue-rgb),0.4)]">91%</span>
+                <span className="text-7xl md:text-8xl font-display font-bold text-accent-blue tracking-tighter font-mono">91%</span>
                 <span className="text-muted-foreground/40 text-[11px] font-bold uppercase tracking-[0.15em] mb-3">Top 0.1% Range</span>
               </div>
             </div>
@@ -60,7 +60,7 @@ export const PhilosophySection = () => {
               </p>
             </div>
             
-            <div className="w-full h-px bg-gradient-to-r from-transparent via-border/20 to-transparent" />
+            <div className="w-full h-px bg-border/20" />
 
             <div className="space-y-6">
               <span className="text-muted-foreground/60 text-[10px] font-bold tracking-[0.4em] uppercase block">Build the winning edge</span>

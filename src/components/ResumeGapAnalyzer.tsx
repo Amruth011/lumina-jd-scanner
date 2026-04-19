@@ -273,8 +273,8 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
     return (
       <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="grid grid-cols-1 md:grid-cols-[120px,1fr] gap-4">
-            <div className="premium-card rounded-2xl p-4 bg-white/5 border border-white/10 flex flex-col items-center justify-center text-center">
-                <span className="text-4xl font-black text-foreground">{result.overall_match}%</span>
+            <div className="premium-card rounded-2xl p-4 flex flex-col items-center justify-center text-center">
+                <span className="text-4xl font-black text-foreground font-mono">{result.overall_match}%</span>
                 <span className="text-[12px] font-black uppercase text-primary tracking-widest mt-1 block">Match</span>
             </div>
             <div className="premium-card rounded-2xl p-4 bg-white/5 border border-white/10 flex items-center">
@@ -294,7 +294,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                     <div key={i} className="p-4 rounded-xl bg-background/50 border border-border/40 flex items-start justify-between gap-4">
                         <div>
                             <span className="text-xs font-bold text-foreground block mb-1">{d.reason}</span>
-                            <span className="text-[9px] text-accent-red font-bold px-2 py-0.5 rounded bg-accent-red/10 border border-accent-red/20">-{d.percent}% Impact</span>
+                            <span className="text-[9px] text-accent-red font-bold px-2 py-0.5 rounded bg-accent-red/10 border border-accent-red/20 font-mono">-{d.percent}% Impact</span>
                         </div>
                         {d.fix_snippet && <button onClick={() => handleCopyBullet(d.fix_snippet!)} className="p-2 rounded-lg bg-accent-blue/10 text-accent-blue hover:bg-accent-blue/20 transition-all shrink-0"><Copy className="w-3.5 h-3.5" /></button>}
                     </div>
@@ -315,7 +315,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                                 {getVerdictIcon(sm.verdict)}
                                 <span className="text-xs font-medium truncate">{sm.skill}</span>
                             </div>
-                            <span className="text-[10px] font-bold text-muted-foreground">{sm.match_percent}%</span>
+                            <span className="text-[10px] font-bold text-muted-foreground font-mono">{sm.match_percent}%</span>
                         </div>
                     ))}
                 </div>
@@ -346,13 +346,10 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
   };
 
   return (
-    <div className="glass-panel rounded-[3rem] p-6 lg:p-10 border border-white/5 relative overflow-hidden bg-gradient-to-br from-white/[0.01] to-transparent">
-      {/* Visual Background Pulse */}
-      <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
-      
+    <div className="glass-panel p-6 lg:p-10 relative overflow-hidden">
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10 mb-16 relative z-10">
         <div className="flex items-center gap-8">
-          <div className="w-20 h-20 rounded-[2rem] bg-foreground/5 flex items-center justify-center border border-white/10 shadow-inner group-hover:scale-105 transition-transform duration-500">
+          <div className="w-20 h-20 rounded-[2rem] bg-foreground/5 flex items-center justify-center border border-white/10 group-hover:scale-105 transition-transform duration-500">
             <FileText className="w-10 h-10 text-primary/40" />
           </div>
           <div>
@@ -363,7 +360,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
         {!isOpen && (
           <button
             onClick={() => setIsOpen(true)}
-            className="px-10 py-5 rounded-full bg-foreground text-background text-[13px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-[0_20px_40px_rgba(0,0,0,0.2)] active:scale-95"
+            className="px-10 py-5 rounded-full bg-foreground text-background text-[13px] font-black uppercase tracking-widest hover:scale-105 transition-all active:scale-95"
           >
             Launch Diagnostic Scan
           </button>
@@ -385,7 +382,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                         isParsing ? "bg-primary/5 border-primary/40 animate-pulse" : "border-white/10 hover:border-primary/40 hover:bg-primary/[0.02]"
                     }`}
                 >
-                    <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover/upload:opacity-100 transition-opacity duration-700 blur-3xl" />
+                    <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover/upload:opacity-100 transition-opacity duration-700" />
                     {isParsing ? <Loader2 className="w-16 h-16 text-primary animate-spin" /> : <CloudUpload className="w-16 h-16 text-muted-foreground/20 group-hover/upload:text-primary/40 transition-colors" />}
                     <div className="text-center relative z-10">
                         <p className="text-xl font-display font-bold text-foreground/90">{fileName || "Inject Resume Signal"}</p>
@@ -412,12 +409,12 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
             </div>
 
             <div className="relative group">
-              <div className="absolute inset-0 bg-primary/5 rounded-[3rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+              <div className="absolute inset-0 bg-primary/5 rounded-[3rem] opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
               <textarea
                   value={resumeText}
                   onChange={(e) => setResumeText(e.target.value)}
                   placeholder="Paste raw intent here for a deep-tissue semantic scan..."
-                  className="w-full h-48 bg-white/5 border border-white/10 rounded-[3rem] p-10 text-[15px] outline-none focus:border-primary/40 transition-all resize-none relative z-10 font-medium placeholder:text-muted-foreground/30 shadow-inner"
+                  className="w-full h-48 bg-white/5 border border-white/10 rounded-[3rem] p-10 text-[15px] outline-none focus:border-primary/40 transition-all resize-none relative z-10 font-medium placeholder:text-muted-foreground/30"
               />
             </div>
 
@@ -436,9 +433,8 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
               <div className="space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-1000">
                 {/* ── CINEMATIC SCORE OVERVIEW ── */}
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                    <div className="md:col-span-4 glass-panel p-10 rounded-[2.5rem] border-white/5 flex flex-col items-center justify-center text-center relative overflow-hidden group">
-                        <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-3xl" />
-                        <span className="text-6xl font-display font-black tracking-tighter text-foreground relative z-10">{result.overall_match}%</span>
+                    <div className="md:col-span-4 glass-panel p-10 flex flex-col items-center justify-center text-center relative overflow-hidden group">
+                        <span className="text-6xl font-display font-black tracking-tighter text-foreground relative z-10 font-mono">{result.overall_match}%</span>
                         <span className="text-[12px] font-black uppercase text-primary tracking-[0.4em] mt-3 relative z-10 opacity-70">Intelligence Match</span>
                         
                         <div className="w-full h-1.5 bg-white/5 rounded-full mt-8 relative z-10 overflow-hidden">
@@ -481,7 +477,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                                 <div className="space-y-3">
                                     <div className="flex justify-between items-start">
                                         <span className="text-[14px] font-bold text-foreground pr-4">{d.reason}</span>
-                                        <span className="text-[12px] text-red-500 font-black px-3 py-1 rounded-xl bg-red-500/10 border border-red-500/20 whitespace-nowrap">-{d.percent}%</span>
+                                        <span className="text-[12px] text-red-500 font-black px-3 py-1 rounded-xl bg-red-500/10 border border-red-500/20 whitespace-nowrap font-mono">-{d.percent}%</span>
                                     </div>
                                     <p className="text-[12px] text-muted-foreground leading-relaxed font-medium">This deficit weakens your overall probability of advancing to clinical interviews.</p>
                                 </div>
@@ -506,7 +502,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                 {/* ── DETAIL GRIDS ── */}
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
                     {/* Skills Breakdown */}
-                    <div className="md:col-span-7 glass-panel p-10 rounded-[3rem] border-white/5 space-y-8 bg-gradient-to-br from-white/[0.01] to-transparent">
+                    <div className="md:col-span-7 glass-panel p-10 rounded-[3rem] border-white/5 space-y-8">
                         <div className="flex items-center justify-between">
                             <div className="space-y-2">
                                 <div className="flex items-center gap-3 text-accent-emerald">
@@ -526,7 +522,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                                       <div className="flex-1 mr-4 h-1 bg-foreground/5 rounded-full overflow-hidden">
                                         <div className="h-full bg-accent-emerald/40" style={{ width: `${sm.match_percent}%` }} />
                                       </div>
-                                      <span className="text-[12px] font-black text-foreground/30">{sm.match_percent}%</span>
+                                      <span className="text-[12px] font-black text-foreground/30 font-mono">{sm.match_percent}%</span>
                                     </div>
                                 </div>
                             ))}
@@ -565,7 +561,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                     <button 
                       onClick={handleAddToTracker} 
                       disabled={addedToTracker} 
-                      className="px-16 py-7 rounded-full bg-primary text-background font-black uppercase tracking-[0.4em] text-[13px] shadow-[0_25px_60px_rgba(var(--primary-rgb),0.3)] hover:scale-105 active:scale-95 transition-all flex items-center gap-5 group"
+                      className="px-16 py-7 rounded-full bg-primary text-background font-black uppercase tracking-[0.4em] text-[13px] hover:scale-105 active:scale-95 transition-all flex items-center gap-5 group"
                     >
                       {addedToTracker ? <CheckCircle2 className="w-6 h-6" /> : <Plus className="w-6 h-6 group-hover:rotate-90 transition-transform" />}
                       {addedToTracker ? "Application Tracked" : "Initiate Pipeline Tracking"}

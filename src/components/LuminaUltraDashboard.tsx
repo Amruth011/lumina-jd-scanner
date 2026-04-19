@@ -36,7 +36,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
          {/* Total Score Card */}
           <div className="lg:col-span-4 glass-panel p-8 rounded-[2.5rem] flex flex-col items-center justify-center relative overflow-hidden group">
-            <div className="absolute inset-0 bg-primary/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             <LuminaGauge 
                 value={grade.score} 
                 label="Aggregate Score" 
@@ -50,7 +50,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
          </div>
 
          {/* Required vs Preferred Skills */}
-          <div className="lg:col-span-5 glass-panel p-8 rounded-[2.5rem] space-y-6 flex flex-col justify-between bg-gradient-to-br from-white/[0.01] to-transparent">
+          <div className="lg:col-span-5 glass-panel p-8 flex flex-col justify-between">
             <div className="space-y-2">
                 <div className="flex items-center gap-3">
                     <Target size={18} className="text-accent-gold" />
@@ -71,7 +71,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                           }`}>
                               {(s?.importance || 0) > 80 ? 'Impact' : (s?.importance || 0) > 50 ? 'Strategic' : 'Support'}
                           </span>
-                          <span className="text-xs font-black text-foreground/20">{s?.importance || 0}%</span>
+                          <span className="text-xs font-black text-foreground/20 font-mono">{s?.importance || 0}%</span>
                         </div>
                     </div>
                 ))}
@@ -99,7 +99,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
               </div>
               <div className="flex items-center justify-between p-5 rounded-2xl bg-white/5 border border-white/10 ring-1 ring-accent-gold/20">
                 <span className="text-xs font-black uppercase tracking-widest text-muted-foreground/60">Market Comp</span>
-                <span className="text-xs font-black uppercase text-accent-gold tracking-widest">Top 0.1%</span>
+                <span className="text-xs font-black uppercase text-accent-gold tracking-widest font-mono">Top 0.1%</span>
               </div>
             </div>
          </div>
@@ -108,7 +108,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
       {/* ── PHASE 2: VERDICT & INTELLIGENCE ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           <div className="lg:col-span-8 flex flex-col">
-            <div className="glass-panel p-8 lg:p-12 rounded-[3rem] space-y-8 relative overflow-hidden flex-1 font-display bg-gradient-to-br from-white/[0.01] to-transparent">
+            <div className="glass-panel p-8 lg:p-12 space-y-8 relative overflow-hidden flex-1 font-display">
                 <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
                     <MessageSquare size={180} />
                 </div>
@@ -140,7 +140,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
       {/* ── PHASE 3/4: RISK & REWARDS ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
          {/* Strategic Insights Section */}
-          <div className="lg:col-span-5 glass-panel p-5 rounded-[3rem] space-y-3 bg-gradient-to-br from-red-500/[0.03] to-transparent flex flex-col">
+          <div className="lg:col-span-5 glass-panel p-5 rounded-[3rem] space-y-3 flex flex-col border-red-500/10">
              <div className="space-y-2">
                 <div className="flex items-center gap-3">
                     <div className="p-2.5 rounded-2xl bg-red-500/10 text-red-500">
@@ -174,17 +174,17 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
 
          <div className="lg:col-span-7 space-y-6 flex flex-col">
              {/* Salary Range Card */}
-              <div className="glass-panel p-8 rounded-[3rem] space-y-8 bg-gradient-to-br from-accent-emerald/[0.03] to-transparent flex-1 flex flex-col justify-center">
+              <div className="glass-panel p-8 rounded-[3rem] space-y-8 flex-1 flex flex-col justify-center">
                 <div className="flex justify-between items-start">
                     <div className="space-y-4">
                         <span className="text-xs uppercase font-black tracking-widest text-muted-foreground opacity-60">Projected Value Range</span>
                         <div className="flex items-baseline gap-4">
-                            <span className="text-3xl lg:text-4xl font-display font-black tracking-tighter text-foreground">
+                            <span className="text-3xl lg:text-4xl font-display font-black tracking-tighter text-foreground font-mono">
                                 {results?.logistics?.salary_range?.currency === 'INR' ? '₹' : '$'}
                                 {(results?.logistics?.salary_range?.min ?? 0).toLocaleString()}
                             </span>
                             <span className="text-xl text-muted-foreground/20 font-black">-</span>
-                            <span className="text-3xl lg:text-4xl font-display font-black text-accent-emerald tracking-tighter">
+                            <span className="text-3xl lg:text-4xl font-display font-black text-accent-emerald tracking-tighter font-mono">
                                 {(results?.logistics?.salary_range?.max ?? 0).toLocaleString()}
                             </span>
                         </div>
@@ -201,8 +201,8 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
 
                 <div className="space-y-6 pt-4">
                     <div className="h-6 w-full bg-white/5 rounded-full p-1 border border-white/5 relative">
-                        <div className="h-full bg-gradient-to-r from-primary/20 via-accent-emerald/60 to-primary/20 rounded-full">
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-white border-4 border-accent-emerald shadow-[0_0_20px_rgba(var(--accent-emerald-rgb),0.8)] z-20" />
+                        <div className="h-full bg-primary/20 rounded-full">
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-white border-4 border-accent-emerald z-20" />
                         </div>
                     </div>
                     <div className="grid grid-cols-3 gap-6 px-4">
@@ -247,7 +247,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                             }, { total: 0, elements: [] as React.ReactNode[] }).elements}
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                            <span className="text-2xl font-black font-display tracking-tighter text-foreground">100%</span>
+                            <span className="text-2xl font-black font-display tracking-tighter text-foreground font-mono">100%</span>
                             <span className="text-[10px] font-black uppercase text-primary/40 tracking-widest">Focus</span>
                         </div>
                       </div>
@@ -256,7 +256,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                             <div key={i} className="flex items-center gap-2 p-1 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all cursor-crosshair">
                                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: i === 0 ? 'var(--primary)' : i === 1 ? 'var(--accent-emerald)' : i === 2 ? 'var(--accent-gold)' : 'var(--accent-blue)' }} />
                                 <span className="text-[10px] font-black uppercase tracking-widest text-foreground/80 truncate">{item?.label || "Execution"}</span>
-                                <span className="text-[10px] font-black ml-auto text-foreground/40">{item?.percent || 0}%</span>
+                                <span className="text-[10px] font-black ml-auto text-foreground/40 font-mono">{item?.percent || 0}%</span>
                             </div>
                         ))}
                       </div>
@@ -272,12 +272,12 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
       <div className="space-y-8">
         <div className="flex items-center gap-8 pl-4">
             <h2 className="text-3xl font-serif italic whitespace-nowrap text-foreground/90">Tactical Optimization</h2>
-            <div className="h-px flex-1 bg-gradient-to-r from-foreground/10 to-transparent" />
+            <div className="h-px flex-1 bg-foreground/10" />
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             {/* NEW: STRATEGIC DEFICIT (Keyword Gap Analysis) */}
-            <div className="lg:col-span-12 glass-panel p-8 lg:p-12 rounded-[3.5rem] space-y-8 bg-gradient-to-br from-primary/[0.03] to-transparent">
+            <div className="lg:col-span-12 glass-panel p-8 lg:p-12 rounded-[3.5rem] space-y-8">
                 <div className="flex items-center justify-between">
                     <div className="space-y-2">
                         <div className="flex items-center gap-4">
@@ -288,13 +288,13 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                     </div>
                     <div className="px-6 py-3 rounded-2xl bg-primary/10 border border-primary/20 text-center">
                         <span className="text-[10px] font-black uppercase text-primary tracking-widest block">Gap Density</span>
-                        <span className="text-2xl font-black">{results?.resume_help?.keywords?.length || 0} GAPS</span>
+                        <span className="text-2xl font-black font-mono">{results?.resume_help?.keywords?.length || 0} GAPS</span>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                     {(results?.resume_help?.keywords || []).map((keyword, i) => (
-                        <div key={i} className="group relative p-5 rounded-2xl bg-white/5 border border-white/5 hover:border-primary/40 transition-all duration-500 hover:-translate-y-1">
+                        <div key={i} className="group relative p-5 rounded-2xl bg-white/5 border border-white/5 hover:border-primary/40 transition-all duration-500">
                             <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <SearchCheck size={14} className="text-primary" />
                             </div>
@@ -310,7 +310,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                 </div>
             </div>
 
-            <div className="lg:col-span-8 glass-panel p-6 lg:p-8 rounded-[3rem] space-y-6 flex flex-col bg-white/[0.02]">
+            <div className="lg:col-span-8 glass-panel p-6 lg:p-8 rounded-[3rem] space-y-6 flex flex-col">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Clock size={20} className="text-accent-blue" />
@@ -324,7 +324,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
 
             <div className="lg:col-span-4 space-y-6 flex flex-col h-full">
                 {/* NEW: OPTIMIZATION ROADMAP */}
-                <div className="glass-panel p-8 rounded-[2.5rem] bg-gradient-to-br from-accent-emerald/[0.05] to-transparent border border-accent-emerald/10">
+                <div className="glass-panel p-8 rounded-[2.5rem] border border-accent-emerald/10">
                     <div className="flex items-center gap-4 mb-8">
                         <TrendingUp size={20} className="text-accent-emerald" />
                         <span className="text-[12px] uppercase font-black tracking-[0.3em] text-accent-emerald">Optimization Roadmap</span>
@@ -332,7 +332,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                     <div className="space-y-6">
                         {(results?.resume_help?.bullets || []).slice(0, 4).map((step, i) => (
                             <div key={i} className="flex gap-4 group">
-                                <div className="w-1.5 h-1.5 rounded-full bg-accent-emerald mt-2 group-hover:scale-150 transition-transform shadow-[0_0_10px_rgba(var(--accent-emerald-rgb),0.8)]" />
+                                <div className="w-1.5 h-1.5 rounded-full bg-accent-emerald mt-2 group-hover:scale-150 transition-transform" />
                                 <p className="text-[13px] font-medium text-foreground/70 leading-relaxed group-hover:text-foreground transition-colors italic">
                                     {step}
                                 </p>
@@ -341,7 +341,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                     </div>
                 </div>
 
-                <div className="glass-panel p-8 rounded-[2.5rem] bg-accent-blue/5 flex flex-col justify-center shadow-xl shadow-accent-blue/5">
+                <div className="glass-panel p-8 rounded-[2.5rem] flex flex-col justify-center">
                     <RecruiterLens insights={results?.recruiter_lens || []} />
                 </div>
             </div>
@@ -381,7 +381,7 @@ const BonusCard = ({ icon: Icon, label, value, sub, color }: { icon: LucideIcon,
         </div>
         <div className="text-right">
             <div className="flex items-baseline justify-end gap-1.5">
-                <span className="text-3xl font-display font-black tracking-tighter text-foreground">{value}%</span>
+                <span className="text-3xl font-display font-black tracking-tighter text-foreground font-mono">{value}%</span>
             </div>
             <h4 className="text-[12px] font-black uppercase text-muted-foreground tracking-[0.2em] mt-1 opacity-60">{sub}</h4>
         </div>
@@ -394,7 +394,7 @@ const BonusCard = ({ icon: Icon, label, value, sub, color }: { icon: LucideIcon,
               initial={{ width: 0 }} 
               animate={{ width: `${value}%` }} 
               transition={{ duration: 1.5, ease: "easeOut" }}
-              className="h-full rounded-full shadow-[0_0_10px_rgba(currentColor,0.4)]" 
+              className="h-full rounded-full" 
               style={{ backgroundColor: color.startsWith('var') ? color : '' }} 
             />
         </div>

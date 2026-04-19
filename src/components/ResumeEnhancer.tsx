@@ -159,7 +159,7 @@ export const ResumeEnhancer = ({ resumeText, skills, deductions, jobTitle, gapRe
     >
       <div className="flex items-center justify-between flex-wrap gap-8 mb-8">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-accent-emerald/10 flex items-center justify-center border border-accent-emerald/10 shadow-sm shadow-accent-emerald/5">
+          <div className="w-12 h-12 rounded-xl bg-accent-emerald/10 flex items-center justify-center border border-accent-emerald/10">
             <Wand2 className="w-6 h-6 text-accent-emerald" />
           </div>
           <div>
@@ -175,9 +175,8 @@ export const ResumeEnhancer = ({ resumeText, skills, deductions, jobTitle, gapRe
           whileTap={{ scale: 0.98, y: 0 }}
           onClick={handleGenerate}
           disabled={isGenerating}
-          className="relative overflow-hidden flex items-center gap-2.5 px-8 py-3.5 rounded-2xl text-sm font-bold bg-accent-emerald text-white hover:bg-accent-emerald/90 transition-all liquid-glass-refraction shadow-xl shadow-accent-emerald/10 disabled:opacity-50"
+          className="relative overflow-hidden flex items-center gap-2.5 px-8 py-3.5 rounded-2xl text-sm font-bold bg-accent-emerald text-white hover:bg-accent-emerald/90 transition-all disabled:opacity-50"
         >
-          <div className="liquid-water-layer opacity-20" />
           {isGenerating ? (
             <><Loader2 className="w-4 h-4 animate-spin" /> Enhancing...</>
           ) : (
@@ -201,12 +200,11 @@ export const ResumeEnhancer = ({ resumeText, skills, deductions, jobTitle, gapRe
               </div>
               <div className="flex items-center gap-3">
                 <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={copyFullResume}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-[11px] font-bold bg-muted/30 text-muted-foreground border border-border/40 hover:bg-muted/50 transition-all shadow-sm uppercase tracking-widest">
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-[11px] font-bold bg-muted/30 text-muted-foreground border border-border/40 hover:bg-muted/50 transition-all uppercase tracking-widest">
                   <Copy className="w-3.5 h-3.5" /> Copy Text
                 </motion.button>
                 <motion.button whileHover={{ scale: 1.05, y: -1 }} whileTap={{ scale: 1, y: 0 }} onClick={handleDownloadPDF}
-                  className="relative overflow-hidden flex items-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-bold bg-accent-emerald text-white hover:bg-accent-emerald/90 transition-all liquid-glass-refraction shadow-lg shadow-accent-emerald/10 uppercase tracking-widest">
-                  <div className="liquid-water-layer opacity-20" />
+                  className="relative overflow-hidden flex items-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-bold bg-accent-emerald text-white hover:bg-accent-emerald/90 transition-all uppercase tracking-widest">
                   <Download className="w-4 h-4" /> Download PDF
                 </motion.button>
                 <button onClick={() => setIsOpen(false)} className="p-3 rounded-xl text-muted-foreground/60 hover:text-foreground hover:bg-muted/50 transition-all border border-transparent hover:border-border/40">
@@ -215,7 +213,7 @@ export const ResumeEnhancer = ({ resumeText, skills, deductions, jobTitle, gapRe
               </div>
             </div>
 
-            <div className="bg-background/40 backdrop-blur-md border border-border/40 rounded-3xl p-6 sm:p-12 space-y-12 shadow-inner max-h-[750px] overflow-y-auto custom-scrollbar">
+            <div className="bg-background/40 border border-border/40 rounded-3xl p-6 sm:p-12 space-y-12 max-h-[750px] overflow-y-auto custom-scrollbar">
               {/* Professional Summary */}
               <div className="relative group/section">
                 <div className="flex items-center justify-between mb-6 border-b border-border/10 pb-3">
@@ -262,7 +260,7 @@ export const ResumeEnhancer = ({ resumeText, skills, deductions, jobTitle, gapRe
                 <div className="space-y-10">
                   {resume.experience.map((exp, i) => (
                     <div key={i} className="relative pl-6 border-l-2 border-accent-emerald/20">
-                      <div className="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-accent-emerald shadow-[0_0_8px_rgba(16,185,129,0.3)]" />
+                      <div className="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-accent-emerald" />
                       <h5 className="text-[15px] font-display font-bold text-foreground tracking-tight mb-1.5">{exp.heading}</h5>
                       {exp.content && <p className="text-[10px] text-muted-foreground/70 font-mono font-bold tracking-[0.1em] uppercase mb-4">{exp.content}</p>}
                       {exp.bullets && exp.bullets.length > 0 && (

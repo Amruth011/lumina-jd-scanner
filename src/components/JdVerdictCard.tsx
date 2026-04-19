@@ -11,8 +11,8 @@ export const JdVerdictCard = ({ grade }: JdVerdictCardProps) => {
 
   const getGradeColor = (letter: string) => {
     switch (letter[0]) {
-      case "S": return "text-primary shadow-[0_0_30px_rgba(var(--primary-rgb),0.2)]";
-      case "A": return "text-accent-emerald shadow-[0_0_30px_rgba(var(--accent-emerald-rgb),0.2)]";
+      case "S": return "text-primary";
+      case "A": return "text-accent-emerald";
       case "B": return "text-accent-emerald/80";
       case "C": return "text-accent-gold";
       case "D": case "F": return "text-red-400";
@@ -36,19 +36,19 @@ export const JdVerdictCard = ({ grade }: JdVerdictCardProps) => {
     <motion.div 
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="glass-panel p-10 rounded-[3rem] h-full relative overflow-hidden flex flex-col items-center justify-between border-white/5 bg-gradient-to-b from-white/[0.02] to-transparent"
+      className="glass-panel p-10 h-full relative overflow-hidden flex flex-col items-center justify-between"
     >
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-primary/5 rounded-full blur-3xl -mt-24 pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-primary/5 rounded-full -mt-24 pointer-events-none" />
       
       <div className="text-center space-y-3 relative z-10">
         <span className="text-[12px] uppercase font-black tracking-[0.3em] text-muted-foreground opacity-80 block">Global Verdict</span>
-        <div className={`text-9xl font-serif italic font-black transition-all duration-700 ${getGradeColor(grade.letter)} drop-shadow-2xl`}>
+        <div className={`text-9xl font-serif italic font-black transition-all duration-700 ${getGradeColor(grade.letter)}`}>
           {grade.letter}
         </div>
       </div>
 
       <div className="space-y-8 w-full relative z-10">
-        <div className="h-px w-full bg-gradient-to-r from-transparent via-foreground/10 to-transparent" />
+        <div className="h-px w-full bg-foreground/10" />
         
         <p className="text-center text-[15px] font-medium text-foreground leading-relaxed italic px-2">
           &ldquo;{grade.summary}&rdquo;
@@ -69,8 +69,8 @@ export const JdVerdictCard = ({ grade }: JdVerdictCardProps) => {
                   </span>
                 </div>
                 <div className="flex items-end justify-between">
-                  <span className="text-sm font-display font-black text-foreground">{value}</span>
-                  <span className="text-[12px] uppercase font-black text-muted-foreground opacity-40">/ {max}</span>
+                  <span className="text-sm font-display font-black text-foreground font-mono">{value}</span>
+                  <span className="text-[12px] uppercase font-black text-muted-foreground opacity-40 font-mono">/ {max}</span>
                 </div>
               </div>
             );

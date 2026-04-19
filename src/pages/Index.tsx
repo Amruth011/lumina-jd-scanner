@@ -36,7 +36,7 @@ const Index = () => {
             </div>
             
             <h1 className="text-7xl md:text-9xl text-foreground tracking-[-0.06em] font-serif leading-[0.85] text-balance">
-              Land in the <span className="italic text-accent-blue drop-shadow-[0_0_25px_rgba(var(--accent-blue-rgb),0.2)]">top 0.1%</span>
+              Land in the <span className="italic text-accent-blue">top 0.1%</span>
             </h1>
             
             <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mt-8 leading-relaxed font-sans font-medium">
