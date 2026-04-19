@@ -188,22 +188,23 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                         </div>
                     </div>
                     
-                    <div className="flex items-baseline gap-2 md:gap-3 flex-wrap">
-                        <span className="text-4xl md:text-5xl lg:text-6xl font-display font-black tracking-[-0.07em] text-foreground leading-none">
+                    <div className="flex items-baseline gap-2 md:gap-3 flex-nowrap overflow-hidden">
+                        <span className="text-3xl md:text-4xl lg:text-5xl font-display font-black tracking-[-0.07em] text-foreground leading-none whitespace-nowrap">
                             {results?.logistics?.salary_range?.currency === 'INR' ? '₹' : '$'}
                             {(results?.logistics?.salary_range?.min ?? 0).toLocaleString()}
                         </span>
                         <span className="text-xl text-muted-foreground/10 font-black">-</span>
-                        <span className="text-4xl md:text-5xl lg:text-6xl font-display font-black text-accent-emerald tracking-[-0.07em] leading-none">
+                        <span className="text-3xl md:text-4xl lg:text-5xl font-display font-black text-accent-emerald tracking-[-0.07em] leading-none whitespace-nowrap">
                             {(results?.logistics?.salary_range?.max ?? 0).toLocaleString()}
                         </span>
                     </div>
                 </div>
 
                 <div className="space-y-6 pt-4">
-                    <div className="h-6 w-full bg-white/5 rounded-full p-1 border border-white/5 relative">
-                        <div className="h-full bg-primary/20 rounded-full">
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-white border-4 border-accent-emerald z-20" />
+                    <div className="h-6 w-full bg-white/5 rounded-full p-1 border border-white/5 relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent animate-shimmer" />
+                        <div className="h-full bg-gradient-to-r from-primary/20 via-accent-emerald/40 to-accent-gold/20 rounded-full relative z-10">
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-white border-4 border-accent-emerald z-20 shadow-xl" />
                         </div>
                     </div>
                     <div className="grid grid-cols-3 gap-6 px-4">
