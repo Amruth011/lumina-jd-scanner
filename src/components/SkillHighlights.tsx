@@ -85,7 +85,7 @@ export const SkillHighlights = ({
         </div>
 
         <div className="flex flex-wrap gap-2.5">
-          {cleanedNiceToHave.map((skill, idx) => (
+          {niceToHaveSkills.map((skill, idx) => (
             <motion.span 
               key={idx}
               whileHover={{ scale: 1.05 }}
@@ -94,7 +94,7 @@ export const SkillHighlights = ({
               {skill.skill}
             </motion.span>
           ))}
-          {cleanedNiceToHave.length === 0 && (
+          {niceToHaveSkills.length === 0 && (
             <p className="text-sm text-muted-foreground italic pl-1">All identified skills are classified as core requirements.</p>
           )}
         </div>
