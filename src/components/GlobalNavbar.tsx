@@ -50,7 +50,7 @@ export const GlobalNavbar = ({ activeTab, onTabChange }: GlobalNavbarProps) => {
         </div>
 
         {/* Global Tactical Tabs */}
-        <div className="hidden lg:flex items-center gap-1.5 bg-white/5 p-1 rounded-full border border-white/5 shadow-inner">
+        <div className="flex items-center gap-1.5 bg-white/5 p-1 rounded-full border border-white/5 shadow-inner overflow-x-auto no-scrollbar max-w-[50%] md:max-w-none">
           {tabs.map((tab) => (
             <button 
               key={tab.key} 

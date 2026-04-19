@@ -16,6 +16,7 @@ import { RecruiterLens } from "./RecruiterLens";
 import { BiasDetector } from "./BiasDetector";
 import { ResumeBulletGenerator } from "./ResumeBulletGenerator";
 import { SkillHighlights } from "./SkillHighlights";
+import { CultureRadar } from "./CultureRadar";
 import { LucideIcon } from "lucide-react";
 import { generateUnifiedReport } from "@/lib/pdfExporter";
 import { toast } from "sonner";
@@ -381,10 +382,11 @@ export const LuminaUltraDashboard = ({ results, resumeResults }: LuminaUltraDash
       <div className="space-y-12">
         <PhaseLabel number="03" title="Strategic Intelligence" sub="Elite Differentiation Suite" />
         
-        {/* Row 1: Bias & Bullets */}
+        {/* Row 1: Bias, Culture & Bullets */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-            <div className="lg:col-span-6 flex flex-col">
+            <div className="lg:col-span-6 flex flex-col gap-6">
                 <BiasDetector bias={results?.deep_dive?.bias_analysis} />
+                <CultureRadar radar={results?.deep_dive?.culture_radar} />
             </div>
             <div className="lg:col-span-6 flex flex-col">
                 <ResumeBulletGenerator bullets={results?.resume_help?.bullets} />
