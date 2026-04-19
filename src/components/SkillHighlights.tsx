@@ -5,12 +5,19 @@ import type { Skill } from "@/types/jd";
 import { cn } from "@/lib/utils";
 
 const commonPreferred = [
-  "git", "aws", "azure", "gcp", "cloud", "spark", "hadoop", "big data", "tableau", "power bi", 
-  "docker", "kubernetes", "jenkins", "terraform", "ci/cd", "rest", "api", "graphql", "sql", 
-  "nosql", "mongodb", "postgresql", "redis", "kafka", "elastic", "linux", "jira", "agile", 
-  "scrum", "devops", "mlops", "tensorflow", "pytorch", "pandas", "numpy", "scikit", "java", 
-  "python", "javascript", "typescript", "react", "next.js", "node", "go", "rust", "distributed system",
-  "microservice", "security", "encryption", "auth0", "firebase", "tailwind", "figma", "storybook"
+  // AI & Agentic Stack
+  "rag", "langchain", "agentic", "semantic search", "generative ai", "genai", "llm", "google agent",
+  // Data Science Libraries (often required vs just "Python")
+  "pandas", "numpy", "scikit", "scikit-learn", "matplotlib", "seaborn", "tableau", "power bi",
+  // Machine Learning Foundations
+  "linear regression", "logistic regression", "decision trees", "hypothesis testing", "eda", "data cleaning", "preprocessing",
+  // Infrastructure & Cloud
+  "git", "aws", "azure", "gcp", "cloud", "spark", "pyspark", "hadoop", "big data", 
+  "docker", "kubernetes", "jenkins", "terraform", "ci/cd", 
+  // Database & Modern Stack
+  "sql", "nosql", "mongodb", "postgresql", "redis", "kafka", "elastic", "linux", "jira", "agile", 
+  "scrum", "devops", "mlops", "tensorflow", "pytorch", "java", 
+  "python", "javascript", "typescript", "react", "next.js", "node", "go", "rust"
 ];
 
 interface SkillHighlightsProps {
@@ -22,11 +29,11 @@ export const SkillHighlights = ({ skills, results }: { skills: Skill[], results?
   const requiredSkills = (skills || []).filter((s) => s.importance >= 80);
   const niceToHaveSkills = (skills || []).filter((s) => s.importance < 80 && s.importance > 0);
 
-  // Fallback: Scavenger for preferred skills from keywords if the AI missed them
-  const finalNiceToHave = [...niceToHaveSkills];
-  
   // -- MULTI-SOURCE SCAVENGER (Keywords, Bullets, and Highlights) --
   const identifiedSkills = (skills || []).map(s => s.skill.toLowerCase());
+  const finalRequired = [...requiredSkills];
+  const finalNiceToHave = [...niceToHaveSkills];
+  
   const potentialSources = [
     ...(results?.resume_help?.keywords || []),
     ...(results?.resume_help?.bullets || []),
@@ -34,40 +41,60 @@ export const SkillHighlights = ({ skills, results }: { skills: Skill[], results?
   ];
 
   if (potentialSources.length > 0) {
-    const existingNames = new Set(finalNiceToHave.map(s => s.skill.toLowerCase()));
+    const existingRequiredNames = new Set(finalRequired.map(s => s.skill.toLowerCase()));
+    const existingNiceNames = new Set(finalNiceToHave.map(s => s.skill.toLowerCase()));
     
-    // Look for preferred tech mentioned anywhere in the AI analysis
+    // Pattern to detect "Must-Have" intensity
+    const requiredPatterns = ["essential", "required", "must have", "proficiency in", "solid understanding", "foundational knowledge", "must-to-have"];
+
     commonPreferred.forEach(pref => {
       const prefLower = pref.toLowerCase();
       
-      // If we haven't already identified this skill, check if it appears in any source text
-      const isAlreadyRequired = identifiedSkills.some(id => 
-        id === prefLower || id.includes(prefLower) || prefLower.includes(id)
-      );
+      // Check if we already have this skill in either category
+      const isAlreadyHandled = 
+        identifiedSkills.some(id => id === prefLower || id.includes(prefLower)) ||
+        existingRequiredNames.has(prefLower) || 
+        existingNiceNames.has(prefLower);
 
-      if (!isAlreadyRequired && !existingNames.has(prefLower)) {
-        
-        const isMentioned = potentialSources.some(source => {
+      if (!isAlreadyHandled) {
+        let isMentioned = false;
+        let isHighIntensity = false;
+
+        potentialSources.forEach(source => {
           const sLower = (source || "").toLowerCase();
-          // Match if the source contains the tech name as a whole word or significant part
-          return sLower.includes(prefLower);
+          if (sLower.includes(prefLower)) {
+            isMentioned = true;
+            // If the keyword appears near a "Required" pattern, promote it
+            if (requiredPatterns.some(p => sLower.includes(p))) {
+              isHighIntensity = true;
+            }
+          }
         });
 
         if (isMentioned) {
-          finalNiceToHave.push({ 
-            skill: pref, 
-            importance: 50, 
-            category: "Preferred" 
-          });
-          existingNames.add(prefLower);
+          if (isHighIntensity) {
+            finalRequired.push({ 
+              skill: pref, 
+              importance: 90, 
+              category: "Technical" 
+            });
+            existingRequiredNames.add(prefLower);
+          } else {
+            finalNiceToHave.push({ 
+              skill: pref, 
+              importance: 50, 
+              category: "Preferred" 
+            });
+            existingNiceNames.add(prefLower);
+          }
         }
       }
     });
   }
 
   // Group required skills by category
-  const groupedRequired = requiredSkills.reduce((acc, skill) => {
-    const cat = skill.category || "Industry Knowledge";
+  const groupedRequired = finalRequired.reduce((acc, skill) => {
+    const cat = skill.category || "General";
     if (!acc[cat]) acc[cat] = [];
     acc[cat].push(skill);
     return acc;
