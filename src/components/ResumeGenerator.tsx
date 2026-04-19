@@ -32,7 +32,8 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
     phone: "",
     location: "",
     linkedin: "",
-    portfolio: ""
+    portfolio: "",
+    github: ""
   });
   const [tone, setTone] = useState<"Professional" | "Modern" | "Aggressive">("Modern");
 
@@ -40,9 +41,32 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
   useEffect(() => {
     if (user) {
       loadVault();
+      loadDraft();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, jdTitle]);
+
+  const loadDraft = async () => {
+    if (!user || !jdTitle) return;
+    try {
+      const { data, error } = await supabase
+        .from("generated_resumes")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("job_title", jdTitle)
+        .maybeSingle();
+
+      if (data) {
+        setResume(data.content as GeneratedResume);
+        setEditableResume(data.content as GeneratedResume);
+        setEditableHeader(data.header_data as typeof editableHeader);
+        setIsOpen(true);
+        toast.success("Resumed from your previous draft!");
+      }
+    } catch (err) {
+      console.error("Load draft error:", err);
+    }
+  };
 
   const loadVault = async () => {
     const { data: profileData } = await supabase.from("profiles").select("*").eq("id", user?.id).single();
@@ -56,7 +80,8 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
         phone: profileData.phone || "",
         location: profileData.location || "",
         linkedin: profileData.linkedin_url || "",
-        portfolio: profileData.website_url || ""
+        portfolio: profileData.website_url || "",
+        github: profileData.github_url || ""
       });
     }
   };
@@ -153,6 +178,30 @@ RETURN JSON FORMAT ONLY:
       setIsGenerating(false);
     }
   };
+  
+  const handleSaveDraft = async () => {
+    if (!user || !editableResume) {
+      toast.error("Please generate a resume first.");
+      return;
+    }
+    
+    try {
+      const { error } = await supabase.from("generated_resumes").upsert({
+        user_id: user.id,
+        job_title: jdTitle,
+        content: editableResume,
+        header_data: editableHeader,
+        status: 'draft',
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id, job_title' });
+
+      if (error) throw error;
+      toast.success("Resume draft saved successfully!");
+    } catch (err) {
+      console.error("Save error:", err);
+      toast.error("Failed to save draft to vault.");
+    }
+  };
 
   const handleDownloadPDF = () => {
     if (!resume) return;
@@ -194,13 +243,26 @@ RETURN JSON FORMAT ONLY:
       ].filter(Boolean).join("  •  ");
       addText(contactLines, 8.5, false, [80, 80, 80], "center");
       
-      const linkLines = [
-        editableHeader.linkedin?.replace(/^https?:\/\//, ''),
-        editableHeader.portfolio?.replace(/^https?:\/\//, '')
-      ].filter(Boolean).join("  |  ");
-      if (linkLines) {
+      const linkItems = [
+        { label: "LINKEDIN", url: editableHeader.linkedin },
+        { label: "GITHUB", url: editableHeader.github },
+        { label: "PORTFOLIO", url: editableHeader.portfolio }
+      ].filter(item => item.url);
+
+      if (linkItems.length > 0) {
         y += 1;
-        addText(linkLines, 8.5, false, [0, 102, 204], "center");
+        const totalWidth = linkItems.reduce((acc, item) => acc + pdf.getTextWidth(item.label) + 10, 0) - 10;
+        let currentX = (pageWidth - totalWidth) / 2;
+        
+        linkItems.forEach((item, idx) => {
+          pdf.setFontSize(8.5);
+          pdf.setTextColor(0, 102, 204);
+          pdf.text(item.label, currentX, y);
+          // Add invisible link
+          pdf.link(currentX, y - 3, pdf.getTextWidth(item.label), 5, { url: item.url });
+          currentX += pdf.getTextWidth(item.label) + 10;
+        });
+        y += 4;
       }
       y += 6;
 
@@ -419,15 +481,11 @@ RETURN JSON FORMAT ONLY:
               </div>
               <div className="flex flex-col md:flex-row gap-4">
                 <button
-                  onClick={() => setIsEditing(!isEditing)}
-                  className={`flex items-center gap-4 px-8 py-5 rounded-2xl border text-xs font-black uppercase tracking-[0.2em] transition-all active:scale-95 ${
-                    isEditing 
-                      ? "bg-accent-blue text-white border-accent-blue" 
-                      : "bg-white/5 border-white/10 text-muted-foreground hover:bg-white/10 hover:text-foreground"
-                  }`}
+                  onClick={handleSaveDraft}
+                  className="flex items-center gap-4 px-8 py-5 rounded-2xl bg-white/10 border border-primary/30 text-xs font-black uppercase tracking-[0.2em] text-primary hover:bg-primary hover:text-primary-foreground transition-all shadow-[0_0_20px_rgba(var(--primary-rgb),0.1)] active:scale-95"
                 >
-                  <Wand2 className={`w-5 h-5 ${isEditing ? "animate-pulse" : ""}`} /> 
-                  {isEditing ? "Save & View" : "Live Edit Mode"}
+                  <ArchiveBox className="w-5 h-5" /> 
+                  Save as Draft
                 </button>
                 <button
                   onClick={handleDownloadPDF}
@@ -446,21 +504,96 @@ RETURN JSON FORMAT ONLY:
 
             {/* PREVIEW CONTAINER */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
-              {/* SOURCE VAULT DATA (Left Panel) */}
-              <div className="md:col-span-4 glass-panel p-10 flex flex-col">
-                <div className="flex items-center gap-3 mb-8">
-                  <ArchiveBox className="w-5 h-5 text-muted-foreground opacity-40" />
-                  <span className="text-xs font-black text-muted-foreground/60 uppercase tracking-[0.2em]">Profile Intelligence Inputs</span>
+              {/* ELITE EDITOR (Left Panel) */}
+              <div className="md:col-span-4 glass-panel p-8 flex flex-col gap-8 h-fit max-h-[1100px] overflow-y-auto custom-scrollbar border border-white/5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Wand2 className="w-5 h-5 text-primary" />
+                    <span className="text-xs font-black text-muted-foreground uppercase tracking-[0.2em]">Elite Section Editor</span>
+                  </div>
                 </div>
-                <div className="space-y-8 overflow-y-auto custom-scrollbar flex-1 pr-4 opacity-40 hover:opacity-100 transition-all duration-700">
-                  {vaultItems.filter(v => v.type === 'professional').slice(0, 4).map((v, i) => (
-                    <div key={i} className="space-y-3 border-l-2 border-white/5 pl-5 hover:border-primary/40 transition-colors">
-                       <h5 className="font-bold text-[13px] uppercase tracking-wide text-foreground/80">{v.title} at {v.organization}</h5>
-                       <p className="text-[14px] text-muted-foreground leading-relaxed italic line-clamp-2">&ldquo;{v.description}&rdquo;</p>
+
+                <div className="space-y-8">
+                  {/* Header Section */}
+                  <div className="space-y-4">
+                    <h5 className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Primary Identity</h5>
+                    <input className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-foreground outline-none focus:ring-1 ring-primary/40" value={editableHeader.fullName} onChange={e => setEditableHeader({...editableHeader, fullName: e.target.value})} placeholder="Full Name" />
+                    <div className="grid grid-cols-2 gap-3">
+                      <input className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-[10px] text-foreground outline-none focus:ring-1 ring-primary/40" value={editableHeader.email} onChange={e => setEditableHeader({...editableHeader, email: e.target.value})} placeholder="Email" />
+                      <input className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-[10px] text-foreground outline-none focus:ring-1 ring-primary/40" value={editableHeader.phone} onChange={e => setEditableHeader({...editableHeader, phone: e.target.value})} placeholder="Phone" />
                     </div>
-                  ))}
-                  <div className="p-6 rounded-[2rem] bg-primary/[0.02] border border-dashed border-primary/20 text-center text-xs text-primary/60 font-medium italic">
-                    + Advanced parser distilling metrics from tactical profile...
+                    <input className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-[10px] text-foreground outline-none focus:ring-1 ring-primary/40" value={editableHeader.location} onChange={e => setEditableHeader({...editableHeader, location: e.target.value})} placeholder="Location (e.g. New York, NY)" />
+                  </div>
+
+                  {/* Social/Links Section */}
+                  <div className="space-y-4">
+                    <h5 className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Digital Footprint</h5>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-2">
+                        <Linkedin size={14} className="text-[#0077B5]" />
+                        <input className="flex-1 bg-transparent border-none text-[10px] text-foreground outline-none placeholder:opacity-50" value={editableHeader.linkedin} onChange={e => setEditableHeader({...editableHeader, linkedin: e.target.value})} placeholder="LinkedIn URL" />
+                      </div>
+                      <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-2">
+                        <Github size={14} className="text-foreground" />
+                        <input className="flex-1 bg-transparent border-none text-[10px] text-foreground outline-none placeholder:opacity-50" value={editableHeader.github} onChange={e => setEditableHeader({...editableHeader, github: e.target.value})} placeholder="GitHub URL" />
+                      </div>
+                      <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-2">
+                        <FileText size={14} className="text-secondary" />
+                        <input className="flex-1 bg-transparent border-none text-[10px] text-foreground outline-none placeholder:opacity-50" value={editableHeader.portfolio} onChange={e => setEditableHeader({...editableHeader, portfolio: e.target.value})} placeholder="Portfolio URL" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Summary Section */}
+                  <div className="space-y-4">
+                    <h5 className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Strategic Summary</h5>
+                    <textarea 
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-foreground outline-none focus:ring-1 ring-primary/40 min-h-[120px] resize-none"
+                      value={editableResume?.professional_summary}
+                      onChange={e => setEditableResume(prev => prev ? {...prev, professional_summary: e.target.value} : null)}
+                    />
+                  </div>
+
+                  {/* Skills Section */}
+                  <div className="space-y-4">
+                    <h5 className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Core Competencies</h5>
+                    <textarea 
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[11px] text-foreground outline-none focus:ring-1 ring-primary/40 min-h-[80px]"
+                      value={editableResume?.skills_section.join(", ")}
+                      onChange={e => {
+                        const newSkills = e.target.value.split(",").map(s => s.trim());
+                        setEditableResume(prev => prev ? {...prev, skills_section: newSkills} : null);
+                      }}
+                      placeholder="Skill 1, Skill 2, ..."
+                    />
+                  </div>
+
+                  {/* Experience Section */}
+                  <div className="space-y-4">
+                    <h5 className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Experience & Impact</h5>
+                    <div className="space-y-6">
+                      {editableResume?.experience.map((exp, i) => (
+                        <div key={i} className="space-y-3 p-4 rounded-xl bg-white/[0.03] border border-white/5">
+                          <input className="w-full bg-transparent border-none text-[11px] font-bold text-foreground outline-none" value={exp.heading} onChange={e => {
+                            const newExp = [...editableResume.experience];
+                            newExp[i].heading = e.target.value;
+                            setEditableResume({...editableResume, experience: newExp});
+                          }} />
+                          <div className="space-y-2">
+                             {exp.bullets?.map((bullet, j) => (
+                               <div key={j} className="flex gap-2">
+                                 <div className="w-1.5 h-1.5 rounded-full bg-primary/20 mt-2 shrink-0" />
+                                 <textarea className="w-full bg-transparent border-none text-[10px] text-muted-foreground outline-none resize-none overflow-hidden" rows={2} value={bullet} onChange={e => {
+                                   const newExp = [...editableResume.experience];
+                                   newExp[i].bullets[j] = e.target.value;
+                                   setEditableResume({...editableResume, experience: newExp});
+                                 }} />
+                               </div>
+                             ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -470,46 +603,33 @@ RETURN JSON FORMAT ONLY:
                 className="md:col-span-8 bg-white max-w-4xl mx-auto rounded-none p-8 border border-zinc-200 overflow-y-auto max-h-[1100px] flex flex-col gap-6 text-black print:p-0 print:shadow-none"
                 style={{ fontFamily: fontFamily === 'Merriweather' ? 'serif' : 'sans-serif' }}
               >
-                <div className="text-center space-y-2">
-                  {isEditing ? (
-                    <div className="space-y-4">
-                      <input 
-                        className="text-2xl font-bold uppercase tracking-tight text-black text-center w-full bg-zinc-50 border border-zinc-200 p-2 rounded"
-                        value={editableHeader.fullName}
-                        onChange={(e) => setEditableHeader({...editableHeader, fullName: e.target.value})}
-                      />
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        <input className="text-[10px] font-bold uppercase p-2 border border-zinc-100 rounded" value={editableHeader.location} placeholder="Location" onChange={(e) => setEditableHeader({...editableHeader, location: e.target.value})} />
-                        <input className="text-[10px] font-bold p-2 border border-zinc-100 rounded lowercase" value={editableHeader.email} placeholder="Email" onChange={(e) => setEditableHeader({...editableHeader, email: e.target.value})} />
-                        <input className="text-[10px] font-bold p-2 border border-zinc-100 rounded" value={editableHeader.phone} placeholder="Phone" onChange={(e) => setEditableHeader({...editableHeader, phone: e.target.value})} />
-                        <input className="text-[10px] font-bold p-2 border border-zinc-100 rounded" value={editableHeader.linkedin} placeholder="LinkedIn URL" onChange={(e) => setEditableHeader({...editableHeader, linkedin: e.target.value})} />
-                        <input className="text-[10px] font-bold p-2 border border-zinc-100 rounded" value={editableHeader.portfolio} placeholder="Portfolio/Website URL" onChange={(e) => setEditableHeader({...editableHeader, portfolio: e.target.value})} />
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <h1 className="text-2xl font-bold uppercase tracking-tight text-black">{editableHeader.fullName}</h1>
-                       <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px] text-zinc-700 font-bold uppercase tracking-wider">
-                         <span>{editableHeader.location}</span>
-                         <span className="opacity-30">|</span>
-                         <span className="lowercase font-medium tracking-normal text-zinc-500">{editableHeader.email}</span>
-                         <span className="opacity-30">|</span>
-                         <span>{editableHeader.phone}</span>
-                         {editableHeader.linkedin && (
-                           <>
-                             <span className="opacity-30">|</span>
-                             <span className="text-accent-blue">{editableHeader.linkedin.replace(/^https?:\/\//, '')}</span>
-                           </>
-                         )}
-                         {editableHeader.portfolio && (
-                           <>
-                             <span className="opacity-30">|</span>
-                             <span className="text-accent-blue">{editableHeader.portfolio.replace(/^https?:\/\//, '')}</span>
-                           </>
-                         )}
-                       </div>
-                    </>
-                  )}
+                <div className="text-center space-y-4">
+                  <h1 className="text-3xl font-bold uppercase tracking-tight text-black">{editableHeader.fullName}</h1>
+                   <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[11px] text-zinc-700 font-bold uppercase tracking-wider">
+                     <span className="flex items-center gap-1.5"><MapPin size={10} className="text-zinc-400" /> {editableHeader.location}</span>
+                     <span className="opacity-30">|</span>
+                     <span className="flex items-center gap-1.5 lowercase font-medium tracking-normal text-zinc-600"><Mail size={10} className="text-zinc-400" /> {editableHeader.email}</span>
+                     <span className="opacity-30">|</span>
+                     <span>{editableHeader.phone}</span>
+                   </div>
+                   
+                   <div className="flex flex-wrap items-center justify-center gap-6 mt-2 text-[10px] font-black tracking-widest">
+                     {editableHeader.linkedin && (
+                       <a href={editableHeader.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-accent-blue hover:text-accent-blue/80 transition-colors uppercase border-b border-accent-blue/20 pb-0.5">
+                         <Linkedin size={10} /> LINKEDIN
+                       </a>
+                     )}
+                     {editableHeader.github && (
+                       <a href={editableHeader.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-black hover:opacity-70 transition-opacity uppercase border-b border-black/20 pb-0.5">
+                         <Github size={10} /> GITHUB
+                       </a>
+                     )}
+                     {editableHeader.portfolio && (
+                       <a href={editableHeader.portfolio} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-secondary hover:opacity-80 transition-opacity uppercase border-b border-secondary/20 pb-0.5">
+                         <FileText size={10} /> PORTFOLIO
+                       </a>
+                     )}
+                   </div>
                 </div>
 
                 <div className="space-y-8">
@@ -518,16 +638,7 @@ RETURN JSON FORMAT ONLY:
                       <h4 className="text-[10px] font-black text-black uppercase tracking-widest whitespace-nowrap">Professional Summary</h4>
                       <div className="h-[0.5px] w-full bg-zinc-300" />
                     </div>
-                    {isEditing ? (
-                      <textarea 
-                        className="w-full text-[12px] leading-relaxed text-zinc-900 font-medium bg-zinc-50 border border-zinc-200 p-2 rounded outline-none focus:ring-1 ring-accent-blue"
-                        rows={3}
-                        value={editableResume?.professional_summary || ""}
-                        onChange={(e) => setEditableResume(prev => prev ? {...prev, professional_summary: e.target.value} : null)}
-                      />
-                    ) : (
-                      <p className="text-[12px] leading-relaxed text-zinc-900 font-medium">{editableResume?.professional_summary}</p>
-                    )}
+                    <p className="text-[12px] leading-relaxed text-zinc-900 font-medium">{editableResume?.professional_summary}</p>
                   </div>
                   
                   <div className="space-y-4">
@@ -539,36 +650,12 @@ RETURN JSON FORMAT ONLY:
                       {editableResume?.experience.map((exp, i) => (
                         <div key={i} className="space-y-1">
                           <div className="flex justify-between items-baseline">
-                            {isEditing ? (
-                              <input 
-                                className="font-bold text-[13px] text-black w-full bg-zinc-50 border border-zinc-100 p-1 rounded"
-                                value={exp.heading}
-                                onChange={(e) => {
-                                  const newExp = [...editableResume.experience];
-                                  newExp[i].heading = e.target.value;
-                                  setEditableResume({...editableResume, experience: newExp});
-                                }}
-                              />
-                            ) : (
                               <h5 className="font-display font-bold text-[13px] text-black">{exp.heading}</h5>
-                            )}
                           </div>
                           <ul className="space-y-1 list-disc pl-4">
                             {exp.bullets?.map((bullet, j) => (
                               <li key={j} className="text-[11px] text-zinc-800 leading-snug font-medium">
-                                {isEditing ? (
-                                  <textarea 
-                                    className="w-full bg-zinc-50 border border-zinc-100 p-1 rounded text-[11px]"
-                                    value={bullet}
-                                    onChange={(e) => {
-                                      const newExp = [...editableResume.experience];
-                                      newExp[i].bullets[j] = e.target.value;
-                                      setEditableResume({...editableResume, experience: newExp});
-                                    }}
-                                  />
-                                ) : (
-                                  bullet
-                                )}
+                                  {bullet}
                               </li>
                             ))}
                           </ul>
@@ -586,50 +673,14 @@ RETURN JSON FORMAT ONLY:
                     <div className="space-y-4">
                       {editableResume.projects.map((proj, i) => (
                         <div key={i} className="space-y-1">
-                          {isEditing ? (
-                            <input 
-                              className="font-bold text-[13px] text-black w-full bg-zinc-50 border border-zinc-100 p-1 rounded"
-                              value={proj.heading}
-                              onChange={(e) => {
-                                const newProj = [...editableResume.projects];
-                                newProj[i].heading = e.target.value;
-                                setEditableResume({...editableResume, projects: newProj});
-                              }}
-                            />
-                          ) : (
                             <h5 className="font-display font-bold text-[13px] text-black">{proj.heading}</h5>
-                          )}
                           
-                          {isEditing ? (
-                            <textarea 
-                              className="w-full text-[11px] text-zinc-900 leading-relaxed font-medium bg-zinc-50 border border-zinc-100 p-1 mt-1 rounded"
-                              value={proj.content}
-                              onChange={(e) => {
-                                const newProj = [...editableResume.projects];
-                                newProj[i].content = e.target.value;
-                                setEditableResume({...editableResume, projects: newProj});
-                              }}
-                            />
-                          ) : (
                             <p className="text-[11px] text-zinc-900 leading-relaxed font-medium">{proj.content}</p>
-                          )}
 
                           <ul className="space-y-1 list-disc pl-4 mt-1">
                             {proj.bullets?.map((bullet, j) => (
                               <li key={j} className="text-[11px] text-zinc-800 leading-snug">
-                                {isEditing ? (
-                                  <textarea 
-                                    className="w-full bg-zinc-50 border border-zinc-100 p-1 rounded text-[11px]"
-                                    value={bullet}
-                                    onChange={(e) => {
-                                      const newProj = [...editableResume.projects];
-                                      newProj[i].bullets[j] = e.target.value;
-                                      setEditableResume({...editableResume, projects: newProj});
-                                    }}
-                                  />
-                                ) : (
-                                  bullet
-                                )}
+                                  {bullet}
                               </li>
                             ))}
                           </ul>
@@ -645,19 +696,7 @@ RETURN JSON FORMAT ONLY:
                         <h4 className="text-[10px] font-black text-black uppercase tracking-widest whitespace-nowrap">Technical Stack</h4>
                         <div className="h-[0.5px] w-full bg-zinc-300" />
                       </div>
-                      {isEditing ? (
-                        <textarea 
-                          className="w-full text-[12px] text-zinc-800 leading-relaxed bg-zinc-50 border border-zinc-100 p-2 rounded outline-none focus:ring-1 ring-accent-blue"
-                          rows={2}
-                          value={editableResume?.skills_section.join(", ") || ""}
-                          onChange={(e) => {
-                            const newSkills = e.target.value.split(",").map(s => s.trim());
-                            setEditableResume(prev => prev ? {...prev, skills_section: newSkills} : null);
-                          }}
-                        />
-                      ) : (
                         <p className="text-[12px] text-zinc-800 leading-relaxed font-medium">{editableResume?.skills_section.join(", ")}</p>
-                      )}
                     </div>
 
                     {editableResume?.education && editableResume.education.length > 0 && (
@@ -669,19 +708,7 @@ RETURN JSON FORMAT ONLY:
                         <ul className="space-y-1">
                            {editableResume.education.map((edu, idx) => (
                              <li key={idx} className="text-[12px] text-zinc-800">
-                                {isEditing ? (
-                                  <input 
-                                    className="w-full bg-zinc-50 border border-zinc-100 p-1 rounded text-[12px]"
-                                    value={edu}
-                                    onChange={(e) => {
-                                      const newEdu = [...editableResume.education];
-                                      newEdu[idx] = e.target.value;
-                                      setEditableResume({...editableResume, education: newEdu});
-                                    }}
-                                  />
-                                ) : (
                                   <span className="font-medium">{edu}</span>
-                                )}
                              </li>
                            ))}
                         </ul>
@@ -696,19 +723,7 @@ RETURN JSON FORMAT ONLY:
                         <ul className="space-y-1">
                            {editableResume.certifications.map((cert, idx) => (
                              <li key={idx} className="text-[12px] text-zinc-800">
-                                {isEditing ? (
-                                  <input 
-                                    className="w-full bg-zinc-50 border border-zinc-100 p-1 rounded text-[12px]"
-                                    value={cert}
-                                    onChange={(e) => {
-                                      const newCert = [...editableResume.certifications];
-                                      newCert[idx] = e.target.value;
-                                      setEditableResume({...editableResume, certifications: newCert});
-                                    }}
-                                  />
-                                ) : (
                                   <span className="font-medium">{cert}</span>
-                                )}
                              </li>
                            ))}
                         </ul>

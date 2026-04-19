@@ -4,6 +4,15 @@ import { motion } from "framer-motion";
 import type { Skill } from "@/types/jd";
 import { cn } from "@/lib/utils";
 
+const commonPreferred = [
+  "git", "aws", "azure", "gcp", "cloud", "spark", "hadoop", "big data", "tableau", "power bi", 
+  "docker", "kubernetes", "jenkins", "terraform", "ci/cd", "rest", "api", "graphql", "sql", 
+  "nosql", "mongodb", "postgresql", "redis", "kafka", "elastic", "linux", "jira", "agile", 
+  "scrum", "devops", "mlops", "tensorflow", "pytorch", "pandas", "numpy", "scikit", "java", 
+  "python", "javascript", "typescript", "react", "next.js", "node", "go", "rust", "distributed system",
+  "microservice", "security", "encryption", "auth0", "firebase", "tailwind", "figma", "storybook"
+];
+
 interface SkillHighlightsProps {
   skills: Skill[];
 }
@@ -14,25 +23,29 @@ export const SkillHighlights = ({ skills, results }: { skills: Skill[], results?
   const niceToHaveSkills = (skills || []).filter((s) => s.importance < 80 && s.importance > 0);
 
   // Fallback: Scavenger for preferred skills from keywords if the AI missed them
-  const commonPreferred = [
-    "git", "aws", "azure", "gcp", "cloud", "spark", "hadoop", "big data", "tableau", "power bi", 
-    "docker", "kubernetes", "jenkins", "terraform", "ci/cd", "rest", "api", "graphql", "sql", 
-    "nosql", "mongodb", "postgresql", "redis", "kafka", "elastic", "linux", "jira", "agile", 
-    "scrum", "devops", "mlops", "tensorflow", "pytorch", "pandas", "numpy", "scikit", "java", 
-    "python", "javascript", "typescript", "react", "next.js", "node", "go", "rust", "distributed system",
-    "microservice", "security", "encryption", "auth0", "firebase", "tailwind", "figma", "storybook"
-  ];
+  const finalNiceToHave = [...niceToHaveSkills];
   
-  let finalNiceToHave = [...niceToHaveSkills];
-  if (finalNiceToHave.length === 0 && results?.resume_help?.keywords) {
+  // ALWAYS improve nice-to-have by scavenging from keywords if it's sparse
+  if (results?.resume_help?.keywords) {
     const identifiedSkills = skills.map(s => s.skill.toLowerCase());
     const scavenged = results.resume_help.keywords
         .filter(keyword => {
             const kLower = keyword.toLowerCase();
-            return commonPreferred.some(pref => kLower.includes(pref)) && !identifiedSkills.some(id => kLower.includes(id));
+            // Match against common preferred tech list
+            const isPreferredTech = commonPreferred.some(pref => kLower.includes(pref));
+            // Ensure it's not already in the required skills list
+            const isAlreadyListed = identifiedSkills.some(id => kLower.includes(id) || id.includes(kLower));
+            return isPreferredTech && !isAlreadyListed;
         })
         .map(k => ({ skill: k, importance: 50, category: "Preferred" }));
-    finalNiceToHave = scavenged;
+    
+    // De-duplicate and add to final list
+    const existingNames = new Set(finalNiceToHave.map(s => s.skill.toLowerCase()));
+    scavenged.forEach(s => {
+      if (!existingNames.has(s.skill.toLowerCase())) {
+        finalNiceToHave.push(s);
+      }
+    });
   }
 
   // Group required skills by category
