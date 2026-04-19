@@ -47,7 +47,7 @@ const Index = () => {
       </section>
 
       {/* ── SECTION 2 — SCANNER (The Total Tactical Hub) ── */}
-      <section id="scanner" className="relative py-12 bg-background/30 backdrop-blur-sm border-t border-border/40 min-h-screen">
+      <section id="scanner" className="relative py-12 bg-background/30 backdrop-blur-sm min-h-screen">
         <ScannerView activeTab={activeTab} onTabChange={setActiveTab} />
       </section>
 

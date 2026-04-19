@@ -79,14 +79,6 @@ export const LuminaUltraDashboard = ({ results, resumeResults }: LuminaUltraDash
                     <span className="text-[12px] font-black uppercase text-primary/60 tracking-widest block">Intelligence Index</span>
                     <p className="text-[13px] text-muted-foreground mt-2 max-w-[280px] leading-relaxed font-medium">Composite score based on market value, role clarity, and risk factors.</p>
                   </div>
-                  
-                  <button 
-                    onClick={handleExport}
-                    className="flex items-center gap-3 px-8 py-3 rounded-full bg-foreground text-background text-[11px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl"
-                  >
-                    <Download size={14} />
-                    Export Premium PDF
-                  </button>
                 </div>
             </div>
             <JdVerdictCard grade={grade} />

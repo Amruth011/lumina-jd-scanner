@@ -278,7 +278,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                 <span className="text-[12px] font-black uppercase text-primary tracking-widest mt-1 block">Match</span>
             </div>
             <div className="premium-card rounded-2xl p-4 bg-white/5 border border-white/10 flex items-center">
-                <p className="text-sm font-medium text-foreground/80 leading-relaxed italic border-l-2 border-primary/20 pl-4">
+                <p className="text-sm font-medium text-foreground/80 leading-relaxed italic pl-4">
                     "{result.summary}"
                 </p>
             </div>
@@ -483,7 +483,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                                 </div>
                                 
                                 {d.fix_snippet && (
-                                  <div className="mt-6 pt-6 border-t border-white/5 flex items-center justify-between group/fix">
+                                  <div className="mt-6 pt-6 flex items-center justify-between group/fix">
                                       <span className="text-[12px] font-black uppercase text-accent-blue tracking-widest opacity-80">Strategic Counter</span>
                                       <button 
                                         onClick={() => handleCopyBullet(d.fix_snippet!)} 
@@ -566,7 +566,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                       {addedToTracker ? <CheckCircle2 className="w-6 h-6" /> : <Plus className="w-6 h-6 group-hover:rotate-90 transition-transform" />}
                       {addedToTracker ? "Application Tracked" : "Initiate Pipeline Tracking"}
                     </button>
-                    <button onClick={handleExportPDF} className="text-xs font-black uppercase tracking-[0.5em] text-muted-foreground hover:text-foreground transition-all duration-500 pb-1 border-b border-transparent hover:border-muted-foreground/30">
+                    <button onClick={handleExportPDF} className="text-xs font-black uppercase tracking-[0.5em] text-muted-foreground hover:text-foreground transition-all duration-500 pb-1">
                       Download Intelligence Strategy
                     </button>
                 </div>

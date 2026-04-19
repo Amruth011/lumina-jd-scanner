@@ -174,7 +174,6 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
                       <LuminaUltraDashboard results={results} resumeResults={gapResult} />
                       
                       <div className="flex flex-col items-center gap-8 py-20">
-                         <div className="section-divider max-w-sm w-full opacity-20" />
                          <button 
                            onClick={() => handleTabSwitch("analysis")}
                            className="group flex items-center gap-4 px-12 py-6 rounded-full bg-foreground text-background text-[13px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all"

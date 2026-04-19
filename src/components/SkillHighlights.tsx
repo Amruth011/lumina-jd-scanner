@@ -13,8 +13,15 @@ export const SkillHighlights = ({ skills, results }: { skills: Skill[], results?
   const requiredSkills = (skills || []).filter((s) => s.importance >= 80);
   const niceToHaveSkills = (skills || []).filter((s) => s.importance < 80 && s.importance > 0);
 
-  // Fallback: Scavenge for preferred skills from keywords if the AI missed them
-  const commonPreferred = ["git", "aws", "azure", "gcp", "cloud", "spark", "hadoop", "big data", "tableau", "power bi", "docker", "kubernetes", "jenkins", "terraform", "ci/cd"];
+  // Fallback: Scavenger for preferred skills from keywords if the AI missed them
+  const commonPreferred = [
+    "git", "aws", "azure", "gcp", "cloud", "spark", "hadoop", "big data", "tableau", "power bi", 
+    "docker", "kubernetes", "jenkins", "terraform", "ci/cd", "rest", "api", "graphql", "sql", 
+    "nosql", "mongodb", "postgresql", "redis", "kafka", "elastic", "linux", "jira", "agile", 
+    "scrum", "devops", "mlops", "tensorflow", "pytorch", "pandas", "numpy", "scikit", "java", 
+    "python", "javascript", "typescript", "react", "next.js", "node", "go", "rust", "distributed system",
+    "microservice", "security", "encryption", "auth0", "firebase", "tailwind", "figma", "storybook"
+  ];
   
   let finalNiceToHave = [...niceToHaveSkills];
   if (finalNiceToHave.length === 0 && results?.resume_help?.keywords) {
@@ -73,13 +80,13 @@ export const SkillHighlights = ({ skills, results }: { skills: Skill[], results?
             </div>
           ))}
           {Object.keys(groupedRequired).length === 0 && (
-             <p className="text-sm text-muted-foreground italic pl-1">No critical requirements detected.</p>
+            <p className="text-sm text-muted-foreground italic pl-1">No critical requirements detected.</p>
           )}
         </div>
       </div>
 
       {/* Nice to Have Skills Section */}
-      <div className="space-y-8 pt-10 border-t border-white/5">
+      <div className="space-y-8 pt-10">
         <div className="flex items-center gap-4">
           <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-accent-gold/10 border border-accent-gold/20">
             <Star className="w-5 h-5 text-accent-gold fill-accent-gold/20" />
