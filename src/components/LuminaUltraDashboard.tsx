@@ -4,7 +4,7 @@ import {
   ShieldAlert, Target, TrendingUp, Clock, Ghost, Scale, 
   BrainCircuit, Star, Zap, UserCheck, MessageSquare,
   LayoutDashboard, Heart, SearchCheck, Briefcase, ArrowRight,
-  ShieldCheck, Info, Copy, Activity, Sparkles, Download, Check
+  ShieldCheck, Info, Copy, Activity, Sparkles, Download, Check, Users
 } from "lucide-react";
 import type { DecodeResult, ResumeGapResult } from "@/types/jd";
 import { LuminaGauge } from "./LuminaGauge";
