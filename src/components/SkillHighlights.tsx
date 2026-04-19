@@ -63,15 +63,15 @@ export const SkillHighlights = ({ skills }: SkillHighlightsProps) => {
         </div>
       </div>
 
-      {/* Nice to Have Skills Section */}
+      {/* Preferred Qualifications Section */}
       <div className="space-y-8 pt-10 border-t border-white/5">
         <div className="flex items-center gap-4">
           <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-accent-gold/10 border border-accent-gold/20">
             <Star className="w-5 h-5 text-accent-gold fill-accent-gold/20" />
           </div>
           <div>
-            <h3 className="text-3xl font-serif italic text-foreground tracking-tight">Nice to Have Skills</h3>
-            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground opacity-50 mt-0.5">Competitive differentiators</p>
+            <h3 className="text-3xl font-serif italic text-foreground tracking-tight">Preferred Qualifications</h3>
+            <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground opacity-50 mt-0.5">Optional but beneficial highlights</p>
           </div>
         </div>
 

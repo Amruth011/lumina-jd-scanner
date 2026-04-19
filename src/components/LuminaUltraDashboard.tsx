@@ -161,21 +161,30 @@ export const LuminaUltraDashboard = ({ results, resumeResults }: LuminaUltraDash
       {/* ── PHASE 1: TACTICAL PULSE ── */}
       <div className="space-y-8">
         <PhaseLabel number="01" title="Tactical Pulse" sub="Quick Scannable Wins" />
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-            {/* Seniority & Logistics */}
-            <div className="lg:col-span-3 glass-panel p-8 flex flex-col justify-between items-center group">
+            {/* Seniority & Tactical Pulse */}
+            <div className="lg:col-span-2 glass-panel p-6 flex flex-col justify-between items-center group relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+                    <Activity size={40} className="text-accent-emerald" />
+                </div>
                 <LuminaGauge 
                     value={results?.qualifiers?.seniority_level ?? 0} 
-                    label="Seniority Bar" 
-                    size={150} 
+                    label="Seniority" 
+                    size={110} 
                     color="var(--accent-emerald)" 
-                    subLabel={(results?.qualifiers?.seniority_level ?? 0) > 70 ? "Executive" : (results?.qualifiers?.seniority_level ?? 0) > 40 ? "Mid-Senior" : "Entry-Mid"}
                 />
-                <div className="w-full space-y-3 mt-8">
-                    <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 group-hover:bg-white/10 transition-colors">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Work Arrangement</span>
-                        <span className="text-[10px] font-black uppercase text-accent-emerald tracking-widest">
-                            {results?.logistics?.work_arrangement?.remote_friendly === 'yes' ? 'Remote' : results?.logistics?.work_arrangement?.remote_friendly === 'partial' ? 'Hybrid' : 'On-Site'}
+                <div className="w-full space-y-3 mt-6">
+                    <div className="flex flex-col gap-1 p-3 rounded-xl bg-white/5 border border-white/5">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Experience</span>
+                        <span className="text-[10px] font-bold text-foreground">
+                            {results?.qualifiers?.experience?.professional ?? 0}+ Years Required
+                        </span>
+                    </div>
+                    <div className="flex flex-col gap-1 p-3 rounded-xl bg-white/5 border border-white/5">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Arrangement</span>
+                        <span className="text-[10px] font-bold text-accent-emerald">
+                            {results?.logistics?.work_arrangement?.remote_friendly === 'yes' ? 'Full Remote' : results?.logistics?.work_arrangement?.remote_friendly === 'partial' ? 'Flexible Hybrid' : 'On-Site'}
                         </span>
                     </div>
                 </div>
@@ -186,22 +195,56 @@ export const LuminaUltraDashboard = ({ results, resumeResults }: LuminaUltraDash
                 <SkillHighlights skills={results?.skills || []} />
             </div>
 
-            {/* Critical Vulnerabilities */}
-            <div className="lg:col-span-4 glass-panel p-8 rounded-[2.5rem] border-red-500/10 space-y-6">
-                <div className="flex items-center gap-3">
-                    <ShieldAlert size={18} className="text-red-500" />
-                    <span className="text-xs uppercase font-black tracking-widest text-red-500/70">Red Flag Decoder</span>
-                </div>
-                <div className="space-y-4">
-                    {(results?.red_flags || []).slice(0, 3).map((flag, i) => (
-                        <div key={i} className="pl-4 border-l-2 border-red-500/20 space-y-1 group cursor-pointer" onClick={() => { navigator.clipboard.writeText(flag.note); toast.success("Insight copied"); }}>
-                            <div className="flex items-center justify-between">
-                                <p className="text-[13px] font-serif italic text-foreground tracking-tight underline decoration-red-500/20 decoration-2 underline-offset-4 group-hover:text-red-500 transition-colors">&ldquo;{flag.phrase}&rdquo;</p>
-                                <span className="text-xs font-black text-red-500/60">{flag.intensity}%</span>
-                            </div>
-                            <p className="text-[11px] font-medium text-muted-foreground leading-relaxed">{flag.note}</p>
+            {/* Risk & Reward Decoder (Flags) */}
+            <div className="lg:col-span-5 flex flex-col gap-6">
+                {/* Red Flag Decoder */}
+                <div className="glass-panel p-8 rounded-[2.5rem] border-red-500/10 space-y-6 flex-1 relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-red-500/2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="flex items-center justify-between relative z-10">
+                        <div className="flex items-center gap-3">
+                            <ShieldAlert size={18} className="text-red-500" />
+                            <span className="text-xs uppercase font-black tracking-widest text-red-500/70">Red Flag Decoder</span>
                         </div>
-                    ))}
+                        <span className="text-[10px] font-black text-red-500/40 uppercase tracking-widest">Risks Identified</span>
+                    </div>
+                    <div className="space-y-4 relative z-10">
+                        {(results?.red_flags || []).slice(0, 2).map((flag, i) => (
+                            <div key={i} className="pl-4 border-l-2 border-red-500/20 space-y-1 group/f cursor-pointer" onClick={() => { navigator.clipboard.writeText(flag.note); toast.success("Insight copied"); }}>
+                                <div className="flex items-center justify-between">
+                                    <p className="text-[13px] font-serif italic text-foreground tracking-tight underline decoration-red-500/10 decoration-2 underline-offset-4 group-hover/f:text-red-500 transition-colors">&ldquo;{flag.phrase}&rdquo;</p>
+                                    <span className="text-xs font-black text-red-500/60">{flag.intensity}%</span>
+                                </div>
+                                <p className="text-[11px] font-medium text-muted-foreground leading-relaxed transition-colors group-hover/f:text-foreground/70">{flag.note}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Green Flag Decoder */}
+                <div className="glass-panel p-8 rounded-[2.5rem] border-accent-emerald/10 space-y-6 flex-1 relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-accent-emerald/2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="flex items-center justify-between relative z-10">
+                        <div className="flex items-center gap-3">
+                            <ShieldCheck size={18} className="text-accent-emerald" />
+                            <span className="text-xs uppercase font-black tracking-widest text-accent-emerald/70">Green Flag Decoder</span>
+                        </div>
+                        <span className="text-[10px] font-black text-accent-emerald/40 uppercase tracking-widest">Growth Signals</span>
+                    </div>
+                    <div className="space-y-4 relative z-10">
+                        {[
+                            (results?.grade?.breakdown?.benefits ?? 0) > 7 ? { phrase: "Premium Benefits", note: "Compensation & perks scored exceptionally high for this role tier." } : null,
+                            (results?.grade?.breakdown?.growth ?? 0) > 7 ? { phrase: "High Growth Trajectory", note: "Strategic potential for career advancement and skill expansion." } : null,
+                            results?.logistics?.work_arrangement?.remote_friendly === 'yes' ? { phrase: "Total Autonomy", note: "The role supports a fully remote work model with flexible boundaries." } : null,
+                        ].filter(Boolean).slice(0, 2).map((flag, i) => (
+                            <div key={i} className="pl-4 border-l-2 border-accent-emerald/20 space-y-1 group/f cursor-pointer" onClick={() => { if (flag) { navigator.clipboard.writeText(flag.note || ""); toast.success("Strength copied"); } }}>
+                                <div className="flex items-center justify-between">
+                                    <p className="text-[13px] font-serif italic text-foreground tracking-tight underline decoration-accent-emerald/10 decoration-2 underline-offset-4 group-hover/f:text-accent-emerald transition-colors">&ldquo;{flag?.phrase}&rdquo;</p>
+                                    <Check size={12} className="text-accent-emerald" />
+                                </div>
+                                <p className="text-[11px] font-medium text-muted-foreground leading-relaxed transition-colors group-hover/f:text-foreground/70">{flag?.note}</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
