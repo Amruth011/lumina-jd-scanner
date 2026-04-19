@@ -14,8 +14,10 @@ interface ResumeGeneratorProps {
 }
 
 export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGeneratorProps) => {
-  // Version: 1.0.1 - Force build to resolve production ReferenceError
   const { user } = useAuth();
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [resume, setResume] = useState<GeneratedResume | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
   const [profile, setProfile] = useState<UserProfileWithVault | null>(null);
   const [summaryLines, setSummaryLines] = useState(3);
   const [projectLines, setProjectLines] = useState(3);
