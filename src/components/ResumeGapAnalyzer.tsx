@@ -468,7 +468,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                             </div>
                             <h4 className="text-3xl font-serif italic text-foreground">Critical Misalignments</h4>
                         </div>
-                        <p className="text-[12px] uppercase font-black tracking-widest text-red-500/70">Semantic Gaps & Priority Fixes</p>
+                        <p className="text-[12px] uppercase font-black tracking-widest text-red-500/70">Strategic Gaps & Nice-to-Have Bonus Opportunities</p>
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

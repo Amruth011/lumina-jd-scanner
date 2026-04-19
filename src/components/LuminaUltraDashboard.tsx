@@ -162,119 +162,79 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
         <PhaseLabel number="01" title="Tactical Pulse" sub="Quick Scannable Wins" />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-            {/* Seniority & Tactical Pulse */}
-            <div className="lg:col-span-2 glass-panel p-8 flex flex-col items-center group relative overflow-hidden h-full bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-white/20">
-                <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-700">
-                    <Activity size={60} className="text-accent-emerald" />
-                </div>
-                
-                <div className="flex-1 flex flex-col items-center justify-center space-y-6 w-full relative z-10">
-                    <LuminaGauge 
-                        value={results?.qualifiers?.seniority_level ?? 0} 
-                        label="Seniority" 
-                        size={120} 
-                        color="var(--accent-emerald)" 
-                    />
-                    
-                    <div className="text-center space-y-1">
-                        <span className="text-[10px] font-black uppercase text-accent-emerald tracking-[0.2em]">Role Tier</span>
-                        <p className="text-sm font-bold text-foreground">
-                            {(results?.qualifiers?.seniority_level ?? 0) > 70 ? "Executive" : (results?.qualifiers?.seniority_level ?? 0) > 40 ? "Mid-Senior" : "Elite Associate"}
-                        </p>
-                    </div>
-                </div>
-
-                <div className="w-full grid grid-cols-1 gap-3 mt-8 relative z-10">
-                    {/* Location Intelligence */}
-                    <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
-                        <div className="flex flex-col">
-                            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 leading-none mb-1">Base Ops</span>
-                            <span className="text-[11px] font-bold text-foreground truncate max-w-[100px]">
-                                {results?.title?.match(/Bengaluru|Bangalore|Hyderabad|Chennai|Pune|Mumbai|Delhi|London|Remote/i)?.[0] || 
-                                 results?.grade?.summary?.match(/Bengaluru|Bangalore|Hyderabad|Chennai|Pune|Mumbai|Delhi|London|Remote/i)?.[0] || 
-                                 "Bengaluru"}
-                            </span>
-                        </div>
-                        <Target size={14} className="text-accent-blue opacity-40 shrink-0" />
-                    </div>
-
-                    {/* Practice Intensity */}
-                    <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
-                        <div className="flex flex-col text-balance">
-                            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 leading-none mb-1">Practice</span>
-                            <span className="text-[11px] font-bold text-foreground leading-tight">
-                                {(results?.qualifiers?.experience?.professional ?? 0) <= 1.5 || results?.title?.toLowerCase().includes('trainee') || results?.title?.toLowerCase().includes('intern')
-                                    ? "Fresher / Entry Level" 
-                                    : `${results?.qualifiers?.experience?.professional}yr+ Req.`}
-                            </span>
-                        </div>
-                        <Check size={14} className="text-accent-emerald opacity-40 shrink-0" />
-                    </div>
-
-                    {/* Work Format */}
-                    <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
-                        <div className="flex flex-col">
-                            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 leading-none mb-1">Format</span>
-                            <span className="text-[11px] font-bold text-accent-emerald uppercase tracking-tighter">
-                                {results?.logistics?.work_arrangement?.remote_friendly === 'yes' ? 'Remote' : results?.logistics?.work_arrangement?.remote_friendly === 'partial' ? 'Hybrid' : 'On-Site'}
-                            </span>
-                        </div>
-                        <Users size={14} className="text-accent-emerald opacity-40 shrink-0" />
-                    </div>
-                </div>
-            </div>
-
-            {/* Skill Highlights (Dynamic Taxonomy) */}
-            <div className="lg:col-span-5 flex flex-col">
+            {/* Skill Highlights (Expanded Taxonomy) [NEW: taking space of old seniority] */}
+            <div className="lg:col-span-12 xl:col-span-7 flex flex-col">
                 <SkillHighlights skills={results?.skills || []} results={results} rawJd={jdText} />
             </div>
 
-            {/* Edit Synthesis Parameters [NEW] */}
-            <div className="lg:col-span-5 flex flex-col gap-6">
-                <div className="glass-panel p-8 rounded-[3rem] border-white/20 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-8 relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-primary/[0.02] opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="flex items-center justify-between relative z-10">
-                        <div className="flex items-center gap-3">
-                            <Wand2 size={18} className="text-primary" />
-                            <span className="text-xs uppercase font-black tracking-widest text-primary/70">Edit Synthesis Parameters</span>
-                        </div>
-                        <Sparkles size={14} className="text-primary/20" />
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-6 relative z-10">
-                        {Object.entries(synParams).map(([key, value]) => (
-                            <div key={key} className="space-y-3">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">{key}</span>
-                                    <span className="text-[11px] font-bold text-primary px-3 py-1 rounded-full bg-primary/5 border border-primary/10">{value}</span>
-                                </div>
-                                <div className="flex gap-2">
-                                    {['Standard', 'Elite', 'Deep'].map(opt => (
-                                        <button 
-                                            key={opt}
-                                            onClick={() => setSynParams(prev => ({ ...prev, [key]: opt }))}
-                                            className={`flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                                                value === opt 
-                                                  ? "bg-primary text-background shadow-lg" 
-                                                  : "bg-white/5 border border-white/5 text-muted-foreground hover:bg-white/10"
-                                            }`}
-                                        >
-                                            {opt}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
+            {/* Strategic Details & Risk Decoder [NEW: Moving Seniority here] */}
+            <div className="lg:col-span-12 xl:col-span-5 flex flex-col gap-6">
+                {/* Seniority Dashboard (Moved from left side to optimize space) */}
+                <div className="glass-panel p-8 flex flex-col items-center group relative overflow-hidden bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-white-20 rounded-[3rem]">
+                    <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-700">
+                        <Activity size={60} className="text-accent-emerald" />
                     </div>
                     
-                    <button className="w-full py-4 rounded-2xl bg-foreground text-background text-[11px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all mt-4 relative z-10">
-                        Apply Strategic Nudge
-                    </button>
+                    <div className="w-full flex flex-col md:flex-row items-center gap-8 relative z-10">
+                        <div className="shrink-0">
+                            <LuminaGauge 
+                                value={results?.qualifiers?.seniority_level ?? 0} 
+                                label="Seniority" 
+                                size={130} 
+                                color="var(--accent-emerald)" 
+                            />
+                        </div>
+                        
+                        <div className="flex-1 space-y-4">
+                            <div className="space-y-1">
+                                <span className="text-[10px] font-black uppercase text-accent-emerald tracking-[0.2em]">Strategic Calibration</span>
+                                <h4 className="text-2xl font-serif italic text-foreground leading-tight">
+                                    {(results?.qualifiers?.seniority_level ?? 0) > 70 ? "Executive Leadership" : (results?.qualifiers?.seniority_level ?? 0) > 40 ? "Mid-Senior Strategic" : "Elite Associate Level"}
+                                </h4>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Experience Req.</span>
+                                    <p className="text-[11px] font-bold text-foreground">
+                                        {(results?.qualifiers?.experience?.professional ?? 0) <= 1.5 || results?.title?.toLowerCase().includes('trainee') || results?.title?.toLowerCase().includes('intern')
+                                            ? "Early Career / Entry" 
+                                            : `${results?.qualifiers?.experience?.professional}yr+ Domain Exp.`}
+                                    </p>
+                                </div>
+                                <div className="space-y-1 text-right">
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Work Model</span>
+                                    <p className="text-[11px] font-bold text-accent-emerald uppercase tracking-tighter">
+                                        {results?.logistics?.work_arrangement?.remote_friendly === 'yes' ? 'Remote' : results?.logistics?.work_arrangement?.remote_friendly === 'partial' ? 'Hybrid' : 'On-Site'}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="w-full grid grid-cols-2 gap-3 mt-8 pt-6 border-t border-black/5 relative z-10">
+                        <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5">
+                            <Target size={14} className="text-accent-blue opacity-40 shrink-0" />
+                            <div className="flex flex-col">
+                                <span className="text-[8px] font-black uppercase text-muted-foreground/50">Base Ops</span>
+                                <span className="text-[10px] font-bold text-foreground">
+                                    {results?.title?.match(/Bengaluru|Bangalore|Hyderabad|Chennai|Pune|Mumbai|Delhi|London|Remote/i)?.[0] || "Global Tech Hub"}
+                                </span>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5">
+                            <Users size={14} className="text-accent-emerald opacity-40 shrink-0" />
+                            <div className="flex flex-col">
+                                <span className="text-[8px] font-black uppercase text-muted-foreground/50">Intensity</span>
+                                <span className="text-[10px] font-bold text-foreground uppercase tracking-tighter">High Impact</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Red Flag Decoder */}
-                <div className="glass-panel p-8 rounded-[3rem] border-white/20 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-6 relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-red-500/[0.01] opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="glass-panel p-8 rounded-[3rem] border-white/20 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-5 relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-red-500-1 opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div className="flex items-center justify-between relative z-10">
                         <div className="flex items-center gap-3">
                             <ShieldAlert size={18} className="text-red-500" />
@@ -284,19 +244,19 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
                     </div>
                     <div className="space-y-4 relative z-10">
                         {(results?.red_flags || []).slice(0, 2).map((flag, i) => (
-                            <div key={i} className="pl-4 border-l-2 border-red-500/20 space-y-1 group/f cursor-pointer" onClick={() => { navigator.clipboard.writeText(flag.note); toast.success("Insight copied"); }}>
+                            <div key={i} className="pl-4 border-l-2 border-red-500-20 space-y-1 group-f cursor-pointer" onClick={() => { navigator.clipboard.writeText(flag.note); toast.success("Insight copied"); }}>
                                 <div className="flex items-center justify-between">
-                                    <p className="text-[14px] font-serif italic text-foreground tracking-tight underline decoration-red-500/10 decoration-2 underline-offset-4 group-hover/f:text-red-500 transition-colors">&ldquo;{flag.phrase}&rdquo;</p>
+                                    <p className="text-[14px] font-serif italic text-foreground tracking-tight underline decoration-red-500-10 decoration-2 underline-offset-4 group-hover-f:text-red-500 transition-colors">&ldquo;{flag.phrase}&rdquo;</p>
                                     <span className="text-xs font-black text-red-500/60">{flag.intensity}%</span>
                                 </div>
-                                <p className="text-[12px] font-medium text-muted-foreground leading-relaxed transition-colors group-hover/f:text-foreground/70">{flag.note}</p>
+                                <p className="text-[12px] font-medium text-muted-foreground leading-relaxed transition-colors group-hover-f:text-foreground-70">{flag.note}</p>
                             </div>
                         ))}
                     </div>
                 </div>
 
                 {/* Green Flag Decoder */}
-                <div className="glass-panel p-8 rounded-[3rem] border-white/20 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-6 relative overflow-hidden group">
+                <div className="glass-panel p-8 rounded-[3rem] border-white/20 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-5 relative overflow-hidden group">
                     <div className="absolute inset-0 bg-accent-emerald/[0.01] opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div className="flex items-center justify-between relative z-10">
                         <div className="flex items-center gap-3">
@@ -310,12 +270,12 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
                             (results?.grade?.breakdown?.growth ?? 0) > 7 ? { phrase: "High Growth Trajectory", note: "Strategic potential for career advancement and skill expansion." } : null,
                             results?.logistics?.work_arrangement?.remote_friendly === 'yes' ? { phrase: "Total Autonomy", note: "The role supports a fully remote work model with flexible boundaries." } : null,
                         ].filter(Boolean).slice(0, 2).map((flag, i) => (
-                            <div key={i} className="pl-4 border-l-2 border-accent-emerald/20 space-y-1 group/f cursor-pointer" onClick={() => { if (flag) { navigator.clipboard.writeText(flag.note || ""); toast.success("Strength copied"); } }}>
+                            <div key={i} className="pl-4 border-l-2 border-accent-emerald-20 space-y-1 group-f cursor-pointer" onClick={() => { if (flag) { navigator.clipboard.writeText(flag.note || ""); toast.success("Strength copied"); } }}>
                                 <div className="flex items-center justify-between">
-                                    <p className="text-[14px] font-serif italic text-foreground tracking-tight underline decoration-accent-emerald/10 decoration-2 underline-offset-4 group-hover/f:text-accent-emerald transition-colors">&ldquo;{flag?.phrase}&rdquo;</p>
+                                    <p className="text-[14px] font-serif italic text-foreground tracking-tight underline decoration-accent-emerald-10 decoration-2 underline-offset-4 group-hover-f:text-accent-emerald transition-colors">&ldquo;{flag?.phrase}&rdquo;</p>
                                     <Check size={12} className="text-accent-emerald" />
                                 </div>
-                                <p className="text-[12px] font-medium text-muted-foreground leading-relaxed transition-colors group-hover/f:text-foreground/70">{flag?.note}</p>
+                                <p className="text-[12px] font-medium text-muted-foreground leading-relaxed transition-colors group-hover-f:text-foreground-70">{flag?.note}</p>
                             </div>
                         ))}
                     </div>

@@ -426,54 +426,74 @@ RETURN JSON FORMAT ONLY:
             ))}
           </div>
 
-          <div className="mt-8 p-6 rounded-[2rem] bg-white/[0.02] border border-white/5 space-y-4">
+          <div className="mt-8 p-6 rounded-[2rem] bg-white/[0.03] border border-white/10 space-y-4 relative group">
+            <div className="absolute -top-3 left-6 px-3 py-1 rounded-full bg-primary text-background text-[8px] font-black uppercase tracking-widest shadow-xl opacity-0 group-hover:opacity-100 transition-opacity">
+              Strategic Calibration Hub
+            </div>
+            
             <button 
               onClick={() => setShowSettings(!showSettings)}
-              className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors"
+              className={`flex items-center gap-3 px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 ${
+                showSettings 
+                  ? "bg-primary text-background shadow-lg" 
+                  : "bg-white/5 border border-white/10 text-muted-foreground hover:bg-white/10 hover:text-primary"
+              }`}
             >
-              <Wand2 size={12} /> {showSettings ? "Hide Synthesis Parameters" : "Edit Synthesis Parameters"}
+              <Wand2 size={14} className={showSettings ? "animate-pulse" : ""} /> 
+              {showSettings ? "Close Parameters" : "Edit Synthesis Parameters (Lines, Fonts, Tone)"}
             </button>
+
             <AnimatePresence>
               {showSettings && (
                 <motion.div 
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  className="overflow-hidden space-y-4 pt-2"
+                  className="overflow-hidden space-y-6 pt-4 px-2"
                 >
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Summary Lines</label>
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Summary Lines</label>
+                        <div className="h-px flex-1 bg-white/5" />
+                      </div>
                       <select 
                         value={summaryLines} 
                         onChange={(e) => setSummaryLines(Number(e.target.value))}
-                        className="w-full bg-background/40 border border-white/10 rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 ring-primary/40"
+                        className="w-full bg-background/60 border border-white/10 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 ring-primary/40 transition-all font-bold"
                       >
-                        <option value={2}>2 Lines</option>
-                        <option value={3}>3 Lines</option>
-                        <option value={4}>4 Lines</option>
+                        <option value={2}>2 Lines (Condensed)</option>
+                        <option value={3}>3 Lines (Standard)</option>
+                        <option value={4}>4 Lines (Detailed)</option>
                       </select>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Project Density</label>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Project Density</label>
+                        <div className="h-px flex-1 bg-white/5" />
+                      </div>
                       <select 
                         value={projectLines} 
                         onChange={(e) => setProjectLines(Number(e.target.value))}
-                        className="w-full bg-background/40 border border-white/10 rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 ring-primary/40"
+                        className="w-full bg-background/60 border border-white/10 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 ring-primary/40 transition-all font-bold"
                       >
-                        <option value={2}>2 Lines (Concise)</option>
-                        <option value={3}>3 Lines (Standard)</option>
-                        <option value={5}>5 Lines (Senior)</option>
+                        <option value={2}>2 Lines (High Velocity)</option>
+                        <option value={3}>3 Lines (Standard Impact)</option>
+                        <option value={5}>5 Lines (Senior Executive)</option>
                       </select>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4 border-t border-white/5 pt-4">
-                    <div className="space-y-2">
-                      <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Typography (PDF)</label>
+                  
+                  <div className="grid grid-cols-2 gap-6 pt-2">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Typography (PDF)</label>
+                        <div className="h-px flex-1 bg-white/5" />
+                      </div>
                       <select 
                         value={fontFamily} 
                         onChange={(e) => setFontFamily(e.target.value as "Inter" | "Roboto" | "Merriweather" | "Arial")}
-                        className="w-full bg-background/40 border border-white/10 rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 ring-primary/40"
+                        className="w-full bg-background/60 border border-white/10 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 ring-primary/40 transition-all font-bold"
                       >
                         <option value="Inter">Modern Sans (Inter)</option>
                         <option value="Roboto">Classic Sans (Roboto)</option>
@@ -481,12 +501,15 @@ RETURN JSON FORMAT ONLY:
                         <option value="Arial">Standard (Arial)</option>
                       </select>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Strategic Tone</label>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Strategic Tone</label>
+                        <div className="h-px flex-1 bg-white/5" />
+                      </div>
                       <select 
                         value={tone} 
                         onChange={(e) => setTone(e.target.value as "Professional" | "Modern" | "Aggressive")}
-                        className="w-full bg-background/40 border border-white/10 rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 ring-primary/40"
+                        className="w-full bg-background/60 border border-white/10 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 ring-primary/40 transition-all font-bold"
                       >
                         <option value="Modern">Silicon Valley Modern</option>
                         <option value="Professional">Executive Classic</option>

@@ -26,6 +26,7 @@ import { InterviewCoach } from "@/components/InterviewCoach";
 import { BonusInsights } from "@/components/BonusInsights";
 import { IcebergAnalysis } from "@/components/IcebergAnalysis";
 import { HowItWorksSection } from "@/components/HowItWorksSection";
+import { scavengeSkills } from "@/lib/skillScavenger";
 import type { DecodeResult, ResumeGapResult } from "@/types/jd";
 
 const ApplicationTracker = lazy(() => import("@/components/ApplicationTracker").then(module => ({ default: module.ApplicationTracker })));
@@ -198,9 +199,9 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
             {results ? (
               <>
                 <ResumeGapAnalyzer
-                  skills={results.skills}
+                  skills={scavengeSkills(results.skills, results, jdText)}
                   jobTitle={results.title}
-                  onResumeTextChange={setUserResumeText}
+                  jdText={jdText}
                   onResultChange={setGapResult}
                 />
                 {gapResult && (
