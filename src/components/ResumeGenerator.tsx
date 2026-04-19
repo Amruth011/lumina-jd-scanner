@@ -643,6 +643,7 @@ RETURN JSON FORMAT ONLY:
                       <div className="flex items-center gap-3">
                         <h4 className="text-[10px] font-black text-black uppercase tracking-widest whitespace-nowrap">Technical Stack</h4>
                         <div className="h-[0.5px] w-full bg-zinc-300" />
+                      </div>
                       {isEditing ? (
                         <textarea 
                           className="w-full text-[12px] text-zinc-800 leading-relaxed bg-zinc-50 border border-zinc-100 p-2 rounded outline-none focus:ring-1 ring-accent-blue"
@@ -656,7 +657,6 @@ RETURN JSON FORMAT ONLY:
                       ) : (
                         <p className="text-[12px] text-zinc-800 leading-relaxed font-medium">{editableResume?.skills_section.join(", ")}</p>
                       )}
-                      </div>
                     </div>
 
                     {editableResume?.education && editableResume.education.length > 0 && (
