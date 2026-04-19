@@ -27,7 +27,7 @@ export const SkillRadarChart = ({ skills }: SkillRadarChartProps) => {
         <h3 className="text-tag text-muted-foreground/60">
           Skill Radar
         </h3>
-        <span className="text-[11px] font-mono font-bold text-muted-foreground/30 uppercase tracking-widest">{topSkills.length} SKILLS</span>
+        <span className="text-[11px] font-bold text-muted-foreground/30 uppercase tracking-widest">{topSkills.length} SKILLS</span>
       </div>
       <ResponsiveContainer width="100%" height={320}>
         <RadarChart data={topSkills}>

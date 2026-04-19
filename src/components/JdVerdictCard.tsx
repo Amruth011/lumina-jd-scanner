@@ -69,8 +69,8 @@ export const JdVerdictCard = ({ grade }: JdVerdictCardProps) => {
                   </span>
                 </div>
                 <div className="flex items-end justify-between">
-                  <span className="text-sm font-display font-black text-foreground font-mono">{value}</span>
-                  <span className="text-[12px] uppercase font-black text-muted-foreground opacity-40 font-mono">/ {max}</span>
+                  <span className="text-sm font-display font-black text-foreground">{value}</span>
+                  <span className="text-[12px] uppercase font-black text-muted-foreground opacity-40">/ {max}</span>
                 </div>
               </div>
             );

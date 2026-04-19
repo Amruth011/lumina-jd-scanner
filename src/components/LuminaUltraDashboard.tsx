@@ -71,7 +71,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                           }`}>
                               {(s?.importance || 0) > 80 ? 'Impact' : (s?.importance || 0) > 50 ? 'Strategic' : 'Support'}
                           </span>
-                          <span className="text-xs font-black text-foreground/20 font-mono">{s?.importance || 0}%</span>
+                          <span className="text-xs font-black text-foreground/20">{s?.importance || 0}%</span>
                         </div>
                     </div>
                 ))}
@@ -99,7 +99,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
               </div>
               <div className="flex items-center justify-between p-5 rounded-2xl bg-white/5 border border-white/10 ring-1 ring-accent-gold/20">
                 <span className="text-xs font-black uppercase tracking-widest text-muted-foreground/60">Market Comp</span>
-                <span className="text-xs font-black uppercase text-accent-gold tracking-widest font-mono">Top 0.1%</span>
+                <span className="text-xs font-black uppercase text-accent-gold tracking-widest">Top 0.1%</span>
               </div>
             </div>
          </div>
@@ -179,12 +179,12 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                     <div className="space-y-4">
                         <span className="text-xs uppercase font-black tracking-widest text-muted-foreground opacity-60">Projected Value Range</span>
                         <div className="flex items-baseline gap-4">
-                            <span className="text-3xl lg:text-4xl font-display font-black tracking-tighter text-foreground font-mono">
+                            <span className="text-3xl lg:text-4xl font-display font-black tracking-tighter text-foreground">
                                 {results?.logistics?.salary_range?.currency === 'INR' ? '₹' : '$'}
                                 {(results?.logistics?.salary_range?.min ?? 0).toLocaleString()}
                             </span>
                             <span className="text-xl text-muted-foreground/20 font-black">-</span>
-                            <span className="text-3xl lg:text-4xl font-display font-black text-accent-emerald tracking-tighter font-mono">
+                            <span className="text-3xl lg:text-4xl font-display font-black text-accent-emerald tracking-tighter">
                                 {(results?.logistics?.salary_range?.max ?? 0).toLocaleString()}
                             </span>
                         </div>
@@ -247,7 +247,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                             }, { total: 0, elements: [] as React.ReactNode[] }).elements}
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                            <span className="text-2xl font-black font-display tracking-tighter text-foreground font-mono">100%</span>
+                            <span className="text-2xl font-black font-display tracking-tighter text-foreground">100%</span>
                             <span className="text-[10px] font-black uppercase text-primary/40 tracking-widest">Focus</span>
                         </div>
                       </div>
@@ -256,7 +256,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                             <div key={i} className="flex items-center gap-2 p-1 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all cursor-crosshair">
                                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: i === 0 ? 'var(--primary)' : i === 1 ? 'var(--accent-emerald)' : i === 2 ? 'var(--accent-gold)' : 'var(--accent-blue)' }} />
                                 <span className="text-[10px] font-black uppercase tracking-widest text-foreground/80 truncate">{item?.label || "Execution"}</span>
-                                <span className="text-[10px] font-black ml-auto text-foreground/40 font-mono">{item?.percent || 0}%</span>
+                                <span className="text-[10px] font-black ml-auto text-foreground/40">{item?.percent || 0}%</span>
                             </div>
                         ))}
                       </div>
@@ -288,7 +288,7 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                     </div>
                     <div className="px-6 py-3 rounded-2xl bg-primary/10 border border-primary/20 text-center">
                         <span className="text-[10px] font-black uppercase text-primary tracking-widest block">Gap Density</span>
-                        <span className="text-2xl font-black font-mono">{results?.resume_help?.keywords?.length || 0} GAPS</span>
+                        <span className="text-2xl font-black">{results?.resume_help?.keywords?.length || 0} GAPS</span>
                     </div>
                 </div>
 
@@ -381,7 +381,7 @@ const BonusCard = ({ icon: Icon, label, value, sub, color }: { icon: LucideIcon,
         </div>
         <div className="text-right">
             <div className="flex items-baseline justify-end gap-1.5">
-                <span className="text-3xl font-display font-black tracking-tighter text-foreground font-mono">{value}%</span>
+                <span className="text-3xl font-display font-black tracking-tighter text-foreground">{value}%</span>
             </div>
             <h4 className="text-[12px] font-black uppercase text-muted-foreground tracking-[0.2em] mt-1 opacity-60">{sub}</h4>
         </div>

@@ -25,7 +25,7 @@ export const SkillProgressBars = ({ skills, priorityMode }: SkillProgressBarsPro
         <h3 className="text-tag text-muted-foreground/60">
           Skills Breakdown
         </h3>
-        <span className="text-[11px] font-mono font-bold text-muted-foreground/30 uppercase tracking-widest">{skills.length} SKILLS TOTAL</span>
+        <span className="text-[11px] font-bold text-muted-foreground/30 uppercase tracking-widest">{skills.length} SKILLS TOTAL</span>
       </div>
       <div className="space-y-4 max-h-[340px] overflow-y-auto pr-2">
         {skills.map((skill, i) => {
@@ -39,7 +39,7 @@ export const SkillProgressBars = ({ skills, priorityMode }: SkillProgressBarsPro
             >
               <div className="flex justify-between items-center mb-2">
                 <span className="text-base font-bold text-foreground/90 tracking-tight">{skill.skill}</span>
-                <span className="text-[11px] text-muted-foreground/70 flex items-center gap-2 font-mono font-bold">
+                <span className="text-[11px] text-muted-foreground/70 flex items-center gap-2 font-bold">
                   {tier.label && (
                     <span className={`text-[10px] font-bold uppercase tracking-[0.1em] px-3 py-0.5 rounded-full border shadow-sm ${tier.labelClass}`}>
                       {tier.label}

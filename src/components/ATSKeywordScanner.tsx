@@ -84,7 +84,7 @@ export const ATSKeywordScanner = ({ skills, aiInsight }: ATSKeywordScannerProps)
               }`}
             />
           </div>
-          <span className={`text-[13px] font-bold font-mono tracking-tighter whitespace-nowrap px-2 py-0.5 rounded-md ${
+          <span className={`text-[13px] font-bold tracking-tighter whitespace-nowrap px-2 py-0.5 rounded-md ${
             coveragePercent >= 80 ? "bg-accent-emerald/10 text-accent-emerald" :
             coveragePercent >= 50 ? "bg-accent-amber/10 text-accent-amber" : "bg-accent-red/10 text-accent-red"
           }`}>

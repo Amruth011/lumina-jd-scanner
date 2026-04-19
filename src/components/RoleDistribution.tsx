@@ -50,7 +50,7 @@ export const RoleDistribution = ({ distribution }: RoleDistributionProps) => {
                 <div className={`mt-1.5 w-2.5 h-2.5 rounded-full ${colors[idx % colors.length]}`} />
                 <div className="space-y-0.5">
                   <div className="flex items-baseline gap-2">
-                    <span className="text-xl font-display font-black leading-none font-mono">{item.percent}%</span>
+                    <span className="text-xl font-display font-black leading-none">{item.percent}%</span>
                     <span className="text-[9px] uppercase font-black tracking-widest text-muted-foreground opacity-50">Target</span>
                   </div>
                   <p className="text-xs font-display font-bold text-foreground group-hover:text-primary transition-colors">
