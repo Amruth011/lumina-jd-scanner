@@ -8,10 +8,23 @@ interface SkillHighlightsProps {
   skills: Skill[];
 }
 
-export const SkillHighlights = ({ skills }: SkillHighlightsProps) => {
+export const SkillHighlights = ({ skills, results }: { skills: Skill[], results?: DecodeResult | null }) => {
   // Required skills are importance >= 80 to ensure "Preferred" skills drop into the next category
   const requiredSkills = (skills || []).filter((s) => s.importance >= 80);
   const niceToHaveSkills = (skills || []).filter((s) => s.importance < 80 && s.importance > 0);
+
+  // Fallback: Scavenge for preferred skills from keywords if the AI missed them
+  const commonPreferred = ["git", "aws", "azure", "gcp", "cloud", "spark", "hadoop", "big data", "tableau", "power bi", "docker", "kubernetes", "jenkins", "terraform", "ci/cd"];
+  
+  let finalNiceToHave = [...niceToHaveSkills];
+  if (finalNiceToHave.length === 0 && results?.resume_help?.keywords) {
+    const identifiedSkills = skills.map(s => s.skill.toLowerCase());
+    const scavenged = results.resume_help.keywords
+        .filter(k => commonPreferred.includes(k.toLowerCase()))
+        .filter(k => !identifiedSkills.includes(k.toLowerCase()))
+        .map(k => ({ skill: k, importance: 50, category: "Preferred" }));
+    finalNiceToHave = scavenged;
+  }
 
   // Group required skills by category
   const groupedRequired = requiredSkills.reduce((acc, skill) => {
@@ -26,7 +39,7 @@ export const SkillHighlights = ({ skills }: SkillHighlightsProps) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      className="glass-panel p-10 rounded-[3rem] space-y-12 border-white/10 bg-white/[0.02] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] backdrop-blur-3xl"
+      className="glass-panel p-10 rounded-[3rem] space-y-12 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-white/20"
     >
       {/* Required Skills Section */}
       <div className="space-y-8">
@@ -76,7 +89,7 @@ export const SkillHighlights = ({ skills }: SkillHighlightsProps) => {
         </div>
 
         <div className="flex flex-wrap gap-2.5">
-          {niceToHaveSkills.map((skill, idx) => (
+          {finalNiceToHave.map((skill, idx) => (
             <motion.span 
               key={idx}
               whileHover={{ scale: 1.05 }}
@@ -85,7 +98,7 @@ export const SkillHighlights = ({ skills }: SkillHighlightsProps) => {
               {skill.skill}
             </motion.span>
           ))}
-          {niceToHaveSkills.length === 0 && (
+          {finalNiceToHave.length === 0 && (
             <p className="text-sm text-muted-foreground italic pl-1">All identified skills are classified as core requirements.</p>
           )}
         </div>

@@ -164,7 +164,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults }: LuminaUltraDash
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             {/* Seniority & Tactical Pulse */}
-            <div className="lg:col-span-2 glass-panel p-8 flex flex-col items-center group relative overflow-hidden h-full">
+            <div className="lg:col-span-2 glass-panel p-8 flex flex-col items-center group relative overflow-hidden h-full bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-white/20">
                 <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-700">
                     <Activity size={60} className="text-accent-emerald" />
                 </div>
@@ -207,14 +207,14 @@ export const LuminaUltraDashboard = ({ results, resumeResults }: LuminaUltraDash
 
             {/* Skill Highlights (Dynamic Taxonomy) */}
             <div className="lg:col-span-5 flex flex-col">
-                <SkillHighlights skills={results?.skills || []} />
+                <SkillHighlights skills={results?.skills || []} results={results} />
             </div>
 
             {/* Risk & Reward Decoder (Flags) */}
             <div className="lg:col-span-5 flex flex-col gap-6">
                 {/* Red Flag Decoder */}
-                <div className="glass-panel p-8 rounded-[2.5rem] border-red-500/10 space-y-6 flex-1 relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-red-500/2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="glass-panel p-8 rounded-[3rem] border-white/20 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-6 flex-1 relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-red-500/[0.01] opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div className="flex items-center justify-between relative z-10">
                         <div className="flex items-center gap-3">
                             <ShieldAlert size={18} className="text-red-500" />
@@ -236,8 +236,8 @@ export const LuminaUltraDashboard = ({ results, resumeResults }: LuminaUltraDash
                 </div>
 
                 {/* Green Flag Decoder */}
-                <div className="glass-panel p-8 rounded-[2.5rem] border-accent-emerald/10 space-y-6 flex-1 relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-accent-emerald/2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="glass-panel p-8 rounded-[3rem] border-white/20 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-6 flex-1 relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-accent-emerald/[0.01] opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div className="flex items-center justify-between relative z-10">
                         <div className="flex items-center gap-3">
                             <ShieldCheck size={18} className="text-accent-emerald" />
