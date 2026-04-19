@@ -178,6 +178,47 @@ RETURN JSON FORMAT ONLY:
       setIsGenerating(false);
     }
   };
+
+  const handleAddExperience = () => {
+    if (!editableResume) return;
+    const newItems = [...editableResume.experience, { heading: "New Experience", content: "", bullets: ["• New bullet point"] }];
+    setEditableResume({ ...editableResume, experience: newItems });
+  };
+
+  const handleRemoveExperience = (index: number) => {
+    if (!editableResume) return;
+    const newItems = editableResume.experience.filter((_, i) => i !== index);
+    setEditableResume({ ...editableResume, experience: newItems });
+  };
+
+  const handleAddProject = () => {
+    if (!editableResume) return;
+    const newItems = [...editableResume.projects, { heading: "New Project", content: "", bullets: ["• Strategic achievement bullet"] }];
+    setEditableResume({ ...editableResume, projects: newItems });
+  };
+
+  const handleRemoveProject = (index: number) => {
+    if (!editableResume) return;
+    const newItems = editableResume.projects.filter((_, i) => i !== index);
+    setEditableResume({ ...editableResume, projects: newItems });
+  };
+
+  const handleAddFromVault = (item: VaultItem) => {
+    if (!editableResume) return;
+    const isProject = item.type === 'project';
+    if (isProject) {
+      setEditableResume({
+        ...editableResume,
+        projects: [...editableResume.projects, { heading: `${item.title} @ ${item.organization}`, content: item.description, bullets: ["• Synthesizing metrics from tactical vault..."] }]
+      });
+    } else {
+      setEditableResume({
+        ...editableResume,
+        experience: [...editableResume.experience, { heading: `${item.title} @ ${item.organization}`, content: item.description, bullets: ["• Synthesizing metrics from tactical vault..."] }]
+      });
+    }
+    toast.success(`Imported ${item.title} from vault!`);
+  };
   
   const handleSaveDraft = async () => {
     if (!user || !editableResume) {
@@ -546,9 +587,9 @@ RETURN JSON FORMAT ONLY:
 
                   {/* Summary Section */}
                   <div className="space-y-4">
-                    <h5 className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Strategic Summary</h5>
+                    <h5 className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Professional Narrative</h5>
                     <textarea 
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-foreground outline-none focus:ring-1 ring-primary/40 min-h-[120px] resize-none"
+                      className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-xs text-foreground outline-none focus:ring-1 ring-primary/40 min-h-[120px] resize-none shadow-xl hover:border-white/30 transition-all font-medium"
                       value={editableResume?.professional_summary}
                       onChange={e => setEditableResume(prev => prev ? {...prev, professional_summary: e.target.value} : null)}
                     />
@@ -558,7 +599,7 @@ RETURN JSON FORMAT ONLY:
                   <div className="space-y-4">
                     <h5 className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Core Competencies</h5>
                     <textarea 
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[11px] text-foreground outline-none focus:ring-1 ring-primary/40 min-h-[80px]"
+                      className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-[11px] text-foreground outline-none focus:ring-1 ring-primary/40 min-h-[80px] shadow-xl hover:border-white/30 transition-all font-bold"
                       value={editableResume?.skills_section.join(", ")}
                       onChange={e => {
                         const newSkills = e.target.value.split(",").map(s => s.trim());
@@ -573,25 +614,96 @@ RETURN JSON FORMAT ONLY:
                     <h5 className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Experience & Impact</h5>
                     <div className="space-y-6">
                       {editableResume?.experience.map((exp, i) => (
-                        <div key={i} className="space-y-3 p-4 rounded-xl bg-white/[0.03] border border-white/5">
-                          <input className="w-full bg-transparent border-none text-[11px] font-bold text-foreground outline-none" value={exp.heading} onChange={e => {
-                            const newExp = [...editableResume.experience];
-                            newExp[i].heading = e.target.value;
-                            setEditableResume({...editableResume, experience: newExp});
-                          }} />
+                        <div key={i} className="group relative space-y-3 p-5 rounded-xl bg-white/10 border border-white/20 shadow-xl transition-all hover:border-primary/30">
+                          <div className="flex justify-between items-start">
+                            <input className="w-full bg-transparent border-none text-[11px] font-bold text-foreground outline-none focus:text-primary transition-colors" value={exp.heading} onChange={e => {
+                              const newExp = [...editableResume.experience];
+                              newExp[i].heading = e.target.value;
+                              setEditableResume({...editableResume, experience: newExp});
+                            }} />
+                            <button onClick={() => handleRemoveExperience(i)} className="opacity-0 group-hover:opacity-100 p-1 text-red-400 hover:text-red-500 transition-all">
+                              <Minus size={14} />
+                            </button>
+                          </div>
                           <div className="space-y-2">
                              {exp.bullets?.map((bullet, j) => (
                                <div key={j} className="flex gap-2">
                                  <div className="w-1.5 h-1.5 rounded-full bg-primary/20 mt-2 shrink-0" />
-                                 <textarea className="w-full bg-transparent border-none text-[10px] text-muted-foreground outline-none resize-none overflow-hidden" rows={2} value={bullet} onChange={e => {
+                                 <textarea className="w-full bg-black/20 p-2 rounded-lg border border-white/5 text-[10px] text-muted-foreground outline-none resize-none overflow-hidden hover:border-white/20 focus:border-primary/40 transition-all" rows={2} value={bullet} onChange={e => {
                                    const newExp = [...editableResume.experience];
                                    newExp[i].bullets[j] = e.target.value;
                                    setEditableResume({...editableResume, experience: newExp});
                                  }} />
                                </div>
                              ))}
+                             <button onClick={() => {
+                               const newExp = [...editableResume.experience];
+                               newExp[i].bullets.push("• Click to add high-impact metric bullet");
+                               setEditableResume({...editableResume, experience: newExp});
+                             }} className="text-[9px] text-primary/40 hover:text-primary transition-colors flex items-center gap-1 mt-1 ml-4 uppercase tracking-widest font-black">
+                               <Plus size={10} /> Add Bullet
+                             </button>
                           </div>
                         </div>
+                      ))}
+                      <button onClick={handleAddExperience} className="w-full py-4 border-2 border-dashed border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:border-primary/40 hover:text-primary transition-all flex items-center justify-center gap-2">
+                        <Plus size={14} /> Add Experience
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Projects Section */}
+                  <div className="space-y-4">
+                    <h5 className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Strategic Projects</h5>
+                    <div className="space-y-6">
+                      {editableResume?.projects.map((proj, i) => (
+                        <div key={i} className="group relative space-y-3 p-5 rounded-xl bg-white/10 border border-white/20 shadow-xl transition-all hover:border-secondary/30">
+                          <div className="flex justify-between items-start">
+                            <input className="w-full bg-transparent border-none text-[11px] font-bold text-foreground outline-none focus:text-secondary transition-colors" value={proj.heading} onChange={e => {
+                              const newProj = [...editableResume.projects];
+                              newProj[i].heading = e.target.value;
+                              setEditableResume({...editableResume, projects: newProj});
+                            }} />
+                            <button onClick={() => handleRemoveProject(i)} className="opacity-0 group-hover:opacity-100 p-1 text-red-400 hover:text-red-500 transition-all">
+                              <Minus size={14} />
+                            </button>
+                          </div>
+                          <div className="space-y-2">
+                             {proj.bullets?.map((bullet, j) => (
+                               <div key={j} className="flex gap-2">
+                                 <div className="w-1.5 h-1.5 rounded-full bg-secondary/20 mt-2 shrink-0" />
+                                 <textarea className="w-full bg-black/20 p-2 rounded-lg border border-white/5 text-[10px] text-muted-foreground outline-none resize-none overflow-hidden hover:border-white/20 focus:border-secondary/40 transition-all" rows={2} value={bullet} onChange={e => {
+                                   const newProj = [...editableResume.projects];
+                                   newProj[i].bullets[j] = e.target.value;
+                                   setEditableResume({...editableResume, projects: newProj});
+                                 }} />
+                               </div>
+                             ))}
+                             <button onClick={() => {
+                               const newProj = [...editableResume.projects];
+                               newProj[i].bullets.push("• Click to add high-impact project bullet");
+                               setEditableResume({...editableResume, projects: newProj});
+                             }} className="text-[9px] text-secondary/40 hover:text-secondary transition-colors flex items-center gap-1 mt-1 ml-4 uppercase tracking-widest font-black">
+                               <Plus size={10} /> Add Bullet
+                             </button>
+                          </div>
+                        </div>
+                      ))}
+                      <button onClick={handleAddProject} className="w-full py-4 border-2 border-dashed border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:border-secondary/40 hover:text-secondary transition-all flex items-center justify-center gap-2">
+                        <Plus size={14} /> Add Project
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* VAULT IMPORT QUICK-ADD */}
+                  <div className="pt-8 border-t border-white/5 space-y-4">
+                    <h5 className="text-[10px] font-black uppercase tracking-widest text-primary/40 mb-2">Import from Tactical Vault</h5>
+                    <div className="grid grid-cols-1 gap-2">
+                      {vaultItems.slice(0, 3).map((item, i) => (
+                        <button key={i} onClick={() => handleAddFromVault(item)} className="p-3 bg-white/5 border border-white/10 rounded-lg text-left hover:bg-white/10 transition-all group">
+                          <p className="text-[10px] font-bold text-foreground group-hover:text-primary">{item.title}</p>
+                          <p className="text-[8px] text-muted-foreground uppercase tracking-wider">{item.organization} • {item.type}</p>
+                        </button>
                       ))}
                     </div>
                   </div>

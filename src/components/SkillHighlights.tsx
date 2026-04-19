@@ -41,12 +41,17 @@ export const SkillHighlights = ({ skills, results }: { skills: Skill[], results?
       const prefLower = pref.toLowerCase();
       
       // If we haven't already identified this skill, check if it appears in any source text
-      if (!identifiedSkills.some(id => id.includes(prefLower) || prefLower.includes(id)) && 
-          !existingNames.has(prefLower)) {
+      const isAlreadyRequired = identifiedSkills.some(id => 
+        id === prefLower || id.includes(prefLower) || prefLower.includes(id)
+      );
+
+      if (!isAlreadyRequired && !existingNames.has(prefLower)) {
         
-        const isMentioned = potentialSources.some(source => 
-          source.toLowerCase().includes(prefLower)
-        );
+        const isMentioned = potentialSources.some(source => {
+          const sLower = (source || "").toLowerCase();
+          // Match if the source contains the tech name as a whole word or significant part
+          return sLower.includes(prefLower);
+        });
 
         if (isMentioned) {
           finalNiceToHave.push({ 
