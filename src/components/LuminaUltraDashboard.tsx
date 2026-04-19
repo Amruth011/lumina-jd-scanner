@@ -174,28 +174,29 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
 
          <div className="lg:col-span-7 space-y-6 flex flex-col">
              {/* Salary Range Card */}
-              <div className="glass-panel p-8 rounded-[3rem] space-y-8 flex-1 flex flex-col justify-center">
-                <div className="flex justify-between items-start">
-                    <div className="space-y-4">
+              <div className="glass-panel p-8 rounded-[3rem] space-y-8 flex-1 flex flex-col justify-center overflow-hidden">
+                <div className="space-y-6">
+                    <div className="flex items-center justify-between">
                         <span className="text-xs uppercase font-black tracking-widest text-muted-foreground opacity-60">Projected Value Range</span>
-                        <div className="flex items-baseline gap-4">
-                            <span className="text-3xl lg:text-4xl font-display font-black tracking-tighter text-foreground">
-                                {results?.logistics?.salary_range?.currency === 'INR' ? '₹' : '$'}
-                                {(results?.logistics?.salary_range?.min ?? 0).toLocaleString()}
-                            </span>
-                            <span className="text-xl text-muted-foreground/20 font-black">-</span>
-                            <span className="text-3xl lg:text-4xl font-display font-black text-accent-emerald tracking-tighter">
-                                {(results?.logistics?.salary_range?.max ?? 0).toLocaleString()}
-                            </span>
+                        <div className="flex items-center gap-4">
+                            <div className="flex gap-1.5">
+                                {[1, 2, 3, 4, 5].map(i => (
+                                    <div key={i} className={`w-4 h-1 rounded-full ${i <= 4 ? 'bg-accent-gold' : 'bg-white/10'}`} />
+                                ))}
+                            </div>
+                            <span className="text-[10px] uppercase font-black text-accent-gold/60 tracking-widest">Confidence</span>
                         </div>
                     </div>
-                    <div className="p-5 rounded-[2rem] bg-accent-gold/10 border border-accent-gold/20 text-right">
-                        <span className="text-xs font-black uppercase text-accent-gold block mb-3 opacity-60">Confidence</span>
-                        <div className="flex gap-2 justify-end">
-                            {[1, 2, 3, 4, 5].map(i => (
-                                <div key={i} className={`w-5 h-2 rounded-full ${i <= 4 ? 'bg-accent-gold' : 'bg-white/10'}`} />
-                            ))}
-                        </div>
+                    
+                    <div className="flex items-baseline gap-2 md:gap-4 flex-wrap">
+                        <span className="text-4xl md:text-5xl lg:text-7xl font-display font-black tracking-tighter text-foreground leading-none">
+                            {results?.logistics?.salary_range?.currency === 'INR' ? '₹' : '$'}
+                            {(results?.logistics?.salary_range?.min ?? 0).toLocaleString()}
+                        </span>
+                        <span className="text-2xl text-muted-foreground/10 font-black">-</span>
+                        <span className="text-4xl md:text-5xl lg:text-7xl font-display font-black text-accent-emerald tracking-tighter leading-none">
+                            {(results?.logistics?.salary_range?.max ?? 0).toLocaleString()}
+                        </span>
                     </div>
                 </div>
 
