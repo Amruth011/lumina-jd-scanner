@@ -42,17 +42,6 @@ const Index = () => {
             <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mt-8 leading-relaxed font-sans font-medium">
               Paste a job description. Upload your resume. Get your exact match score, skill gaps, and a winning playbook — in seconds.
             </p>
-
-            {/* Dual CTA */}
-            <div className="flex gap-4 mt-10 justify-center flex-wrap">
-              <button
-                onClick={() => scrollToScanner("decode")}
-                className="bg-accent-blue hover:opacity-90 text-white rounded-full px-10 py-5 text-base font-semibold flex items-center gap-2 transition-all shadow-xl shadow-accent-blue/20 group"
-              >
-                Analyze My JD Free
-                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-              </button>
-            </div>
           </motion.div>
         </div>
       </section>
