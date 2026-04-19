@@ -716,7 +716,7 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
                     {items.filter(item => item.type === 'project').map(item => (
                         <div key={item.id} className="premium-card p-6 flex justify-between items-center group">
                             <div>
-                                <h5 className="font-bold text-sm">{item.title}</h5>
+                                <h5 className="font-display font-bold text-base">{item.title}</h5>
                                 <p className="text-[10px] text-muted-foreground uppercase">{item.organization}</p>
                             </div>
                             <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
@@ -740,7 +740,7 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
                     {items.filter(item => item.type === 'certification').map(item => (
                         <div key={item.id} className="premium-card p-6 flex justify-between items-center group">
                             <div>
-                                <h5 className="font-bold text-sm">{item.title}</h5>
+                                <h5 className="font-display font-bold text-base">{item.title}</h5>
                                 <p className="text-[10px] text-muted-foreground uppercase">{item.organization}</p>
                             </div>
                             <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">

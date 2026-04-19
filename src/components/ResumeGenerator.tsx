@@ -20,10 +20,19 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
   const [summaryLines, setSummaryLines] = useState(3);
   const [projectLines, setProjectLines] = useState(3);
   const [showSettings, setShowSettings] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [resume, setResume] = useState<GeneratedResume | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
   const [vaultItems, setVaultItems] = useState<VaultItem[]>([]);
+  const [fontFamily, setFontFamily] = useState<"Inter" | "Roboto" | "Merriweather" | "Arial">("Inter");
+  const [isEditing, setIsEditing] = useState(false);
+  const [editableResume, setEditableResume] = useState<GeneratedResume | null>(null);
+  const [editableHeader, setEditableHeader] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    location: "",
+    linkedin: "",
+    portfolio: ""
+  });
+  const [tone, setTone] = useState<"Professional" | "Modern" | "Aggressive">("Modern");
 
 
   useEffect(() => {
@@ -38,6 +47,16 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
     const { data: vaultData } = await supabase.from("master_vault").select("*").eq("user_id", user?.id);
     setProfile(profileData as UserProfileWithVault);
     setVaultItems(vaultData as VaultItem[] || []);
+    if (profileData) {
+      setEditableHeader({
+        fullName: profileData.full_name || "",
+        email: profileData.email?.toLowerCase() || "",
+        phone: profileData.phone || "",
+        location: profileData.location || "",
+        linkedin: profileData.linkedin_url || "",
+        portfolio: profileData.website_url || ""
+      });
+    }
   };
 
   const handleGenerate = async () => {
@@ -58,13 +77,13 @@ Candidate Profile:
 ${JSON.stringify(vaultItems.map(v => ({ title: v.title, org: v.organization, desc: v.description })), null, 2)}
 
 STRATEGY:
-1. Use standard resume headers (Professional Summary, Experience, Projects, Education).
-2. For experience, focus on HARD METRICS (%, $, #). 
-3. PROFESSIONAL SUMMARY: Strictly exactly ${summaryLines} high-impact lines.
-4. PROJECTS: Include exactly 2-3 significant projects. Each project description must be exactly ${projectLines} lines, quantified and strictly aligned with JD skills.
-5. Strictly white background, black text, and minimal vertical spacing to fit 1 page.
-6. Avoid any special characters, icons, or complex formatting.
-7. ALL bullet points must be quantified with metrics (%, $, #).
+1. TONE: Use a ${tone} tone. ${tone === 'Aggressive' ? 'Focus on high-growth metrics and leadership impact.' : tone === 'Professional' ? 'Focus on executive authority and structured domain expertise.' : 'Focus on lean efficiency and modern tactical precision.'}
+2. QUANTIFICATION: Every single bullet point MUST contain a quantified metric (%, $, #, or integers). If a specific number is missing from the profile, estimate a realistic impact metric based on professional context.
+3. STRUCTURE: Use standard resume headers (Professional Summary, Experience, Projects, Education).
+4. PROFESSIONAL SUMMARY: Strictly exactly ${summaryLines} high-impact lines.
+5. PROJECTS: Include exactly 2-3 significant projects. Each project description must be exactly ${projectLines} lines, quantified and strictly aligned with JD skills.
+6. LAYOUT: Strictly white background, black text, and minimal vertical spacing to fit 1 page.
+7. NO VAGUE CLAIMS: Replace phrases like 'improved performance' with 'increased throughput by 25%'.
 
 RETURN JSON FORMAT ONLY:
 {
@@ -122,6 +141,7 @@ RETURN JSON FORMAT ONLY:
       const structData = JSON.parse(resultText.substring(firstBrace, lastBrace + 1));
 
       setResume(structData as GeneratedResume);
+      setEditableResume(structData as GeneratedResume);
       setIsOpen(true);
       toast.success("Silicon Valley Modern resume generated!");
     } catch (err) {
@@ -143,7 +163,13 @@ RETURN JSON FORMAT ONLY:
       const contentWidth = pageWidth - margin * 2;
 
       const addText = (text: string, size: number, isBold = false, color: number[] = [0, 0, 0], align: "left" | "center" = "left") => {
-        pdf.setFont("helvetica", isBold ? "bold" : "normal");
+        const fontMap = {
+          "Inter": "helvetica",
+          "Roboto": "helvetica",
+          "Merriweather": "times",
+          "Arial": "helvetica"
+        };
+        pdf.setFont(fontMap[fontFamily] || "helvetica", isBold ? "bold" : "normal");
         pdf.setFontSize(size);
         pdf.setTextColor(color[0], color[1], color[2]);
         const lines = pdf.splitTextToSize(text, contentWidth);
@@ -157,23 +183,22 @@ RETURN JSON FORMAT ONLY:
       };
 
       // Header: Ultra-clean center aligned
-      addText(profile?.full_name?.toUpperCase() || "CANDIDATE NAME", 18, true, [0, 0, 0], "center");
+      addText(editableHeader.fullName.toUpperCase(), 18, true, [0, 0, 0], "center");
       y += 2;
-      const contactInfo = [
-        profile?.email,
-        profile?.phone,
-        profile?.location,
+      const contactLines = [
+        editableHeader.location,
+        editableHeader.phone,
+        editableHeader.email.toLowerCase()
       ].filter(Boolean).join("  •  ");
-      addText(contactInfo, 8.5, false, [80, 80, 80], "center");
+      addText(contactLines, 8.5, false, [80, 80, 80], "center");
       
-      const links = [
-        profile?.linkedin_url?.replace(/^https?:\/\//, ''),
-        profile?.github_url?.replace(/^https?:\/\//, ''),
-        profile?.website_url?.replace(/^https?:\/\//, '')
+      const linkLines = [
+        editableHeader.linkedin?.replace(/^https?:\/\//, ''),
+        editableHeader.portfolio?.replace(/^https?:\/\//, '')
       ].filter(Boolean).join("  |  ");
-      if (links) {
+      if (linkLines) {
         y += 1;
-        addText(links, 8.5, false, [0, 102, 204], "center");
+        addText(linkLines, 8.5, false, [0, 102, 204], "center");
       }
       y += 6;
 
@@ -183,67 +208,69 @@ RETURN JSON FORMAT ONLY:
       pdf.setLineWidth(0.2);
       pdf.line(margin, y, pageWidth - margin, y);
       y += 4;
-      addText(resume.professional_summary, 9.5, false, [40, 40, 40]);
-      y += 4;
+      if (editableResume) {
+        addText(editableResume.professional_summary, 9.5, false, [40, 40, 40]);
+        y += 4;
 
-      // Skills: Modern Pill style simulated
-      addText("CORE COMPETENCIES", 10, true, [0, 0, 0]);
-      pdf.line(margin, y, pageWidth - margin, y);
-      y += 4;
-      addText(resume.skills_section.join("  •  "), 9, false, [40, 40, 40]);
-      y += 5;
+        // Skills
+        addText("CORE COMPETENCIES", 10, true, [0, 0, 0]);
+        pdf.line(margin, y, pageWidth - margin, y);
+        y += 4;
+        addText(editableResume.skills_section.join("  •  "), 9, false, [40, 40, 40]);
+        y += 5;
 
-      // Experience: The meat of the resume
-      addText("EXPERIENCE", 10, true, [0, 0, 0]);
-      pdf.line(margin, y, pageWidth - margin, y);
-      y += 3; // reduced space
-      resume.experience.forEach(exp => {
-        const [title, company] = exp.heading.split('@');
-        addText(title?.trim() || "", 9.5, true, [0, 0, 0]);
-        y -= 3.5;
-        addText(company?.trim() || "Organization", 9, true, [80, 80, 80]);
-        if (exp.content) {
-          addText(exp.content, 8, false, [100, 100, 100]);
-        }
-        y += 0.5; // tight spacing
-        exp.bullets?.forEach(bullet => {
-          addText(`•  ${bullet}`, 8.5, false, [0, 0, 0]); // Pure black
-        });
-        y += 1.5; // tight spacing
-      });
-
-      // Projects
-      if (resume.projects && resume.projects.length > 0) {
-        addText("KEY PROJECTS", 10, true, [0, 0, 0]);
+        // Experience
+        addText("EXPERIENCE", 10, true, [0, 0, 0]);
         pdf.line(margin, y, pageWidth - margin, y);
         y += 3;
-        resume.projects.forEach(proj => {
-          addText(proj.heading, 9.5, true, [0, 0, 0]);
-          if (proj.content) {
-            addText(proj.content, 8.5, false, [40, 40, 40]);
+        editableResume.experience.forEach(exp => {
+          const [title, company] = exp.heading.split('@');
+          addText(title?.trim() || "", 9.5, true, [0, 0, 0]);
+          y -= 3.5;
+          addText(company?.trim() || "Organization", 9, true, [80, 80, 80]);
+          if (exp.content) {
+            addText(exp.content, 8, false, [100, 100, 100]);
           }
-          proj.bullets?.forEach(bullet => {
-            addText(`•  ${bullet}`, 8.5, false, [40, 40, 40]);
+          y += 0.5;
+          exp.bullets?.forEach(bullet => {
+            addText(`•  ${bullet}`, 8.5, false, [0, 0, 0]);
           });
-          y += 2;
+          y += 1.5;
         });
-      }
 
-      // Education
-      if (resume.education.length > 0) {
-        addText("EDUCATION", 10, true, [0, 0, 0]);
-        pdf.line(margin, y, pageWidth - margin, y);
-        y += 3;
-        resume.education.forEach(edu => addText(edu, 9, false, [40, 40, 40]));
-        y += 2;
-      }
+        // Projects
+        if (editableResume.projects && editableResume.projects.length > 0) {
+          addText("KEY PROJECTS", 10, true, [0, 0, 0]);
+          pdf.line(margin, y, pageWidth - margin, y);
+          y += 3;
+          editableResume.projects.forEach(proj => {
+            addText(proj.heading, 9.5, true, [0, 0, 0]);
+            if (proj.content) {
+              addText(proj.content, 8.5, false, [40, 40, 40]);
+            }
+            proj.bullets?.forEach(bullet => {
+              addText(`•  ${bullet}`, 8.5, false, [40, 40, 40]);
+            });
+            y += 2;
+          });
+        }
 
-      // Certifications
-      if (resume.certifications && resume.certifications.length > 0) {
-        addText("CERTIFICATIONS", 10, true, [0, 0, 0]);
-        pdf.line(margin, y, pageWidth - margin, y);
-        y += 3;
-        resume.certifications.forEach(cert => addText(cert, 9, false, [40, 40, 40]));
+        // Education
+        if (editableResume.education.length > 0) {
+          addText("EDUCATION", 10, true, [0, 0, 0]);
+          pdf.line(margin, y, pageWidth - margin, y);
+          y += 3;
+          editableResume.education.forEach(edu => addText(edu, 9, false, [40, 40, 40]));
+          y += 2;
+        }
+
+        // Certifications
+        if (editableResume.certifications && editableResume.certifications.length > 0) {
+          addText("CERTIFICATIONS", 10, true, [0, 0, 0]);
+          pdf.line(margin, y, pageWidth - margin, y);
+          y += 3;
+          editableResume.certifications.forEach(cert => addText(cert, 9, false, [40, 40, 40]));
+        }
       }
 
       pdf.save(`Lumina-AI-Resume-${profile?.full_name?.replace(/ /g, "_")}.pdf`);
@@ -325,6 +352,33 @@ RETURN JSON FORMAT ONLY:
                       </select>
                     </div>
                   </div>
+                  <div className="grid grid-cols-2 gap-4 border-t border-white/5 pt-4">
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Typography (PDF)</label>
+                      <select 
+                        value={fontFamily} 
+                        onChange={(e) => setFontFamily(e.target.value as "Inter" | "Roboto" | "Merriweather" | "Arial")}
+                        className="w-full bg-background/40 border border-white/10 rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 ring-primary/40"
+                      >
+                        <option value="Inter">Modern Sans (Inter)</option>
+                        <option value="Roboto">Classic Sans (Roboto)</option>
+                        <option value="Merriweather">Premium Serif (Merriweather)</option>
+                        <option value="Arial">Standard (Arial)</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Strategic Tone</label>
+                      <select 
+                        value={tone} 
+                        onChange={(e) => setTone(e.target.value as "Professional" | "Modern" | "Aggressive")}
+                        className="w-full bg-background/40 border border-white/10 rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 ring-primary/40"
+                      >
+                        <option value="Modern">Silicon Valley Modern</option>
+                        <option value="Professional">Executive Classic</option>
+                        <option value="Aggressive">Growth Ninja (Impact)</option>
+                      </select>
+                    </div>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -362,7 +416,18 @@ RETURN JSON FORMAT ONLY:
                 </div>
                 <p className="text-xl text-foreground/90 font-serif italic">Generation Complete. Strategically aligned for human & bot review.</p>
               </div>
-              <div className="flex gap-4">
+              <div className="flex flex-col md:flex-row gap-4">
+                <button
+                  onClick={() => setIsEditing(!isEditing)}
+                  className={`flex items-center gap-4 px-8 py-5 rounded-2xl border text-xs font-black uppercase tracking-[0.2em] transition-all active:scale-95 ${
+                    isEditing 
+                      ? "bg-accent-blue text-white border-accent-blue" 
+                      : "bg-white/5 border-white/10 text-muted-foreground hover:bg-white/10 hover:text-foreground"
+                  }`}
+                >
+                  <Wand2 className={`w-5 h-5 ${isEditing ? "animate-pulse" : ""}`} /> 
+                  {isEditing ? "Save & View" : "Live Edit Mode"}
+                </button>
                 <button
                   onClick={handleDownloadPDF}
                   className="flex items-center gap-4 px-10 py-5 rounded-2xl bg-foreground text-background text-xs font-black uppercase tracking-[0.2em] transition-all hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)] active:scale-95"
@@ -400,16 +465,50 @@ RETURN JSON FORMAT ONLY:
               </div>
 
               {/* TACTICAL RESULT PREVIEW (The Document) */}
-              <div className="md:col-span-8 bg-white max-w-4xl mx-auto rounded-none p-8 border border-zinc-200 shadow-2xl overflow-y-auto max-h-[1100px] flex flex-col gap-6 text-black print:p-0 print:shadow-none">
-                <div className="text-center space-y-1">
-                  <h1 className="text-2xl font-bold uppercase tracking-tight text-black">{profile?.full_name}</h1>
-                   <div className="flex items-center justify-center gap-3 text-[10px] text-zinc-700 font-bold uppercase tracking-wider">
-                     <span>{profile?.location}</span>
-                     <span>|</span>
-                     <span>{profile?.email}</span>
-                     <span>|</span>
-                     <span>{profile?.phone}</span>
-                   </div>
+              <div 
+                className="md:col-span-8 bg-white max-w-4xl mx-auto rounded-none p-8 border border-zinc-200 shadow-2xl overflow-y-auto max-h-[1100px] flex flex-col gap-6 text-black print:p-0 print:shadow-none"
+                style={{ fontFamily: fontFamily === 'Merriweather' ? 'serif' : 'sans-serif' }}
+              >
+                <div className="text-center space-y-2">
+                  {isEditing ? (
+                    <div className="space-y-4">
+                      <input 
+                        className="text-2xl font-bold uppercase tracking-tight text-black text-center w-full bg-zinc-50 border border-zinc-200 p-2 rounded"
+                        value={editableHeader.fullName}
+                        onChange={(e) => setEditableHeader({...editableHeader, fullName: e.target.value})}
+                      />
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        <input className="text-[10px] font-bold uppercase p-2 border border-zinc-100 rounded" value={editableHeader.location} placeholder="Location" onChange={(e) => setEditableHeader({...editableHeader, location: e.target.value})} />
+                        <input className="text-[10px] font-bold p-2 border border-zinc-100 rounded lowercase" value={editableHeader.email} placeholder="Email" onChange={(e) => setEditableHeader({...editableHeader, email: e.target.value})} />
+                        <input className="text-[10px] font-bold p-2 border border-zinc-100 rounded" value={editableHeader.phone} placeholder="Phone" onChange={(e) => setEditableHeader({...editableHeader, phone: e.target.value})} />
+                        <input className="text-[10px] font-bold p-2 border border-zinc-100 rounded" value={editableHeader.linkedin} placeholder="LinkedIn URL" onChange={(e) => setEditableHeader({...editableHeader, linkedin: e.target.value})} />
+                        <input className="text-[10px] font-bold p-2 border border-zinc-100 rounded" value={editableHeader.portfolio} placeholder="Portfolio/Website URL" onChange={(e) => setEditableHeader({...editableHeader, portfolio: e.target.value})} />
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <h1 className="text-2xl font-bold uppercase tracking-tight text-black">{editableHeader.fullName}</h1>
+                       <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px] text-zinc-700 font-bold uppercase tracking-wider">
+                         <span>{editableHeader.location}</span>
+                         <span className="opacity-30">|</span>
+                         <span className="lowercase font-medium tracking-normal text-zinc-500">{editableHeader.email}</span>
+                         <span className="opacity-30">|</span>
+                         <span>{editableHeader.phone}</span>
+                         {editableHeader.linkedin && (
+                           <>
+                             <span className="opacity-30">|</span>
+                             <span className="text-accent-blue">{editableHeader.linkedin.replace(/^https?:\/\//, '')}</span>
+                           </>
+                         )}
+                         {editableHeader.portfolio && (
+                           <>
+                             <span className="opacity-30">|</span>
+                             <span className="text-accent-blue">{editableHeader.portfolio.replace(/^https?:\/\//, '')}</span>
+                           </>
+                         )}
+                       </div>
+                    </>
+                  )}
                 </div>
 
                 <div className="space-y-8">
@@ -418,7 +517,16 @@ RETURN JSON FORMAT ONLY:
                       <h4 className="text-[10px] font-black text-black uppercase tracking-widest whitespace-nowrap">Professional Summary</h4>
                       <div className="h-[0.5px] w-full bg-zinc-300" />
                     </div>
-                    <p className="text-[12px] leading-relaxed text-zinc-900 font-medium">{resume.professional_summary}</p>
+                    {isEditing ? (
+                      <textarea 
+                        className="w-full text-[12px] leading-relaxed text-zinc-900 font-medium bg-zinc-50 border border-zinc-200 p-2 rounded outline-none focus:ring-1 ring-accent-blue"
+                        rows={3}
+                        value={editableResume?.professional_summary || ""}
+                        onChange={(e) => setEditableResume(prev => prev ? {...prev, professional_summary: e.target.value} : null)}
+                      />
+                    ) : (
+                      <p className="text-[12px] leading-relaxed text-zinc-900 font-medium">{editableResume?.professional_summary}</p>
+                    )}
                   </div>
                   
                   <div className="space-y-4">
@@ -427,15 +535,39 @@ RETURN JSON FORMAT ONLY:
                       <div className="h-[0.5px] w-full bg-zinc-300" />
                     </div>
                     <div className="space-y-5">
-                      {resume.experience.map((exp, i) => (
+                      {editableResume?.experience.map((exp, i) => (
                         <div key={i} className="space-y-1">
                           <div className="flex justify-between items-baseline">
-                            <h5 className="font-bold text-[13px] text-black">{exp.heading}</h5>
+                            {isEditing ? (
+                              <input 
+                                className="font-bold text-[13px] text-black w-full bg-zinc-50 border border-zinc-100 p-1 rounded"
+                                value={exp.heading}
+                                onChange={(e) => {
+                                  const newExp = [...editableResume.experience];
+                                  newExp[i].heading = e.target.value;
+                                  setEditableResume({...editableResume, experience: newExp});
+                                }}
+                              />
+                            ) : (
+                              <h5 className="font-display font-bold text-[13px] text-black">{exp.heading}</h5>
+                            )}
                           </div>
-                          <ul className="space-y-0.5 list-disc pl-4">
+                          <ul className="space-y-1 list-disc pl-4">
                             {exp.bullets?.map((bullet, j) => (
                               <li key={j} className="text-[11px] text-zinc-800 leading-snug font-medium">
-                                {bullet}
+                                {isEditing ? (
+                                  <textarea 
+                                    className="w-full bg-zinc-50 border border-zinc-100 p-1 rounded text-[11px]"
+                                    value={bullet}
+                                    onChange={(e) => {
+                                      const newExp = [...editableResume.experience];
+                                      newExp[i].bullets[j] = e.target.value;
+                                      setEditableResume({...editableResume, experience: newExp});
+                                    }}
+                                  />
+                                ) : (
+                                  bullet
+                                )}
                               </li>
                             ))}
                           </ul>
@@ -444,21 +576,59 @@ RETURN JSON FORMAT ONLY:
                     </div>
                   </div>
 
-                  {resume.projects && resume.projects.length > 0 && (
+                  {editableResume?.projects && editableResume.projects.length > 0 && (
                   <div className="space-y-4">
                     <div className="flex items-center gap-3">
                       <h4 className="text-[10px] font-black text-black uppercase tracking-widest whitespace-nowrap">Strategic Projects</h4>
                       <div className="h-[0.5px] w-full bg-zinc-300" />
                     </div>
                     <div className="space-y-4">
-                      {resume.projects.map((proj, i) => (
+                      {editableResume.projects.map((proj, i) => (
                         <div key={i} className="space-y-1">
-                          <h5 className="font-bold text-[13px] text-black">{proj.heading}</h5>
-                          <p className="text-[11px] text-zinc-900 leading-relaxed font-medium">{proj.content}</p>
-                          <ul className="space-y-0.5 list-disc pl-4">
+                          {isEditing ? (
+                            <input 
+                              className="font-bold text-[13px] text-black w-full bg-zinc-50 border border-zinc-100 p-1 rounded"
+                              value={proj.heading}
+                              onChange={(e) => {
+                                const newProj = [...editableResume.projects];
+                                newProj[i].heading = e.target.value;
+                                setEditableResume({...editableResume, projects: newProj});
+                              }}
+                            />
+                          ) : (
+                            <h5 className="font-display font-bold text-[13px] text-black">{proj.heading}</h5>
+                          )}
+                          
+                          {isEditing ? (
+                            <textarea 
+                              className="w-full text-[11px] text-zinc-900 leading-relaxed font-medium bg-zinc-50 border border-zinc-100 p-1 mt-1 rounded"
+                              value={proj.content}
+                              onChange={(e) => {
+                                const newProj = [...editableResume.projects];
+                                newProj[i].content = e.target.value;
+                                setEditableResume({...editableResume, projects: newProj});
+                              }}
+                            />
+                          ) : (
+                            <p className="text-[11px] text-zinc-900 leading-relaxed font-medium">{proj.content}</p>
+                          )}
+
+                          <ul className="space-y-1 list-disc pl-4 mt-1">
                             {proj.bullets?.map((bullet, j) => (
                               <li key={j} className="text-[11px] text-zinc-800 leading-snug">
-                                {bullet}
+                                {isEditing ? (
+                                  <textarea 
+                                    className="w-full bg-zinc-50 border border-zinc-100 p-1 rounded text-[11px]"
+                                    value={bullet}
+                                    onChange={(e) => {
+                                      const newProj = [...editableResume.projects];
+                                      newProj[i].bullets[j] = e.target.value;
+                                      setEditableResume({...editableResume, projects: newProj});
+                                    }}
+                                  />
+                                ) : (
+                                  bullet
+                                )}
                               </li>
                             ))}
                           </ul>
@@ -473,19 +643,72 @@ RETURN JSON FORMAT ONLY:
                       <div className="flex items-center gap-3">
                         <h4 className="text-[10px] font-black text-black uppercase tracking-widest whitespace-nowrap">Technical Stack</h4>
                         <div className="h-[0.5px] w-full bg-zinc-300" />
+                      {isEditing ? (
+                        <textarea 
+                          className="w-full text-[12px] text-zinc-800 leading-relaxed bg-zinc-50 border border-zinc-100 p-2 rounded outline-none focus:ring-1 ring-accent-blue"
+                          rows={2}
+                          value={editableResume?.skills_section.join(", ") || ""}
+                          onChange={(e) => {
+                            const newSkills = e.target.value.split(",").map(s => s.trim());
+                            setEditableResume(prev => prev ? {...prev, skills_section: newSkills} : null);
+                          }}
+                        />
+                      ) : (
+                        <p className="text-[12px] text-zinc-800 leading-relaxed font-medium">{editableResume?.skills_section.join(", ")}</p>
+                      )}
                       </div>
-                      <p className="text-[12px] text-zinc-800 leading-relaxed">{resume.skills_section.join(", ")}</p>
                     </div>
 
-                    {resume.education.length > 0 && (
+                    {editableResume?.education && editableResume.education.length > 0 && (
                       <div className="space-y-2">
                         <div className="flex items-center gap-3">
                           <h4 className="text-[10px] font-black text-black uppercase tracking-widest whitespace-nowrap">Education</h4>
                           <div className="h-[0.5px] w-full bg-zinc-300" />
                         </div>
-                        <ul className="space-y-0.5">
-                           {resume.education.map((edu, idx) => (
-                             <li key={idx} className="text-[12px] text-zinc-800">{edu}</li>
+                        <ul className="space-y-1">
+                           {editableResume.education.map((edu, idx) => (
+                             <li key={idx} className="text-[12px] text-zinc-800">
+                                {isEditing ? (
+                                  <input 
+                                    className="w-full bg-zinc-50 border border-zinc-100 p-1 rounded text-[12px]"
+                                    value={edu}
+                                    onChange={(e) => {
+                                      const newEdu = [...editableResume.education];
+                                      newEdu[idx] = e.target.value;
+                                      setEditableResume({...editableResume, education: newEdu});
+                                    }}
+                                  />
+                                ) : (
+                                  <span className="font-medium">{edu}</span>
+                                )}
+                             </li>
+                           ))}
+                        </ul>
+                      </div>
+                    )}
+                    {editableResume?.certifications && editableResume.certifications.length > 0 && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-3">
+                          <h4 className="text-[10px] font-black text-black uppercase tracking-widest whitespace-nowrap">Certifications</h4>
+                          <div className="h-[0.5px] w-full bg-zinc-300" />
+                        </div>
+                        <ul className="space-y-1">
+                           {editableResume.certifications.map((cert, idx) => (
+                             <li key={idx} className="text-[12px] text-zinc-800">
+                                {isEditing ? (
+                                  <input 
+                                    className="w-full bg-zinc-50 border border-zinc-100 p-1 rounded text-[12px]"
+                                    value={cert}
+                                    onChange={(e) => {
+                                      const newCert = [...editableResume.certifications];
+                                      newCert[idx] = e.target.value;
+                                      setEditableResume({...editableResume, certifications: newCert});
+                                    }}
+                                  />
+                                ) : (
+                                  <span className="font-medium">{cert}</span>
+                                )}
+                             </li>
                            ))}
                         </ul>
                       </div>

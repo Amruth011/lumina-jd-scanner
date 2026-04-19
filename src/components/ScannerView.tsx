@@ -26,12 +26,11 @@ import { InterviewCoach } from "@/components/InterviewCoach";
 import { BonusInsights } from "@/components/BonusInsights";
 import { IcebergAnalysis } from "@/components/IcebergAnalysis";
 import { HowItWorksSection } from "@/components/HowItWorksSection";
-import { FeaturedSection } from "@/components/FeaturedSection";
 import type { DecodeResult, ResumeGapResult } from "@/types/jd";
 
 const ApplicationTracker = lazy(() => import("@/components/ApplicationTracker").then(module => ({ default: module.ApplicationTracker })));
 
-export type Tab = "decode" | "analysis" | "profile" | "generator" | "guide" | "featured";
+export type Tab = "decode" | "analysis" | "profile" | "generator" | "guide";
 
 interface ScannerViewProps {
   activeTab?: Tab;
@@ -292,18 +291,7 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
               <HowItWorksSection />
             </div>
           </motion.div>
-        ) : (
-          <motion.div
-            key="featured"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-          >
-            <div className="glass-panel p-6 lg:p-10 rounded-[4rem] border-foreground/10 bg-white/[0.02]">
-              <FeaturedSection />
-            </div>
-          </motion.div>
-        )}
+        ) : null}
       </AnimatePresence>
     </div>
   );
