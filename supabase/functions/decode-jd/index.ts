@@ -75,7 +75,10 @@ STRUCTURE YOUR RESPONSE EXACTLY AS THIS JSON:
     "tech_stack_popularity": [{"name": "tech", "demand": "Standard|High|Extreme"}]
   },
   
-  "interview_kit": { "questions": [{"question": "text", "type": "technical|behavioral|situational", "tip": "tip"}], "reverse_questions": ["questions to ask them"] },
+  "interview_kit": { 
+    "questions": [{"question": "text", "type": "technical|behavioral|situational", "tip": "tip"}], // PROVIDE EXACTLY 10 DIVERSE QUESTIONS
+    "reverse_questions": ["questions to ask them"] // PROVIDE EXACTLY 5 STRATEGIC QUESTIONS
+  },
   "resume_help": { "keywords": ["string"], "bullets": ["string"] },
   "jd_rewrite": { "highlights": [{"text": "sentence", "color": "skill|leverage|caution"}] }
 }

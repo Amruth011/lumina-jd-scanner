@@ -29,7 +29,7 @@ export const useDecodeJD = () => {
         if (cached && cached.grade) { // Ensure cache has 2.0 data
           setResults(cached);
           setWasCached(true);
-          toast.success(`Decoded: ${cached.title} (cached)`, { duration: 4000 });
+          toast.success(`Decoded: ${cached.title}`, { duration: 4000 });
           return;
         }
       }

@@ -290,7 +290,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults }: LuminaUltraDash
         <PhaseLabel number="02" title="Power Features" sub="Deep Extraction & Analysis" />
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             {/* Plain English Summary */}
-            <div className="lg:col-span-7 glass-panel p-10 space-y-8 relative overflow-hidden group">
+            <div className="lg:col-span-12 lg:col-span-5 glass-panel p-10 space-y-8 relative overflow-hidden group">
                 <div className="absolute inset-0 bg-primary/2 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="flex items-center justify-between relative z-10">
                     <div>
@@ -299,11 +299,11 @@ export const LuminaUltraDashboard = ({ results, resumeResults }: LuminaUltraDash
                     </div>
                     <Zap size={24} className="text-primary/20" />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 relative z-10">
-                    {(grade?.plain_english_summary || []).slice(0, 6).map((point, i) => (
+                <div className="space-y-6 relative z-10">
+                    {(grade?.plain_english_summary || []).slice(0, 5).map((point, i) => (
                         <div key={i} className="flex gap-4 group/p cursor-pointer" onClick={() => { navigator.clipboard.writeText(point); toast.success("Summary point copied"); }}>
                             <span className="text-[11px] font-black text-primary/40 mt-1 group-hover/p:text-primary transition-colors">{String(i+1).padStart(2, '0')}</span>
-                            <p className="text-[14px] font-medium text-foreground/80 leading-relaxed group-hover/p:text-foreground transition-colors">
+                            <p className="text-[13px] font-medium text-foreground/80 leading-relaxed group-hover/p:text-foreground transition-colors">
                                 {point.split('**').map((part, idx) => idx % 2 === 1 ? <strong key={idx} className="text-primary font-black">{part}</strong> : part)}
                             </p>
                         </div>
@@ -311,30 +311,67 @@ export const LuminaUltraDashboard = ({ results, resumeResults }: LuminaUltraDash
                 </div>
             </div>
 
+            {/* Vital Mandates Card [NEW POWER FEATURE] */}
+            <div className="lg:col-span-12 lg:col-span-4 glass-panel p-10 space-y-10 relative overflow-hidden group border-accent-blue/10">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h3 className="text-3xl font-serif italic text-foreground">Vital Mandates</h3>
+                        <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground opacity-50 mt-1">Non-Negotiable Qualifiers</p>
+                    </div>
+                    <ShieldCheck size={24} className="text-accent-blue/20" />
+                </div>
+                
+                <div className="space-y-8 relative z-10">
+                    <div className="space-y-3">
+                         <span className="text-[10px] font-black uppercase tracking-widest text-accent-blue/60 group-hover:text-accent-blue transition-colors">Education Threshold</span>
+                         <p className="text-[14px] font-bold text-foreground leading-tight">
+                            {results?.requirements?.education?.[0] || "Foundational Degree Preferred"}
+                         </p>
+                    </div>
+
+                    <div className="space-y-3">
+                         <span className="text-[10px] font-black uppercase tracking-widest text-accent-blue/60 group-hover:text-accent-blue transition-colors">Core Agreements</span>
+                         <div className="space-y-3">
+                            {(results?.requirements?.agreements || []).slice(0, 3).map((agreement, idx) => (
+                                <div key={idx} className="flex items-center gap-3">
+                                    <div className="w-1 h-1 rounded-full bg-accent-blue/40" />
+                                    <p className="text-[12px] font-medium text-foreground/80 leading-snug">{agreement}</p>
+                                </div>
+                            ))}
+                         </div>
+                    </div>
+
+                    <div className="pt-4 border-t border-white/5">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 block mb-2">Practice Standard</span>
+                        <p className="text-[12px] font-medium text-muted-foreground">This role demands <span className="text-foreground font-bold">{results?.requirements?.experience}</span> as the core practice baseline.</p>
+                    </div>
+                </div>
+            </div>
+
             {/* Strategic Deficit (Keywords) */}
-            <div className="lg:col-span-5 glass-panel p-8 space-y-8 border-primary/10">
+            <div className="lg:col-span-12 lg:col-span-3 glass-panel p-8 space-y-8 border-primary/10">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <SearchCheck size={18} className="text-primary" />
                         <span className="text-xs uppercase font-black tracking-widest text-foreground/70">Strategic Deficit</span>
                     </div>
-                    <button 
-                        onClick={copyAllKeywords}
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 text-[9px] font-black uppercase tracking-widest transition-all"
-                    >
-                        <Copy size={10} />
-                        Copy All
-                    </button>
                 </div>
                 <div className="flex flex-wrap gap-2 pt-2">
-                    {(results?.resume_help?.keywords || []).map((word, i) => (
-                        <div key={i} className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 hover:border-primary/30 transition-all cursor-pointer" onClick={() => { navigator.clipboard.writeText(word); toast.success(`"${word}" copied`); }}>
-                            <span className="text-[13px] font-bold text-foreground/80 tracking-tight">{word}</span>
+                    {(results?.resume_help?.keywords || []).slice(0, 12).map((word, i) => (
+                        <div key={i} className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 hover:border-primary/30 transition-all cursor-pointer" onClick={() => { navigator.clipboard.writeText(word); toast.success(`"${word}" copied`); }}>
+                            <span className="text-[12px] font-bold text-foreground/80 tracking-tight">{word}</span>
                         </div>
                     ))}
                 </div>
-                <p className="text-[10px] text-muted-foreground opacity-50 leading-relaxed italic">
-                    Keywords analyzed for ATS frequency and semantic weights. High-priority missing anchors.
+                <button 
+                    onClick={copyAllKeywords}
+                    className="w-full mt-4 flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 text-[9px] font-black uppercase tracking-widest transition-all"
+                >
+                    <Copy size={10} />
+                    Copy Keywords
+                </button>
+                <p className="text-[10px] text-muted-foreground opacity-50 leading-relaxed italic pt-4 border-t border-white/5">
+                    Keywords analyzed for ATS frequency and semantic weights.
                 </p>
             </div>
         </div>

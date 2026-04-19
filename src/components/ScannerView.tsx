@@ -153,13 +153,12 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
                             : "bg-accent-emerald/10 border-accent-emerald/20 text-accent-emerald"
                         }`}>
                           <Shield size={10} className={wasCached ? "animate-pulse" : ""} />
-                          {wasCached ? "Consistency Verified (Cached)" : "Strategic Intelligence Active"}
+                          {wasCached ? "Consistency Verified" : "Strategic Intelligence Active"}
                         </div>
                       </div>
                       <h3 className="font-serif italic text-4xl md:text-5xl lg:text-7xl text-foreground tracking-[-0.04em] leading-[0.9] max-w-5xl mx-auto px-4 mt-4 text-balance">
                         {results.title}
                       </h3>
-                      <div className="section-divider w-24 mx-auto mt-10 opacity-60" />
                     </motion.div>
 
                   </div>
