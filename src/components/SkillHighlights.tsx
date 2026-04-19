@@ -25,25 +25,37 @@ export const SkillHighlights = ({ skills, results }: { skills: Skill[], results?
   // Fallback: Scavenger for preferred skills from keywords if the AI missed them
   const finalNiceToHave = [...niceToHaveSkills];
   
-  // ALWAYS improve nice-to-have by scavenging from keywords if it's sparse
-  if (results?.resume_help?.keywords) {
-    const identifiedSkills = skills.map(s => s.skill.toLowerCase());
-    const scavenged = results.resume_help.keywords
-        .filter(keyword => {
-            const kLower = keyword.toLowerCase();
-            // Match against common preferred tech list
-            const isPreferredTech = commonPreferred.some(pref => kLower.includes(pref));
-            // Ensure it's not already in the required skills list
-            const isAlreadyListed = identifiedSkills.some(id => kLower.includes(id) || id.includes(kLower));
-            return isPreferredTech && !isAlreadyListed;
-        })
-        .map(k => ({ skill: k, importance: 50, category: "Preferred" }));
-    
-    // De-duplicate and add to final list
+  // -- MULTI-SOURCE SCAVENGER (Keywords, Bullets, and Highlights) --
+  const identifiedSkills = (skills || []).map(s => s.skill.toLowerCase());
+  const potentialSources = [
+    ...(results?.resume_help?.keywords || []),
+    ...(results?.resume_help?.bullets || []),
+    ...(results?.jd_rewrite?.highlights?.map(h => h.text) || [])
+  ];
+
+  if (potentialSources.length > 0) {
     const existingNames = new Set(finalNiceToHave.map(s => s.skill.toLowerCase()));
-    scavenged.forEach(s => {
-      if (!existingNames.has(s.skill.toLowerCase())) {
-        finalNiceToHave.push(s);
+    
+    // Look for preferred tech mentioned anywhere in the AI analysis
+    commonPreferred.forEach(pref => {
+      const prefLower = pref.toLowerCase();
+      
+      // If we haven't already identified this skill, check if it appears in any source text
+      if (!identifiedSkills.some(id => id.includes(prefLower) || prefLower.includes(id)) && 
+          !existingNames.has(prefLower)) {
+        
+        const isMentioned = potentialSources.some(source => 
+          source.toLowerCase().includes(prefLower)
+        );
+
+        if (isMentioned) {
+          finalNiceToHave.push({ 
+            skill: pref, 
+            importance: 50, 
+            category: "Preferred" 
+          });
+          existingNames.add(prefLower);
+        }
       }
     });
   }
