@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BrainCircuit, ExternalLink, HelpCircle, MessageCircle, Sparkles, UserCheck } from "lucide-react";
+import { BrainCircuit, ExternalLink, HelpCircle, MessageCircle, Sparkles, UserCheck, Copy, Check } from "lucide-react";
 import type { InterviewQuestion } from "@/types/jd";
+import { toast } from "sonner";
 
 interface InterviewCoachProps {
   questions?: InterviewQuestion[];
@@ -10,8 +11,16 @@ interface InterviewCoachProps {
 
 export const InterviewCoach = ({ questions, interviewerQuestions }: InterviewCoachProps) => {
   const [activeTab, setActiveTab] = useState<"prep" | "ask">("prep");
-  
+  const [copiedIndex, setCopiedIndex] = useState<string | null>(null);
+
   if (!questions && !interviewerQuestions) return null;
+
+  const handleCopy = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedIndex(id);
+    toast.success("Question copied to clipboard");
+    setTimeout(() => setCopiedIndex(null), 2000);
+  };
 
   return (
     <div className="space-y-6">
@@ -33,7 +42,7 @@ export const InterviewCoach = ({ questions, interviewerQuestions }: InterviewCoa
             ].map((tab) => (
                 <button
                     key={tab.id}
-
+                    onClick={() => setActiveTab(tab.id as "prep" | "ask")}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[9px] uppercase font-black tracking-widest transition-all ${
                         activeTab === tab.id ? "bg-foreground text-background shadow-lg" : "text-muted-foreground hover:text-foreground"
                     }`}
@@ -55,7 +64,11 @@ export const InterviewCoach = ({ questions, interviewerQuestions }: InterviewCoa
             className="grid grid-cols-1 md:grid-cols-2 gap-4"
           >
             {questions?.map((q, idx) => (
-              <div key={idx} className="glass-panel p-6 rounded-3xl border-white/5 space-y-3 group hover:border-primary/20 transition-all">
+              <div 
+                key={idx} 
+                className="glass-panel p-6 rounded-3xl border-white/5 space-y-3 group hover:border-primary/20 transition-all cursor-pointer relative overflow-hidden"
+                onClick={() => handleCopy(q.question, `prep-${idx}`)}
+              >
                 <div className="flex items-start justify-between gap-4">
                   <div className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${
                     q.type === 'technical' ? 'bg-accent-blue/10 text-accent-blue' : 
@@ -64,9 +77,11 @@ export const InterviewCoach = ({ questions, interviewerQuestions }: InterviewCoa
                   }`}>
                     {q.type}
                   </div>
-                  <Sparkles size={12} className="text-primary/20 group-hover:text-primary/40 transition-colors" />
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                    {copiedIndex === `prep-${idx}` ? <Check size={12} className="text-accent-emerald" /> : <Copy size={12} className="text-primary/40" />}
+                  </div>
                 </div>
-                <p className="font-display font-bold text-sm text-foreground leading-relaxed group-hover:translate-x-1 transition-transform">
+                <p className="font-display font-bold text-sm text-foreground leading-relaxed transition-transform">
                   {q.question}
                 </p>
                 {q.target_answer && (
@@ -93,14 +108,23 @@ export const InterviewCoach = ({ questions, interviewerQuestions }: InterviewCoa
                 <span className="text-xs font-display font-bold text-foreground">Reverse Interview Questions</span>
             </div>
             {interviewerQuestions?.map((q, idx) => (
-              <div key={idx} className="flex gap-4 p-4 rounded-2xl bg-white/30 border border-white/5 group hover:bg-white/50 transition-all">
+              <div 
+                key={idx} 
+                className="flex gap-4 p-4 rounded-2xl bg-white/30 border border-white/5 group hover:bg-white/50 transition-all cursor-pointer"
+                onClick={() => handleCopy(q, `ask-${idx}`)}
+              >
                 <div className="flex flex-col items-center">
                     <span className="text-[10px] font-black text-primary/40 leading-none">{idx + 1}</span>
                     <div className="w-[1px] h-full bg-primary/10 mt-2" />
                 </div>
-                <p className="text-sm font-display font-medium text-foreground leading-snug">
-                  {q}
-                </p>
+                <div className="flex-1">
+                    <p className="text-sm font-display font-medium text-foreground leading-snug">
+                        {q}
+                    </p>
+                </div>
+                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                    {copiedIndex === `ask-${idx}` ? <Check size={14} className="text-accent-emerald" /> : <Copy size={14} className="text-primary/40" />}
+                </div>
               </div>
             ))}
           </motion.div>
