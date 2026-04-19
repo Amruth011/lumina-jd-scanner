@@ -15,6 +15,7 @@ import { LuminaTimeline } from "./LuminaTimeline";
 import { RecruiterLens } from "./RecruiterLens";
 import { BiasDetector } from "./BiasDetector";
 import { ResumeBulletGenerator } from "./ResumeBulletGenerator";
+import { SkillHighlights } from "./SkillHighlights";
 import { LucideIcon } from "lucide-react";
 import { generateUnifiedReport } from "@/lib/pdfExporter";
 import { toast } from "sonner";
@@ -180,29 +181,9 @@ export const LuminaUltraDashboard = ({ results, resumeResults }: LuminaUltraDash
                 </div>
             </div>
 
-            {/* Skill Spectrum */}
-            <div className="lg:col-span-5 glass-panel p-8 flex flex-col space-y-6">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <Target size={16} className="text-accent-gold" />
-                        <span className="text-xs uppercase font-black tracking-widest text-foreground/70">Skill Criticality Spectrum</span>
-                    </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3 flex-1">
-                    {(results?.skills || []).slice(0, 6).map((s, i) => (
-                        <div key={i} className="flex flex-col gap-1.5 p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-accent-gold/20 transition-all cursor-default">
-                            <span className="text-sm font-display font-bold text-foreground/90 truncate">{s?.skill || "Essential Focus"}</span>
-                            <div className="flex items-center justify-between mt-1">
-                                <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest ${
-                                    (s?.importance || 0) > 75 ? 'bg-red-400/10 text-red-400' : 'bg-accent-gold/10 text-accent-gold'
-                                }`}>
-                                    {(s?.importance || 0) > 75 ? 'Impact' : 'Strategic'}
-                                </span>
-                                <span className="text-[10px] font-black text-foreground/20">{s?.importance || 0}%</span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+            {/* Skill Highlights (Dynamic Taxonomy) */}
+            <div className="lg:col-span-5 flex flex-col">
+                <SkillHighlights skills={results?.skills || []} />
             </div>
 
             {/* Critical Vulnerabilities */}
