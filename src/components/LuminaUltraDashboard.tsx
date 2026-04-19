@@ -24,10 +24,16 @@ import { toast } from "sonner";
 interface LuminaUltraDashboardProps {
   results: DecodeResult;
   resumeResults?: ResumeGapResult | null;
+  jdText?: string;
 }
 
-export const LuminaUltraDashboard = ({ results, resumeResults }: LuminaUltraDashboardProps) => {
+export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaUltraDashboardProps) => {
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [synParams, setSynParams] = useState({
+    intensity: 'Elite',
+    focus: 'Technical',
+    tone: 'Professional'
+  });
 
   const grade = results?.grade || { 
     score: 0, 
@@ -220,13 +226,54 @@ export const LuminaUltraDashboard = ({ results, resumeResults }: LuminaUltraDash
 
             {/* Skill Highlights (Dynamic Taxonomy) */}
             <div className="lg:col-span-5 flex flex-col">
-                <SkillHighlights skills={results?.skills || []} results={results} />
+                <SkillHighlights skills={results?.skills || []} results={results} rawJd={jdText} />
             </div>
 
-            {/* Risk & Reward Decoder (Flags) */}
+            {/* Edit Synthesis Parameters [NEW] */}
             <div className="lg:col-span-5 flex flex-col gap-6">
+                <div className="glass-panel p-8 rounded-[3rem] border-white/20 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-8 relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-primary/[0.02] opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="flex items-center justify-between relative z-10">
+                        <div className="flex items-center gap-3">
+                            <Wand2 size={18} className="text-primary" />
+                            <span className="text-xs uppercase font-black tracking-widest text-primary/70">Edit Synthesis Parameters</span>
+                        </div>
+                        <Sparkles size={14} className="text-primary/20" />
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-6 relative z-10">
+                        {Object.entries(synParams).map(([key, value]) => (
+                            <div key={key} className="space-y-3">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">{key}</span>
+                                    <span className="text-[11px] font-bold text-primary px-3 py-1 rounded-full bg-primary/5 border border-primary/10">{value}</span>
+                                </div>
+                                <div className="flex gap-2">
+                                    {['Standard', 'Elite', 'Deep'].map(opt => (
+                                        <button 
+                                            key={opt}
+                                            onClick={() => setSynParams(prev => ({ ...prev, [key]: opt }))}
+                                            className={`flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                                                value === opt 
+                                                  ? "bg-primary text-background shadow-lg" 
+                                                  : "bg-white/5 border border-white/5 text-muted-foreground hover:bg-white/10"
+                                            }`}
+                                        >
+                                            {opt}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    
+                    <button className="w-full py-4 rounded-2xl bg-foreground text-background text-[11px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all mt-4 relative z-10">
+                        Apply Strategic Nudge
+                    </button>
+                </div>
+
                 {/* Red Flag Decoder */}
-                <div className="glass-panel p-8 rounded-[3rem] border-white/20 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-6 flex-1 relative overflow-hidden group">
+                <div className="glass-panel p-8 rounded-[3rem] border-white/20 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-6 relative overflow-hidden group">
                     <div className="absolute inset-0 bg-red-500/[0.01] opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div className="flex items-center justify-between relative z-10">
                         <div className="flex items-center gap-3">
@@ -249,7 +296,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults }: LuminaUltraDash
                 </div>
 
                 {/* Green Flag Decoder */}
-                <div className="glass-panel p-8 rounded-[3rem] border-white/20 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-6 flex-1 relative overflow-hidden group">
+                <div className="glass-panel p-8 rounded-[3rem] border-white/20 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-6 relative overflow-hidden group">
                     <div className="absolute inset-0 bg-accent-emerald/[0.01] opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div className="flex items-center justify-between relative z-10">
                         <div className="flex items-center gap-3">

@@ -171,7 +171,7 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
                       transition={{ delay: 0.2, duration: 1, ease: [0.16, 1, 0.3, 1] }}
                       className="space-y-32"
                     >
-                      <LuminaUltraDashboard results={results} resumeResults={gapResult} />
+                      <LuminaUltraDashboard results={results} resumeResults={gapResult} jdText={jdText} />
                       
                       <div className="flex flex-col items-center gap-8 py-20">
                          <button 

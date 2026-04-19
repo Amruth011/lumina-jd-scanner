@@ -24,12 +24,20 @@ interface SkillHighlightsProps {
   skills: Skill[];
 }
 
-export const SkillHighlights = ({ skills, results }: { skills: Skill[], results?: DecodeResult | null }) => {
+export const SkillHighlights = ({ 
+  skills, 
+  results, 
+  rawJd 
+}: { 
+  skills: Skill[], 
+  results?: DecodeResult | null,
+  rawJd?: string
+}) => {
   // Required skills are importance >= 80 to ensure "Preferred" skills drop into the next category
   const requiredSkills = (skills || []).filter((s) => s.importance >= 80);
   const niceToHaveSkills = (skills || []).filter((s) => s.importance < 80 && s.importance > 0);
 
-  // -- MULTI-SOURCE SCAVENGER (Keywords, Bullets, and Highlights) --
+  // -- MULTI-SOURCE SCAVENGER (Keywords, Bullets, Highlights, AND Raw JD) --
   const identifiedSkills = (skills || []).map(s => s.skill.toLowerCase());
   const finalRequired = [...requiredSkills];
   const finalNiceToHave = [...niceToHaveSkills];
@@ -37,7 +45,8 @@ export const SkillHighlights = ({ skills, results }: { skills: Skill[], results?
   const potentialSources = [
     ...(results?.resume_help?.keywords || []),
     ...(results?.resume_help?.bullets || []),
-    ...(results?.jd_rewrite?.highlights?.map(h => h.text) || [])
+    ...(results?.jd_rewrite?.highlights?.map(h => h.text) || []),
+    ...(rawJd ? [rawJd] : [])
   ];
 
   if (potentialSources.length > 0) {
@@ -45,7 +54,7 @@ export const SkillHighlights = ({ skills, results }: { skills: Skill[], results?
     const existingNiceNames = new Set(finalNiceToHave.map(s => s.skill.toLowerCase()));
     
     // Pattern to detect "Must-Have" intensity
-    const requiredPatterns = ["essential", "required", "must have", "proficiency in", "solid understanding", "foundational knowledge", "must-to-have"];
+    const requiredPatterns = ["essential", "required", "must have", "proficiency in", "solid understanding", "foundational knowledge", "must-to-have", "mandatory", "expected"];
 
     commonPreferred.forEach(pref => {
       const prefLower = pref.toLowerCase();
@@ -62,10 +71,15 @@ export const SkillHighlights = ({ skills, results }: { skills: Skill[], results?
 
         potentialSources.forEach(source => {
           const sLower = (source || "").toLowerCase();
-          if (sLower.includes(prefLower)) {
+          
+          // Use regex with word boundaries for precision, especially for short words like "R"
+          const wordRegex = new RegExp(`\\b${prefLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+          if (wordRegex.test(sLower)) {
             isMentioned = true;
-            // If the keyword appears near a "Required" pattern, promote it
+            
+            // Intensity check: check the surroundings of the match (approx 100 chars)
             if (requiredPatterns.some(p => sLower.includes(p))) {
+              // Simple check: if a required pattern exists in the same source string
               isHighIntensity = true;
             }
           }
@@ -91,6 +105,11 @@ export const SkillHighlights = ({ skills, results }: { skills: Skill[], results?
       }
     });
   }
+
+  // Final cleanup: remove duplicates from niceToHave if they got promoted to required
+  const cleanedNiceToHave = finalNiceToHave.filter(s => 
+    !finalRequired.some(rs => rs.skill.toLowerCase() === s.skill.toLowerCase())
+  );
 
   // Group required skills by category
   const groupedRequired = finalRequired.reduce((acc, skill) => {
@@ -155,7 +174,7 @@ export const SkillHighlights = ({ skills, results }: { skills: Skill[], results?
         </div>
 
         <div className="flex flex-wrap gap-2.5">
-          {finalNiceToHave.map((skill, idx) => (
+          {cleanedNiceToHave.map((skill, idx) => (
             <motion.span 
               key={idx}
               whileHover={{ scale: 1.05 }}
@@ -164,7 +183,7 @@ export const SkillHighlights = ({ skills, results }: { skills: Skill[], results?
               {skill.skill}
             </motion.span>
           ))}
-          {finalNiceToHave.length === 0 && (
+          {cleanedNiceToHave.length === 0 && (
             <p className="text-sm text-muted-foreground italic pl-1">All identified skills are classified as core requirements.</p>
           )}
         </div>

@@ -37,6 +37,16 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
   });
   const [tone, setTone] = useState<"Professional" | "Modern" | "Aggressive">("Modern");
 
+  const formatUrl = (url: string) => {
+    if (!url) return "";
+    let formatted = url.trim();
+    if (!formatted.startsWith("http://") && !formatted.startsWith("https://")) {
+      // If it starts with linkedin.com or github.com, we add https://
+      formatted = `https://${formatted}`;
+    }
+    return formatted;
+  };
+
 
   useEffect(() => {
     if (user) {
@@ -570,17 +580,38 @@ RETURN JSON FORMAT ONLY:
                   <div className="space-y-4">
                     <h5 className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Digital Footprint</h5>
                     <div className="space-y-3">
-                      <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-2">
+                      <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-2 ring-primary/20 focus-within:ring-2 transition-all">
                         <Linkedin size={14} className="text-[#0077B5]" />
-                        <input className="flex-1 bg-transparent border-none text-[10px] text-foreground outline-none placeholder:opacity-50" value={editableHeader.linkedin} onChange={e => setEditableHeader({...editableHeader, linkedin: e.target.value})} placeholder="LinkedIn URL" />
+                        <input 
+                          id="edit-linkedin"
+                          className="flex-1 bg-transparent border-none text-[10px] text-foreground outline-none placeholder:opacity-50" 
+                          value={editableHeader.linkedin} 
+                          onChange={e => setEditableHeader({...editableHeader, linkedin: e.target.value})} 
+                          onBlur={e => setEditableHeader({...editableHeader, linkedin: formatUrl(e.target.value)})}
+                          placeholder="linkedin.com/in/..." 
+                        />
                       </div>
-                      <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-2">
+                      <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-2 ring-primary/20 focus-within:ring-2 transition-all">
                         <Github size={14} className="text-foreground" />
-                        <input className="flex-1 bg-transparent border-none text-[10px] text-foreground outline-none placeholder:opacity-50" value={editableHeader.github} onChange={e => setEditableHeader({...editableHeader, github: e.target.value})} placeholder="GitHub URL" />
+                        <input 
+                          id="edit-github"
+                          className="flex-1 bg-transparent border-none text-[10px] text-foreground outline-none placeholder:opacity-50" 
+                          value={editableHeader.github} 
+                          onChange={e => setEditableHeader({...editableHeader, github: e.target.value})} 
+                          onBlur={e => setEditableHeader({...editableHeader, github: formatUrl(e.target.value)})}
+                          placeholder="github.com/..." 
+                        />
                       </div>
-                      <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-2">
+                      <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-2 ring-primary/20 focus-within:ring-2 transition-all">
                         <FileText size={14} className="text-secondary" />
-                        <input className="flex-1 bg-transparent border-none text-[10px] text-foreground outline-none placeholder:opacity-50" value={editableHeader.portfolio} onChange={e => setEditableHeader({...editableHeader, portfolio: e.target.value})} placeholder="Portfolio URL" />
+                        <input 
+                          id="edit-portfolio"
+                          className="flex-1 bg-transparent border-none text-[10px] text-foreground outline-none placeholder:opacity-50" 
+                          value={editableHeader.portfolio} 
+                          onChange={e => setEditableHeader({...editableHeader, portfolio: e.target.value})} 
+                          onBlur={e => setEditableHeader({...editableHeader, portfolio: formatUrl(e.target.value)})}
+                          placeholder="yourportfolio.me" 
+                        />
                       </div>
                     </div>
                   </div>
@@ -725,23 +756,38 @@ RETURN JSON FORMAT ONLY:
                      <span>{editableHeader.phone}</span>
                    </div>
                    
-                   <div className="flex flex-wrap items-center justify-center gap-6 mt-2 text-[10px] font-black tracking-widest">
-                     {editableHeader.linkedin && (
-                       <a href={editableHeader.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-accent-blue hover:text-accent-blue/80 transition-colors uppercase border-b border-accent-blue/20 pb-0.5">
-                         <Linkedin size={10} /> LINKEDIN
-                       </a>
-                     )}
-                     {editableHeader.github && (
-                       <a href={editableHeader.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-black hover:opacity-70 transition-opacity uppercase border-b border-black/20 pb-0.5">
-                         <Github size={10} /> GITHUB
-                       </a>
-                     )}
-                     {editableHeader.portfolio && (
-                       <a href={editableHeader.portfolio} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-secondary hover:opacity-80 transition-opacity uppercase border-b border-secondary/20 pb-0.5">
-                         <FileText size={10} /> PORTFOLIO
-                       </a>
-                     )}
-                   </div>
+                    <div className="flex flex-wrap items-center justify-center gap-6 mt-2 text-[10px] font-black tracking-widest">
+                      {editableHeader.linkedin && (
+                        <div className="flex items-center gap-2 group/link">
+                          <a href={editableHeader.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-accent-blue hover:text-accent-blue/80 transition-colors uppercase border-b border-accent-blue/20 pb-0.5">
+                            <Linkedin size={10} /> LINKEDIN
+                          </a>
+                          <button onClick={() => document.getElementById('edit-linkedin')?.focus()} className="opacity-0 group-hover/link:opacity-100 p-1 text-zinc-400 hover:text-primary transition-all">
+                             <Plus size={10} className="rotate-45" />
+                          </button>
+                        </div>
+                      )}
+                      {editableHeader.github && (
+                        <div className="flex items-center gap-2 group/link">
+                          <a href={editableHeader.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-black hover:opacity-70 transition-opacity uppercase border-b border-black/20 pb-0.5">
+                            <Github size={10} /> GITHUB
+                          </a>
+                          <button onClick={() => document.getElementById('edit-github')?.focus()} className="opacity-0 group-hover/link:opacity-100 p-1 text-zinc-400 hover:text-primary transition-all">
+                             <Plus size={10} className="rotate-45" />
+                          </button>
+                        </div>
+                      )}
+                      {editableHeader.portfolio && (
+                        <div className="flex items-center gap-2 group/link">
+                          <a href={editableHeader.portfolio} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-secondary hover:opacity-80 transition-opacity uppercase border-b border-secondary/20 pb-0.5">
+                            <FileText size={10} /> PORTFOLIO
+                          </a>
+                          <button onClick={() => document.getElementById('edit-portfolio')?.focus()} className="opacity-0 group-hover/link:opacity-100 p-1 text-zinc-400 hover:text-primary transition-all">
+                             <Plus size={10} className="rotate-45" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
                 </div>
 
                 <div className="space-y-8">
