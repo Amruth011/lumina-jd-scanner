@@ -186,23 +186,41 @@ export const LuminaUltraDashboard = ({ results, resumeResults }: LuminaUltraDash
                 </div>
 
                 <div className="w-full grid grid-cols-1 gap-3 mt-8 relative z-10">
+                    {/* Location Intelligence */}
+                    <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
+                        <div className="flex flex-col">
+                            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 leading-none mb-1">Base Ops</span>
+                            <span className="text-[11px] font-bold text-foreground truncate max-w-[100px]">
+                                {results?.title?.match(/Bengaluru|Bangalore|Hyderabad|Chennai|Pune|Mumbai|Delhi|London|Remote/i)?.[0] || 
+                                 results?.grade?.summary?.match(/Bengaluru|Bangalore|Hyderabad|Chennai|Pune|Mumbai|Delhi|London|Remote/i)?.[0] || 
+                                 "Bengaluru"}
+                            </span>
+                        </div>
+                        <Target size={14} className="text-accent-blue opacity-40 shrink-0" />
+                    </div>
+
+                    {/* Practice Intensity */}
                     <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
                         <div className="flex flex-col text-balance">
                             <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 leading-none mb-1">Practice</span>
                             <span className="text-[11px] font-bold text-foreground leading-tight">
-                                {(results?.qualifiers?.experience?.professional ?? 0) === 0 ? "Freshers / Entry Level" : `${results?.qualifiers?.experience?.professional}yr+ Req.`}
+                                {(results?.qualifiers?.experience?.professional ?? 0) <= 1.5 || results?.title?.toLowerCase().includes('trainee') || results?.title?.toLowerCase().includes('intern')
+                                    ? "Fresher / Entry Level" 
+                                    : `${results?.qualifiers?.experience?.professional}yr+ Req.`}
                             </span>
                         </div>
                         <Check size={14} className="text-accent-emerald opacity-40 shrink-0" />
                     </div>
+
+                    {/* Work Format */}
                     <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
                         <div className="flex flex-col">
-                            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Format</span>
+                            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 leading-none mb-1">Format</span>
                             <span className="text-[11px] font-bold text-accent-emerald uppercase tracking-tighter">
                                 {results?.logistics?.work_arrangement?.remote_friendly === 'yes' ? 'Remote' : results?.logistics?.work_arrangement?.remote_friendly === 'partial' ? 'Hybrid' : 'On-Site'}
                             </span>
                         </div>
-                        <Users size={14} className="text-accent-emerald opacity-40" />
+                        <Users size={14} className="text-accent-emerald opacity-40 shrink-0" />
                     </div>
                 </div>
             </div>
@@ -228,10 +246,10 @@ export const LuminaUltraDashboard = ({ results, resumeResults }: LuminaUltraDash
                         {(results?.red_flags || []).slice(0, 2).map((flag, i) => (
                             <div key={i} className="pl-4 border-l-2 border-red-500/20 space-y-1 group/f cursor-pointer" onClick={() => { navigator.clipboard.writeText(flag.note); toast.success("Insight copied"); }}>
                                 <div className="flex items-center justify-between">
-                                    <p className="text-[13px] font-serif italic text-foreground tracking-tight underline decoration-red-500/10 decoration-2 underline-offset-4 group-hover/f:text-red-500 transition-colors">&ldquo;{flag.phrase}&rdquo;</p>
+                                    <p className="text-[14px] font-serif italic text-foreground tracking-tight underline decoration-red-500/10 decoration-2 underline-offset-4 group-hover/f:text-red-500 transition-colors">&ldquo;{flag.phrase}&rdquo;</p>
                                     <span className="text-xs font-black text-red-500/60">{flag.intensity}%</span>
                                 </div>
-                                <p className="text-[11px] font-medium text-muted-foreground leading-relaxed transition-colors group-hover/f:text-foreground/70">{flag.note}</p>
+                                <p className="text-[12px] font-medium text-muted-foreground leading-relaxed transition-colors group-hover/f:text-foreground/70">{flag.note}</p>
                             </div>
                         ))}
                     </div>
@@ -255,10 +273,10 @@ export const LuminaUltraDashboard = ({ results, resumeResults }: LuminaUltraDash
                         ].filter(Boolean).slice(0, 2).map((flag, i) => (
                             <div key={i} className="pl-4 border-l-2 border-accent-emerald/20 space-y-1 group/f cursor-pointer" onClick={() => { if (flag) { navigator.clipboard.writeText(flag.note || ""); toast.success("Strength copied"); } }}>
                                 <div className="flex items-center justify-between">
-                                    <p className="text-[13px] font-serif italic text-foreground tracking-tight underline decoration-accent-emerald/10 decoration-2 underline-offset-4 group-hover/f:text-accent-emerald transition-colors">&ldquo;{flag?.phrase}&rdquo;</p>
+                                    <p className="text-[14px] font-serif italic text-foreground tracking-tight underline decoration-accent-emerald/10 decoration-2 underline-offset-4 group-hover/f:text-accent-emerald transition-colors">&ldquo;{flag?.phrase}&rdquo;</p>
                                     <Check size={12} className="text-accent-emerald" />
                                 </div>
-                                <p className="text-[11px] font-medium text-muted-foreground leading-relaxed transition-colors group-hover/f:text-foreground/70">{flag?.note}</p>
+                                <p className="text-[12px] font-medium text-muted-foreground leading-relaxed transition-colors group-hover/f:text-foreground/70">{flag?.note}</p>
                             </div>
                         ))}
                     </div>
@@ -311,7 +329,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults }: LuminaUltraDash
                 <div className="flex flex-wrap gap-2 pt-2">
                     {(results?.resume_help?.keywords || []).map((word, i) => (
                         <div key={i} className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 hover:border-primary/30 transition-all cursor-pointer" onClick={() => { navigator.clipboard.writeText(word); toast.success(`"${word}" copied`); }}>
-                            <span className="text-[12px] font-bold text-foreground/80 tracking-tight">{word}</span>
+                            <span className="text-[13px] font-bold text-foreground/80 tracking-tight">{word}</span>
                         </div>
                     ))}
                 </div>

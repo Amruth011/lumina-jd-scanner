@@ -20,8 +20,10 @@ export const SkillHighlights = ({ skills, results }: { skills: Skill[], results?
   if (finalNiceToHave.length === 0 && results?.resume_help?.keywords) {
     const identifiedSkills = skills.map(s => s.skill.toLowerCase());
     const scavenged = results.resume_help.keywords
-        .filter(k => commonPreferred.includes(k.toLowerCase()))
-        .filter(k => !identifiedSkills.includes(k.toLowerCase()))
+        .filter(keyword => {
+            const kLower = keyword.toLowerCase();
+            return commonPreferred.some(pref => kLower.includes(pref)) && !identifiedSkills.some(id => kLower.includes(id));
+        })
         .map(k => ({ skill: k, importance: 50, category: "Preferred" }));
     finalNiceToHave = scavenged;
   }
