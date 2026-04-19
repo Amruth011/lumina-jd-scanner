@@ -4,7 +4,7 @@ import {
   ShieldAlert, Target, TrendingUp, Clock, Ghost, Scale, 
   BrainCircuit, Star, Zap, UserCheck, MessageSquare,
   LayoutDashboard, Heart, SearchCheck, Briefcase, ArrowRight,
-  ShieldCheck, Info, Copy, Activity, Sparkles, Download, Check, Users
+  ShieldCheck, Info, Copy, Activity, Sparkles, Download, Check, Users, Wand2
 } from "lucide-react";
 import type { DecodeResult, ResumeGapResult } from "@/types/jd";
 import { LuminaGauge } from "./LuminaGauge";
@@ -306,8 +306,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
                         <span className="text-[10px] font-black text-accent-emerald/40 uppercase tracking-widest">Growth Signals</span>
                     </div>
                     <div className="space-y-4 relative z-10">
-                        {[
-                            (results?.grade?.breakdown?.benefits ?? 0) > 7 ? { phrase: "Premium Benefits", note: "Compensation & perks scored exceptionally high for this role tier." } : null,
+                        {[(results?.grade?.breakdown?.benefits ?? 0) > 7 ? { phrase: "Premium Benefits", note: "Compensation & perks scored exceptionally high for this role tier." } : null,
                             (results?.grade?.breakdown?.growth ?? 0) > 7 ? { phrase: "High Growth Trajectory", note: "Strategic potential for career advancement and skill expansion." } : null,
                             results?.logistics?.work_arrangement?.remote_friendly === 'yes' ? { phrase: "Total Autonomy", note: "The role supports a fully remote work model with flexible boundaries." } : null,
                         ].filter(Boolean).slice(0, 2).map((flag, i) => (
