@@ -9,9 +9,9 @@ interface SkillHighlightsProps {
 }
 
 export const SkillHighlights = ({ skills }: SkillHighlightsProps) => {
-  // Required skills are importance >= 70
-  const requiredSkills = (skills || []).filter((s) => s.importance >= 70);
-  const niceToHaveSkills = (skills || []).filter((s) => s.importance < 70);
+  // Required skills are importance >= 80 to ensure "Preferred" skills drop into the next category
+  const requiredSkills = (skills || []).filter((s) => s.importance >= 80);
+  const niceToHaveSkills = (skills || []).filter((s) => s.importance < 80 && s.importance > 0);
 
   // Group required skills by category
   const groupedRequired = requiredSkills.reduce((acc, skill) => {
@@ -26,7 +26,7 @@ export const SkillHighlights = ({ skills }: SkillHighlightsProps) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      className="glass-panel p-8 md:p-10 rounded-[3rem] space-y-12 border-white/5 bg-white/[0.01]"
+      className="glass-panel p-10 rounded-[3rem] space-y-12 border-white/10 bg-white/[0.02] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] backdrop-blur-3xl"
     >
       {/* Required Skills Section */}
       <div className="space-y-8">

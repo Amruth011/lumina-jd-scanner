@@ -164,28 +164,43 @@ export const LuminaUltraDashboard = ({ results, resumeResults }: LuminaUltraDash
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             {/* Seniority & Tactical Pulse */}
-            <div className="lg:col-span-2 glass-panel p-6 flex flex-col justify-between items-center group relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
-                    <Activity size={40} className="text-accent-emerald" />
+            <div className="lg:col-span-2 glass-panel p-8 flex flex-col items-center group relative overflow-hidden h-full">
+                <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-700">
+                    <Activity size={60} className="text-accent-emerald" />
                 </div>
-                <LuminaGauge 
-                    value={results?.qualifiers?.seniority_level ?? 0} 
-                    label="Seniority" 
-                    size={110} 
-                    color="var(--accent-emerald)" 
-                />
-                <div className="w-full space-y-3 mt-6">
-                    <div className="flex flex-col gap-1 p-3 rounded-xl bg-white/5 border border-white/5">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Experience</span>
-                        <span className="text-[10px] font-bold text-foreground">
-                            {results?.qualifiers?.experience?.professional ?? 0}+ Years Required
-                        </span>
+                
+                <div className="flex-1 flex flex-col items-center justify-center space-y-6 w-full relative z-10">
+                    <LuminaGauge 
+                        value={results?.qualifiers?.seniority_level ?? 0} 
+                        label="Seniority" 
+                        size={120} 
+                        color="var(--accent-emerald)" 
+                    />
+                    
+                    <div className="text-center space-y-1">
+                        <span className="text-[10px] font-black uppercase text-accent-emerald tracking-[0.2em]">Role Tier</span>
+                        <p className="text-sm font-bold text-foreground">
+                            {(results?.qualifiers?.seniority_level ?? 0) > 70 ? "Executive" : (results?.qualifiers?.seniority_level ?? 0) > 40 ? "Mid-Senior" : "Elite Associate"}
+                        </p>
                     </div>
-                    <div className="flex flex-col gap-1 p-3 rounded-xl bg-white/5 border border-white/5">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Arrangement</span>
-                        <span className="text-[10px] font-bold text-accent-emerald">
-                            {results?.logistics?.work_arrangement?.remote_friendly === 'yes' ? 'Full Remote' : results?.logistics?.work_arrangement?.remote_friendly === 'partial' ? 'Flexible Hybrid' : 'On-Site'}
-                        </span>
+                </div>
+
+                <div className="w-full grid grid-cols-1 gap-3 mt-8 relative z-10">
+                    <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
+                        <div className="flex flex-col">
+                            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Practice</span>
+                            <span className="text-[11px] font-bold text-foreground">{results?.qualifiers?.experience?.professional ?? 0}yr+ Req.</span>
+                        </div>
+                        <Check size={14} className="text-accent-emerald opacity-40" />
+                    </div>
+                    <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
+                        <div className="flex flex-col">
+                            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Format</span>
+                            <span className="text-[11px] font-bold text-accent-emerald uppercase tracking-tighter">
+                                {results?.logistics?.work_arrangement?.remote_friendly === 'yes' ? 'Remote' : results?.logistics?.work_arrangement?.remote_friendly === 'partial' ? 'Hybrid' : 'On-Site'}
+                            </span>
+                        </div>
+                        <Users size={14} className="text-accent-emerald opacity-40" />
                     </div>
                 </div>
             </div>
