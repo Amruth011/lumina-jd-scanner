@@ -19,7 +19,7 @@ export const CultureRadar = ({ radar }: CultureRadarProps) => {
   ];
 
   return (
-    <div className="glass-panel p-8 rounded-[2.5rem] border-white/5 space-y-8 relative overflow-hidden group h-full flex flex-col justify-between">
+    <div className="glass-panel p-8 rounded-[2.5rem] border-white/5 space-y-6 relative overflow-hidden group">
       <div className="flex items-center gap-4">
         <div className="p-3 rounded-2xl bg-primary/10 border border-primary/20 text-primary">
           <Activity size={20} />

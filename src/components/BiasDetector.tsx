@@ -19,7 +19,7 @@ export const BiasDetector = ({ bias }: BiasDetectorProps) => {
   };
 
   return (
-    <div className="glass-panel p-8 rounded-[2.5rem] border-white/5 space-y-8 relative overflow-hidden group">
+    <div className="glass-panel p-8 rounded-[2.5rem] border-white/5 space-y-6 relative overflow-hidden group">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="p-3 rounded-2xl bg-accent-blue/10 border border-accent-blue/20 text-accent-blue">
