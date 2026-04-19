@@ -188,13 +188,13 @@ export const LuminaUltraDashboard = ({ results }: LuminaUltraDashboardProps) => 
                         </div>
                     </div>
                     
-                    <div className="flex items-baseline gap-2 md:gap-4 flex-wrap">
-                        <span className="text-4xl md:text-5xl lg:text-7xl font-display font-black tracking-tighter text-foreground leading-none">
+                    <div className="flex items-baseline gap-2 md:gap-3 flex-wrap">
+                        <span className="text-4xl md:text-5xl lg:text-6xl font-display font-black tracking-[-0.07em] text-foreground leading-none">
                             {results?.logistics?.salary_range?.currency === 'INR' ? '₹' : '$'}
                             {(results?.logistics?.salary_range?.min ?? 0).toLocaleString()}
                         </span>
-                        <span className="text-2xl text-muted-foreground/10 font-black">-</span>
-                        <span className="text-4xl md:text-5xl lg:text-7xl font-display font-black text-accent-emerald tracking-tighter leading-none">
+                        <span className="text-xl text-muted-foreground/10 font-black">-</span>
+                        <span className="text-4xl md:text-5xl lg:text-6xl font-display font-black text-accent-emerald tracking-[-0.07em] leading-none">
                             {(results?.logistics?.salary_range?.max ?? 0).toLocaleString()}
                         </span>
                     </div>
