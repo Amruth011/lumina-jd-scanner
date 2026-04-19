@@ -95,10 +95,10 @@
 
   /* Remove all blurs, glows, and complex motions */
   .liquid-glass, .liquid-glass-refractive, .liquid-water-layer, .shimmer-sweep, .shine-effect, .grain-overlay::before, .dot-grid-bg {
-    display: none !important;
     background: none !important;
     backdrop-filter: none !important;
     animation: none !important;
+    box-shadow: none !important;
   }
 
   .premium-button-glow:hover, .hover-glow:hover {

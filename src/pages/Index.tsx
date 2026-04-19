@@ -17,7 +17,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background dot-grid-bg grain-overlay font-sans text-foreground">
+    <div className="min-h-screen bg-background font-sans text-foreground">
       <GlobalNavbar activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* ── SECTION 1 — HERO ── */}
@@ -30,7 +30,7 @@ const Index = () => {
             transition={{ duration: 0.6 }}
             className="flex flex-col items-center"
           >
-            <div className="liquid-glass rounded-full px-4 py-1.5 flex items-center gap-2 mb-8 border border-border/40 hover:bg-background/40 transition-colors cursor-default group">
+            <div className="rounded-full px-4 py-1.5 flex items-center gap-2 mb-8 border border-border/40 hover:bg-background/40 transition-colors cursor-default group">
               <Sparkles size={14} className="text-accent-blue group-hover:rotate-12 transition-transform" />
               <span className="text-muted-foreground text-[10px] font-bold tracking-[0.25em] uppercase">The #1 ATS Optimization Engine</span>
             </div>

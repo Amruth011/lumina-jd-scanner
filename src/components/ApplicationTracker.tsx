@@ -142,8 +142,6 @@ export const ApplicationTracker = () => {
             onClick={() => setShowAddForm(!showAddForm)}
             className="relative overflow-hidden flex items-center gap-3 px-8 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest bg-foreground text-background hover:scale-[1.05] transition-all shadow-2xl shadow-foreground/20"
           >
-            <div className="liquid-water-layer opacity-10" />
-            <div className="shimmer-sweep" />
             <Plus className="w-4 h-4" /> Add Manual Intelligence
           </motion.button>
         </div>
@@ -202,9 +200,8 @@ export const ApplicationTracker = () => {
                     whileHover={{ scale: 1.02, y: -1 }}
                     whileTap={{ scale: 0.98, y: 0 }}
                     onClick={handleManualAdd}
-                    className="relative overflow-hidden flex-1 px-4 py-3 rounded-xl text-xs font-bold bg-accent-blue text-white hover:bg-accent-blue/90 transition-all liquid-glass-refraction shadow-lg shadow-accent-blue/10"
+                    className="relative overflow-hidden flex-1 px-4 py-3 rounded-xl text-xs font-bold bg-accent-blue text-white hover:bg-accent-blue/90 transition-all shadow-lg shadow-accent-blue/10"
                   >
-                    <div className="liquid-water-layer opacity-20" />
                     <Check className="w-3.5 h-3.5 inline mr-1.5" /> Save
                   </motion.button>
                   <button
@@ -266,7 +263,7 @@ export const ApplicationTracker = () => {
                             layout
                             initial={{ opacity: 0, scale: 0.98 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="group liquid-glass-refractive p-8 rounded-3xl border border-white/5 hover:border-accent-blue/40 transition-all duration-700 hover:shadow-2xl hover:shadow-accent-blue/5 relative"
+                            className="group p-8 rounded-3xl border border-white/5 hover:border-accent-blue/40 transition-all duration-700 hover:shadow-2xl hover:shadow-accent-blue/5 relative"
                           >
                             {/* Actions Overlay */}
                             <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 z-20">
