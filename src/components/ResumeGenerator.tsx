@@ -25,6 +25,7 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
   const [showSettings, setShowSettings] = useState(false);
   const [vaultItems, setVaultItems] = useState<VaultItem[]>([]);
   const [fontFamily, setFontFamily] = useState<"Inter" | "Roboto" | "Merriweather" | "Arial">("Inter");
+  const [draftId, setDraftId] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editableResume, setEditableResume] = useState<GeneratedResume | null>(null);
   const [editableHeader, setEditableHeader] = useState({
@@ -69,6 +70,7 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
         .maybeSingle();
 
       if (data) {
+        setDraftId(data.id);
         setResume(data.content as GeneratedResume);
         setEditableResume(data.content as GeneratedResume);
         setEditableHeader(data.header_data as typeof editableHeader);
@@ -307,20 +309,27 @@ RETURN JSON FORMAT ONLY:
     }
     
     try {
-      const { error } = await supabase.from("generated_resumes").upsert({
+      const { data, error } = await supabase.from("generated_resumes").upsert({
+        ...(draftId ? { id: draftId } : {}),
         user_id: user.id,
         job_title: jdTitle,
         content: editableResume,
         header_data: editableHeader,
         status: 'draft',
         updated_at: new Date().toISOString()
-      }, { onConflict: 'user_id, job_title' });
+      }, { onConflict: 'user_id,job_title' }).select("id").single();
 
       if (error) throw error;
+      
+      if (data) {
+        setDraftId(data.id);
+      }
+      
       toast.success("Resume draft saved successfully!");
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Save error:", err);
-      toast.error("Failed to save draft to vault.");
+      const errorMessage = err instanceof Error ? err.message : "Unknown error";
+      toast.error(`Save failed: ${errorMessage}`);
     }
   };
 
