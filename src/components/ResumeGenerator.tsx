@@ -36,6 +36,7 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
     github: ""
   });
   const [tone, setTone] = useState<"Professional" | "Modern" | "Aggressive">("Modern");
+  const [addingSection, setAddingSection] = useState<'experience' | 'projects' | 'education' | 'certifications' | null>(null);
 
   const formatUrl = (url: string) => {
     if (!url) return "";
@@ -187,9 +188,14 @@ RETURN JSON FORMAT ONLY:
   };
 
   const handleAddExperience = () => {
+    setAddingSection('experience');
+  };
+
+  const handleManualAddExperience = () => {
     if (!editableResume) return;
     const newItems = [...editableResume.experience, { heading: "New Experience", content: "", bullets: ["• New bullet point"] }];
     setEditableResume({ ...editableResume, experience: newItems });
+    setAddingSection(null);
   };
 
   const handleRemoveExperience = (index: number) => {
@@ -199,31 +205,96 @@ RETURN JSON FORMAT ONLY:
   };
 
   const handleAddProject = () => {
+    setAddingSection('projects');
+  };
+
+  const handleManualAddProject = () => {
     if (!editableResume) return;
-    const newItems = [...editableResume.projects, { heading: "New Project", content: "", bullets: ["• Strategic achievement bullet"] }];
+    const newItems = [...(editableResume.projects || []), { heading: "New Project", content: "", bullets: ["• Strategic achievement bullet"] }];
     setEditableResume({ ...editableResume, projects: newItems });
+    setAddingSection(null);
   };
 
   const handleRemoveProject = (index: number) => {
     if (!editableResume) return;
-    const newItems = editableResume.projects.filter((_, i) => i !== index);
+    const newItems = (editableResume.projects || []).filter((_, i) => i !== index);
     setEditableResume({ ...editableResume, projects: newItems });
+  };
+
+  const handleAddEducation = () => {
+    setAddingSection('education');
+  };
+
+  const handleManualAddEducation = () => {
+    if (!editableResume) return;
+    const newItems = [...editableResume.education, "New Degree - University Name"];
+    setEditableResume({ ...editableResume, education: newItems });
+    setAddingSection(null);
+  };
+
+  const handleRemoveEducation = (index: number) => {
+    if (!editableResume) return;
+    const newItems = editableResume.education.filter((_, i) => i !== index);
+    setEditableResume({ ...editableResume, education: newItems });
+  };
+
+  const handleAddCertification = () => {
+    setAddingSection('certifications');
+  };
+
+  const handleManualAddCertification = () => {
+    if (!editableResume) return;
+    const certs = editableResume.certifications || [];
+    const newItems = [...certs, "Certification Name (Issuer)"];
+    setEditableResume({ ...editableResume, certifications: newItems });
+    setAddingSection(null);
+  };
+
+  const handleRemoveCertification = (index: number) => {
+    if (!editableResume) return;
+    const certs = editableResume.certifications || [];
+    const newItems = certs.filter((_, i) => i !== index);
+    setEditableResume({ ...editableResume, certifications: newItems });
   };
 
   const handleAddFromVault = (item: VaultItem) => {
     if (!editableResume) return;
-    const isProject = item.type === 'project';
-    if (isProject) {
+    
+    if (item.type === 'project') {
+      const projects = editableResume.projects || [];
       setEditableResume({
         ...editableResume,
-        projects: [...editableResume.projects, { heading: `${item.title} @ ${item.organization}`, content: item.description, bullets: ["• Synthesizing metrics from tactical vault..."] }]
+        projects: [...projects, { 
+          heading: item.organization ? `${item.title} @ ${item.organization}` : item.title, 
+          content: item.description, 
+          bullets: item.bullets && item.bullets.length > 0 ? item.bullets : ["• Synthesizing metrics from tactical vault..."] 
+        }]
       });
-    } else {
+    } else if (item.type === 'professional') {
       setEditableResume({
         ...editableResume,
-        experience: [...editableResume.experience, { heading: `${item.title} @ ${item.organization}`, content: item.description, bullets: ["• Synthesizing metrics from tactical vault..."] }]
+        experience: [...editableResume.experience, { 
+          heading: item.organization ? `${item.title} @ ${item.organization}` : item.title, 
+          content: item.description, 
+          bullets: item.bullets && item.bullets.length > 0 ? item.bullets : ["• Synthesizing metrics from tactical vault..."] 
+        }]
+      });
+    } else if (item.type === 'education') {
+      const eduEntry = item.organization ? `${item.title} - ${item.organization}` : item.title;
+      setEditableResume({
+        ...editableResume,
+        education: [...editableResume.education, eduEntry]
+      });
+    } else if (item.type === 'certification') {
+      const certifications = editableResume.certifications || [];
+      const certEntry = item.organization ? `${item.title} (${item.organization})` : item.title;
+      setEditableResume({
+        ...editableResume,
+        certifications: [...certifications, certEntry]
       });
     }
+    
+    setAddingSection(null);
     toast.success(`Imported ${item.title} from vault!`);
   };
   
@@ -430,13 +501,13 @@ RETURN JSON FORMAT ONLY:
             
             <button 
               onClick={() => setShowSettings(!showSettings)}
-              className={`flex items-center gap-3 px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 ${
+              className={`flex items-center gap-3 px-8 py-3.5 rounded-full text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-500 shadow-xl ${
                 showSettings 
-                  ? "bg-primary text-background shadow-lg" 
-                  : "bg-white/5 border border-white/10 text-muted-foreground hover:bg-white/10 hover:text-primary"
+                  ? "bg-slate-900 text-white border border-white/20 scale-105" 
+                  : "bg-slate-950 text-white/70 border border-white/10 hover:bg-slate-900 hover:text-white hover:scale-105"
               }`}
             >
-              <Wand2 size={14} className={showSettings ? "animate-pulse" : ""} /> 
+              <Wand2 size={14} className={showSettings ? "animate-pulse text-primary" : ""} /> 
               {showSettings ? "Close Parameters" : "Edit Synthesis Parameters (Lines, Fonts, Tone)"}
             </button>
 
@@ -697,9 +768,34 @@ RETURN JSON FORMAT ONLY:
                           </div>
                         </div>
                       ))}
-                      <button onClick={handleAddExperience} className="w-full py-4 border-2 border-dashed border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:border-primary/40 hover:text-primary transition-all flex items-center justify-center gap-2">
-                        <Plus size={14} /> Add Experience
-                      </button>
+
+                      {addingSection === 'experience' && (
+                        <div className="p-4 rounded-xl bg-slate-900/50 border border-primary/20 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                          <div className="flex justify-between items-center px-1">
+                            <span className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Select from Profile</span>
+                            <button onClick={() => setAddingSection(null)} className="p-1 hover:bg-white/10 rounded-lg transition-all">
+                              <X size={12} className="text-muted-foreground" />
+                            </button>
+                          </div>
+                          <div className="space-y-2 max-h-[240px] overflow-y-auto custom-scrollbar pr-1">
+                            {vaultItems.filter(v => v.type === 'professional').map((v, i) => (
+                              <button key={i} onClick={() => handleAddFromVault(v)} className="w-full text-left p-3 rounded-lg bg-white/5 border border-white/5 hover:border-primary/40 transition-all group">
+                                <p className="text-[10px] font-bold text-foreground group-hover:text-primary transition-colors">{v.title}</p>
+                                <p className="text-[8px] text-muted-foreground uppercase mt-0.5">{v.organization} • {v.period}</p>
+                              </button>
+                            ))}
+                            <button onClick={handleManualAddExperience} className="w-full py-3 rounded-lg border border-dashed border-white/10 text-[9px] font-bold uppercase text-muted-foreground hover:border-primary/40 hover:text-primary transition-all flex items-center justify-center gap-2">
+                              <Plus size={12} /> Add Manually
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {!addingSection && (
+                        <button onClick={handleAddExperience} className="w-full py-4 border-2 border-dashed border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:border-primary/40 hover:text-primary transition-all flex items-center justify-center gap-2">
+                          <Plus size={14} /> Add Experience
+                        </button>
+                      )}
                     </div>
                   </div>
 
@@ -740,9 +836,128 @@ RETURN JSON FORMAT ONLY:
                           </div>
                         </div>
                       ))}
-                      <button onClick={handleAddProject} className="w-full py-4 border-2 border-dashed border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:border-secondary/40 hover:text-secondary transition-all flex items-center justify-center gap-2">
-                        <Plus size={14} /> Add Project
-                      </button>
+
+                      {addingSection === 'projects' && (
+                        <div className="p-4 rounded-xl bg-slate-900/50 border border-secondary/20 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                          <div className="flex justify-between items-center px-1">
+                            <span className="text-[9px] font-black uppercase text-secondary/60 tracking-widest">Select Project from Vault</span>
+                            <button onClick={() => setAddingSection(null)} className="p-1 hover:bg-white/10 rounded-lg transition-all">
+                              <X size={12} className="text-muted-foreground" />
+                            </button>
+                          </div>
+                          <div className="space-y-2 max-h-[240px] overflow-y-auto custom-scrollbar pr-1">
+                            {vaultItems.filter(v => v.type === 'project').map((v, i) => (
+                              <button key={i} onClick={() => handleAddFromVault(v)} className="w-full text-left p-3 rounded-lg bg-white/5 border border-white/5 hover:border-secondary/40 transition-all group">
+                                <p className="text-[10px] font-bold text-foreground group-hover:text-secondary transition-colors">{v.title}</p>
+                                <p className="text-[8px] text-muted-foreground uppercase mt-0.5">{v.organization || "Independent Project"} • {v.period}</p>
+                              </button>
+                            ))}
+                            <button onClick={handleManualAddProject} className="w-full py-3 rounded-lg border border-dashed border-white/10 text-[9px] font-bold uppercase text-muted-foreground hover:border-secondary/40 hover:text-secondary transition-all flex items-center justify-center gap-2">
+                              <Plus size={12} /> Add Manually
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {!addingSection && (
+                        <button onClick={handleAddProject} className="w-full py-4 border-2 border-dashed border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:border-secondary/40 hover:text-secondary transition-all flex items-center justify-center gap-2">
+                          <Plus size={14} /> Add Project
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Education Section */}
+                  <div className="space-y-4">
+                    <h5 className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Academic Foundation</h5>
+                    <div className="space-y-4">
+                      {editableResume?.education.map((edu, i) => (
+                        <div key={i} className="group relative flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-primary/20 transition-all">
+                          <input className="flex-1 bg-transparent border-none text-[11px] font-bold text-foreground outline-none focus:text-primary transition-colors" value={edu} onChange={e => {
+                            const newEdu = [...editableResume.education];
+                            newEdu[i] = e.target.value;
+                            setEditableResume({...editableResume, education: newEdu});
+                          }} />
+                          <button onClick={() => handleRemoveEducation(i)} className="opacity-0 group-hover:opacity-100 p-1 text-red-400 hover:text-red-500 transition-all">
+                            <Minus size={14} />
+                          </button>
+                        </div>
+                      ))}
+
+                      {addingSection === 'education' && (
+                        <div className="p-4 rounded-xl bg-slate-900/50 border border-primary/20 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                          <div className="flex justify-between items-center px-1">
+                            <span className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Select Education from Vault</span>
+                            <button onClick={() => setAddingSection(null)} className="p-1 hover:bg-white/10 rounded-lg transition-all">
+                              <X size={12} className="text-muted-foreground" />
+                            </button>
+                          </div>
+                          <div className="space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-1">
+                            {vaultItems.filter(v => v.type === 'education').map((v, i) => (
+                              <button key={i} onClick={() => handleAddFromVault(v)} className="w-full text-left p-3 rounded-lg bg-white/5 border border-white/5 hover:border-primary/40 transition-all group">
+                                <p className="text-[10px] font-bold text-foreground group-hover:text-primary transition-colors">{v.title}</p>
+                                <p className="text-[8px] text-muted-foreground uppercase mt-0.5">{v.organization} • {v.period}</p>
+                              </button>
+                            ))}
+                            <button onClick={handleManualAddEducation} className="w-full py-3 rounded-lg border border-dashed border-white/10 text-[9px] font-bold uppercase text-muted-foreground hover:border-primary/40 hover:text-primary transition-all flex items-center justify-center gap-2">
+                              <Plus size={12} /> Add Manually
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {!addingSection && (
+                        <button onClick={handleAddEducation} className="w-full py-4 border-2 border-dashed border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:border-primary/40 hover:text-primary transition-all flex items-center justify-center gap-2">
+                          <Plus size={14} /> Add Education
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Certifications Section */}
+                  <div className="space-y-4">
+                    <h5 className="text-[10px] font-black uppercase tracking-widest text-secondary/60 mb-2">Industry Credentials</h5>
+                    <div className="space-y-4">
+                      {editableResume?.certifications?.map((cert, i) => (
+                        <div key={i} className="group relative flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-secondary/20 transition-all">
+                          <input className="flex-1 bg-transparent border-none text-[11px] font-bold text-foreground outline-none focus:text-secondary transition-colors" value={cert} onChange={e => {
+                            const newCerts = [...(editableResume.certifications || [])];
+                            newCerts[i] = e.target.value;
+                            setEditableResume({...editableResume, certifications: newCerts});
+                          }} />
+                          <button onClick={() => handleRemoveCertification(i)} className="opacity-0 group-hover:opacity-100 p-1 text-red-400 hover:text-red-500 transition-all">
+                            <Minus size={14} />
+                          </button>
+                        </div>
+                      ))}
+
+                      {addingSection === 'certifications' && (
+                        <div className="p-4 rounded-xl bg-slate-900/50 border border-secondary/20 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                          <div className="flex justify-between items-center px-1">
+                            <span className="text-[9px] font-black uppercase text-secondary/60 tracking-widest">Select Certificate from Vault</span>
+                            <button onClick={() => setAddingSection(null)} className="p-1 hover:bg-white/10 rounded-lg transition-all">
+                              <X size={12} className="text-muted-foreground" />
+                            </button>
+                          </div>
+                          <div className="space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-1">
+                            {vaultItems.filter(v => v.type === 'certification').map((v, i) => (
+                              <button key={i} onClick={() => handleAddFromVault(v)} className="w-full text-left p-3 rounded-lg bg-white/5 border border-white/5 hover:border-secondary/40 transition-all group">
+                                <p className="text-[10px] font-bold text-foreground group-hover:text-secondary transition-colors">{v.title}</p>
+                                <p className="text-[8px] text-muted-foreground uppercase mt-0.5">{v.organization} • {v.period}</p>
+                              </button>
+                            ))}
+                            <button onClick={handleManualAddCertification} className="w-full py-3 rounded-lg border border-dashed border-white/10 text-[9px] font-bold uppercase text-muted-foreground hover:border-secondary/40 hover:text-secondary transition-all flex items-center justify-center gap-2">
+                              <Plus size={12} /> Add Manually
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {!addingSection && (
+                        <button onClick={handleAddCertification} className="w-full py-4 border-2 border-dashed border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:border-secondary/40 hover:text-secondary transition-all flex items-center justify-center gap-2">
+                          <Plus size={14} /> Add Certification
+                        </button>
+                      )}
                     </div>
                   </div>
 
