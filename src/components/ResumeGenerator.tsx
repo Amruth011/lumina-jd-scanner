@@ -317,19 +317,23 @@ RETURN JSON FORMAT ONLY:
         header_data: editableHeader,
         status: 'draft',
         updated_at: new Date().toISOString()
-      }, { onConflict: 'user_id,job_title' }).select("id").single();
+      }, { onConflict: 'user_id,job_title' }).select("id");
 
-      if (error) throw error;
+      if (error) {
+        console.error("Database save error:", error);
+        toast.error(`Save failed: ${error.message || "Database rejected the draft"}`);
+        return;
+      }
       
-      if (data) {
-        setDraftId(data.id);
+      if (data && data.length > 0) {
+        setDraftId(data[0].id);
       }
       
       toast.success("Resume draft saved successfully!");
     } catch (err: unknown) {
-      console.error("Save error:", err);
-      const errorMessage = err instanceof Error ? err.message : "Unknown error";
-      toast.error(`Save failed: ${errorMessage}`);
+      console.error("Unexpected save error:", err);
+      const message = (err as { message?: string })?.message || (typeof err === 'string' ? err : "Unknown process error");
+      toast.error(`Save crashed: ${message}`);
     }
   };
 
