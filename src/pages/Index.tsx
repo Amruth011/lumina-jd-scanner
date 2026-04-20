@@ -91,53 +91,55 @@ const Index = () => {
         {user ? (
           <ScannerView activeTab={activeTab} onTabChange={setActiveTab} />
         ) : (
-          <div className="max-w-6xl mx-auto px-6">
+          <div className="max-w-5xl mx-auto px-6">
             <motion.div 
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="relative rounded-[4rem] p-[1px] bg-gradient-to-br from-white/10 via-white/5 to-white/10 overflow-hidden"
+              className="relative rounded-[3rem] p-[1px] bg-gradient-to-br from-white/10 via-white/5 to-white/10 overflow-hidden"
             >
-              <div className="relative bg-slate-950/40 backdrop-blur-3xl rounded-[4rem] p-12 lg:p-24 overflow-hidden border border-white/5">
+              <div className="relative bg-slate-950/40 backdrop-blur-3xl rounded-[3rem] p-10 lg:p-16 overflow-hidden border border-white/5">
                 {/* Decorative Elements */}
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/20 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 -z-10" />
-                <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-accent-blue/10 blur-[80px] rounded-full translate-y-1/2 -translate-x-1/2 -z-10" />
+                <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-primary/20 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2 -z-10" />
+                <div className="absolute bottom-0 left-0 w-[250px] h-[250px] bg-accent-blue/10 blur-[70px] rounded-full translate-y-1/2 -translate-x-1/2 -z-10" />
                 
-                <div className="flex flex-col items-center text-center space-y-12 max-w-3xl mx-auto">
-                  <div className="w-20 h-20 rounded-[2rem] bg-foreground text-background flex items-center justify-center shadow-2xl scale-110">
-                    <Lock size={32} />
+                <div className="flex flex-col items-center text-center space-y-10 max-w-2xl mx-auto">
+                  <div className="w-16 h-16 rounded-2xl bg-foreground text-background flex items-center justify-center shadow-2xl scale-110">
+                    <Lock size={24} />
                   </div>
                   
-                  <div className="space-y-6">
-                    <h2 className="text-4xl md:text-6xl font-serif italic text-white tracking-tight">
+                  <div className="space-y-4">
+                    <h2 className="text-3xl md:text-5xl font-serif italic text-white tracking-tight">
                       Intelligence Signal Restricted
                     </h2>
-                    <p className="text-muted-foreground text-lg md:text-xl font-medium leading-relaxed">
+                    <p className="text-muted-foreground text-base md:text-lg font-medium leading-relaxed max-w-xl mx-auto">
                       Our Total Intelligence Engine is reserved for authenticated strategists. 
-                      Sign in to unlock real-time match scoring, skill gap diagnostics, and premium resume tailoring.
+                      Sign in to unlock these 3 essential career services.
                     </p>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full pt-8">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-5 w-full pt-4">
                     {[
                       { icon: BrainCircuit, label: "JD Decoding", desc: "Extract hidden metrics and skills" },
-                      { icon: ShieldCheck, label: "ATS Readiness", desc: "Simulate machine-parsing success" },
-                      { icon: Sparkles, label: "AI Tailoring", desc: "Generate winning resume blueprints" }
+                      { icon: ShieldCheck, label: "Resume Analysis", desc: "Deep gap analysis for your target role" },
+                      { icon: Sparkles, label: "ATS friendly Resume Generator", desc: "Blueprint creation as per the JD" }
                     ].map((feature, i) => (
-                      <div key={i} className="p-6 rounded-3xl bg-white/5 border border-white/10 space-y-3">
-                         <feature.icon className="w-8 h-8 text-primary mx-auto" />
-                         <h4 className="text-xs font-black uppercase tracking-widest text-white">{feature.label}</h4>
-                         <p className="text-[10px] text-muted-foreground leading-tight">{feature.desc}</p>
+                      <div key={i} className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-3 flex flex-col items-center group hover:bg-white/10 transition-colors">
+                         <feature.icon className="w-6 h-6 text-primary" />
+                         <div className="space-y-1">
+                           <h4 className="text-[10px] font-black uppercase tracking-widest text-white">{feature.label}</h4>
+                           <p className="text-[9px] text-muted-foreground leading-tight">{feature.desc}</p>
+                         </div>
                       </div>
                     ))}
                   </div>
                   
-                  <div className="pt-12">
+                  <div className="pt-6">
                     <Link 
                       to="/auth"
-                      className="inline-flex items-center gap-4 px-12 py-6 rounded-[2rem] bg-primary text-white text-xs font-black uppercase tracking-[0.3em] shadow-3xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+                      className="inline-flex items-center gap-3 px-10 py-5 rounded-2xl bg-primary text-white text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
                     >
-                      Sign In to Deploy <ArrowRight size={16} />
+                      Sign In to Deploy <ArrowRight size={14} />
                     </Link>
                   </div>
                 </div>
