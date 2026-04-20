@@ -9,6 +9,7 @@ import { useDecodeJD } from "@/hooks/useDecodeJD";
 import { GlassTextArea } from "@/components/GlassTextArea";
 import { DecodeButton } from "@/components/DecodeButton";
 import { LuminaUltraDashboard } from "./LuminaUltraDashboard";
+import { JdActionCta } from "./JdActionCta";
 import { SkillRadarChart } from "@/components/SkillRadarChart";
 import { SkillProgressBars } from "@/components/SkillProgressBars";
 import { CriticalRequirements } from "@/components/CriticalRequirements";
@@ -174,14 +175,10 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
                     >
                       <LuminaUltraDashboard results={results} resumeResults={gapResult} jdText={jdText} />
                       
-                      <div className="flex flex-col items-center gap-8 py-20">
-                         <button 
-                           onClick={() => handleTabSwitch("analysis")}
-                           className="group flex items-center gap-4 px-12 py-6 rounded-full bg-foreground text-background text-[13px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all"
-                         >
-                           Continue to Resume Analysis <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
-                         </button>
+                      <div className="py-20">
+                         <JdActionCta onCheckResume={() => handleTabSwitch("analysis")} />
                       </div>
+
                     </motion.div>
                   )}
                 </motion.div>

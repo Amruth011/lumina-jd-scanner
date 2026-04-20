@@ -13,10 +13,26 @@ serve(async (req) => {
     if (!jdText) throw new Error("JD text is required");
 
 
-    const prompt = `You are Lumina Intelligence v2, the world's most advanced Recruiters and JD Analyst. Your goal is to decode this Job Description with 99.9% precision into the following JSON structure. BE EXTREMELY CRITICAL AND DEDUCTIVE. Look for hidden red flags, implied tasks, and market context.
+    const prompt = `You are Lumina Intelligence v2, the world's most advanced Recruiters and JD Analyst. Your goal is to decode this Job Description with 99.9% precision into the following JSON structure. BE EXTREMELY CRITICAL AND DEDUCTIVE. 
 
 JD Text:
 ${jdText}
+
+SKILL CATEGORIZATION RULES:
+1. IMPORTANCE SCALE:
+   - 90-100: CRITICAL / NON-NEGOTIABLE (The "What You'll Need" core requirements).
+   - 70-89: STRONGLY PREFERRED (Keywords mentioned as essential or proficiency required).
+   - 40-69: NICE TO HAVE (Keywords in "Preferred" or "Plus" sections).
+   - 10-39: MENTIONED (Bonus pulse or generic jargon).
+
+2. FOUNDATIONS:
+   - If "Mathematics", "Probability", "Statistics", "Algorithms", or "DS Foundational Knowledge" are mentioned in "What You'll Need", assign importance 90+ and category "Foundations".
+
+3. DEGREES:
+   - Include mentions of degrees (e.g., "Computer Science", "Electrical Engineering", "Machine Learning") as skills with category "Education" and importance 90+ if required.
+
+4. DEDUPLICATE:
+   - Do not return both "GenAI" and "Generative AI". Choose the most professional one.
 
 STRUCTURE YOUR RESPONSE EXACTLY AS THIS JSON:
 {
@@ -84,6 +100,7 @@ STRUCTURE YOUR RESPONSE EXACTLY AS THIS JSON:
 }
 
 RETURN ONLY RAW JSON. NO TEXT SURROUNDING IT.`;
+
 
     // Use the Groq Key from our stable pattern
     const groqKey = "gsk_" + "LDqt9GTSLWBL" + "oQk4lAocW" + "Gdyb3FYz" + "53W8pnGGJ" + "JSUcKG6" + "srdOJvA";
