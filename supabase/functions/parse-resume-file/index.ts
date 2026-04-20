@@ -31,6 +31,9 @@ serve(async (req) => {
     const arrayBuffer = await file.arrayBuffer();
     const base64 = arrayBufferToBase64(arrayBuffer);
 
+    const geminiKey = Deno.env.get("GEMINI_API_KEY");
+    if (!geminiKey) throw new Error("GEMINI_API_KEY is not set in secrets.");
+
     // Final Shield: True Resilience Fallback Loop
     const models = ['gemini-2.5-flash'];
     let lastError = "";
