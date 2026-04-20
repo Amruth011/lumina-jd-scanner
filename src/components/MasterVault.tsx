@@ -455,25 +455,76 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
           </h2>
           <p className="text-muted-foreground font-medium max-w-lg">Your master career dataset. Every achievement stored here powers the AI generation engine.</p>
         </div>
-        
-        <div className="flex flex-wrap items-center gap-4">
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            onChange={handleImportResume} 
-            accept=".pdf,.docx,.txt" 
-            className="hidden" 
-          />
-          <button 
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isSyncing}
-            className="flex items-center gap-3 px-8 py-3.5 rounded-2xl bg-primary text-white text-xs font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-primary/20 active:scale-95 disabled:opacity-50"
-          >
-            {isSyncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
-            Smart Sync Resume
-          </button>
-        </div>
       </div>
+
+      {/* ── SMART SYNC HERO CARD ── */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="relative group overflow-hidden rounded-[3rem] p-[1px] bg-gradient-to-br from-primary/40 via-white/5 to-secondary/40 shadow-2xl transition-all hover:scale-[1.01]"
+      >
+        <div className="relative bg-slate-950/90 rounded-[3rem] p-8 lg:p-12 overflow-hidden flex flex-col lg:flex-row items-center gap-10">
+          <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-1000">
+             <Zap className="w-64 h-64 text-primary" />
+          </div>
+          
+          <div className="flex-1 space-y-6 relative z-10 text-center lg:text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary">
+              <Sparkles size={12} className="animate-pulse" />
+              <span className="text-[9px] font-black uppercase tracking-[0.2em]">Zero-Effort Architecture</span>
+            </div>
+            
+            <div className="space-y-4">
+              <h3 className="text-3xl lg:text-4xl font-serif italic text-white leading-tight">
+                Extract Details From <br className="hidden md:block" /> Your Professional Resume
+              </h3>
+              <p className="text-muted-foreground text-sm max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
+                Our AI extraction engine instantly structures your historical candidacy data. 
+                Upload your resume to automatically populate your tactical profile with 0.1% accuracy.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4">
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleImportResume} 
+                accept=".pdf,.docx,.txt" 
+                className="hidden" 
+              />
+              <button 
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isSyncing}
+                className="group relative flex items-center gap-4 px-10 py-5 rounded-2xl bg-white text-slate-950 text-xs font-black uppercase tracking-[0.2em] shadow-2xl hover:shadow-primary/40 active:scale-95 disabled:opacity-50 transition-all overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-primary opacity-0 group-hover:opacity-10 transition-opacity" />
+                {isSyncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Import className="w-5 h-5 text-primary group-hover:scale-125 transition-transform" />}
+                Attach Resume File
+              </button>
+              
+              <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-black uppercase tracking-widest px-4 border-l border-white/10 h-full">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary/40" />
+                Smart Sync Ready
+              </div>
+            </div>
+          </div>
+
+          <div className="lg:w-1/3 flex items-center justify-center relative">
+             <div className="w-32 lg:w-48 h-32 lg:h-48 rounded-full bg-primary/20 blur-[60px] absolute" />
+             <div className="relative p-8 rounded-[2rem] bg-white/5 border border-white/10 backdrop-blur-md transform -rotate-3 hover:rotate-0 transition-transform pointer-events-none">
+                <div className="w-full space-y-3">
+                   <div className="h-2 w-24 bg-white/20 rounded-full" />
+                   <div className="h-2 w-32 bg-white/10 rounded-full" />
+                   <div className="h-2 w-16 bg-white/5 rounded-full" />
+                </div>
+                <div className="absolute -bottom-4 -right-4 p-4 rounded-xl bg-primary shadow-xl">
+                   <Sparkles className="w-6 h-6 text-white" />
+                </div>
+             </div>
+          </div>
+        </div>
+      </motion.div>
 
       <div className="space-y-8">
         <div className="flex items-center gap-4">
