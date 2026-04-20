@@ -593,12 +593,12 @@ RETURN JSON FORMAT ONLY:
                 initial={{ opacity: 0, height: 0, y: 20 }}
                 animate={{ opacity: 1, height: "auto", y: 0 }}
                 exit={{ opacity: 0, height: 0, y: 20 }}
-                className="mt-6 p-8 rounded-[2.5rem] bg-slate-950/95 border border-white/20 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] backdrop-blur-3xl space-y-6"
+                className="mt-6 p-8 rounded-[2.5rem] bg-white/95 border border-zinc-200 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] backdrop-blur-3xl space-y-6"
               >
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
                     <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-primary">Blueprint Archive</h4>
-                    <p className="text-[9px] text-muted-foreground font-medium">Manage your historical architectural drafts</p>
+                    <p className="text-[9px] text-zinc-500 font-medium font-serif italic">Curated historical candidacy architectural drafts</p>
                   </div>
                   {isLoadingArchive && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
                 </div>
@@ -618,22 +618,22 @@ RETURN JSON FORMAT ONLY:
                       >
                         <div className="flex justify-between items-start mb-2">
                           <div className="space-y-1">
-                            <h5 className="text-[11px] font-bold text-foreground truncate max-w-[180px]">{record.job_title}</h5>
-                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest">
+                            <h5 className="text-[11px] font-black text-slate-900 truncate max-w-[180px]">{record.job_title}</h5>
+                            <p className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest">
                               {new Date(record.updated_at).toLocaleDateString()}
                             </p>
                           </div>
                           <button 
                             onClick={(e) => handleDeleteArchive(record.id, e)}
-                            className="p-1.5 rounded-lg text-white/20 hover:text-red-400 hover:bg-red-400/10 transition-all opacity-0 group-hover:opacity-100"
+                            className="p-1.5 rounded-lg text-zinc-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100"
                           >
                             <Minus size={12} />
                           </button>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className={`w-1.5 h-1.5 rounded-full ${record.id === draftId ? 'bg-accent-emerald animate-pulse' : 'bg-white/20'}`} />
-                          <span className="text-[8px] font-black uppercase tracking-tighter opacity-40">
-                            {record.id === draftId ? 'Active' : 'Archived'}
+                          <span className={`w-1.5 h-1.5 rounded-full ${record.id === draftId ? 'bg-accent-emerald animate-pulse' : 'bg-zinc-200'}`} />
+                          <span className="text-[8px] font-black uppercase tracking-tighter opacity-60 text-slate-900">
+                            {record.id === draftId ? 'Active Signal' : 'Archived Blueprint'}
                           </span>
                         </div>
                       </div>
@@ -938,14 +938,17 @@ RETURN JSON FORMAT ONLY:
                       ))}
 
                       {addingSection === 'experience' && (
-                        <div className="p-8 rounded-[2rem] bg-slate-950 border border-primary/30 shadow-2xl space-y-6 animate-in fade-in zoom-in-95 duration-300">
-                          <div className="flex justify-between items-center">
+                        <div className="p-8 rounded-[2rem] bg-white border border-primary/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] space-y-6 animate-in fade-in zoom-in-95 duration-300 overflow-hidden relative">
+                          <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
+                             <Sparkles className="w-24 h-24 text-primary" />
+                          </div>
+                          <div className="flex justify-between items-center relative z-10">
                             <div className="space-y-1">
-                              <span className="text-[10px] font-black uppercase text-primary tracking-[0.2em]">Select from Profile</span>
-                              <p className="text-[8px] text-muted-foreground font-medium uppercase tracking-widest">Tap to inject into candidacy</p>
+                              <span className="text-[10px] font-black uppercase text-primary tracking-[0.2em]">Candidacy Import</span>
+                              <p className="text-[8px] text-zinc-500 font-medium uppercase tracking-widest">Architect tactical experience</p>
                             </div>
-                            <button onClick={() => setAddingSection(null)} className="p-2 hover:bg-white/10 rounded-xl transition-all">
-                              <X size={14} className="text-white/40" />
+                            <button onClick={() => setAddingSection(null)} className="p-2 hover:bg-zinc-100 rounded-xl transition-all">
+                              <X size={14} className="text-zinc-400" />
                             </button>
                           </div>
                           <div className="space-y-2 max-h-[240px] overflow-y-auto custom-scrollbar pr-1">
@@ -1009,14 +1012,17 @@ RETURN JSON FORMAT ONLY:
                       ))}
 
                       {addingSection === 'projects' && (
-                        <div className="p-8 rounded-[2rem] bg-slate-950 border border-secondary/30 shadow-2xl space-y-6 animate-in fade-in zoom-in-95 duration-300">
-                          <div className="flex justify-between items-center">
+                        <div className="p-8 rounded-[2rem] bg-white border border-secondary/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] space-y-6 animate-in fade-in zoom-in-95 duration-300 overflow-hidden relative">
+                          <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
+                             <Wand2 className="w-24 h-24 text-secondary" />
+                          </div>
+                          <div className="flex justify-between items-center relative z-10">
                             <div className="space-y-1">
-                              <span className="text-[10px] font-black uppercase text-secondary tracking-[0.2em]">Select Strategic Project</span>
-                              <p className="text-[8px] text-muted-foreground font-medium uppercase tracking-widest">Tap to archive impact</p>
+                              <span className="text-[10px] font-black uppercase text-secondary tracking-[0.2em]">Tactical Lab</span>
+                              <p className="text-[8px] text-zinc-500 font-medium uppercase tracking-widest">Deploy strategic project</p>
                             </div>
-                            <button onClick={() => setAddingSection(null)} className="p-2 hover:bg-white/10 rounded-xl transition-all">
-                              <X size={14} className="text-white/40" />
+                            <button onClick={() => setAddingSection(null)} className="p-2 hover:bg-zinc-100 rounded-xl transition-all">
+                              <X size={14} className="text-zinc-400" />
                             </button>
                           </div>
                           <div className="space-y-2 max-h-[240px] overflow-y-auto custom-scrollbar pr-1">
@@ -1059,14 +1065,14 @@ RETURN JSON FORMAT ONLY:
                       ))}
 
                       {addingSection === 'education' && (
-                        <div className="p-8 rounded-[2rem] bg-slate-950 border border-primary/30 shadow-2xl space-y-6 animate-in fade-in zoom-in-95 duration-300">
-                          <div className="flex justify-between items-center">
+                        <div className="p-8 rounded-[2rem] bg-white border border-primary/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] space-y-6 animate-in fade-in zoom-in-95 duration-300 relative overflow-hidden">
+                          <div className="flex justify-between items-center relative z-10">
                             <div className="space-y-1">
-                              <span className="text-[10px] font-black uppercase text-primary tracking-[0.2em]">Academic Vault</span>
-                              <p className="text-[8px] text-muted-foreground font-medium uppercase tracking-widest">Select qualification</p>
+                              <span className="text-[10px] font-black uppercase text-primary tracking-[0.2em]">Foundation Archive</span>
+                              <p className="text-[8px] text-zinc-500 font-medium uppercase tracking-widest">Select qualification</p>
                             </div>
-                            <button onClick={() => setAddingSection(null)} className="p-2 hover:bg-white/10 rounded-xl transition-all">
-                              <X size={14} className="text-white/40" />
+                            <button onClick={() => setAddingSection(null)} className="p-2 hover:bg-zinc-100 rounded-xl transition-all">
+                              <X size={14} className="text-zinc-400" />
                             </button>
                           </div>
                           <div className="space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-1">
@@ -1109,14 +1115,14 @@ RETURN JSON FORMAT ONLY:
                       ))}
 
                       {addingSection === 'certifications' && (
-                        <div className="p-8 rounded-[2rem] bg-slate-950 border border-secondary/30 shadow-2xl space-y-6 animate-in fade-in zoom-in-95 duration-300">
-                          <div className="flex justify-between items-center">
+                        <div className="p-8 rounded-[2rem] bg-white border border-secondary/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] space-y-6 animate-in fade-in zoom-in-95 duration-300 relative overflow-hidden">
+                          <div className="flex justify-between items-center relative z-10">
                             <div className="space-y-1">
-                              <span className="text-[10px] font-black uppercase text-secondary tracking-[0.2em]">Credential Vault</span>
-                              <p className="text-[8px] text-muted-foreground font-medium uppercase tracking-widest">Inject certification</p>
+                              <span className="text-[10px] font-black uppercase text-secondary tracking-[0.2em]">Credentials Hub</span>
+                              <p className="text-[8px] text-zinc-500 font-medium uppercase tracking-widest">Inject certification</p>
                             </div>
-                            <button onClick={() => setAddingSection(null)} className="p-2 hover:bg-white/10 rounded-xl transition-all">
-                              <X size={14} className="text-white/40" />
+                            <button onClick={() => setAddingSection(null)} className="p-2 hover:bg-zinc-100 rounded-xl transition-all">
+                              <X size={14} className="text-zinc-400" />
                             </button>
                           </div>
                           <div className="space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-1">
