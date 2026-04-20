@@ -231,9 +231,9 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
                         </div>
                         <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5">
                             <Target size={14} className="text-accent-emerald opacity-40 shrink-0" />
-                            <div className="flex flex-col overflow-hidden">
+                            <div className="flex flex-col">
                                 <span className="text-[8px] font-black uppercase text-muted-foreground/50">Threshold</span>
-                                <span className="text-[10px] font-bold text-foreground truncate uppercase tracking-tighter" title={results?.requirements?.education?.[0]}>
+                                <span className="text-[10px] font-bold text-foreground uppercase tracking-tighter leading-tight" title={results?.requirements?.education?.[0]}>
                                     {results?.requirements?.education?.[0] || "Foundational"}
                                 </span>
                             </div>

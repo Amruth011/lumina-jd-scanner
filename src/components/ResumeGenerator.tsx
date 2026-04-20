@@ -21,6 +21,7 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
   const [profile, setProfile] = useState<UserProfileWithVault | null>(null);
   const [summaryLines, setSummaryLines] = useState(3);
   const [projectLines, setProjectLines] = useState(3);
+  const [experienceBullets, setExperienceBullets] = useState(3);
   const [showSettings, setShowSettings] = useState(false);
   const [vaultItems, setVaultItems] = useState<VaultItem[]>([]);
   const [fontFamily, setFontFamily] = useState<"Inter" | "Roboto" | "Merriweather" | "Arial">("Inter");
@@ -120,8 +121,9 @@ STRATEGY:
 3. STRUCTURE: Use standard resume headers (Professional Summary, Experience, Projects, Education).
 4. PROFESSIONAL SUMMARY: Strictly exactly ${summaryLines} high-impact lines.
 5. PROJECTS: Include exactly 2-3 significant projects. Each project description must be exactly ${projectLines} lines, quantified and strictly aligned with JD skills.
-6. LAYOUT: Strictly white background, black text, and minimal vertical spacing to fit 1 page.
-7. NO VAGUE CLAIMS: Replace phrases like 'improved performance' with 'increased throughput by 25%'.
+6. EXPERIENCE DETAIL: Strictly exactly ${experienceBullets} high-impact quantified bullets per job entry. If the user provided items from their vault, expand and quantify them to exactly ${experienceBullets} bullets.
+7. LAYOUT: Strictly white background, black text, and minimal vertical spacing to fit 1 page.
+8. NO VAGUE CLAIMS: Replace phrases like 'improved performance' with 'increased throughput by 25%'.
 
 RETURN JSON FORMAT ONLY:
 {
@@ -131,7 +133,7 @@ RETURN JSON FORMAT ONLY:
     {
       "heading": "Job Title @ Company Name",
       "content": "Short description of scope (optional)",
-      "bullets": ["Metric driven achievement bullet 1", "Bullet 2"]
+      "bullets": ["Metric driven achievement bullet 1", "Bullet 2", "Bullet up to ${experienceBullets}"]
     }
   ],
   "projects": [
@@ -555,18 +557,17 @@ RETURN JSON FORMAT ONLY:
                   <div className="grid grid-cols-2 gap-6 pt-2">
                     <div className="space-y-3">
                       <div className="flex items-center gap-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Typography (PDF)</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Experience Detail</label>
                         <div className="h-px flex-1 bg-white/5" />
                       </div>
                       <select 
-                        value={fontFamily} 
-                        onChange={(e) => setFontFamily(e.target.value as "Inter" | "Roboto" | "Merriweather" | "Arial")}
+                        value={experienceBullets} 
+                        onChange={(e) => setExperienceBullets(Number(e.target.value))}
                         className="w-full bg-background/60 border border-white/10 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 ring-primary/40 transition-all font-bold"
                       >
-                        <option value="Inter">Modern Sans (Inter)</option>
-                        <option value="Roboto">Classic Sans (Roboto)</option>
-                        <option value="Merriweather">Premium Serif (Merriweather)</option>
-                        <option value="Arial">Standard (Arial)</option>
+                        <option value={3}>3 Bullets (Core)</option>
+                        <option value={4}>4 Bullets (Advanced)</option>
+                        <option value={5}>5 Bullets (Strategic Depth)</option>
                       </select>
                     </div>
                     <div className="space-y-3">
@@ -582,6 +583,25 @@ RETURN JSON FORMAT ONLY:
                         <option value="Modern">Silicon Valley Modern</option>
                         <option value="Professional">Executive Classic</option>
                         <option value="Aggressive">Growth Ninja (Impact)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-6 pt-2">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Typography (PDF)</label>
+                        <div className="h-px flex-1 bg-white/5" />
+                      </div>
+                      <select 
+                        value={fontFamily} 
+                        onChange={(e) => setFontFamily(e.target.value as "Inter" | "Roboto" | "Merriweather" | "Arial")}
+                        className="w-full bg-background/60 border border-white/10 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 ring-primary/40 transition-all font-bold"
+                      >
+                        <option value="Inter">Modern Sans (Inter)</option>
+                        <option value="Roboto">Classic Sans (Roboto)</option>
+                        <option value="Merriweather">Premium Serif (Merriweather)</option>
+                        <option value="Arial">Standard (Arial)</option>
                       </select>
                     </div>
                   </div>
