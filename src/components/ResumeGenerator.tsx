@@ -590,14 +590,17 @@ RETURN JSON FORMAT ONLY:
           <AnimatePresence>
             {showArchive && (
               <motion.div 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mt-6 p-6 rounded-[2rem] bg-black/40 border border-white/10 space-y-4"
+                initial={{ opacity: 0, height: 0, y: 20 }}
+                animate={{ opacity: 1, height: "auto", y: 0 }}
+                exit={{ opacity: 0, height: 0, y: 20 }}
+                className="mt-6 p-8 rounded-[2.5rem] bg-slate-950/95 border border-white/20 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] backdrop-blur-3xl space-y-6"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Blueprint Archive</h4>
-                  {isLoadingArchive && <Loader2 className="w-3 h-3 animate-spin text-primary" />}
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-primary">Blueprint Archive</h4>
+                    <p className="text-[9px] text-muted-foreground font-medium">Manage your historical architectural drafts</p>
+                  </div>
+                  {isLoadingArchive && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
                 </div>
                 
                 {savedResumes.length === 0 ? (
@@ -935,11 +938,14 @@ RETURN JSON FORMAT ONLY:
                       ))}
 
                       {addingSection === 'experience' && (
-                        <div className="p-4 rounded-xl bg-slate-900/50 border border-primary/20 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                          <div className="flex justify-between items-center px-1">
-                            <span className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Select from Profile</span>
-                            <button onClick={() => setAddingSection(null)} className="p-1 hover:bg-white/10 rounded-lg transition-all">
-                              <X size={12} className="text-muted-foreground" />
+                        <div className="p-8 rounded-[2rem] bg-slate-950 border border-primary/30 shadow-2xl space-y-6 animate-in fade-in zoom-in-95 duration-300">
+                          <div className="flex justify-between items-center">
+                            <div className="space-y-1">
+                              <span className="text-[10px] font-black uppercase text-primary tracking-[0.2em]">Select from Profile</span>
+                              <p className="text-[8px] text-muted-foreground font-medium uppercase tracking-widest">Tap to inject into candidacy</p>
+                            </div>
+                            <button onClick={() => setAddingSection(null)} className="p-2 hover:bg-white/10 rounded-xl transition-all">
+                              <X size={14} className="text-white/40" />
                             </button>
                           </div>
                           <div className="space-y-2 max-h-[240px] overflow-y-auto custom-scrollbar pr-1">
@@ -1003,11 +1009,14 @@ RETURN JSON FORMAT ONLY:
                       ))}
 
                       {addingSection === 'projects' && (
-                        <div className="p-4 rounded-xl bg-slate-900/50 border border-secondary/20 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                          <div className="flex justify-between items-center px-1">
-                            <span className="text-[9px] font-black uppercase text-secondary/60 tracking-widest">Select Project from Vault</span>
-                            <button onClick={() => setAddingSection(null)} className="p-1 hover:bg-white/10 rounded-lg transition-all">
-                              <X size={12} className="text-muted-foreground" />
+                        <div className="p-8 rounded-[2rem] bg-slate-950 border border-secondary/30 shadow-2xl space-y-6 animate-in fade-in zoom-in-95 duration-300">
+                          <div className="flex justify-between items-center">
+                            <div className="space-y-1">
+                              <span className="text-[10px] font-black uppercase text-secondary tracking-[0.2em]">Select Strategic Project</span>
+                              <p className="text-[8px] text-muted-foreground font-medium uppercase tracking-widest">Tap to archive impact</p>
+                            </div>
+                            <button onClick={() => setAddingSection(null)} className="p-2 hover:bg-white/10 rounded-xl transition-all">
+                              <X size={14} className="text-white/40" />
                             </button>
                           </div>
                           <div className="space-y-2 max-h-[240px] overflow-y-auto custom-scrollbar pr-1">
@@ -1050,11 +1059,14 @@ RETURN JSON FORMAT ONLY:
                       ))}
 
                       {addingSection === 'education' && (
-                        <div className="p-4 rounded-xl bg-slate-900/50 border border-primary/20 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                          <div className="flex justify-between items-center px-1">
-                            <span className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Select Education from Vault</span>
-                            <button onClick={() => setAddingSection(null)} className="p-1 hover:bg-white/10 rounded-lg transition-all">
-                              <X size={12} className="text-muted-foreground" />
+                        <div className="p-8 rounded-[2rem] bg-slate-950 border border-primary/30 shadow-2xl space-y-6 animate-in fade-in zoom-in-95 duration-300">
+                          <div className="flex justify-between items-center">
+                            <div className="space-y-1">
+                              <span className="text-[10px] font-black uppercase text-primary tracking-[0.2em]">Academic Vault</span>
+                              <p className="text-[8px] text-muted-foreground font-medium uppercase tracking-widest">Select qualification</p>
+                            </div>
+                            <button onClick={() => setAddingSection(null)} className="p-2 hover:bg-white/10 rounded-xl transition-all">
+                              <X size={14} className="text-white/40" />
                             </button>
                           </div>
                           <div className="space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-1">
@@ -1097,11 +1109,14 @@ RETURN JSON FORMAT ONLY:
                       ))}
 
                       {addingSection === 'certifications' && (
-                        <div className="p-4 rounded-xl bg-slate-900/50 border border-secondary/20 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                          <div className="flex justify-between items-center px-1">
-                            <span className="text-[9px] font-black uppercase text-secondary/60 tracking-widest">Select Certificate from Vault</span>
-                            <button onClick={() => setAddingSection(null)} className="p-1 hover:bg-white/10 rounded-lg transition-all">
-                              <X size={12} className="text-muted-foreground" />
+                        <div className="p-8 rounded-[2rem] bg-slate-950 border border-secondary/30 shadow-2xl space-y-6 animate-in fade-in zoom-in-95 duration-300">
+                          <div className="flex justify-between items-center">
+                            <div className="space-y-1">
+                              <span className="text-[10px] font-black uppercase text-secondary tracking-[0.2em]">Credential Vault</span>
+                              <p className="text-[8px] text-muted-foreground font-medium uppercase tracking-widest">Inject certification</p>
+                            </div>
+                            <button onClick={() => setAddingSection(null)} className="p-2 hover:bg-white/10 rounded-xl transition-all">
+                              <X size={14} className="text-white/40" />
                             </button>
                           </div>
                           <div className="space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-1">
