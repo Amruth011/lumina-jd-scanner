@@ -43,6 +43,13 @@ export const useDecodeJD = () => {
       if (!data) throw new Error("AI Engine returned empty data");
       if (data.error) throw new Error(data.error);
 
+      // ── JD SIGNAL VALIDATION ──
+      if (data.valid === false) {
+        toast.error(data.message || "This doesn't appear to be a job description.");
+        setIsScanning(false);
+        return;
+      }
+
       // Explicit schema validation
       if (!data.grade || !data.skills) {
         console.error("Malformed AI Response:", data);

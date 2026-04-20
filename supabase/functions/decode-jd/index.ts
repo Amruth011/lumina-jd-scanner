@@ -34,8 +34,17 @@ SKILL CATEGORIZATION RULES:
 4. DEDUPLICATE:
    - Do not return both "GenAI" and "Generative AI". Choose the most professional one.
 
-STRUCTURE YOUR RESPONSE EXACTLY AS THIS JSON:
+STRUCTURE YOUR RESPONSE EXACTLY AS THIS JSON. 
+If the input is NOT a genuine Job Description (e.g., random chat, generic text, or unrelated notes), RETURN ONLY THIS JSON:
 {
+  "valid": false,
+  "error": "NOT_A_JD",
+  "message": "This doesn't appear to be a job description. Please paste a real JD to decode."
+}
+
+If valid, proceed with:
+{
+  "valid": true,
   "title": "Exact Role Name",
   "skills": [{"category": "string", "skill": "string", "importance": 0-100}],
   "requirements": { "education": ["string"], "experience": "string", "soft_skills": ["string"], "agreements": ["string"] },
@@ -128,7 +137,7 @@ RETURN ONLY RAW JSON. NO TEXT SURROUNDING IT.`;
         messages: [
           { 
             role: "system", 
-            content: "You are Lumina Intelligence v2. Decode JDs into strict JSON. Return ONLY raw JSON. No markdown code blocks." 
+            content: "You are Lumina Intelligence v2. Determine if the input is a genuine job description. A valid JD must contain at least 2 of: job title, skills, responsibilities, company context, or experience requirements. If invalid, return { \"valid\": false, \"error\": \"NOT_A_JD\", \"message\": \"This doesn't appear to be a job description. Please paste a real JD to decode.\" }. If valid, include { \"valid\": true } and decode details. Return ONLY raw JSON." 
           },
           { role: "user", content: prompt }
         ],

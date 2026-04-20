@@ -162,6 +162,7 @@ export interface BonusPulse {
 }
 
 export interface DecodeResult {
+  valid?: boolean;
   title: string;
   skills: Skill[];
   requirements: JdRequirements;
