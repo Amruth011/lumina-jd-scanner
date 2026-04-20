@@ -84,20 +84,17 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
   const loadDraft = async () => {
     if (!user || !jdTitle) return;
     try {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("generated_resumes")
-        .select("*")
+        .select("id")
         .eq("user_id", user.id)
         .eq("job_title", jdTitle)
         .maybeSingle();
 
       if (data) {
         setDraftId(data.id);
-        setResume(data.content as GeneratedResume);
-        setEditableResume(data.content as GeneratedResume);
-        setEditableHeader(data.header_data as typeof editableHeader);
-        setIsOpen(true);
-        toast.success("Resumed from your previous draft!");
+        // Draft content is no longer loaded automatically to keep the generator clean.
+        // Users can explicitly load from the "Saved Blueprints" archive if needed.
       }
     } catch (err) {
       console.error("Load draft error:", err);
