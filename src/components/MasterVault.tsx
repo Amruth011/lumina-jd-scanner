@@ -173,6 +173,7 @@ export const MasterVault = () => {
 
     setIsSyncing(true);
     const toastId = toast.loading("Smart Sync: Parsing your resume locally...");
+    let resultText = "";
 
     try {
       let rawText = "";
@@ -457,12 +458,29 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
         </div>
       </div>
 
+      {/* ── READINESS PROGRESS BAR (RELOCATED) ── */}
+      <div className="space-y-6 pt-4">
+        <div className="flex items-center gap-4">
+          <div className="flex-1 h-3 w-full max-w-lg bg-white/5 rounded-full overflow-hidden border border-white/5 shadow-inner">
+            <motion.div 
+              initial={{ width: 0 }}
+              animate={{ width: `${calculateCompletion(profile, items)}%` }}
+              className="h-full bg-gradient-to-r from-primary via-primary/80 to-primary shadow-[0_0_20px_rgba(59,130,246,0.5)]"
+            />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-primary">{calculateCompletion(profile, items)}% Integrity</span>
+            <span className="text-[8px] font-bold text-muted-foreground uppercase">Readiness Signal</span>
+          </div>
+        </div>
+      </div>
+
       {/* ── SMART SYNC HERO CARD ── */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="relative group overflow-hidden rounded-[3rem] p-[1px] bg-gradient-to-br from-primary/40 via-white/5 to-secondary/40 shadow-2xl transition-all hover:scale-[1.01]"
+        className="relative group overflow-hidden rounded-[3rem] p-[1px] bg-gradient-to-br from-primary/40 via-white/5 to-secondary/40 shadow-2xl transition-all"
       >
         <div className="relative bg-slate-950/90 rounded-[3rem] p-8 lg:p-12 overflow-hidden flex flex-col lg:flex-row items-center gap-10">
           <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-1000">
@@ -526,17 +544,23 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
         </div>
       </motion.div>
 
-      <div className="space-y-8">
-        <div className="flex items-center gap-4">
-          <div className="flex-1 h-1.5 w-full max-w-md bg-white/5 rounded-full overflow-hidden border border-white/5">
-            <motion.div 
-              initial={{ width: 0 }}
-              animate={{ width: `${calculateCompletion(profile, items)}%` }}
-              className="h-full bg-primary"
-            />
-          </div>
-          <span className="text-[10px] font-black uppercase tracking-widest text-primary font-mono">{calculateCompletion(profile, items)}% READINESS SIGNAL</span>
+      {/* ── MANUAL ENTRY BRIDGING SECTION ── */}
+      <div className="relative py-12 flex flex-col items-center">
+        <div className="absolute inset-0 flex items-center justify-center px-4">
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
         </div>
+        <div className="relative px-8 bg-background flex flex-col items-center gap-3 text-center">
+           <div className="flex items-center gap-4">
+              <div className="w-8 h-px bg-primary/30" />
+              <span className="text-[11px] font-black uppercase tracking-[0.5em] text-primary/60">OR</span>
+              <div className="w-8 h-px bg-primary/30" />
+           </div>
+           <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground transition-colors group-hover:text-primary">
+              Refine Your Tactical Profile Manually
+           </p>
+        </div>
+      </div>
+
 
         <div className="grid grid-cols-1 gap-12 pt-8">
 
@@ -917,7 +941,6 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
           </div>
         )}
       </AnimatePresence>
-      </div>
     </div>
   );
 };
