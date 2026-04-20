@@ -1,7 +1,26 @@
+User-agent: *
+Allow: /
+
+# Specifically allow AI and Search Bots for AEO/SEO
 User-agent: Googlebot
 Allow: /
 
+User-agent: Google-Extended
+Allow: /
+
 User-agent: Bingbot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Apify
 Allow: /
 
 User-agent: Twitterbot
@@ -10,5 +29,5 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
-User-agent: *
-Allow: /
+# Sitemaps (if you have them)
+# Sitemap: https://yourdomain.com/sitemap.xml
