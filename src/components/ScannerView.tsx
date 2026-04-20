@@ -175,7 +175,10 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
                     >
                       <LuminaUltraDashboard results={results} resumeResults={gapResult} jdText={jdText} />
                       
-                      <JdActionCta onCheckResume={() => handleTabSwitch("analysis")} />
+                      <JdActionCta 
+                        onCheckResume={() => handleTabSwitch("analysis")} 
+                        onGenerateResume={() => handleTabSwitch("generator")}
+                      />
 
                     </motion.div>
                   )}
