@@ -13,6 +13,24 @@ interface ResumeGeneratorProps {
   companyName?: string;
 }
 
+interface ResumeHeader {
+  fullName: string;
+  email: string;
+  phone: string;
+  location: string;
+  linkedin: string;
+  portfolio: string;
+  github: string;
+}
+
+interface ArchiveRecord {
+  id: string;
+  job_title: string;
+  updated_at: string;
+  content: GeneratedResume;
+  header_data: ResumeHeader;
+}
+
 export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGeneratorProps) => {
   const { user } = useAuth();
   const [isGenerating, setIsGenerating] = useState(false);
@@ -28,7 +46,7 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
   const [draftId, setDraftId] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editableResume, setEditableResume] = useState<GeneratedResume | null>(null);
-  const [editableHeader, setEditableHeader] = useState({
+  const [editableHeader, setEditableHeader] = useState<ResumeHeader>({
     fullName: "",
     email: "",
     phone: "",
@@ -39,6 +57,9 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
   });
   const [tone, setTone] = useState<"Professional" | "Modern" | "Aggressive">("Modern");
   const [addingSection, setAddingSection] = useState<'experience' | 'projects' | 'education' | 'certifications' | null>(null);
+  const [savedResumes, setSavedResumes] = useState<ArchiveRecord[]>([]);
+  const [showArchive, setShowArchive] = useState(false);
+  const [isLoadingArchive, setIsLoadingArchive] = useState(false);
 
   const formatUrl = (url: string) => {
     if (!url) return "";
@@ -55,6 +76,7 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
     if (user) {
       loadVault();
       loadDraft();
+      fetchSavedResumes();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, jdTitle]);
@@ -79,6 +101,50 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
       }
     } catch (err) {
       console.error("Load draft error:", err);
+    }
+  };
+
+  const fetchSavedResumes = async () => {
+    if (!user) return;
+    setIsLoadingArchive(true);
+    try {
+      const { data, error } = await supabase
+        .from("generated_resumes")
+        .select("id, job_title, status, updated_at, content, header_data")
+        .eq("user_id", user.id)
+        .order("updated_at", { ascending: false });
+
+      if (error) throw error;
+      setSavedResumes(data || []);
+    } catch (err) {
+      console.error("Fetch archive error:", err);
+    } finally {
+      setIsLoadingArchive(false);
+    }
+  };
+
+  const handleLoadArchive = (record: ArchiveRecord) => {
+    setDraftId(record.id);
+    setResume(record.content);
+    setEditableResume(record.content);
+    setEditableHeader(record.header_data);
+    setIsOpen(true);
+    setShowArchive(false);
+    toast.success(`Loaded blueprint for ${record.job_title}`);
+  };
+
+  const handleDeleteArchive = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      const { error } = await supabase.from("generated_resumes").delete().eq("id", id);
+      if (error) throw error;
+      setSavedResumes(prev => prev.filter(r => r.id !== id));
+      if (draftId === id) {
+        setDraftId(null);
+      }
+      toast.success("Blueprint purged from archive.");
+    } catch (err) {
+      toast.error("Failed to delete draft.");
     }
   };
 
@@ -329,6 +395,7 @@ RETURN JSON FORMAT ONLY:
         setDraftId(data[0].id);
       }
       
+      fetchSavedResumes(); // Refresh archive list
       toast.success("Resume draft saved successfully!");
     } catch (err: unknown) {
       console.error("Unexpected save error:", err);
@@ -507,7 +574,72 @@ RETURN JSON FORMAT ONLY:
                 {feature}
               </div>
             ))}
+            <button 
+              onClick={() => setShowArchive(!showArchive)}
+              className={`flex items-center gap-2.5 px-6 py-2 rounded-full border text-xs font-black tracking-widest uppercase transition-all ${
+                showArchive 
+                  ? "bg-primary text-primary-foreground border-primary" 
+                  : "bg-white/5 border-white/10 text-primary hover:bg-white/10 shadow-xl"
+              }`}
+            >
+              <ArchiveBox className="w-4 h-4" />
+              {showArchive ? "Hide Archive" : `Saved Blueprints (${savedResumes.length})`}
+            </button>
           </div>
+
+          <AnimatePresence>
+            {showArchive && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mt-6 p-6 rounded-[2rem] bg-black/40 border border-white/10 space-y-4"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Blueprint Archive</h4>
+                  {isLoadingArchive && <Loader2 className="w-3 h-3 animate-spin text-primary" />}
+                </div>
+                
+                {savedResumes.length === 0 ? (
+                  <div className="py-10 text-center space-y-3">
+                    <AlertCircle className="w-8 h-8 text-white/10 mx-auto" />
+                    <p className="text-xs text-muted-foreground font-serif italic">No architectural blueprints found in history.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
+                    {savedResumes.map((record) => (
+                      <div 
+                        key={record.id}
+                        onClick={() => handleLoadArchive(record)}
+                        className="group p-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-primary/40 hover:bg-white/[0.05] transition-all cursor-pointer relative"
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="space-y-1">
+                            <h5 className="text-[11px] font-bold text-foreground truncate max-w-[180px]">{record.job_title}</h5>
+                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest">
+                              {new Date(record.updated_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <button 
+                            onClick={(e) => handleDeleteArchive(record.id, e)}
+                            className="p-1.5 rounded-lg text-white/20 hover:text-red-400 hover:bg-red-400/10 transition-all opacity-0 group-hover:opacity-100"
+                          >
+                            <Minus size={12} />
+                          </button>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`w-1.5 h-1.5 rounded-full ${record.id === draftId ? 'bg-accent-emerald animate-pulse' : 'bg-white/20'}`} />
+                          <span className="text-[8px] font-black uppercase tracking-tighter opacity-40">
+                            {record.id === draftId ? 'Active' : 'Archived'}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div className="mt-8 p-6 rounded-[2rem] bg-white/[0.03] border border-white/10 space-y-4 relative group">
             <div className="absolute -top-3 left-6 px-3 py-1 rounded-full bg-primary text-background text-[8px] font-black uppercase tracking-widest shadow-xl opacity-0 group-hover:opacity-100 transition-opacity">
