@@ -7,7 +7,7 @@ const steps = [
     accentClass: "text-accent-blue",
     number: "01",
     title: "Paste Your JD",
-    body: "Drop in any job description. Gemini AI instantly decodes every requirement, categorizing skills by importance."
+    body: "Drop in any job description. Llama-3.3 Intelligence instantly decodes every requirement, categorizing skills by importance."
   },
   {
     icon: Upload,
