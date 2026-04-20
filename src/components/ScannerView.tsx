@@ -93,11 +93,23 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
   };
 
   const handleDecode = async () => { 
+    if (!user) {
+      toast.error("Authentication required to decode JD intelligence.", {
+        description: "Please sign in to access our total career intelligence engine.",
+      });
+      navigate("/auth");
+      return;
+    }
     console.log("Decoding started for Lumina 2.0...");
     await decodeJD(jdText); 
   };
   
   const handleForceRedecode = async () => { 
+    if (!user) {
+      toast.error("Authentication required for Total Intelligence reboots.");
+      navigate("/auth");
+      return;
+    }
     console.log("Force rebooting Total Intelligence engine...");
     await decodeJD(jdText, true); 
   };
