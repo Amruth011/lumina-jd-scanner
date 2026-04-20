@@ -171,13 +171,11 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
                       initial={{ opacity: 0, y: 40 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.2, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                      className="space-y-32"
+                      className="space-y-4"
                     >
                       <LuminaUltraDashboard results={results} resumeResults={gapResult} jdText={jdText} />
                       
-                      <div className="py-20">
-                         <JdActionCta onCheckResume={() => handleTabSwitch("analysis")} />
-                      </div>
+                      <JdActionCta onCheckResume={() => handleTabSwitch("analysis")} />
 
                     </motion.div>
                   )}

@@ -47,12 +47,12 @@ const Index = () => {
       </section>
 
       {/* ── SECTION 2 — SCANNER (The Total Tactical Hub) ── */}
-      <section id="scanner" className="relative py-12 bg-background/30 backdrop-blur-sm min-h-screen">
+      <section id="scanner" className="relative py-4 bg-background/30 backdrop-blur-sm min-h-fit">
         <ScannerView activeTab={activeTab} onTabChange={setActiveTab} />
       </section>
 
       {/* Footer */}
-      <footer className="bg-background border-t border-border/40 py-12 px-6">
+      <footer className="bg-background border-t border-border/40 py-4 px-6">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-2">
             <Sparkles size={20} className="text-accent-blue" />

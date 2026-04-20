@@ -46,7 +46,7 @@ STRUCTURE YOUR RESPONSE EXACTLY AS THIS JSON:
     "letter": "S|A|B|C|D|F",
     "summary": "1-sentence executive verdict",
     "breakdown": { "clarity": 0-20, "realistic": 0-15, "compensation": 0-15, "red_flags": 0-15, "benefits": 0-10, "growth": 0-10, "inclusivity": 0-10, "readability": 0-5 },
-    "plain_english_summary": ["5 concise summary points about the role"]
+    "plain_english_summary": ["string"] // PROVIDE EXACTLY 5 CONCISE SUMMARY POINTS. NO MORE. NO LESS.
   },
   
   "red_flags": [{"phrase": "text", "intensity": 0-100, "note": "why"}],
@@ -92,14 +92,20 @@ STRUCTURE YOUR RESPONSE EXACTLY AS THIS JSON:
   },
   
   "interview_kit": { 
-    "questions": [{"question": "text", "type": "technical|behavioral|situational", "tip": "tip"}], // PROVIDE EXACTLY 10 DIVERSE QUESTIONS
-    "reverse_questions": ["questions to ask them"] // PROVIDE EXACTLY 5 STRATEGIC QUESTIONS
+    "questions": [{"question": "text", "type": "technical|behavioral|situational", "tip": "tip"}], // AT LEAST 10 DIVERSE QUESTIONS
+    "reverse_questions": ["string"] // EXACTLY 5 STRATEGIC QUESTIONS
   },
-  "resume_help": { "keywords": ["string"], "bullets": ["string"] },
+  "resume_help": { 
+    "keywords": ["string"], 
+    "bullets": ["Bullet 1", "Bullet 2", "Bullet 3", "Bullet 4", "Bullet 5"] // YOU MUST PROVIDE EXACTLY 5 BULLET POINTS. NO MORE, NO LESS.
+  },
   "jd_rewrite": { "highlights": [{"text": "sentence", "color": "skill|leverage|caution"}] }
 }
 
 RETURN ONLY RAW JSON. NO TEXT SURROUNDING IT.`;
+
+
+
 
 
     // Use the Groq Key from our stable pattern

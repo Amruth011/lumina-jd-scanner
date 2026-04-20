@@ -68,7 +68,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
   };
 
   return (
-    <div className="space-y-12 pb-24">
+    <div className="space-y-6">
       {/* ── HERO INTELLIGENCE (Priority Metrics) ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Total Score & Grade */}
@@ -212,24 +212,34 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
                         </div>
                     </div>
 
-                    <div className="w-full grid grid-cols-2 gap-3 mt-8 pt-6 border-t border-black/5 relative z-10">
+                    <div className="w-full grid grid-cols-2 md:grid-cols-3 gap-3 mt-8 pt-6 border-t border-black/5 relative z-10">
                         <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5">
                             <Target size={14} className="text-accent-blue opacity-40 shrink-0" />
-                            <div className="flex flex-col">
+                            <div className="flex flex-col overflow-hidden">
                                 <span className="text-[8px] font-black uppercase text-muted-foreground/50">Base Ops</span>
-                                <span className="text-[10px] font-bold text-foreground">
+                                <span className="text-[10px] font-bold text-foreground truncate">
                                     {results?.title?.match(/Bengaluru|Bangalore|Hyderabad|Chennai|Pune|Mumbai|Delhi|London|Remote/i)?.[0] || "Global Tech Hub"}
                                 </span>
                             </div>
                         </div>
                         <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5">
-                            <Users size={14} className="text-accent-emerald opacity-40 shrink-0" />
+                            <Activity size={14} className="text-accent-emerald opacity-40 shrink-0" />
                             <div className="flex flex-col">
                                 <span className="text-[8px] font-black uppercase text-muted-foreground/50">Intensity</span>
                                 <span className="text-[10px] font-bold text-foreground uppercase tracking-tighter">High Impact</span>
                             </div>
                         </div>
+                        <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5">
+                            <Target size={14} className="text-accent-emerald opacity-40 shrink-0" />
+                            <div className="flex flex-col overflow-hidden">
+                                <span className="text-[8px] font-black uppercase text-muted-foreground/50">Threshold</span>
+                                <span className="text-[10px] font-bold text-foreground truncate uppercase tracking-tighter" title={results?.requirements?.education?.[0]}>
+                                    {results?.requirements?.education?.[0] || "Foundational"}
+                                </span>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
 
                 {/* Red Flag Decoder */}
@@ -385,7 +395,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
       </div>
 
       {/* ── PHASE 3: STRATEGIC DIFFERENTIATORS ── */}
-      <div className="space-y-12">
+      <div className="space-y-6">
         <PhaseLabel number="03" title="Strategic Intelligence" sub="Elite Differentiation Suite" />
         
         {/* Row 1: Bias, Culture & Bullets */}
