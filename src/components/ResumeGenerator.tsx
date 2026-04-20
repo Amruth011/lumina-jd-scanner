@@ -144,14 +144,11 @@ RETURN JSON FORMAT ONLY:
   "certifications": ["Cert Name"]
 }`;
 
-      // Migrated to Groq API exactly as requested
-      const groqKey = "gsk_" + "LDqt9GTSLWBL" + "oQk4lAocW" + "Gdyb3FYz" + "53W8pnGGJ" + "JSUcKG6" + "srdOJvA";
       let resultText = "";
 
-      const apiResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      const apiResponse = await fetch("/api/analyze", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${groqKey}`,
           "Content-Type": "application/json"
         },
         body: JSON.stringify({

@@ -28,8 +28,12 @@ serve(async (req) => {
       }
     `;
 
-    // Final Shield: True Resilience Groq Migration
-    const groqKey = "gsk_" + "LDqt9GTSLWBL" + "oQk4lAocW" + "Gdyb3FYz" + "53W8pnGGJ" + "JSUcKG6" + "srdOJvA";
+    // Use the Groq Key from Environment Variables
+    const groqKey = Deno.env.get("GROQ_API_KEY");
+    if (!groqKey) {
+      console.error("GROQ_API_KEY is not set in Supabase secrets.");
+      throw new Error("Server configuration error: Missing API Key");
+    }
     
     console.log(`True Resilience: Attempting Bullet Optimization with Groq (Llama-3.3-70b-versatile)...`);
 

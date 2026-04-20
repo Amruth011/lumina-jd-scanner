@@ -217,27 +217,19 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
   ]
 }`;
 
-      // Migrated to Groq API exactly as requested
-      const groqKey = "gsk_" + "LDqt9GTSLWBL" + "oQk4lAocW" + "Gdyb3FYz" + "53W8pnGGJ" + "JSUcKG6" + "srdOJvA";
-      let resultText = "";
-
       try {
-        console.log(`Smart Sync: Attempting with Groq llama-3.3-70b-versatile...`);
-        const apiResponse = await fetch(
-          `https://api.groq.com/openai/v1/chat/completions`,
-          {
-            method: "POST",
-            headers: { 
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${groqKey}`
-            },
-            body: JSON.stringify({
-              model: "llama-3.3-70b-versatile",
-              messages: [{ role: "user", content: syncPrompt + "\n\nIMPORTANT: Return ONLY valid JSON." }],
-              response_format: { type: "json_object" }
-            }),
-          }
-        );
+        console.log(`Smart Sync: Attempting via secure proxy...`);
+        const apiResponse = await fetch("/api/analyze", {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "llama-3.3-70b-versatile",
+            messages: [{ role: "user", content: syncPrompt + "\n\nIMPORTANT: Return ONLY valid JSON." }],
+            response_format: { type: "json_object" }
+          }),
+        });
 
         if (!apiResponse.ok) {
           const errorData = await apiResponse.json().catch(() => ({}));

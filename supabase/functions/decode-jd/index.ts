@@ -108,8 +108,12 @@ RETURN ONLY RAW JSON. NO TEXT SURROUNDING IT.`;
 
 
 
-    // Use the Groq Key from our stable pattern
-    const groqKey = "gsk_" + "LDqt9GTSLWBL" + "oQk4lAocW" + "Gdyb3FYz" + "53W8pnGGJ" + "JSUcKG6" + "srdOJvA";
+    // Use the Groq Key from Environment Variables
+    const groqKey = Deno.env.get("GROQ_API_KEY");
+    if (!groqKey) {
+      console.error("GROQ_API_KEY is not set in Supabase secrets.");
+      throw new Error("Server configuration error: Missing API Key");
+    }
     
     console.log(`Decoding Intelligence: Starting Groq Scan (Llama-3.3-70b-versatile)...`);
 
