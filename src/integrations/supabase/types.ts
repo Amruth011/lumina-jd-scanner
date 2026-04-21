@@ -48,6 +48,12 @@ export type Database = {
           email: string | null
           id: string
           phone: string | null
+          full_name: string | null
+          location: string | null
+          linkedin_url: string | null
+          github_url: string | null
+          website_url: string | null
+          summary_master: string | null
         }
         Insert: {
           created_at?: string
@@ -55,6 +61,12 @@ export type Database = {
           email?: string | null
           id: string
           phone?: string | null
+          full_name?: string | null
+          location?: string | null
+          linkedin_url?: string | null
+          github_url?: string | null
+          website_url?: string | null
+          summary_master?: string | null
         }
         Update: {
           created_at?: string
@@ -62,6 +74,12 @@ export type Database = {
           email?: string | null
           id?: string
           phone?: string | null
+          full_name?: string | null
+          location?: string | null
+          linkedin_url?: string | null
+          github_url?: string | null
+          website_url?: string | null
+          summary_master?: string | null
         }
         Relationships: []
       }
@@ -98,6 +116,84 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      master_vault: {
+        Row: {
+          id: string
+          user_id: string
+          type: string
+          title: string
+          organization: string | null
+          period: string | null
+          description: string | null
+          bullets: Json | null
+          skills: Json | null
+          is_quantified: boolean | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          type: string
+          title: string
+          organization?: string | null
+          period?: string | null
+          description?: string | null
+          bullets?: Json | null
+          skills?: Json | null
+          is_quantified?: boolean | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          type?: string
+          title?: string
+          organization?: string | null
+          period?: string | null
+          description?: string | null
+          bullets?: Json | null
+          skills?: Json | null
+          is_quantified?: boolean | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      generated_resumes: {
+        Row: {
+          id: string
+          user_id: string
+          job_title: string
+          content: Json
+          header_data: Json | null
+          status: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          job_title: string
+          content: Json
+          header_data?: Json | null
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          job_title?: string
+          content?: Json
+          header_data?: Json | null
+          status?: string
+          created_at?: string
+          updated_at?: string
         }
         Relationships: []
       }

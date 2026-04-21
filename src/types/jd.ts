@@ -177,7 +177,7 @@ export interface DecodeResult {
   deep_dive: CompanyDeepDive;
   bonus_pulse: BonusPulse;
   interview_kit: {
-    questions: { question: string; type: string; tip?: string }[];
+    questions: InterviewQuestion[];
     reverse_questions: string[];
   };
   resume_help: {
@@ -253,6 +253,31 @@ export interface UserProfileWithVault {
   website_url?: string;
   summary_master?: string;
   created_at?: string;
+}
+
+// ── NEW: Resume Analysis types ──
+export interface ResumeDeduction {
+  reason: string;
+  percent: number;
+  fix_snippet?: string;
+}
+
+export type Deduction = ResumeDeduction; // Alias for compatibility
+
+export interface ResumeGapResult {
+  overall_match: number;
+  summary: string;
+  deductions: ResumeDeduction[];
+  skill_matches?: SkillMatch[];
+  tailored_resume_snippets?: string[];
+  actionable_directives?: { action: string; description: string }[];
+}
+
+export interface InterviewQuestion {
+  question: string;
+  type: "technical" | "behavioral" | "situational";
+  tip: string;
+  target_answer?: string;
 }
 
 // ── NEW: Tailoring types ──

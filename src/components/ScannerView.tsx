@@ -16,6 +16,7 @@ import { ResumeEnhancer } from "@/components/ResumeEnhancer";
 import { MasterVault } from "@/components/MasterVault";
 import { ResumeGenerator } from "@/components/ResumeGenerator";
 import { scavengeSkills } from "@/lib/skillScavenger";
+import { HowItWorksSection } from "@/components/HowItWorksSection";
 import type { DecodeResult, ResumeGapResult } from "@/types/jd";
 
 const ApplicationTracker = lazy(() => import("@/components/ApplicationTracker").then(module => ({ default: module.ApplicationTracker })));
@@ -54,7 +55,7 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
     setSavingJd(true);
     try {
       const { data, error } = await supabase.from("jd_vault").insert({
-        user_id: user.id, title: results.title, raw_text: jdText, skills_json: results.skills,
+        user_id: user.id, title: results.title, raw_text: jdText, skills_json: results.skills as unknown as Record<string, unknown>[],
       }).select("id").single();
       if (error) throw error;
       setSavedJdId(data.id);

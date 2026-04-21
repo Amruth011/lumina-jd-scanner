@@ -45,7 +45,9 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
       compensation: 0,
       red_flags: 0,
       benefits: 0,
-      growth: 0
+      growth: 0,
+      inclusivity: 0,
+      readability: 0
     }, 
     plain_english_summary: [] 
   };

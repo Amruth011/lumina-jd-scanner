@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, Download, Sparkles, Copy, X, Wand2, FileText, CheckCircle2, AlertCircle, ArrowRight, Github, Linkedin, Mail, MapPin, Plus, Minus } from "lucide-react";
+import { Loader2, Download, Sparkles, Copy, X, Wand2, FileText, CheckCircle2, AlertCircle, ArrowRight, Github, Linkedin, Mail, MapPin, Plus, Minus, Archive } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -112,7 +112,7 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
         .order("updated_at", { ascending: false });
 
       if (error) throw error;
-      setSavedResumes(data || []);
+      setSavedResumes((data as unknown as ArchiveRecord[]) || []);
     } catch (err) {
       console.error("Fetch archive error:", err);
     } finally {
@@ -380,7 +380,7 @@ RETURN JSON FORMAT ONLY:
         header_data: editableHeader,
         status: 'draft',
         updated_at: new Date().toISOString()
-      }, { onConflict: 'user_id,job_title' }).select("id");
+      } as unknown as Record<string, unknown>, { onConflict: 'user_id,job_title' }).select("id");
 
       if (error) {
         console.error("Database save error:", error);
@@ -579,7 +579,7 @@ RETURN JSON FORMAT ONLY:
                   : "bg-white/5 border-white/10 text-primary hover:bg-white/10 shadow-xl"
               }`}
             >
-              <ArchiveBox className="w-4 h-4" />
+              <Archive className="w-4 h-4" />
               {showArchive ? "Hide Archive" : `Saved Blueprints (${savedResumes.length})`}
             </button>
           </div>
@@ -791,7 +791,7 @@ RETURN JSON FORMAT ONLY:
                   onClick={handleSaveDraft}
                   className="flex items-center gap-4 px-8 py-5 rounded-2xl bg-white/10 border border-primary/30 text-xs font-black uppercase tracking-[0.2em] text-primary hover:bg-primary hover:text-primary-foreground transition-all shadow-[0_0_20px_rgba(var(--primary-rgb),0.1)] active:scale-95"
                 >
-                  <ArchiveBox className="w-5 h-5" /> 
+                  <Archive className="w-5 h-5" /> 
                   Save as Draft
                 </button>
                 <button
@@ -1316,8 +1316,4 @@ RETURN JSON FORMAT ONLY:
   );
 };
 
-// Simple Icon fallback if Box is missing
-const ArchiveBox = ({ className }: { className?: string }) => (
-  <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
-);
 

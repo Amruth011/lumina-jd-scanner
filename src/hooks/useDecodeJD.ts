@@ -35,6 +35,9 @@ export const useDecodeJD = () => {
       }
 
       // ── CALL TOTAL INTELLIGENCE ENGINE (Supabase Edge Function) ──
+      console.log("── LUMINA ENGINE REQUEST INITIATED ──");
+      console.log("Payload Length:", jdText.length);
+      
       const { data, error } = await supabase.functions.invoke('decode-jd', {
         body: { jdText }
       });
@@ -80,25 +83,36 @@ export const useDecodeJD = () => {
       setWasCached(false);
       toast.success(`Total Intelligence Active: ${result.title}`, { duration: 4000 });
       
-    } catch (err) {
-      console.error("Decode JD Error:", err);
+    } catch (err: unknown) {
+      const error = err as Record<string, unknown>;
+      console.error("── LUMINA ENGINE CRASH DETECTED ──");
+      console.dir(err);
       
       let errorMessage = "AI Engine failed. Please try again.";
+      let diagnosticDetails = "Check browser console (F12) for the full response stack trace.";
       
-      // If it's a Supabase function error, try to extract the message
-      if (err instanceof Error) {
-        errorMessage = err.message;
-        
-        // Handle Supabase function specific error message extraction if possible
-        try {
-          const body = JSON.parse(err.message);
+      // ── SUPABASE SDK ERROR EXTRACTION ──
+      // Some versions of the SDK put the error in context, others in data
+      try {
+        if (err.context && typeof err.context.json === 'function') {
+          const body = await err.context.json();
           if (body.error) errorMessage = body.error;
-        } catch {
-          // Message wasn't JSON, use raw message
+          if (body.details) diagnosticDetails = body.details;
+        } else if (err.status && err.statusText) {
+          // If it's a raw response error
+          errorMessage = `Server Error (${err.status}): ${err.statusText}`;
+        } else if (err.message) {
+          errorMessage = err.message;
         }
+      } catch (parseErr) {
+        console.warn("Failed to parse error body:", parseErr);
+        if (err.message) errorMessage = err.message;
       }
       
-      toast.error(errorMessage);
+      toast.error(`${err.status ? `Engine Error (${err.status})` : 'AI Engine Failed'}`, {
+        description: diagnosticDetails,
+        duration: 8000
+      });
     } finally {
       setIsScanning(false);
     }

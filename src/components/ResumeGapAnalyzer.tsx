@@ -29,7 +29,7 @@ async function extractPdfText(file: File): Promise<string> {
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
     const content = await page.getTextContent();
-    fullText += content.items.map((item: { str: string }) => item.str).join(" ") + "\n";
+    fullText += content.items.map((item: { str?: string }) => item.str || "").join(" ") + "\n";
   }
   return fullText.trim();
 }

@@ -161,7 +161,7 @@ export const MasterVault = () => {
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
       const content = await page.getTextContent();
-      const pageText = content.items.map((item: { str: string }) => item.str).join(" ");
+      const pageText = content.items.map((item: { str?: string }) => item.str || "").join(" ");
       fullText += pageText + "\n";
     }
     return fullText.trim();
@@ -379,7 +379,11 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
           throw error;
         }
       } else {
-        const { error } = await supabase.from("master_vault").insert({ ...itemToSave, user_id: user.id });
+        const { error } = await supabase.from("master_vault").insert({ 
+          ...itemToSave, 
+          user_id: user.id,
+          type: editingItem.type || 'professional' // Ensure required type is present
+        } as unknown as Record<string, unknown>); // Cast to bypass strict Postgrest type checking
         if (error) {
           console.error("MasterVault Insert Error:", error);
           throw error;
