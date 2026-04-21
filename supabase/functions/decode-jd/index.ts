@@ -14,20 +14,41 @@ const corsHeaders = {
 const JD_SCHEMA = {
   valid: true,
   title: "Role Name",
-  skills: [{ category: "string", skill: "string", importance: 0 }],
+  skills: [{ category: "Technical|Foundations|Education|Preferred", skill: "string", importance: 0 }],
   requirements: { education: [], experience: "", soft_skills: [], agreements: [] },
   winning_strategy: [{ title: "step", description: "detail" }],
-  grade: { score: 0, letter: "S", summary: "", breakdown: {}, plain_english_summary: [] },
+  grade: { 
+    score: 0, 
+    letter: "S", 
+    summary: "", 
+    breakdown: { clarity: 0, realistic: 0, compensation: 0, red_flags: 0, benefits: 0, growth: 0, inclusivity: 0, readability: 0 }, 
+    plain_english_summary: [] 
+  },
   red_flags: [{ phrase: "", intensity: 0, note: "" }],
   recruiter_lens: [{ jargon: "", reality: "" }],
-  qualifiers: { must_have_percent: 0, nice_to_have_percent: 0, seniority_level: 0, experience: { professional: 0, project_proof: 0 }, education: { degree_required: false, skills_first_percent: 0 } },
-  logistics: { salary_range: { min: 0, max: 0, currency: "INR", estimate: true, note: "" }, work_arrangement: { remote_friendly: "unspecified", office_presence: "none", flexible_hours: false }, responsibility_mix: [], archetype: { label: "", description: "", primary_focus: "", primary_tool: "", match_score: 0 }, hard_soft_ratio: { hard: 0, soft: 0 } },
-  role_reality: { iceberg_above: [], iceberg_below: [], dimensions: {} },
-  deep_dive: { day_in_life: [], health_radar: {}, bias_analysis: {}, culture_radar: {} },
-  bonus_pulse: { ghost_job_probability: 0, desperation_meter: 0, competition_estimate: 0, skill_rarity: 0, interview_difficulty: 0, career_growth: {}, tech_stack_popularity: [] },
-  interview_kit: { questions: [], reverse_questions: [] },
-  resume_help: { keywords: [], bullets: [] },
-  jd_rewrite: { highlights: [] }
+  qualifiers: { 
+    must_have_percent: 0, 
+    nice_to_have_percent: 0, 
+    seniority_level: 0, 
+    experience: { professional: 0, project_proof: 0 }, 
+    education: { degree_required: false, skills_first_percent: 0 } 
+  },
+  logistics: { 
+    salary_range: { min: 0, max: 0, currency: "INR", estimate: true, note: "" }, 
+    work_arrangement: { remote_friendly: "unspecified", office_presence: "none", flexible_hours: false }, 
+    responsibility_mix: [], 
+    archetype: { label: "", description: "", primary_focus: "", primary_tool: "", match_score: 0 } 
+  },
+  role_reality: { iceberg_above: [], iceberg_below: [], dimensions: { technical_depth: 0, research_autonomy: 0, client_interaction: 0, strategic_impact: 0, legacy_maintenance: 0 } },
+  deep_dive: { 
+    day_in_life: [{ time: "09:00", task: "Title", description: "Descr" }], 
+    health_radar: { market_position: 0, tech_innovation: 0, transparency: 0, client_quality: 0, employee_benefits: 0 }, 
+    bias_analysis: { inclusivity_score: 0, gender_meter: "neutral", age_bias_graph: 0, tonal_map: [] }, 
+    culture_radar: { innovation: 0, work_life_balance: 0, collaboration: 0, hierarchy: 0, results_driven: 0, stability: 0 } 
+  },
+  bonus_pulse: { ghost_job_probability: 0, desperation_meter: 0, competition_estimate: 0, skill_rarity: 0, interview_difficulty: 0, career_growth: { trajectory: [], potential_score: 0 }, tech_stack_popularity: [] },
+  interview_kit: { questions: [{ question: "Q", type: "technical", target_answer: "A" }], reverse_questions: [] },
+  resume_help: { keywords: [], bullets: [] }
 };
 
 NativeDeno.serve(async (req: Request) => {
@@ -83,7 +104,7 @@ NativeDeno.serve(async (req: Request) => {
         messages: [
           { 
             role: "system", 
-            content: "You are Lumina Intelligence. Return ONLY raw JSON." 
+            content: "You are Lumina Ultra, an elite career intelligence engine. Analyze the provided JD and return the analysis in the exact JSON format requested. CRITICAL: Never return null for arrays or objects; use empty placeholders instead. Return ONLY raw JSON." 
           },
           { 
             role: "user", 

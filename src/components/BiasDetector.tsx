@@ -104,7 +104,7 @@ export const BiasDetector = ({ bias }: BiasDetectorProps) => {
       {/* Tone Map Tokens */}
       <div className="pt-4 border-t border-white/5">
         <div className="flex flex-wrap gap-2">
-          {bias.tonal_map.map((t, i) => (
+          {(bias.tonal_map || []).map((t, i) => (
             <div key={i} className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/5 flex items-center gap-2 group hover:border-accent-blue/30 transition-all">
                 <Activity size={10} className="text-accent-blue/40 group-hover:text-accent-blue transition-colors" />
                 <span className="text-[9px] font-black uppercase text-muted-foreground/60 group-hover:text-foreground/80 tracking-widest">{t.category}:</span>

@@ -10,7 +10,9 @@ export const JdVerdictCard = ({ grade }: JdVerdictCardProps) => {
   if (!grade) return null;
 
   const getGradeColor = (letter: string) => {
-    switch (letter[0]) {
+    if (!letter) return "text-foreground";
+    const L = letter[0]?.toUpperCase();
+    switch (L) {
       case "S": return "text-primary";
       case "A": return "text-accent-emerald";
       case "B": return "text-accent-emerald/80";

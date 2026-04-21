@@ -35,7 +35,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
     tone: 'Professional'
   });
 
-  const grade = results?.grade || { 
+  const grade = (results?.grade && typeof results.grade.score === 'number') ? results.grade : { 
     score: 0, 
     letter: '?', 
     summary: 'Intelligence Report Pending...', 
