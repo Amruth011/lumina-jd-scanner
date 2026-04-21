@@ -242,8 +242,8 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
                             <Target size={14} className="text-accent-emerald opacity-40 shrink-0" />
                             <div className="flex flex-col">
                                 <span className="text-[8px] font-black uppercase text-muted-foreground/50">Threshold</span>
-                                <span className="text-[10px] font-bold text-foreground uppercase tracking-tighter leading-tight" title={results?.requirements?.education?.[0]}>
-                                    {results?.requirements?.education?.[0] || "Foundational"}
+                                <span className="text-[10px] font-bold text-foreground uppercase tracking-tighter leading-tight" title={String(results?.requirements?.education?.[0] || "")}>
+                                    {String(results?.requirements?.education?.[0] || "Foundational")}
                                 </span>
                             </div>
                         </div>

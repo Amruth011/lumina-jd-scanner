@@ -58,7 +58,7 @@ NativeDeno.serve(async (req: Request) => {
     const groqKey = rawKey?.replace(/[^a-zA-Z0-9_-]/g, '')?.trim();
     if (!groqKey) throw new Error("Auth Config Error: Missing API Key");
 
-    const safeJD = jdText.substring(0, 8000); 
+    const safeJD = jdText.substring(0, 15000); 
     const fallbackModels = [
       "llama-3.3-70b-versatile",
       "llama-3.1-8b-instant",

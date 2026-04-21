@@ -89,10 +89,10 @@ export const useDecodeJD = () => {
            red_flags: safeArr(raw.red_flags),
            recruiter_lens: safeArr(raw.recruiter_lens),
            requirements: {
-             education: safeArr(raw.requirements?.education),
+             education: safeArr(raw.requirements?.education).map(e => safeStr(e)),
              experience: safeStr(raw.requirements?.experience),
-             soft_skills: safeArr(raw.requirements?.soft_skills),
-             agreements: safeArr(raw.requirements?.agreements)
+             soft_skills: safeArr(raw.requirements?.soft_skills).map(s => safeStr(s)),
+             agreements: safeArr(raw.requirements?.agreements).map(a => safeStr(a))
            },
            logistics: {
               ...raw.logistics,
