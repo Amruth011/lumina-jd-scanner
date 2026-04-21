@@ -93,44 +93,70 @@ NativeDeno.serve(async (req: Request) => {
     // Massive JDs can cause timeouts. Capping to 8k chars for stability.
     const safeJD = jdText.substring(0, 8000); 
 
-    const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${groqKey}`
-      },
-      body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
-        messages: [
-          { 
-            role: "system", 
-            content: "You are Lumina Ultra, an elite career intelligence engine. Analyze the provided JD and return the analysis in the exact JSON format requested. CRITICAL: Never return null for arrays or objects; use empty placeholders instead. Return ONLY raw JSON." 
-          },
-          { 
-            role: "user", 
-            content: `JD: ${safeJD}\n\nSCHEMA:\n${JSON.stringify(JD_SCHEMA)}` 
-          }
-        ],
-        response_format: { type: "json_object" },
-        temperature: 0.1,
-        max_tokens: 3500, // Capped to ensure generation finishes within 60s
-      }),
-    }).catch(e => {
-      console.error("Groq Network Error:", e);
-      throw new Error(`AI Provider unreachable: ${e.message}`);
-    });
+    const fallbackModels = [
+      "llama-3.3-70b-versatile",
+      "mixtral-8x7b-32768",
+      "llama-3-8b-8192"
+    ];
 
-    console.log(`Intelligence Status: ${groqResponse.status} ${groqResponse.statusText}`);
+    let resultText = "";
+    let lastError = "";
 
-    if (!groqResponse.ok) {
-        const errorText = await groqResponse.text();
-        console.error("Groq Failure Body:", errorText);
-        throw new Error(`AI Engine Refined Result: ${groqResponse.status} - ${errorText.substring(0, 50)}`);
+    for (let i = 0; i < fallbackModels.length; i++) {
+        const model = fallbackModels[i];
+        try {
+            console.log(`Lumina Engine: Attempting analysis via ${model}...`);
+            const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${groqKey}`
+                },
+                body: JSON.stringify({
+                    model: model,
+                    messages: [
+                        { 
+                            role: "system", 
+                            content: "You are Lumina Ultra, an elite career intelligence engine. Analyze the provided JD and return the analysis in the exact JSON format requested. CRITICAL: Never return null for arrays or objects; use empty placeholders instead. Return ONLY raw JSON." 
+                        },
+                        { 
+                            role: "user", 
+                            content: `JD: ${safeJD}\n\nSCHEMA:\n${JSON.stringify(JD_SCHEMA)}` 
+                        }
+                    ],
+                    response_format: { type: "json_object" },
+                    temperature: 0.1,
+                    max_tokens: 3500,
+                }),
+            });
+
+            if (!groqResponse.ok) {
+                const status = groqResponse.status;
+                const errorBody = await groqResponse.text();
+                if (status === 429) {
+                    console.warn(`Lumina Engine: Rate Limit (429) on ${model}. Switching fallback...`);
+                    lastError = "Rate Limit Exceeded";
+                    continue; 
+                }
+                throw new Error(`AI Provider Error (${status}): ${errorBody.substring(0, 100)}`);
+            }
+
+            const data = await groqResponse.json();
+            resultText = data.choices?.[0]?.message?.content;
+            if (resultText) {
+                console.log(`Lumina Engine: Successful generation via ${model}`);
+                break;
+            }
+        } catch (err: unknown) {
+            lastError = err instanceof Error ? err.message : String(err);
+            if (lastError.includes("429") || lastError.includes("Rate Limit")) {
+                continue;
+            }
+            throw err;
+        }
     }
 
-    const data = await groqResponse.json();
-    const resultText = data.choices?.[0]?.message?.content;
-    if (!resultText) throw new Error("AI returned empty content");
+    if (!resultText) throw new Error(`All Intelligence Engines exhausted: ${lastError}`);
 
     let parsed;
     try {
