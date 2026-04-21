@@ -79,7 +79,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
                     value={grade.score} 
                     label="Aggregate Score" 
                     size={220} 
-                    color="var(--primary)" 
+                    color="var(--accent-blue)" 
                 />
                 <div className="mt-8 text-center relative z-10 space-y-4">
                   <div>
@@ -157,9 +157,9 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
           </div>
       </div>
 
-      {/* ── PHASE 1: TACTICAL PULSE ── */}
+      {/* ── PHASE 1: JD DECODER ── */}
       <div className="space-y-8">
-        <PhaseLabel number="01" title="Tactical Pulse" sub="Quick Scannable Wins" />
+        <PhaseLabel number="01" title="JD Decoder" sub="Quick Scannable Wins" />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             {/* Skill Highlights (Expanded Taxonomy) [NEW: taking space of old seniority] */}
@@ -294,9 +294,9 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
         </div>
       </div>
 
-      {/* ── PHASE 2: POWER METRICS ── */}
+      {/* ── PHASE 2: GAP ANALYSIS ── */}
       <div className="space-y-8">
-        <PhaseLabel number="02" title="Power Features" sub="Deep Extraction & Analysis" />
+        <PhaseLabel number="02" title="Gap Analysis" sub="Deep Extraction & Analysis" />
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             {/* Plain English Summary */}
             <div className="lg:col-span-12 lg:col-span-5 glass-panel p-10 space-y-8 relative overflow-hidden group">
@@ -311,9 +311,9 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
                 <div className="space-y-6 relative z-10">
                     {(grade?.plain_english_summary || []).slice(0, 5).map((point, i) => (
                         <div key={i} className="flex gap-4 group/p cursor-pointer" onClick={() => { navigator.clipboard.writeText(point); toast.success("Summary point copied"); }}>
-                            <span className="text-[11px] font-black text-primary/40 mt-1 group-hover/p:text-primary transition-colors">{String(i+1).padStart(2, '0')}</span>
+                            <span className="text-[11px] font-black text-accent-emerald/40 mt-1 group-hover/p:text-accent-emerald transition-colors">{String(i+1).padStart(2, '0')}</span>
                             <p className="text-[13px] font-medium text-foreground/80 leading-relaxed group-hover/p:text-foreground transition-colors">
-                                {point.split('**').map((part, idx) => idx % 2 === 1 ? <strong key={idx} className="text-primary font-black">{part}</strong> : part)}
+                                {point.split('**').map((part, idx) => idx % 2 === 1 ? <strong key={idx} className="text-accent-emerald font-black">{part}</strong> : part)}
                             </p>
                         </div>
                     ))}
@@ -394,9 +394,9 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
         </div>
       </div>
 
-      {/* ── PHASE 3: STRATEGIC DIFFERENTIATORS ── */}
+      {/* ── PHASE 3: RESUME TAILOR ── */}
       <div className="space-y-6">
-        <PhaseLabel number="03" title="Strategic Intelligence" sub="Elite Differentiation Suite" />
+        <PhaseLabel number="03" title="Resume Tailor" sub="Elite Differentiation Suite" />
         
         {/* Row 1: Bias, Culture & Bullets */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
@@ -443,7 +443,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
 const PhaseLabel = ({ number, title, sub }: { number: string, title: string, sub: string }) => (
     <div className="flex items-center gap-6 px-4">
         <div className="flex flex-col">
-            <span className="text-[10px] font-black uppercase text-primary tracking-[0.4em] leading-none mb-1">Phase {number}</span>
+            <span className="text-[10px] font-black uppercase text-accent-emerald tracking-[0.4em] leading-none mb-1">Phase {number}</span>
             <div className="flex items-baseline gap-4">
                 <h2 className="text-3xl font-serif italic text-foreground leading-none">{title}</h2>
                 <div className="h-px w-24 bg-foreground/10" />

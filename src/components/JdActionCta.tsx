@@ -17,12 +17,12 @@ export const JdActionCta = ({ onCheckResume, onGenerateResume }: JdActionCtaProp
       className="relative w-full rounded-[3.5rem] overflow-hidden group"
     >
       {/* ── Background Logic ── */}
-      <div className="absolute inset-0 bg-[#3b82f6] transition-transform duration-1000 group-hover:scale-105" />
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-600/50 via-transparent to-blue-400/30" />
+      <div className="absolute inset-0 bg-[#10B981] transition-transform duration-1000 group-hover:scale-105" />
+      <div className="absolute inset-0 bg-gradient-to-br from-accent-emerald/50 via-transparent to-accent-emerald/30" />
       
       {/* ── Animated Orbs ── */}
       <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[140%] bg-white/10 blur-[100px] rounded-full animate-pulse" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[140%] bg-blue-400/20 blur-[100px] rounded-full" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[140%] bg-accent-emerald/20 blur-[100px] rounded-full" />
 
       <div className="relative z-10 px-6 py-6 md:py-10 flex flex-col items-center text-center space-y-6">
         <div className="space-y-4 max-w-3xl">
@@ -50,7 +50,7 @@ export const JdActionCta = ({ onCheckResume, onGenerateResume }: JdActionCtaProp
             whileHover={{ scale: 1.05, y: -4 }}
             whileTap={{ scale: 0.95 }}
             onClick={onCheckResume}
-            className="group flex items-center gap-4 px-8 py-3 rounded-full bg-white text-blue-600 text-[11px] font-black uppercase tracking-widest shadow-[0_10px_20px_rgba(0,0,0,0.1)] hover:shadow-[0_15px_30px_rgba(0,0,0,0.2)] transition-all"
+            className="group flex items-center gap-4 px-8 py-3 rounded-full bg-white text-accent-emerald text-[11px] font-black uppercase tracking-widest shadow-[0_10px_20px_rgba(0,0,0,0.1)] hover:shadow-[0_15px_30px_rgba(0,0,0,0.2)] transition-all"
           >
             Check Your Resume 
             <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />

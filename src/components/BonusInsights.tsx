@@ -13,11 +13,11 @@ export const BonusInsights = ({ insights, salary }: BonusInsightsProps) => {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3 px-4">
-        <div className="p-2 rounded-xl bg-accent-gold/10 border border-accent-gold/20">
-          <Star size={18} className="text-accent-gold" />
+        <div className="p-2 rounded-xl bg-accent-emerald/10 border border-accent-emerald/20">
+          <Star size={18} className="text-accent-emerald" />
         </div>
         <div>
-          <h3 className="text-lg font-serif italic text-foreground leading-none">Bonus Intelligence</h3>
+          <h3 className="text-lg font-serif italic text-accent-emerald leading-none">Market Insights</h3>
           <p className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground mt-1 opacity-50">Market Position & Probability</p>
         </div>
       </div>

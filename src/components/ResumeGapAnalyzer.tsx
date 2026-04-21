@@ -66,7 +66,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
 
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(18);
-      pdf.setTextColor(59, 130, 246);
+      pdf.setTextColor(16, 185, 129); // #10B981 Teal
       pdf.text("Lumina Strategy: Path to 100% Match", 20, y);
       
       y += 15;
@@ -275,7 +275,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
         <div className="grid grid-cols-1 md:grid-cols-[120px,1fr] gap-4">
             <div className="premium-card rounded-2xl p-4 flex flex-col items-center justify-center text-center">
                 <span className="text-4xl font-black text-foreground">{result.overall_match}%</span>
-                <span className="text-[12px] font-black uppercase text-primary tracking-widest mt-1 block">Match</span>
+                <span className="text-[12px] font-black uppercase text-accent-emerald tracking-widest mt-1 block">Match</span>
             </div>
             <div className="premium-card rounded-2xl p-4 bg-white/5 border border-white/10 flex items-center">
                 <p className="text-sm font-medium text-foreground/80 leading-relaxed italic pl-4">
@@ -321,8 +321,8 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                 </div>
             </div>
 
-            <div className="premium-card rounded-2xl p-4 bg-accent-blue/5 border border-accent-blue/20">
-                <h4 className="font-bold mb-3 uppercase tracking-[0.15em] text-[9px] text-accent-blue flex items-center gap-2">
+            <div className="premium-card rounded-2xl p-4 bg-accent-emerald/5 border border-accent-emerald/20">
+                <h4 className="font-bold mb-3 uppercase tracking-[0.15em] text-[9px] text-accent-emerald flex items-center gap-2">
                     <TrendingUp className="w-3.5 h-3.5" /> Action Roadmap
                 </h4>
                 <div className="space-y-3">
@@ -360,7 +360,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
         {!isOpen && (
           <button
             onClick={() => setIsOpen(true)}
-            className="px-10 py-5 rounded-full bg-foreground text-background text-[13px] font-black uppercase tracking-widest hover:scale-105 transition-all active:scale-95"
+            className="px-10 py-5 rounded-full bg-accent-emerald text-background text-[13px] font-black uppercase tracking-widest hover:scale-105 transition-all active:scale-95 shadow-xl shadow-accent-emerald/20"
           >
             Launch Diagnostic Scan
           </button>
@@ -532,11 +532,11 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                     {/* Action Roadmap */}
                     <div className="md:col-span-5 glass-panel p-10 rounded-[3rem] bg-accent-blue/[0.02] border-accent-blue/10 space-y-10">
                         <div className="space-y-3">
-                            <div className="flex items-center gap-3 text-accent-blue">
+                            <div className="flex items-center gap-3 text-accent-emerald">
                                 <TrendingUp size={20} />
                                 <h4 className="text-2xl font-serif italic text-foreground">Action Roadmap</h4>
                             </div>
-                            <p className="text-xs uppercase font-black tracking-widest text-accent-blue/40">Strategic directives for 100% match</p>
+                            <p className="text-xs uppercase font-black tracking-widest text-accent-emerald/40">Strategic directives for 100% match</p>
                         </div>
                         
                         <div className="space-y-6">
@@ -545,7 +545,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                                 { action: "Inject", description: "Integrate specific JD keyword tokens into your professional summary." }
                             ]).map((d, i) => (
                                 <div key={i} className="flex gap-6 items-start p-6 rounded-[2rem] bg-white/5 border border-white/5 hover:bg-white/10 transition-all duration-500">
-                                    <div className="w-8 h-8 rounded-xl bg-accent-blue/10 flex items-center justify-center text-[13px] font-black text-accent-blue border border-accent-blue/20">{i+1}</div>
+                                    <div className="w-8 h-8 rounded-xl bg-accent-emerald/10 flex items-center justify-center text-[13px] font-black text-accent-emerald border border-accent-emerald/20">{i+1}</div>
                                     <div className="space-y-1.5 pt-1">
                                         <span className="text-xs font-black uppercase text-foreground tracking-widest block">{d.action}</span>
                                         <p className="text-[14px] text-muted-foreground leading-relaxed font-medium">{d.description}</p>
@@ -561,7 +561,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                     <button 
                       onClick={handleAddToTracker} 
                       disabled={addedToTracker} 
-                      className="px-16 py-7 rounded-full bg-primary text-background font-black uppercase tracking-[0.4em] text-[13px] hover:scale-105 active:scale-95 transition-all flex items-center gap-5 group"
+                      className="px-16 py-7 rounded-full bg-accent-emerald text-background font-black uppercase tracking-[0.4em] text-[13px] hover:scale-105 active:scale-95 transition-all flex items-center gap-5 group shadow-2xl shadow-accent-emerald/20"
                     >
                       {addedToTracker ? <CheckCircle2 className="w-6 h-6" /> : <Plus className="w-6 h-6 group-hover:rotate-90 transition-transform" />}
                       {addedToTracker ? "Application Tracked" : "Initiate Pipeline Tracking"}

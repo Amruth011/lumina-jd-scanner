@@ -4,7 +4,7 @@ import { FileText, Upload, Trophy } from "lucide-react";
 const steps = [
   {
     icon: FileText,
-    accentClass: "text-accent-blue",
+    accentClass: "text-accent-emerald",
     number: "01",
     title: "Paste Your JD",
     body: "Drop in any job description. Llama-3.3 Intelligence instantly decodes every requirement, categorizing skills by importance."
@@ -34,7 +34,7 @@ export const HowItWorksSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-accent-blue/40 text-[10px] font-bold tracking-[0.4em] uppercase block mb-6"
+          className="text-accent-emerald/40 text-[10px] font-bold tracking-[0.4em] uppercase block mb-6"
         >
           The Process
         </motion.span>
@@ -46,7 +46,7 @@ export const HowItWorksSection = () => {
           transition={{ duration: 0.8, delay: 0.1 }}
           className="text-4xl md:text-5xl lg:text-6xl text-foreground tracking-tighter font-serif mb-20 leading-[1.05]"
         >
-          From applicant to <em className="italic text-accent-blue drop-shadow-[0_0_10px_rgba(var(--accent-blue-rgb),0.3)] not-italic font-serif">top candidate.</em>
+          From applicant to <em className="italic text-accent-emerald drop-shadow-[0_0_10px_rgba(16,185,129,0.3)] not-italic font-serif">top candidate.</em>
         </motion.h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">

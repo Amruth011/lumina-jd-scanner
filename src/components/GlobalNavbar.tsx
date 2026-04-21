@@ -42,8 +42,8 @@ export const GlobalNavbar = ({ activeTab, onTabChange }: GlobalNavbarProps) => {
         
         <div className="flex items-center gap-2 pl-6 py-2">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-8 h-8 rounded-xl bg-accent-blue/10 flex items-center justify-center border border-accent-blue/20 transition-all group-hover:bg-accent-blue group-hover:border-accent-blue/50">
-               <Sparkles size={18} className="text-accent-blue transition-colors group-hover:text-white" />
+            <div className="w-8 h-8 rounded-xl bg-accent-emerald/10 flex items-center justify-center border border-accent-emerald/20 transition-all group-hover:bg-accent-emerald group-hover:border-accent-emerald/50">
+               <Sparkles size={18} className="text-accent-emerald transition-colors group-hover:text-white" />
             </div>
             <span className="text-foreground font-display font-black text-xl tracking-tighter whitespace-nowrap">Lumina JD</span>
           </Link>
@@ -64,7 +64,7 @@ export const GlobalNavbar = ({ activeTab, onTabChange }: GlobalNavbarProps) => {
               {activeTab === tab.key && (
                 <motion.div
                   layoutId="globalActiveTab"
-                  className="absolute inset-0 bg-primary rounded-full"
+                  className="absolute inset-0 bg-accent-emerald rounded-full"
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}

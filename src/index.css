@@ -9,7 +9,7 @@
 
 @layer base {
   :root {
-    /* Lumina JD - Refined Minimalism System */
+    /* Lumina JD - Brand Identity System */
     --background: 220 13% 96%; /* #F4F5F7 */
     --foreground: 0 0% 4%;    /* #0A0A0A */
 
@@ -19,10 +19,10 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 4%;
 
-    --primary: 213 32% 17%;  /* #1E2A3A - Dark Navy for CTA */
+    --primary: 213 32% 17%;  /* #1E2A3A - Lumina Navy (Official) */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 160 84% 39%; /* #10B981 - Lumina Teal */
+    --secondary: 160 84% 39%; /* #10B981 - Lumina Teal (Identity) */
     --secondary-foreground: 0 0% 100%;
 
     --accent: 147 83% 96%;   /* #ECFDF5 - Teal Light BG */
@@ -31,20 +31,20 @@
     --muted: 220 13% 94%;
     --muted-foreground: 220 5% 45%;
 
-    --destructive: 0 84% 60%; /* #EF4444 - Gap Red */
+    --destructive: 0 84% 60%; /* #EF4444 - Risk/Gap Red */
     --destructive-foreground: 0 0% 100%;
 
     --border: 0 0% 0%;       /* rgba(0,0,0,0.08) */
     --input: 0 0% 0%;
-    --ring: 160 84% 39%;
+    --ring: 160 84% 39%;     /* Teal for interactive focus */
 
     --radius: 2.5rem;
 
-    --accent-blue: 221 83% 53%;   /* #2563EB - Signal Blue */
+    --accent-blue: 221 83% 53%;   /* #2563EB - Signal Blue (Data Only) */
     --accent-blue-rgb: 37, 99, 235;
     --accent-emerald: 160 84% 39%; /* #10B981 - Lumina Teal */
-    --accent-amber: 38 92% 50%;   /* #F59E0B - Amber */
-    --accent-red: 0 84% 60%;     /* #EF4444 - Gap Red */
+    --accent-amber: 38 92% 50%;   /* #F59E0B - Market Amber */
+    --accent-red: 0 84% 60%;     /* #EF4444 - Risk/Gap Red */
 
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 0 0% 4%;

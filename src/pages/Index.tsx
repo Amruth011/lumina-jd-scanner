@@ -35,12 +35,12 @@ const Index = () => {
             className="flex flex-col items-center"
           >
             <div className="rounded-full px-4 py-1.5 flex items-center gap-2 mb-8 border border-border/40 hover:bg-background/40 transition-colors cursor-default group">
-              <Sparkles size={14} className="text-accent-blue group-hover:rotate-12 transition-transform" />
+              <Sparkles size={14} className="text-accent-emerald group-hover:rotate-12 transition-transform" />
               <span className="text-muted-foreground text-[10px] font-bold tracking-[0.25em] uppercase">The #1 ATS Optimization Engine</span>
             </div>
             
             <h1 className="text-7xl md:text-9xl text-foreground tracking-[-0.06em] font-serif leading-[0.85] text-balance">
-              Land in the <span className="italic text-accent-blue">top 0.1%</span>
+              Land in the <span className="italic text-accent-emerald">top 0.1%</span>
             </h1>
             
             <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mt-8 leading-relaxed font-sans font-medium">
@@ -120,9 +120,9 @@ const Index = () => {
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-5 w-full pt-4">
                     {[
-                      { icon: BrainCircuit, label: "JD Decoding", desc: "Extract hidden metrics and skills" },
-                      { icon: ShieldCheck, label: "Resume Analysis", desc: "Deep gap analysis for your target role" },
-                      { icon: Sparkles, label: "ATS friendly Resume Generator", desc: "Blueprint creation as per the JD" }
+                      { icon: BrainCircuit, label: "JD Decoder", desc: "Extract hidden metrics and skills" },
+                      { icon: ShieldCheck, label: "Gap Analysis", desc: "Deep gap analysis for your target role" },
+                      { icon: Sparkles, label: "Resume Tailor", desc: "Blueprint creation as per the JD" }
                     ].map((feature, i) => (
                       <div key={i} className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-3 flex flex-col items-center group hover:bg-white/10 transition-colors">
                          <feature.icon className="w-6 h-6 text-primary" />
@@ -137,7 +137,7 @@ const Index = () => {
                   <div className="pt-6">
                     <Link 
                       to="/auth"
-                      className="inline-flex items-center gap-3 px-10 py-5 rounded-2xl bg-primary text-white text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+                      className="inline-flex items-center gap-3 px-10 py-5 rounded-2xl bg-accent-emerald text-white text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl shadow-accent-emerald/20 hover:scale-105 active:scale-95 transition-all"
                     >
                       Sign In to Deploy <ArrowRight size={14} />
                     </Link>
@@ -153,7 +153,7 @@ const Index = () => {
       <footer className="bg-background border-t border-border/40 py-12 px-6">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-2">
-            <Sparkles size={24} className="text-accent-blue" />
+            <Sparkles size={24} className="text-accent-emerald" />
             <span className="text-foreground font-display font-black text-xl">Lumina JD</span>
           </div>
           <p className="text-muted-foreground/60 text-[10px] font-black uppercase tracking-[0.4em]">
