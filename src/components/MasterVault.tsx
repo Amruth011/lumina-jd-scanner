@@ -218,41 +218,57 @@ RETURN JSON FORMAT ONLY (no markdown, no explanation):
   ]
 }`;
 
-      try {
-        console.log(`Smart Sync: Attempting via secure proxy...`);
-        const apiResponse = await fetch("/api/analyze", {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            model: "llama-3.3-70b-versatile",
-            messages: [{ role: "user", content: syncPrompt + "\n\nIMPORTANT: Return ONLY valid JSON." }],
-            response_format: { type: "json_object" }
-          }),
-        });
+      const techModels = [
+        "llama-3.3-70b-versatile",
+        "llama-3-8b-8192",
+        "mixtral-8x7b-32768"
+      ];
 
-        if (!apiResponse.ok) {
-          const errorData = await apiResponse.json().catch(() => ({}));
-          const errMessage = `AI Error: ${apiResponse.status} - ${errorData.error?.message || apiResponse.statusText}`;
-          if (apiResponse.status === 429) {
-            throw new Error(`Rate Limit Exceeded limits. Please try again later.`);
+      let lastError = "";
+      for (const model of techModels) {
+        try {
+          if (model !== techModels[0]) {
+            toast.loading(`Optimization: Primary engine busy, switching to high-speed engine (${model.split('-')[2] || 'Alternative'})...`, { id: toastId });
           }
-          throw new Error(errMessage);
-        }
+          
+          console.log(`Smart Sync: Attempting via ${model}...`);
+          const apiResponse = await fetch("/api/analyze", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              model: model,
+              messages: [{ role: "user", content: syncPrompt + "\n\nIMPORTANT: Return ONLY valid JSON." }],
+              response_format: { type: "json_object" }
+            }),
+          });
 
-        const rawData = await apiResponse.json();
-        resultText = rawData.choices?.[0]?.message?.content;
-        if (resultText) {
-          console.log(`Smart Sync: Success with Groq`);
+          if (!apiResponse.ok) {
+            const errorData = await apiResponse.json().catch(() => ({}));
+            if (apiResponse.status === 429) {
+              console.warn(`Smart Sync: Rate limit on ${model}. Switching fallback...`);
+              lastError = "Rate Limit Exceeded";
+              continue; // Try next model
+            }
+            throw new Error(`AI Error: ${apiResponse.status} - ${errorData.error?.message || apiResponse.statusText}`);
+          }
+
+          const rawData = await apiResponse.json();
+          resultText = rawData.choices?.[0]?.message?.content;
+          if (resultText) {
+            console.log(`Smart Sync: Success with ${model}`);
+            break; // Exit loop on success
+          }
+        } catch (err: unknown) {
+          lastError = err instanceof Error ? err.message : String(err);
+          if (lastError.includes("Rate Limit")) continue;
+          throw err; // Re-throw fatal errors
         }
-      } catch (err) {
-        const errMsg = err instanceof Error ? err.message : String(err);
-        console.warn(`Smart Sync: Groq failed...`, errMsg);
-        throw new Error(`Smart Sync failed: ${errMsg}`);
       }
 
-      if (!resultText) throw new Error('Groq model returned empty response.');
+      if (!resultText) {
+        throw new Error(lastError || "All AI engines are currently reaching capacity. Please try again in 60 seconds.");
+      }
+
 
       const firstBrace = resultText.indexOf("{");
       const lastBrace = resultText.lastIndexOf("}");
