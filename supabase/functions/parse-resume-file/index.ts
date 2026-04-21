@@ -77,7 +77,7 @@ serve(async (req) => {
   } catch (err) {
     console.error("parse-resume-file error:", err);
     return new Response(JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }), {
-      status: 200,
+      status: 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

@@ -82,7 +82,22 @@ export const useDecodeJD = () => {
       
     } catch (err) {
       console.error("Decode JD Error:", err);
-      const errorMessage = (err as Error).message || "Intelligence Engine failed. Please try again.";
+      
+      let errorMessage = "AI Engine failed. Please try again.";
+      
+      // If it's a Supabase function error, try to extract the message
+      if (err instanceof Error) {
+        errorMessage = err.message;
+        
+        // Handle Supabase function specific error message extraction if possible
+        try {
+          const body = JSON.parse(err.message);
+          if (body.error) errorMessage = body.error;
+        } catch {
+          // Message wasn't JSON, use raw message
+        }
+      }
+      
       toast.error(errorMessage);
     } finally {
       setIsScanning(false);
