@@ -175,99 +175,93 @@ export const MasterVault = () => {
     const toastId = toast.loading("Smart Sync: Parsing your resume locally...");
     let resultText = "";
 
-    try {
-      let rawText = "";
-      if (file.type === "application/pdf") {
-        rawText = await extractTextFromPDF(file);
-      } else {
-        rawText = await file.text();
-      }
+      try {
+        let rawText = "";
+        if (file.type === "application/pdf") {
+          rawText = await extractTextFromPDF(file);
+        } else {
+          rawText = await file.text();
+        }
 
-      if (!rawText || rawText.trim().length < 50) {
-        throw new Error("Could not extract sufficient text from this file.");
-      }
-      
-      toast.loading("Smart Sync: Structure and tailoring experience via AI...", { id: toastId });
+        if (!rawText || rawText.trim().length < 50) {
+          throw new Error("Could not extract sufficient text from this file.");
+        }
+        
+        // v2.7 Resilience: Cap resume text to prevent TPM (Tokens Per Minute) spikes
+        const cappedText = rawText.substring(0, 10000);
+        
+        toast.loading("[Lumina AI v2.7] Analysing & Structuring...", { id: toastId });
 
-      // Migrated to Groq API exactly as requested
-      const syncPrompt = `You are an expert resume parser. Extract ALL professional experience AND the candidate's personal details from this resume text.
+        const syncPrompt = `You are an expert resume parser. Extract ALL professional experience AND the candidate's personal details from this resume text.
 
 Resume Text:
-${rawText}
+${cappedText}
 
-RETURN JSON FORMAT ONLY (no markdown, no explanation):
+RETURN JSON FORMAT ONLY:
 {
-  "personal_details": {
-    "full_name": "Full Name",
-    "phone": "Phone Number",
-    "location": "City, State",
-    "linkedin": "extracted linkedin url",
-    "summary": "Create a strong executive summary matching their profile (max 3 sentences)."
-  },
-  "experience": [
-    { "company": "Company Name", "role": "Job Title", "period": "Start Date - End Date", "bullets": ["Achievement bullet 1", "Achievement bullet 2"] }
-  ],
-  "education": [
-    { "institution": "University / College", "degree": "Degree / Major", "period": "Graduation Timeline", "details": ["Honors", "Coursework"] }
-  ],
-  "projects": [
-    { "name": "Project Name", "tech_stack": "React, Node.js", "period": "Timeline", "details": ["What was built", "Impact"] }
-  ],
-  "certifications": [
-    { "name": "Certificate Name", "issuer": "Issuing Entity", "period": "Date Issued", "details": ["Credential ID", "Validation"] }
-  ]
+  "personal_details": { "full_name": "", "phone": "", "location": "", "linkedin": "", "summary": "" },
+  "experience": [{ "company": "", "role": "", "period": "", "bullets": [] }],
+  "education": [{ "institution": "", "degree": "", "period": "", "details": [] }],
+  "projects": [{ "name": "", "tech_stack": "", "period": "", "details": [] }],
+  "certifications": [{ "name": "", "issuer": "", "period": "", "details": [] }]
 }`;
 
-      const techModels = [
-        "llama-3.3-70b-versatile",
-        "llama-3-8b-8192",
-        "mixtral-8x7b-32768"
-      ];
+        const techModels = [
+          "llama-3.3-70b-versatile",
+          "mixtral-8x7b-32768",
+          "llama-3-8b-8192"
+        ];
 
-      let lastError = "";
-      for (const model of techModels) {
-        try {
-          if (model !== techModels[0]) {
-            toast.loading(`Optimization: Primary engine busy, switching to high-speed engine (${model.split('-')[2] || 'Alternative'})...`, { id: toastId });
-          }
-          
-          console.log(`Smart Sync: Attempting via ${model}...`);
-          const apiResponse = await fetch("/api/analyze", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              model: model,
-              messages: [{ role: "user", content: syncPrompt + "\n\nIMPORTANT: Return ONLY valid JSON." }],
-              response_format: { type: "json_object" }
-            }),
-          });
+        // Helper for exponential backoff
+        const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-          if (!apiResponse.ok) {
-            const errorData = await apiResponse.json().catch(() => ({}));
-            if (apiResponse.status === 429) {
-              console.warn(`Smart Sync: Rate limit on ${model}. Switching fallback...`);
-              lastError = "Rate Limit Exceeded";
-              continue; // Try next model
+        let lastError = "";
+        for (let i = 0; i < techModels.length; i++) {
+          const model = techModels[i];
+          try {
+            if (i > 0) {
+              toast.loading(`Resilience: Engine busy, waiting 2s for slot... (${model.split('-')[2] || 'Alt'})`, { id: toastId });
+              await sleep(2000); // 2 second pause to let TPM reset
             }
-            throw new Error(`AI Error: ${apiResponse.status} - ${errorData.error?.message || apiResponse.statusText}`);
-          }
+            
+            console.log(`Smart Sync v2.7: Requesting ${model}...`);
+            const apiResponse = await fetch("/api/analyze", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                model: model,
+                messages: [{ role: "user", content: syncPrompt + "\n\nIMPORTANT: Return ONLY valid JSON." }],
+                response_format: { type: "json_object" }
+              }),
+            });
 
-          const rawData = await apiResponse.json();
-          resultText = rawData.choices?.[0]?.message?.content;
-          if (resultText) {
-            console.log(`Smart Sync: Success with ${model}`);
-            break; // Exit loop on success
+            if (!apiResponse.ok) {
+              const status = apiResponse.status;
+              const errorData = await apiResponse.json().catch(() => ({}));
+              if (status === 429) {
+                console.warn(`Smart Sync: 429 Rate Limit on ${model}.`);
+                lastError = "Rate Limit Exceeded (Tokens Per Minute)";
+                continue; 
+              }
+              throw new Error(`AI Engine Error (${status}): ${errorData.error?.message || apiResponse.statusText}`);
+            }
+
+            const rawData = await apiResponse.json();
+            resultText = rawData.choices?.[0]?.message?.content;
+            if (resultText) {
+              console.log(`Smart Sync: Success with ${model}`);
+              break;
+            }
+          } catch (err: unknown) {
+            lastError = err instanceof Error ? err.message : String(err);
+            if (lastError.includes("429") || lastError.includes("Rate Limit")) continue;
+            throw err;
           }
-        } catch (err: unknown) {
-          lastError = err instanceof Error ? err.message : String(err);
-          if (lastError.includes("Rate Limit")) continue;
-          throw err; // Re-throw fatal errors
         }
-      }
 
-      if (!resultText) {
-        throw new Error(lastError || "All AI engines are currently reaching capacity. Please try again in 60 seconds.");
-      }
+        if (!resultText) {
+          throw new Error(`[SYNC_FAULT_v2.7] ${lastError || "All engines currently reaching capacity."}`);
+        }
 
 
       const firstBrace = resultText.indexOf("{");
