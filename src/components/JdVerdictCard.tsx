@@ -11,7 +11,7 @@ export const JdVerdictCard = ({ grade }: JdVerdictCardProps) => {
 
   const getGradeColor = (letter: string) => {
     if (!letter) return "text-foreground";
-    const L = letter[0]?.toUpperCase();
+    const L = String(letter)[0]?.toUpperCase();
     switch (L) {
       case "S": return "text-primary";
       case "A": return "text-accent-emerald";
@@ -44,8 +44,8 @@ export const JdVerdictCard = ({ grade }: JdVerdictCardProps) => {
       
       <div className="text-center space-y-3 relative z-10">
         <span className="text-[12px] uppercase font-black tracking-[0.3em] text-muted-foreground opacity-80 block">Global Verdict</span>
-        <div className={`text-9xl font-serif italic font-black transition-all duration-700 ${getGradeColor(grade.letter)}`}>
-          {grade.letter}
+        <div className={`text-9xl font-serif italic font-black transition-all duration-700 ${getGradeColor(String(grade.letter))}`}>
+          {String(grade.letter)}
         </div>
       </div>
 
@@ -53,7 +53,7 @@ export const JdVerdictCard = ({ grade }: JdVerdictCardProps) => {
         <div className="h-px w-full bg-foreground/10" />
         
         <p className="text-center text-[15px] font-medium text-foreground leading-relaxed italic px-2">
-          &ldquo;{grade.summary}&rdquo;
+          &ldquo;{String(grade.summary || "Intelligence analysis in progress...")}&rdquo;
         </p>
 
         <div className="grid grid-cols-2 gap-4 pt-4">
@@ -67,7 +67,7 @@ export const JdVerdictCard = ({ grade }: JdVerdictCardProps) => {
                 <div className="flex items-center gap-2.5">
                   <Icon size={14} className="text-primary/60" />
                   <span className="text-[12px] uppercase font-black tracking-widest text-muted-foreground/80 truncate">
-                    {key.replace("_", " ")}
+                    {String(key).replace("_", " ")}
                   </span>
                 </div>
                 <div className="flex items-end justify-between">
