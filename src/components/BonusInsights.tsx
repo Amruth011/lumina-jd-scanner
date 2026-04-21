@@ -3,8 +3,8 @@ import { Ghost, ShieldX, TrendingDown, Star, Milestone, Sparkle } from "lucide-r
 import type { DecodeResult } from "@/types/jd";
 
 interface BonusInsightsProps {
-  insights?: DecodeResult["bonus_insights"];
-  salary?: DecodeResult["salary_estimate"];
+  insights?: DecodeResult["bonus_pulse"];
+  salary?: DecodeResult["logistics"]["salary_range"];
 }
 
 export const BonusInsights = ({ insights, salary }: BonusInsightsProps) => {
@@ -60,7 +60,7 @@ export const BonusInsights = ({ insights, salary }: BonusInsightsProps) => {
                         </span>
                     </div>
                     <p className="text-[10px] text-muted-foreground leading-tight italic">
-                        {salary.source_note}
+                        {salary.note}
                     </p>
                 </div>
             ) : (
@@ -74,7 +74,7 @@ export const BonusInsights = ({ insights, salary }: BonusInsightsProps) => {
         <div className="glass-panel p-6 rounded-[2rem] border-white/5 space-y-4">
             <span className="text-[9px] uppercase font-black tracking-widest text-muted-foreground/60">Career Trajectory</span>
             <div className="space-y-2">
-                {insights?.career_growth?.map((role, i) => (
+                {insights?.career_growth?.trajectory?.map((role, i) => (
                     <div key={i} className="flex items-center gap-2 group">
                         <Milestone size={10} className="text-primary/40 group-hover:text-primary transition-colors" />
                         <span className="text-xs font-display font-bold text-foreground/80 group-hover:text-foreground transition-all">

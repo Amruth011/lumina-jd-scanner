@@ -24,7 +24,6 @@ import { JdVerdictCard } from "@/components/JdVerdictCard";
 import { RecruiterLens } from "@/components/RecruiterLens";
 import { RoleDistribution } from "@/components/RoleDistribution";
 import { InterviewCoach } from "@/components/InterviewCoach";
-import { BonusInsights } from "@/components/BonusInsights";
 import { IcebergAnalysis } from "@/components/IcebergAnalysis";
 import { HowItWorksSection } from "@/components/HowItWorksSection";
 import { scavengeSkills } from "@/lib/skillScavenger";
