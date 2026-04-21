@@ -13,116 +13,66 @@ const corsHeaders = {
 
 const JD_SCHEMA = {
   valid: true,
-  title: "Role Name",
-  skills: [{ category: "Technical|Foundations|Education|Preferred", skill: "string", importance: 0 }],
+  title: "",
+  skills: [{ category: "", skill: "", importance: 0 }],
   requirements: { education: [], experience: "", soft_skills: [], agreements: [] },
-  winning_strategy: [{ title: "step", description: "detail" }],
+  winning_strategy: [{ title: "", description: "" }],
   grade: { 
-    score: 0, 
-    letter: "S", 
-    summary: "", 
+    score: 0, letter: "S", summary: "", 
     breakdown: { clarity: 0, realistic: 0, compensation: 0, red_flags: 0, benefits: 0, growth: 0, inclusivity: 0, readability: 0 }, 
     plain_english_summary: [] 
   },
   red_flags: [{ phrase: "", intensity: 0, note: "" }],
   recruiter_lens: [{ jargon: "", reality: "" }],
-  qualifiers: { 
-    must_have_percent: 0, 
-    nice_to_have_percent: 0, 
-    seniority_level: 0, 
-    experience: { professional: 0, project_proof: 0 }, 
-    education: { degree_required: false, skills_first_percent: 0 } 
-  },
+  qualifiers: { must_have_percent: 0, nice_to_have_percent: 0, seniority_level: 0, experience: { professional: 0, project_proof: 0 }, education: { degree_required: false, skills_first_percent: 0 } },
   logistics: { 
     salary_range: { min: 0, max: 0, currency: "INR", estimate: true, note: "" }, 
-    work_arrangement: { remote_friendly: "unspecified", office_presence: "none", flexible_hours: false }, 
+    work_arrangement: { remote_friendly: "", office_presence: "", flexible_hours: false }, 
     responsibility_mix: [], 
     archetype: { label: "", description: "", primary_focus: "", primary_tool: "", match_score: 0 } 
   },
   role_reality: { iceberg_above: [], iceberg_below: [], dimensions: { technical_depth: 0, research_autonomy: 0, client_interaction: 0, strategic_impact: 0, legacy_maintenance: 0 } },
   deep_dive: { 
-    day_in_life: [{ time: "09:00", task: "Title", description: "Descr" }], 
+    day_in_life: [{ time: "09:00", task: "", description: "" }], 
     health_radar: { market_position: 0, tech_innovation: 0, transparency: 0, client_quality: 0, employee_benefits: 0 }, 
     bias_analysis: { inclusivity_score: 0, gender_meter: "neutral", age_bias_graph: 0, tonal_map: [] }, 
     culture_radar: { innovation: 0, work_life_balance: 0, collaboration: 0, hierarchy: 0, results_driven: 0, stability: 0 } 
   },
   bonus_pulse: { ghost_job_probability: 0, desperation_meter: 0, competition_estimate: 0, skill_rarity: 0, interview_difficulty: 0, career_growth: { trajectory: [], potential_score: 0 }, tech_stack_popularity: [] },
-  interview_kit: { questions: [{ question: "Q", type: "technical", target_answer: "A" }], reverse_questions: [] },
+  interview_kit: { questions: [{ question: "", type: "technical", target_answer: "" }], reverse_questions: [] },
   resume_help: { keywords: [], bullets: [] }
 };
 
 NativeDeno.serve(async (req: Request) => {
-  // ── CORS PREFLIGHT ──
   if (req.method === "OPTIONS") {
-    return new Response("ok", { 
-      headers: {
-        ...corsHeaders,
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-      } 
-    });
+    return new Response("ok", { headers: { ...corsHeaders, "Access-Control-Allow-Methods": "POST, OPTIONS", } });
   }
 
   try {
-    const body = await req.json().catch(() => {
-        throw new Error("Failed to parse request body. Ensure it is valid JSON.");
-    });
-    
-    // ── DIAGNOSTIC PING MODE ──
-    if (body?.ping) {
-      console.info("Lumina Diagnostic: Native Connectivity Ping Received");
-      return new Response(JSON.stringify({ status: "ok", message: "Lumina Engine Status: HEALTHY" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
+    const body = await req.json().catch(() => { throw new Error("Failed to parse request body."); });
     const { jdText } = body;
     if (!jdText) throw new Error("Job description input is missing.");
 
-    // ── SECRET SANITIZATION ──
     const rawKey = NativeDeno.env.get("GROQ_API_KEY");
     const groqKey = rawKey?.replace(/[^a-zA-Z0-9_-]/g, '')?.trim();
-    
-    if (!groqKey || groqKey.length < 10) {
-      console.error("GROQ_API_KEY is null or corrupt.");
-      throw new Error(`Auth Config Error (Key Length: ${rawKey?.length || 0})`);
-    }
-    
-    console.log(`Lumina Engine [v2.6]: Processing JD (${jdText.length} chars)...`);
+    if (!groqKey) throw new Error("Auth Config Error: Missing API Key");
 
-    // ── TOKEN SAFETY ──
-    // Massive JDs can cause timeouts. Capping to 8k chars for stability.
     const safeJD = jdText.substring(0, 8000); 
-
-    const fallbackModels = [
-      "llama-3.3-70b-versatile",
-      "mixtral-8x7b-32768",
-      "llama-3-8b-8192"
-    ];
+    const fallbackModels = ["llama-3.3-70b-versatile", "mixtral-8x7b-32768", "llama-3-8b-8192"];
 
     let resultText = "";
     let lastError = "";
 
-    for (let i = 0; i < fallbackModels.length; i++) {
-        const model = fallbackModels[i];
+    for (const model of fallbackModels) {
         try {
-            console.log(`Lumina Engine: Attempting analysis via ${model}...`);
             const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
-                headers: { 
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${groqKey}`
-                },
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${groqKey}` },
                 body: JSON.stringify({
                     model: model,
                     messages: [
-                        { 
-                            role: "system", 
-                            content: "You are Lumina Ultra, an elite career intelligence engine. Analyze the provided JD and return the analysis in the exact JSON format requested. CRITICAL: Never return null for arrays or objects; use empty placeholders instead. Return ONLY raw JSON." 
-                        },
-                        { 
-                            role: "user", 
-                            content: `JD: ${safeJD}\n\nSCHEMA:\n${JSON.stringify(JD_SCHEMA)}` 
-                        }
+                        { role: "system", content: "You are Lumina Ultra. Analyze the JD and return JSON. Never return null for arrays; use empty placeholders. Return ONLY raw JSON." },
+                        { role: "user", content: `JD: ${safeJD}\n\nSCHEMA:\n${JSON.stringify(JD_SCHEMA)}` }
                     ],
                     response_format: { type: "json_object" },
                     temperature: 0.1,
@@ -134,52 +84,38 @@ NativeDeno.serve(async (req: Request) => {
                 const status = groqResponse.status;
                 const errorBody = await groqResponse.text();
                 if (status === 429) {
-                    console.warn(`Lumina Engine: Rate Limit (429) on ${model}. Switching fallback...`);
-                    lastError = "Rate Limit Exceeded";
+                    lastError = "Rate Limit Exceeded (429)";
                     continue; 
                 }
-                throw new Error(`AI Provider Error (${status}): ${errorBody.substring(0, 100)}`);
+                throw new Error(`AI Provider Error (${status}): ${errorBody.substring(0, 150)}`);
             }
 
             const data = await groqResponse.json();
             resultText = data.choices?.[0]?.message?.content;
-            if (resultText) {
-                console.log(`Lumina Engine: Successful generation via ${model}`);
-                break;
-            }
+            if (resultText) break;
         } catch (err: unknown) {
             lastError = err instanceof Error ? err.message : String(err);
-            if (lastError.includes("429") || lastError.includes("Rate Limit")) {
-                continue;
-            }
+            if (lastError.includes("429") || lastError.includes("Rate Limit")) continue;
             throw err;
         }
     }
 
-    if (!resultText) throw new Error(`All Intelligence Engines exhausted: ${lastError}`);
+    if (!resultText) throw new Error(`Engines exhausted: ${lastError}`);
 
     let parsed;
     try {
       const firstBrace = resultText.indexOf('{');
       const lastBrace = resultText.lastIndexOf('}');
-      const cleanJsonText = resultText.substring(firstBrace, lastBrace + 1);
-      parsed = JSON.parse(cleanJsonText);
+      parsed = JSON.parse(resultText.substring(firstBrace, lastBrace + 1));
     } catch (e) {
-      console.error("JSON Post-Process Failure. Content:", resultText);
       throw new Error("Intelligence Engine returned malformed content.");
     }
     
-    return new Response(JSON.stringify(parsed), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(JSON.stringify(parsed), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
   } catch (e) {
     const errorMsg = e instanceof Error ? e.message : "System Exception";
-    console.error("Internal Engine Fault:", errorMsg);
-    return new Response(JSON.stringify({ 
-        error: `Lumina Engine Fault: ${errorMsg}`,
-        details: "Consult logs in Supabase Dashboard -> Edge Functions -> decode-jd"
-    }), {
+    return new Response(JSON.stringify({ error: `Lumina Engine Fault: ${errorMsg}`, details: errorMsg }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
