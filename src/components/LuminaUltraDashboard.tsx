@@ -39,7 +39,14 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
     score: 0, 
     letter: '?', 
     summary: 'Intelligence Report Pending...', 
-    breakdown: {}, 
+    breakdown: {
+      clarity: 0,
+      realistic: 0,
+      compensation: 0,
+      red_flags: 0,
+      benefits: 0,
+      growth: 0
+    }, 
     plain_english_summary: [] 
   };
 
@@ -170,7 +177,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
             {/* Strategic Details & Risk Decoder [NEW: Moving Seniority here] */}
             <div className="lg:col-span-12 xl:col-span-5 flex flex-col gap-6">
                 {/* Seniority Dashboard (Moved from left side to optimize space) */}
-                <div className="glass-panel p-8 flex flex-col items-center group relative overflow-hidden bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-white-20 rounded-[3rem]">
+                <div className="glass-panel p-8 flex flex-col items-center group relative overflow-hidden bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-white/20 rounded-[3rem]">
                     <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-700">
                         <Activity size={60} className="text-accent-emerald" />
                     </div>
@@ -244,7 +251,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
 
                 {/* Red Flag Decoder */}
                 <div className="glass-panel p-8 rounded-[3rem] border-white/20 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-5 relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-red-500-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 bg-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div className="flex items-center justify-between relative z-10">
                         <div className="flex items-center gap-3">
                             <ShieldAlert size={18} className="text-red-500" />

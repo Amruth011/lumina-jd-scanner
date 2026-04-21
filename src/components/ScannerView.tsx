@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect, lazy } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Brain, Filter, LayoutDashboard, Search, LogOut, LogIn, Loader2, Save, BookmarkCheck, CheckCircle2, RefreshCw, ArrowRight, Shield, Zap, BarChart3, Briefcase, BrainCircuit, ShieldCheck, Info } from "lucide-react";
@@ -10,22 +10,11 @@ import { GlassTextArea } from "@/components/GlassTextArea";
 import { DecodeButton } from "@/components/DecodeButton";
 import { LuminaUltraDashboard } from "./LuminaUltraDashboard";
 import { JdActionCta } from "./JdActionCta";
-import { SkillRadarChart } from "@/components/SkillRadarChart";
-import { SkillProgressBars } from "@/components/SkillProgressBars";
-import { CriticalRequirements } from "@/components/CriticalRequirements";
-import { WinningStrategy } from "@/components/WinningStrategy";
 import { ResumeGapAnalyzer } from "@/components/ResumeGapAnalyzer";
-import { ATSKeywordScanner } from "@/components/ATSKeywordScanner";
 import { ATSScoreSimulator } from "@/components/ATSScoreSimulator";
 import { ResumeEnhancer } from "@/components/ResumeEnhancer";
 import { MasterVault } from "@/components/MasterVault";
 import { ResumeGenerator } from "@/components/ResumeGenerator";
-import { JdVerdictCard } from "@/components/JdVerdictCard";
-import { RecruiterLens } from "@/components/RecruiterLens";
-import { RoleDistribution } from "@/components/RoleDistribution";
-import { InterviewCoach } from "@/components/InterviewCoach";
-import { IcebergAnalysis } from "@/components/IcebergAnalysis";
-import { HowItWorksSection } from "@/components/HowItWorksSection";
 import { scavengeSkills } from "@/lib/skillScavenger";
 import type { DecodeResult, ResumeGapResult } from "@/types/jd";
 
