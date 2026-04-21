@@ -28,18 +28,19 @@ const JD_SCHEMA = {
   logistics: { 
     salary_range: { min: 0, max: 0, currency: "INR", estimate: true, note: "" }, 
     work_arrangement: { remote_friendly: "", office_presence: "", flexible_hours: false }, 
-    responsibility_mix: [], 
-    archetype: { label: "", description: "", primary_focus: "", primary_tool: "", match_score: 0 } 
+    responsibility_mix: [{ label: "", percent: 0 }], 
+    archetype: { label: "", description: "", primary_focus: "", primary_tool: "", match_score: 0 },
+    hard_soft_ratio: { hard: 0, soft: 0 }
   },
   role_reality: { iceberg_above: [], iceberg_below: [], dimensions: { technical_depth: 0, research_autonomy: 0, client_interaction: 0, strategic_impact: 0, legacy_maintenance: 0 } },
   deep_dive: { 
     day_in_life: [{ time: "09:00", task: "", description: "" }], 
     health_radar: { market_position: 0, tech_innovation: 0, transparency: 0, client_quality: 0, employee_benefits: 0 }, 
-    bias_analysis: { inclusivity_score: 0, gender_meter: "neutral", age_bias_graph: 0, tonal_map: [] }, 
+    bias_analysis: { inclusivity_score: 0, gender_meter: "neutral", age_bias_graph: 0, tonal_map: [{ category: "", tone: "" }] }, 
     culture_radar: { innovation: 0, work_life_balance: 0, collaboration: 0, hierarchy: 0, results_driven: 0, stability: 0 } 
   },
-  bonus_pulse: { ghost_job_probability: 0, desperation_meter: 0, competition_estimate: 0, skill_rarity: 0, interview_difficulty: 0, career_growth: { trajectory: [], potential_score: 0 }, tech_stack_popularity: [] },
-  interview_kit: { questions: [{ question: "", type: "technical", target_answer: "" }], reverse_questions: [] },
+  bonus_pulse: { ghost_job_probability: 0, desperation_meter: 0, competition_estimate: 0, skill_rarity: 0, interview_difficulty: 0, career_growth: { trajectory: [], potential_score: 0 }, tech_stack_popularity: [{ name: "", demand: "Standard" }] },
+  interview_kit: { questions: [{ question: "", type: "technical", tip: "", target_answer: "" }], reverse_questions: [] },
   resume_help: { keywords: [], bullets: [] }
 };
 

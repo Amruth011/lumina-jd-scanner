@@ -53,7 +53,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
   };
 
   const copyAllKeywords = () => {
-    if (results?.resume_help?.keywords) {
+    if (results?.resume_help?.keywords?.length) {
         navigator.clipboard.writeText(results.resume_help.keywords.join(", "));
         toast.success("Keywords copied to clipboard");
     }
@@ -206,9 +206,9 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
                                 <div className="space-y-1">
                                     <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Experience Req.</span>
                                     <p className="text-[11px] font-bold text-foreground">
-                                        {(results?.qualifiers?.experience?.professional ?? 0) <= 1.5 || results?.title?.toLowerCase().includes('trainee') || results?.title?.toLowerCase().includes('intern')
+                                        {(results?.qualifiers?.experience?.professional ?? 0) <= 1.5 || results?.title?.toLowerCase()?.includes('trainee') || results?.title?.toLowerCase()?.includes('intern')
                                             ? "Early Career / Entry" 
-                                            : `${results?.qualifiers?.experience?.professional}yr+ Domain Exp.`}
+                                            : `${results?.qualifiers?.experience?.professional ?? 0}yr+ Domain Exp.`}
                                     </p>
                                 </div>
                                 <div className="space-y-1 text-right">
