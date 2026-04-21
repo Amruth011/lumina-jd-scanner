@@ -76,7 +76,7 @@ NativeDeno.serve(async (req: Request) => {
                 body: JSON.stringify({
                     model: model,
                     messages: [
-                        { role: "system", content: "You are Lumina Ultra. Analyze the JD and return JSON. Never return null for arrays; use empty placeholders. Return ONLY raw JSON." },
+                        { role: "system", content: "You are Lumina Ultra. Analyze the JD and return JSON. IMPORTANT: Use plain strings for 'experience', 'education', 'titles', and 'category' fields. NEVER use nested objects for these fields. Never return null; use empty placeholders. Return ONLY raw JSON." },
                         { role: "user", content: `JD: ${safeJD}\n\nSCHEMA:\n${JSON.stringify(JD_SCHEMA)}` }
                     ],
                     response_format: { type: "json_object" },

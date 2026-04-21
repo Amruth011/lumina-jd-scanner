@@ -78,17 +78,23 @@ export const CriticalRequirements = ({ requirements }: CriticalRequirementsProps
                 <span className="text-tag text-muted-foreground/40">{config.title}</span>
               </div>
               <div className="flex flex-wrap gap-2.5">
-                {section.items.map((item, i) => (
-                  <motion.span
-                    key={item}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.03 * i, type: "spring", stiffness: 300 }}
-                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-display font-bold border transition-all cursor-default shadow-sm ${config.chipStyle}`}
-                  >
-                    {item}
-                  </motion.span>
-                ))}
+                {section.items.map((item, i) => {
+                  const displayValue = typeof item === 'object' && item !== null
+                    ? Object.values(item).filter(v => typeof v !== 'object').join(' ')
+                    : String(item || "");
+                  
+                  return (
+                    <motion.span
+                      key={`${section.key}-${i}`}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.03 * i, type: "spring", stiffness: 300 }}
+                      className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-display font-bold border transition-all cursor-default shadow-sm ${config.chipStyle}`}
+                    >
+                      {displayValue}
+                    </motion.span>
+                  );
+                })}
               </div>
             </motion.div>
           );

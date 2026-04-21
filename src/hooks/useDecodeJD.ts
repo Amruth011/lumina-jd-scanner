@@ -53,112 +53,120 @@ export const useDecodeJD = () => {
         return;
       }
 
-      // ── DATA HYDRATION & REPAIR ──
-      // This ensures that even if the AI misses a field, the UI never crashes
+      // ── DATA HYDRATION & OMNI-RESILIENCE REPAIR ──
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const hydrate = (raw: Record<string, any>): DecodeResult => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const safeArr = (arr: any) => Array.isArray(arr) ? arr.filter(Boolean) : [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const safeStr = (v: any) => typeof v === 'object' && v !== null ? Object.values(v).filter(val => typeof val !== 'object').join(' ') : String(v || "");
+        
         return {
            ...raw,
-           title: raw.title || "Intelligence Report",
+           title: safeStr(raw.title || raw.job_title) || "Intelligence Report",
            grade: {
-             score: raw.grade?.score ?? 0,
-             letter: raw.grade?.letter ?? "?",
-             summary: raw.grade?.summary || "Intelligence unavailable",
+             score: Number(raw.grade?.score || raw.score || raw.total_score) || 0,
+             letter: String(raw.grade?.letter || raw.letter || "?"),
+             summary: safeStr(raw.grade?.summary || raw.summary) || "Intelligence unavailable",
              breakdown: {
-                clarity: raw.grade?.breakdown?.clarity ?? 0,
-                realistic: raw.grade?.breakdown?.realistic ?? 0,
-                compensation: raw.grade?.breakdown?.compensation ?? 0,
-                red_flags: raw.grade?.breakdown?.red_flags ?? 0,
-                benefits: raw.grade?.breakdown?.benefits ?? 0,
-                growth: raw.grade?.breakdown?.growth ?? 0,
-                inclusivity: raw.grade?.breakdown?.inclusivity ?? 0,
-                readability: raw.grade?.breakdown?.readability ?? 0,
+                clarity: Number(raw.grade?.breakdown?.clarity) || 0,
+                realistic: Number(raw.grade?.breakdown?.realistic) || 0,
+                compensation: Number(raw.grade?.breakdown?.compensation) || 0,
+                red_flags: Number(raw.grade?.breakdown?.red_flags) || 0,
+                benefits: Number(raw.grade?.breakdown?.benefits) || 0,
+                growth: Number(raw.grade?.breakdown?.growth) || 0,
+                inclusivity: Number(raw.grade?.breakdown?.inclusivity) || 0,
+                readability: Number(raw.grade?.breakdown?.readability) || 0,
              },
-             plain_english_summary: Array.isArray(raw.grade?.plain_english_summary) ? raw.grade.plain_english_summary : []
+             plain_english_summary: safeArr(raw.grade?.plain_english_summary || raw.plain_english_summary)
            },
-           skills: Array.isArray(raw.skills) ? raw.skills : [],
-           red_flags: Array.isArray(raw.red_flags) ? raw.red_flags : [],
-           recruiter_lens: Array.isArray(raw.recruiter_lens) ? raw.recruiter_lens : [],
+           // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           skills: safeArr(raw.skills).map((s: any) => ({
+             skill: safeStr(s?.skill || s),
+             importance: Number(s?.importance) || 50,
+             category: safeStr(s?.category || "Technical")
+           })),
+           red_flags: safeArr(raw.red_flags),
+           recruiter_lens: safeArr(raw.recruiter_lens),
            requirements: {
-             education: Array.isArray(raw.requirements?.education) ? raw.requirements.education : [],
-             experience: raw.requirements?.experience ?? "Not specified",
-             soft_skills: Array.isArray(raw.requirements?.soft_skills) ? raw.requirements.soft_skills : [],
-             agreements: Array.isArray(raw.requirements?.agreements) ? raw.requirements.agreements : []
+             education: safeArr(raw.requirements?.education),
+             experience: safeStr(raw.requirements?.experience),
+             soft_skills: safeArr(raw.requirements?.soft_skills),
+             agreements: safeArr(raw.requirements?.agreements)
            },
            logistics: {
               ...raw.logistics,
               salary_range: {
-                min: raw.logistics?.salary_range?.min ?? 0,
-                max: raw.logistics?.salary_range?.max ?? 0,
-                currency: raw.logistics?.salary_range?.currency || "INR",
+                min: Number(raw.logistics?.salary_range?.min) || 0,
+                max: Number(raw.logistics?.salary_range?.max) || 0,
+                currency: safeStr(raw.logistics?.salary_range?.currency || "INR"),
                 estimate: raw.logistics?.salary_range?.estimate ?? true,
-                note: raw.logistics?.salary_range?.note || ""
+                note: safeStr(raw.logistics?.salary_range?.note)
               },
               work_arrangement: {
-                remote_friendly: raw.logistics?.work_arrangement?.remote_friendly || "unspecified",
-                office_presence: raw.logistics?.work_arrangement?.office_presence || "unspecified",
+                remote_friendly: safeStr(raw.logistics?.work_arrangement?.remote_friendly) || "unspecified",
+                office_presence: safeStr(raw.logistics?.work_arrangement?.office_presence) || "unspecified",
                 flexible_hours: !!raw.logistics?.work_arrangement?.flexible_hours
               },
-              responsibility_mix: Array.isArray(raw.logistics?.responsibility_mix) ? raw.logistics.responsibility_mix : [],
+              responsibility_mix: safeArr(raw.logistics?.responsibility_mix),
               archetype: {
-                label: raw.logistics?.archetype?.label || "Generalist",
-                description: raw.logistics?.archetype?.description || "",
-                primary_focus: raw.logistics?.archetype?.primary_focus || "",
-                primary_tool: raw.logistics?.archetype?.primary_tool || "",
-                match_score: raw.logistics?.archetype?.match_score ?? 50
+                label: safeStr(raw.logistics?.archetype?.label) || "Generalist",
+                description: safeStr(raw.logistics?.archetype?.description),
+                primary_focus: safeStr(raw.logistics?.archetype?.primary_focus),
+                primary_tool: safeStr(raw.logistics?.archetype?.primary_tool),
+                match_score: Number(raw.logistics?.archetype?.match_score) || 50
               }
            },
            deep_dive: {
-             day_in_life: Array.isArray(raw.deep_dive?.day_in_life) ? raw.deep_dive.day_in_life : [],
+             day_in_life: safeArr(raw.deep_dive?.day_in_life),
              health_radar: {
-               market_position: raw.deep_dive?.health_radar?.market_position ?? 50,
-               tech_innovation: raw.deep_dive?.health_radar?.tech_innovation ?? 50,
-               transparency: raw.deep_dive?.health_radar?.transparency ?? 50,
-               client_quality: raw.deep_dive?.health_radar?.client_quality ?? 50,
-               employee_benefits: raw.deep_dive?.health_radar?.employee_benefits ?? 50
+               market_position: Number(raw.deep_dive?.health_radar?.market_position) || 50,
+               tech_innovation: Number(raw.deep_dive?.health_radar?.tech_innovation) || 50,
+               transparency: Number(raw.deep_dive?.health_radar?.transparency) || 50,
+               client_quality: Number(raw.deep_dive?.health_radar?.client_quality) || 50,
+               employee_benefits: Number(raw.deep_dive?.health_radar?.employee_benefits) || 50
              },
              bias_analysis: {
-               inclusivity_score: raw.deep_dive?.bias_analysis?.inclusivity_score ?? 50,
-               gender_meter: raw.deep_dive?.bias_analysis?.gender_meter || "neutral",
-               age_bias_graph: raw.deep_dive?.bias_analysis?.age_bias_graph ?? 50,
-               tonal_map: Array.isArray(raw.deep_dive?.bias_analysis?.tonal_map) ? raw.deep_dive.bias_analysis.tonal_map : []
+               inclusivity_score: Number(raw.deep_dive?.bias_analysis?.inclusivity_score) || 50,
+               gender_meter: safeStr(raw.deep_dive?.bias_analysis?.gender_meter) || "neutral",
+               age_bias_graph: Number(raw.deep_dive?.bias_analysis?.age_bias_graph) || 50,
+               tonal_map: safeArr(raw.deep_dive?.bias_analysis?.tonal_map)
              },
              culture_radar: {
-               innovation: raw.deep_dive?.culture_radar?.innovation ?? 50,
-               work_life_balance: raw.deep_dive?.culture_radar?.work_life_balance ?? 50,
-               collaboration: raw.deep_dive?.culture_radar?.collaboration ?? 50,
-               hierarchy: raw.deep_dive?.culture_radar?.hierarchy ?? 50,
-               results_driven: raw.deep_dive?.culture_radar?.results_driven ?? 50,
-               stability: raw.deep_dive?.culture_radar?.stability ?? 50
+               innovation: Number(raw.deep_dive?.culture_radar?.innovation) || 50,
+               work_life_balance: Number(raw.deep_dive?.culture_radar?.work_life_balance) || 50,
+               collaboration: Number(raw.deep_dive?.culture_radar?.collaboration) || 50,
+               hierarchy: Number(raw.deep_dive?.culture_radar?.hierarchy) || 50,
+               results_driven: Number(raw.deep_dive?.culture_radar?.results_driven) || 50,
+               stability: Number(raw.deep_dive?.culture_radar?.stability) || 50
              }
            },
            bonus_pulse: {
-             ghost_job_probability: raw.bonus_pulse?.ghost_job_probability ?? 0,
-             desperation_meter: raw.bonus_pulse?.desperation_meter ?? 0,
-             competition_estimate: raw.bonus_pulse?.competition_estimate ?? 0,
-             skill_rarity: raw.bonus_pulse?.skill_rarity ?? 0,
-             interview_difficulty: raw.bonus_pulse?.interview_difficulty ?? 0,
+             ghost_job_probability: Number(raw.bonus_pulse?.ghost_job_probability) || 0,
+             desperation_meter: Number(raw.bonus_pulse?.desperation_meter) || 0,
+             competition_estimate: Number(raw.bonus_pulse?.competition_estimate) || 0,
+             skill_rarity: Number(raw.bonus_pulse?.skill_rarity) || 0,
+             interview_difficulty: Number(raw.bonus_pulse?.interview_difficulty) || 0,
              career_growth: {
-               trajectory: Array.isArray(raw.bonus_pulse?.career_growth?.trajectory) ? raw.bonus_pulse.career_growth.trajectory : [],
-               potential_score: raw.bonus_pulse?.career_growth?.potential_score ?? 50
+               trajectory: safeArr(raw.bonus_pulse?.career_growth?.trajectory),
+               potential_score: Number(raw.bonus_pulse?.career_growth?.potential_score) || 50
              },
-             tech_stack_popularity: Array.isArray(raw.bonus_pulse?.tech_stack_popularity) ? raw.bonus_pulse.tech_stack_popularity : []
+             tech_stack_popularity: safeArr(raw.bonus_pulse?.tech_stack_popularity)
            },
            interview_kit: {
-             questions: Array.isArray(raw.interview_kit?.questions) ? raw.interview_kit.questions : [],
-             reverse_questions: Array.isArray(raw.interview_kit?.reverse_questions) ? raw.interview_kit.reverse_questions : []
+             questions: safeArr(raw.interview_kit?.questions),
+             reverse_questions: safeArr(raw.interview_kit?.reverse_questions)
            },
            resume_help: {
-             keywords: Array.isArray(raw.resume_help?.keywords) ? raw.resume_help.keywords : [],
-             bullets: Array.isArray(raw.resume_help?.bullets) ? raw.resume_help.bullets : []
+             keywords: safeArr(raw.resume_help?.keywords),
+             bullets: safeArr(raw.resume_help?.bullets)
            },
-           winning_strategy: Array.isArray(data.winning_strategy) 
-            ? data.winning_strategy.map((ws: { title?: string, description?: string }, idx: number) => 
+           // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           winning_strategy: safeArr(raw.winning_strategy || raw.strategy).map((ws: any, idx: number) => 
                 typeof ws === 'string' 
                   ? { title: `Strategy ${idx + 1}`, description: ws }
-                  : { title: ws?.title || `Strategy ${idx + 1}`, description: ws?.description || '' }
-              )
-            : []
+                  : { title: safeStr(ws?.title) || `Strategy ${idx + 1}`, description: safeStr(ws?.description) }
+           )
         };
       };
 
