@@ -208,8 +208,8 @@ RETURN JSON FORMAT ONLY:
 
         const techModels = [
           "llama-3.3-70b-versatile",
-          "mixtral-8x7b-32768",
-          "llama-3-8b-8192"
+          "llama-3.1-8b-instant",
+          "gemma2-9b-it"
         ];
 
         // Helper for exponential backoff
@@ -238,9 +238,10 @@ RETURN JSON FORMAT ONLY:
             if (!apiResponse.ok) {
               const status = apiResponse.status;
               const errorData = await apiResponse.json().catch(() => ({}));
-              if (status === 429) {
-                console.warn(`Smart Sync: 429 Rate Limit on ${model}.`);
-                lastError = "Rate Limit Exceeded (Tokens Per Minute)";
+              // Resilience: Continue on Rate Limit (429) OR Discovery Error (400/404)
+              if (status === 429 || status === 400 || status === 404) {
+                console.warn(`Smart Sync: Model ${model} unavailable (${status}).`);
+                lastError = `Model ${model} unavailable (${status})`;
                 continue; 
               }
               throw new Error(`AI Engine Error (${status}): ${errorData.error?.message || apiResponse.statusText}`);

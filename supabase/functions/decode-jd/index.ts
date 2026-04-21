@@ -58,7 +58,11 @@ NativeDeno.serve(async (req: Request) => {
     if (!groqKey) throw new Error("Auth Config Error: Missing API Key");
 
     const safeJD = jdText.substring(0, 8000); 
-    const fallbackModels = ["llama-3.3-70b-versatile", "mixtral-8x7b-32768", "llama-3-8b-8192"];
+    const fallbackModels = [
+      "llama-3.3-70b-versatile",
+      "llama-3.1-8b-instant",
+      "gemma2-9b-it"
+    ];
 
     let resultText = "";
     let lastError = "";
@@ -83,8 +87,10 @@ NativeDeno.serve(async (req: Request) => {
             if (!groqResponse.ok) {
                 const status = groqResponse.status;
                 const errorBody = await groqResponse.text();
-                if (status === 429) {
-                    lastError = "Rate Limit Exceeded (429)";
+                // Persist the specific error code for the resilience loop
+                // We now continue on 400 (model retired) as well to ensure we reach the 8B fallback
+                if (status === 429 || status === 400 || status === 404) {
+                    lastError = `Model ${model} unavailable (${status})`;
                     continue; 
                 }
                 throw new Error(`AI Provider Error (${status}): ${errorBody.substring(0, 150)}`);
@@ -95,7 +101,8 @@ NativeDeno.serve(async (req: Request) => {
             if (resultText) break;
         } catch (err: unknown) {
             lastError = err instanceof Error ? err.message : String(err);
-            if (lastError.includes("429") || lastError.includes("Rate Limit")) continue;
+            // Continue to next model on any retriable error
+            if (lastError.includes("429") || lastError.includes("400") || lastError.includes("404")) continue;
             throw err;
         }
     }
