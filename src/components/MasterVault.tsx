@@ -225,29 +225,26 @@ RETURN JSON FORMAT ONLY:
             }
             
             console.log(`Smart Sync v2.7: Requesting ${model}...`);
-            const apiResponse = await fetch("/api/analyze", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
+            const { data: rawData, error: invokeError } = await supabase.functions.invoke("analyze", {
+              body: {
                 model: model,
                 messages: [{ role: "user", content: syncPrompt + "\n\nIMPORTANT: Return ONLY valid JSON." }],
                 response_format: { type: "json_object" }
-              }),
+              },
             });
-
-            if (!apiResponse.ok) {
-              const status = apiResponse.status;
-              const errorData = await apiResponse.json().catch(() => ({}));
+            
+            if (invokeError) {
               // Resilience: Continue on Rate Limit (429) OR Discovery Error (400/404)
-              if (status === 429 || status === 400 || status === 404) {
-                console.warn(`Smart Sync: Model ${model} unavailable (${status}).`);
-                lastError = `Model ${model} unavailable (${status})`;
-                continue; 
-              }
-              throw new Error(`AI Engine Error (${status}): ${errorData.error?.message || apiResponse.statusText}`);
+              console.warn(`Smart Sync: Model ${model} failed (${invokeError.message}).`);
+              lastError = `Model ${model} failed (${invokeError.message})`;
+              continue;
             }
 
-            const rawData = await apiResponse.json();
+            if (!rawData) {
+                lastError = `Model ${model} returned null data`;
+                continue;
+            }
+
             resultText = rawData.choices?.[0]?.message?.content;
             if (resultText) {
               console.log(`Smart Sync: Success with ${model}`);
@@ -471,6 +468,14 @@ RETURN JSON FORMAT ONLY:
           </h2>
           <p className="text-muted-foreground font-medium max-w-lg">Your master career dataset. Every achievement stored here powers the AI generation engine.</p>
         </div>
+        <button 
+          onClick={fetchData}
+          disabled={isLoading}
+          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all disabled:opacity-50"
+        >
+          {isLoading ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
+          Refresh Vault
+        </button>
       </div>
 
       {/* ── READINESS PROGRESS BAR (RELOCATED) ── */}
@@ -839,7 +844,7 @@ RETURN JSON FORMAT ONLY:
       {/* Edit Modal - Upgraded for Quantifier Assistant */}
       <AnimatePresence>
         {editingItem && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

@@ -38,8 +38,16 @@ export const ResumeEnhancer = ({ resumeText, skills, deductions, jobTitle, gapRe
         },
       });
 
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
+      if (error) {
+        console.error("Invoke Error:", error);
+        throw new Error(`AI Engine Offline: ${error.message || "Connection timed out"}`);
+      }
+      
+      if (!data) throw new Error("AI Engine returned no data.");
+      
+      if (data.error) {
+        throw new Error(`AI Engine Error: ${data.error}`);
+      }
 
       setResume({
         professional_summary: data.professional_summary || "",
@@ -50,9 +58,12 @@ export const ResumeEnhancer = ({ resumeText, skills, deductions, jobTitle, gapRe
       });
       setIsOpen(true);
       toast.success("ATS-optimized resume generated!");
-    } catch (err) {
+    } catch (err: any) {
       console.error("Resume generation error:", err);
-      toast.error((err as Error).message || "Failed to generate resume. Please try again.");
+      toast.error("Tailoring engine failed", {
+        description: err.message || "The AI is currently under high load. Please try again in 30 seconds.",
+        duration: 6000
+      });
     } finally {
       setIsGenerating(false);
     }

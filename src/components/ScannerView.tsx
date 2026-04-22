@@ -48,6 +48,16 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
   const [gapResult, setGapResult] = useState<ResumeGapResult | null>(null);
 
   useEffect(() => { setSavedJdId(null); }, [results]);
+  
+  // v2.8 State Sync: Listener for cross-component tab switching
+  useEffect(() => {
+    const handleSwitch = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail) handleTabSwitch(customEvent.detail as Tab);
+    };
+    window.addEventListener('switch-tab', handleSwitch);
+    return () => window.removeEventListener('switch-tab', handleSwitch);
+  }, []);
 
   const handleSaveJd = async () => {
     if (!user) { toast.info("Sign in to save your decoded JDs."); navigate("/auth"); return; }
@@ -117,7 +127,19 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
           >
             {/* ── Text Input ── */}
-            <GlassTextArea value={jdText} onChange={setJdText} isScanning={isScanning} />
+            <div className="space-y-4">
+              <GlassTextArea value={jdText} onChange={setJdText} isScanning={isScanning} />
+              <div className="flex justify-between items-center px-4">
+                <span className={`text-[10px] font-black uppercase tracking-widest ${jdText.length > 15000 ? 'text-red-500' : 'text-muted-foreground/40'}`}>
+                  {jdText.length.toLocaleString()} / 15,000 Characters
+                </span>
+                {jdText.length > 15000 && (
+                  <span className="text-[10px] font-black uppercase tracking-widest text-red-500 animate-pulse">
+                    Limit Crossed
+                  </span>
+                )}
+              </div>
+            </div>
 
             <motion.div
               initial={{ opacity: 0 }}
@@ -128,7 +150,7 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
               <DecodeButton
                 onClick={handleDecode}
                 isLoading={isScanning}
-                disabled={jdText.trim().length < 20}
+                disabled={jdText.trim().length < 20 || jdText.length > 15000}
                 isDecoded={!!results}
               />
             </motion.div>

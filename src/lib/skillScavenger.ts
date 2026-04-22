@@ -2,7 +2,7 @@ import type { Skill, DecodeResult } from "@/types/jd";
 
 const commonPreferred = [
   // AI & Agentic Stack
-  "rag", "langchain", "agentic", "semantic search", "generative ai", "genai", "llm", "google agent",
+  "rag", "langchain", "langgraph", "agentic", "semantic search", "generative ai", "genai", "llm", "google agent", "hugging face", "vector databases", "agentic workflows", "kyc",
   // Data Science & Foundations
   "mathematics", "probability", "statistics", "algorithms", "ds foundational knowledge",
   "pandas", "numpy", "scikit", "scikit-learn", "matplotlib", "seaborn", "tableau", "power bi",
@@ -23,7 +23,14 @@ const commonPreferred = [
 const blacklist = ["go", "it", "at", "as", "is", "be", "do"];
 
 // Skills the user specifically wants in "Nice-to-Have"
-const forceNiceToHave = ["git", "aws", "azure", "gcp", "cloud", "spark", "pyspark", "hadoop", "big data", "docker", "kubernetes", "mlops"];
+const forceNiceToHave = ["git", "jenkins", "terraform", "jira", "agile", "scrum", "devops"];
+
+const requiredPatterns = [
+  "essential", "required", "must have", "proficiency in", "solid understanding", 
+  "foundational knowledge", "must-to-have", "mandatory", "expected", "proficiency",
+  "paramount", "expert", "hands-on", "proficient", "mastery", "years of experience",
+  "strong proficiency", "deep understanding", "accountable for"
+];
 
 const toTitleCase = (str: string) => {
   return str.replace(/\b\w/g, l => l.toUpperCase());
@@ -44,6 +51,15 @@ export const scavengeSkills = (initialSkills: Skill[], results: DecodeResult | n
     const identifiedSkills = new Set(initialMap.keys());
     const finalSkills = Array.from(initialMap.values());
     
+    // Divide JD into sections for context-aware weighting (Required vs Optional)
+    const sections = rawJd.split('\n');
+    const technicalSections = sections.filter(s => 
+      /essential|required|must have|technical|qualifications|responsibilities|what you'll need|what you’ll need/i.test(s)
+    ).join('\n');
+    const optionalSections = sections.filter(s => 
+      /preferred|optional|nice to have|plus|beneficial|advantage|desired|familiarity/i.test(s)
+    ).join('\n');
+
     const potentialSources = [
       ...(results?.resume_help?.keywords || []),
       ...(results?.resume_help?.bullets || []),
@@ -70,39 +86,43 @@ export const scavengeSkills = (initialSkills: Skill[], results: DecodeResult | n
       let isMentioned = false;
       let isHighIntensity = false;
       let isExplicitlyOptional = false;
+      let isCoreContext = firstTwentyPercent.includes(prefLower);
 
       potentialSources.forEach(source => {
         const sLower = source.toLowerCase();
         try {
-          // Use a stricter regex to avoid partial word matches
           const wordRegex = new RegExp(`\\b${prefLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
           
           if (wordRegex.test(sLower)) {
             isMentioned = true;
+
+            const inTechnical = technicalSections.toLowerCase().includes(prefLower);
+            const inOptional = optionalSections.toLowerCase().includes(prefLower);
+
             const matchIdx = sLower.indexOf(prefLower);
             const segment = sLower.substring(Math.max(0, matchIdx - 100), Math.min(sLower.length, matchIdx + 100));
 
-            if (optionalPatterns.some(p => segment.includes(p))) {
+            if (optionalPatterns.some(p => segment.includes(p)) || inOptional) {
               isExplicitlyOptional = true;
-            } else if (requiredPatterns.some(p => segment.includes(p))) {
+            } 
+            
+            if (requiredPatterns.some(p => segment.includes(p)) || inTechnical) {
               isHighIntensity = true;
             }
           }
-        } catch (e) { /* ignore invalid regex */ }
+        } catch (e) { /* ignore */ }
       });
 
       if (isMentioned) {
         const isForcedNice = forceNiceToHave.includes(prefLower);
-        const isFoundation = ["mathematics", "probability", "statistics", "algorithms", "ds foundational knowledge"].includes(prefLower);
-        const isEducation = ["computer science", "electrical engineering", "electronics", "machine learning degree", "data science degree"].includes(prefLower);
+        const isFoundation = ["mathematics", "probability", "statistics", "algorithms", "ds foundational knowledge", "python", "sql", "excel"].includes(prefLower);
+        const isExpertTech = ["rag", "langchain", "langgraph", "agentic", "generative ai", "llm", "semantic search", "vector database", "kyc", "compliance"].includes(prefLower);
         
-        // Foundations and Education in "What You'll Need" sections often don't have "required" right next to them
-        // but are mentioned in a list. We'll give them higher base importance if they are found.
-        if (!isForcedNice && !isExplicitlyOptional && (isHighIntensity || isFoundation || isEducation)) {
+        if (!isForcedNice && !isExplicitlyOptional && (isHighIntensity || isFoundation || isExpertTech || isCoreContext)) {
           finalSkills.push({ 
             skill: toTitleCase(pref), 
-            importance: 90, 
-            category: isEducation ? "Education" : isFoundation ? "Foundations" : "Technical" 
+            importance: isCoreContext ? 98 : 90, 
+            category: isExpertTech ? "GenAI" : isFoundation ? "Foundations" : "Technical" 
           });
         } else {
           finalSkills.push({ 
@@ -116,9 +136,8 @@ export const scavengeSkills = (initialSkills: Skill[], results: DecodeResult | n
     });
 
     return finalSkills;
-  } catch (err) {
-    console.error("Critical error in scavengeSkills:", err);
-    return initialSkills || [];
+  } catch (e) {
+    console.error("Scavenger Fault:", e);
+    return initialSkills;
   }
 };
-

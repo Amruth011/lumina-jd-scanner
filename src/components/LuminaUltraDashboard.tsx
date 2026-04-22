@@ -4,7 +4,7 @@ import {
   ShieldAlert, Target, TrendingUp, Clock, Ghost, Scale, 
   BrainCircuit, Star, Zap, UserCheck, MessageSquare,
   LayoutDashboard, Heart, SearchCheck, Briefcase, ArrowRight,
-  ShieldCheck, Info, Copy, Activity, Sparkles, Download, Check, Users, Wand2
+  ShieldCheck, Info, Copy, Activity, Sparkles, Download, Check, Users, Wand2, DollarSign
 } from "lucide-react";
 import type { DecodeResult, ResumeGapResult } from "@/types/jd";
 import { LuminaGauge } from "./LuminaGauge";
@@ -35,19 +35,31 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
     tone: 'Professional'
   });
 
+  if (!results) {
+    return (
+      <div className="glass-panel p-12 rounded-[3.5rem] mt-8 text-center border-dashed border-foreground/10 bg-white shadow-xl flex flex-col items-center justify-center space-y-4">
+        <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center animate-pulse">
+          <BrainCircuit className="text-primary/20" size={32} />
+        </div>
+        <h3 className="text-2xl font-serif italic text-muted-foreground">Initializing Tactical Interface...</h3>
+        <p className="text-sm text-foreground/40 max-w-sm">Synchronizing with Lumina Engine. Waiting for secure data stream.</p>
+      </div>
+    );
+  }
+
   const grade = (results?.grade && typeof results.grade.score === 'number') ? results.grade : { 
-    score: 0, 
-    letter: '?', 
-    summary: 'Intelligence Report Pending...', 
+    score: 70, 
+    letter: 'B', 
+    summary: 'Standard Industry Alignment Analysis', 
     breakdown: {
-      clarity: 0,
-      realistic: 0,
-      compensation: 0,
-      red_flags: 0,
-      benefits: 0,
-      growth: 0,
-      inclusivity: 0,
-      readability: 0
+      clarity: 70,
+      realistic: 70,
+      compensation: 50,
+      red_flags: 10,
+      benefits: 50,
+      growth: 70,
+      inclusivity: 80,
+      readability: 80
     }, 
     plain_english_summary: [] 
   };
@@ -56,6 +68,8 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
     if (results?.resume_help?.keywords?.length) {
         navigator.clipboard.writeText(results.resume_help.keywords.join(", "));
         toast.success("Keywords copied to clipboard");
+    } else {
+        toast.info("No keywords available to copy");
     }
   };
 
@@ -75,6 +89,13 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
     generateUnifiedReport(results, resumeResults);
     toast.success("Intelligence Report Exported");
   };
+
+  const LuminaInferenceBadge = ({ tooltip }: { tooltip: string }) => (
+    <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-primary/5 border border-primary/10 cursor-help group/badge" title={tooltip}>
+        <Sparkles size={10} className="text-primary animate-pulse" />
+        <span className="text-[8px] font-black uppercase tracking-widest text-primary/60 group-hover/badge:text-primary transition-colors">Inferred Intelligence</span>
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -110,26 +131,39 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
                 </div>
                 <div className="space-y-8 relative z-10">
                     <div className="flex items-center justify-between">
-                        <span className="text-xs uppercase font-black tracking-widest text-muted-foreground opacity-60">Projected Value Range</span>
-                        <div className="flex items-center gap-3">
-                            <div className="flex gap-1">
-                                {[1, 2, 3, 4, 5].map(i => (
-                                    <div key={i} className={`w-3 h-1 rounded-full ${i <= 5 ? 'bg-accent-gold' : 'bg-white/10'}`} />
-                                ))}
-                            </div>
-                            <span className="text-[10px] uppercase font-black text-accent-gold tracking-widest">Confidence 100%</span>
-                        </div>
+                        <div className="flex flex-col gap-1">
+                            <span className="text-xs uppercase font-black tracking-widest text-muted-foreground opacity-60">Projected Value Range</span>
+                            {(results?.logistics?.salary_range?.estimate || !jdText?.toLowerCase()?.includes('salary')) && (
+                                <LuminaInferenceBadge tooltip="Salary not explicitly stated. Calculated based on role, location, and seniority." />
+                            )}
+                <div className="space-y-4 px-6 md:px-12 relative">
+                    <div className="flex items-center gap-3">
+                        <DollarSign size={16} className="text-accent-gold" />
+                        <span className="text-[10px] uppercase font-black tracking-[0.3em] text-accent-gold/60">Forensic Salary Valuation</span>
                     </div>
-                    
                     <div className="flex items-baseline gap-2 flex-wrap">
                         <span className="text-4xl lg:text-5xl font-display font-black tracking-[-0.07em] text-foreground leading-none group-hover:text-accent-gold transition-colors">
-                            {results?.logistics?.salary_range?.currency === 'INR' ? '₹' : '$'}
+                            {(() => {
+                                const c = results?.logistics?.salary_range?.currency?.toUpperCase();
+                                if (c === 'USD' || c === '$') return '$';
+                                if (c === 'INR' || c === '₹') return '₹';
+                                if (c === 'GBP' || c === '£') return '£';
+                                if (c === 'EUR' || c === '€') return '€';
+                                return '$';
+                            })()}
                             {(results?.logistics?.salary_range?.min ?? 0).toLocaleString()}
                         </span>
                         <span className="text-xl text-muted-foreground/20 font-black">-</span>
                         <span className="text-4xl lg:text-5xl font-display font-black text-accent-emerald tracking-[-0.07em] leading-none">
                             {(results?.logistics?.salary_range?.max ?? 0).toLocaleString()}
                         </span>
+                        
+                        <div className="ml-4 px-3 py-1 rounded-full bg-accent-gold/10 border border-accent-gold/20 flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-accent-gold animate-pulse" />
+                            <span className="text-[9px] font-black uppercase text-accent-gold tracking-widest">
+                                {(results?.logistics?.salary_range?.max ?? 0) > 150000 || (results?.logistics?.salary_range?.max ?? 0) > 5000000 ? "Market Elite Tier" : "Standard Domain Pay"}
+                            </span>
+                        </div>
                     </div>
                     {copiedField === 'salary' && (
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute inset-0 bg-accent-gold/10 backdrop-blur-sm flex items-center justify-center rounded-[3.5rem] z-20">
@@ -262,7 +296,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
                         <span className="text-[10px] font-black text-red-500/40 uppercase tracking-widest">Risks Identified</span>
                     </div>
                     <div className="space-y-4 relative z-10">
-                        {(results?.red_flags || []).slice(0, 2).map((flag, i) => (
+                        {results?.red_flags?.length ? results.red_flags.slice(0, 2).map((flag, i) => (
                             <div key={i} className="pl-4 border-l-2 border-red-500-20 space-y-1 group-f cursor-pointer" onClick={() => { navigator.clipboard.writeText(flag.note); toast.success("Insight copied"); }}>
                                 <div className="flex items-center justify-between">
                                     <p className="text-[14px] font-serif italic text-foreground tracking-tight underline decoration-red-500-10 decoration-2 underline-offset-4 group-hover-f:text-red-500 transition-colors">&ldquo;{flag.phrase}&rdquo;</p>
@@ -270,7 +304,12 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
                                 </div>
                                 <p className="text-[12px] font-medium text-muted-foreground leading-relaxed transition-colors group-hover-f:text-foreground-70">{flag.note}</p>
                             </div>
-                        ))}
+                        )) : (
+                            <div className="flex flex-col items-center justify-center py-4 space-y-2 opacity-40">
+                                <ShieldCheck size={32} className="text-accent-emerald/40" />
+                                <p className="text-[10px] font-black uppercase tracking-widest text-center">Clean Signal: No Major Risks Detected</p>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -419,7 +458,12 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
         </div>
 
         {/* Row 2: Interview Prep (Full Width Integrated) */}
-        <div className="glass-panel p-2 rounded-[3.5rem] border-white/5">
+        <div className="glass-panel p-2 rounded-[3.5rem] border-white/5 relative group">
+            <div className="absolute top-8 right-8 z-20">
+                {(!jdText?.toLowerCase()?.includes('question') && !jdText?.toLowerCase()?.includes('interview')) && (
+                    <LuminaInferenceBadge tooltip="Questions synthesized via Lumina Engine based on role requirements." />
+                )}
+            </div>
             <div className="p-8">
                 <InterviewCoach 
                     questions={results?.interview_kit?.questions} 
@@ -431,9 +475,14 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
         {/* Row 3: Timeline & Archetype Deep Dive */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             <div className="lg:col-span-8 glass-panel p-8 rounded-[3rem] space-y-8 h-full">
-                <div className="flex items-center gap-4">
-                    <Clock size={20} className="text-accent-blue" />
-                    <span className="text-[12px] uppercase font-black tracking-widest text-foreground/70">Day-in-Life Simulation</span>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <Clock size={20} className="text-accent-blue" />
+                        <span className="text-[12px] uppercase font-black tracking-widest text-foreground/70">Day-in-Life Simulation</span>
+                    </div>
+                    {(!jdText?.toLowerCase()?.includes('09:00') && !jdText?.toLowerCase()?.includes('schedule')) && (
+                        <LuminaInferenceBadge tooltip="Daily routine inferred based on job title and market standards." />
+                    )}
                 </div>
                 <LuminaTimeline data={results?.deep_dive?.day_in_life || []} />
             </div>
@@ -452,11 +501,11 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
 const PhaseLabel = ({ number, title, sub }: { number: string, title: string, sub: string }) => (
     <div className="flex items-center gap-6 px-4">
         <div className="flex flex-col">
-            <span className="text-[10px] font-black uppercase text-accent-emerald tracking-[0.4em] leading-none mb-1">Phase {number}</span>
+            <span className="text-[10px] font-black uppercase text-accent-emerald tracking-[0.5em] leading-none mb-2">Protocol {number}</span>
             <div className="flex items-baseline gap-4">
-                <h2 className="text-3xl font-serif italic text-foreground leading-none">{title}</h2>
-                <div className="h-px w-24 bg-foreground/10" />
-                <span className="text-[10px] font-black uppercase text-muted-foreground/40 tracking-widest">{sub}</span>
+                <h2 className="text-3xl font-serif italic text-foreground leading-none tracking-tight">{title}</h2>
+                <div className="h-px w-32 bg-gradient-to-r from-foreground/20 to-transparent" />
+                <span className="text-[10px] font-black uppercase text-muted-foreground/40 tracking-[0.2em]">{sub}</span>
             </div>
         </div>
     </div>

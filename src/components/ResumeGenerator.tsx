@@ -165,7 +165,18 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
 
   const handleGenerate = async () => {
     if (vaultItems.length === 0) {
-      toast.error("Your Tactical Profile is empty! Sync your resume in the Profile tab first.");
+      toast.error("Tactical Profile Empty", {
+        description: "You must sync your resume or add roles in the Profile tab before we can tailor your candidacy.",
+        action: {
+          label: "Go to Profile",
+          onClick: () => {
+             // In ScannerView, this will switch the tab if activeTab is managed by onTabChange
+             // But since we are inside the component, we can't easily reach ScannerView's state 
+             // without passing a prop. For now, a descriptive toast is better than a silent fail.
+             window.dispatchEvent(new CustomEvent('switch-tab', { detail: 'profile' }));
+          }
+        }
+      });
       return;
     }
     setIsGenerating(true);
@@ -213,42 +224,76 @@ RETURN JSON FORMAT ONLY:
 }`;
 
       let resultText = "";
+      const models = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "gemma2-9b-it"];
+      let lastError = "";
 
-      const apiResponse = await fetch("/api/analyze", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
-          messages: [{ role: "user", content: prompt }],
-          temperature: 0.3,
-          response_format: { type: "json_object" }
-        })
-      });
+      for (const model of models) {
+        try {
+          console.log(`Lumina Tailoring: Attempting with ${model}...`);
+          const { data: rawData, error: invokeError } = await supabase.functions.invoke("analyze", {
+            body: {
+              model: model,
+              messages: [{ role: "user", content: prompt }],
+              temperature: 0.3,
+              response_format: { type: "json_object" }
+            }
+          });
 
-      if (!apiResponse.ok) {
-        throw new Error(`API Error: ${apiResponse.status}`);
+          if (invokeError) {
+            lastError = invokeError.message || "Function invocation failed";
+            console.warn(`Lumina Tailoring: ${model} invocation error:`, lastError);
+            continue;
+          }
+
+          if (!rawData) {
+            lastError = "Empty response from engine";
+            continue;
+          }
+
+          if (rawData.error) {
+            lastError = rawData.error;
+            console.warn(`Lumina Tailoring: ${model} logic error:`, lastError);
+            continue;
+          }
+
+          const content = rawData.choices?.[0]?.message?.content;
+          if (content) {
+            resultText = content;
+            console.log(`Lumina Tailoring: Success with ${model}`);
+            break;
+          }
+        } catch (err) {
+          lastError = err instanceof Error ? err.message : String(err);
+          console.error(`Lumina Tailoring: ${model} crash:`, lastError);
+        }
       }
 
-      const rawData = await apiResponse.json();
-      resultText = rawData.choices?.[0]?.message?.content;
+      if (!resultText) {
+        throw new Error(`All AI engines exhausted. Last error: ${lastError}`);
+      }
 
-      if (!resultText) throw new Error('Groq model returned empty response.');
-
-      const firstBrace = resultText.indexOf("{");
-      const lastBrace = resultText.lastIndexOf("}");
-      if (firstBrace === -1 || lastBrace === -1) throw new Error("AI returned no valid JSON.");
-
-      const structData = JSON.parse(resultText.substring(firstBrace, lastBrace + 1));
+      let structData;
+      try {
+        const firstBrace = resultText.indexOf("{");
+        const lastBrace = resultText.lastIndexOf("}");
+        if (firstBrace === -1 || lastBrace === -1) throw new Error("Invalid JSON structure");
+        structData = JSON.parse(resultText.substring(firstBrace, lastBrace + 1));
+      } catch (parseErr) {
+        console.error("Tailoring Parse Error:", resultText);
+        throw new Error("AI returned malformed candidacy data. Please try again.");
+      }
 
       setResume(structData as GeneratedResume);
       setEditableResume(structData as GeneratedResume);
       setIsOpen(true);
       toast.success("Silicon Valley Modern resume generated!");
-    } catch (err) {
-      console.error(err);
-      toast.error("Tailoring engine failed. Please try again.");
+    } catch (err: unknown) {
+      console.error("Generation process failed:", err);
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      toast.error("Tailoring Engine Fault", {
+        description: errorMessage || "System overloaded. Retrying in 30s...",
+        duration: 8000
+      });
     } finally {
       setIsGenerating(false);
     }
