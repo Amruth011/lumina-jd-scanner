@@ -27,6 +27,7 @@ NativeDeno.serve(async (req: Request) => {
       "gemma2-9b-it"
     ].filter((v, i, a) => a.indexOf(v) === i); // Unique models
 
+    const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
     let lastError = "";
     let resultData = null;
 
@@ -52,6 +53,11 @@ NativeDeno.serve(async (req: Request) => {
         const errorData = await groqResponse.json();
         lastError = errorData.error?.message || groqResponse.statusText;
         console.warn(`Lumina Analyze: Model ${model} failed: ${lastError}`);
+
+        if (groqResponse.status === 429) {
+          console.log("Lumina Analyze: Rate limit hit. Waiting 1000ms...");
+          await sleep(1000);
+        }
       } catch (err) {
         lastError = err instanceof Error ? err.message : String(err);
       }

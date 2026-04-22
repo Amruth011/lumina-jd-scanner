@@ -34,6 +34,7 @@ NativeDeno.serve(async (req) => {
     }
     
     const fallbackModels = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "gemma2-9b-it"];
+    const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
     let lastError = "";
     let resultData = null;
 
@@ -61,6 +62,12 @@ NativeDeno.serve(async (req) => {
         
         const errJson = await groqResponse.json();
         lastError = errJson.error?.message || groqResponse.statusText;
+        console.warn(`Lumina Resume: ${model} failed:`, lastError);
+
+        if (groqResponse.status === 429) {
+          console.log("Lumina Resume: Rate limit hit. Waiting 1000ms...");
+          await sleep(1000);
+        }
       } catch (err) {
         lastError = String(err);
       }

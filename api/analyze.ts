@@ -20,33 +20,60 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ error: 'Server configuration error' });
   }
 
+  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  const fallbackModels = [
+    req.body.model || 'llama-3.3-70b-versatile',
+    'llama-3.1-8b-instant',
+    'gemma2-9b-it'
+  ].filter((v, i, a) => a.indexOf(v) === i);
+
+  let lastError = "";
+  let resultData = null;
+
   try {
-    const { model, messages, temperature, response_format } = req.body;
+    const { messages, temperature, response_format } = req.body;
 
-    console.log(`API_PROXY: Requesting completion for model ${model}`);
+    for (const model of fallbackModels) {
+      try {
+        console.log(`API_PROXY: Attempting with ${model}...`);
+        const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${groqKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: model,
+            messages,
+            temperature: temperature ?? 0.3,
+            response_format,
+          }),
+        });
 
-    const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${groqKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: model || 'llama-3.3-70b-versatile',
-        messages,
-        temperature: temperature ?? 0.3,
-        response_format,
-      }),
-    });
+        if (groqResponse.ok) {
+          resultData = await groqResponse.json();
+          break;
+        }
 
-    if (!groqResponse.ok) {
-      const errorData = await groqResponse.json();
-      console.error('GROQ_API_ERROR:', errorData);
-      return res.status(groqResponse.status).json(errorData);
+        const errorData = await groqResponse.json();
+        lastError = errorData.error?.message || groqResponse.statusText;
+        console.warn(`API_PROXY: ${model} failed:`, lastError);
+
+        if (groqResponse.status === 429) {
+          console.log("API_PROXY: Rate limit hit. Waiting 1000ms...");
+          await sleep(1000);
+        }
+      } catch (err) {
+        lastError = err instanceof Error ? err.message : String(err);
+        console.error(`API_PROXY: ${model} crash:`, lastError);
+      }
     }
 
-    const data = await groqResponse.json();
-    return res.status(200).json(data);
+    if (!resultData) {
+      return res.status(500).json({ error: `All AI engines exhausted: ${lastError}` });
+    }
+
+    return res.status(200).json(resultData);
   } catch (error) {
     console.error('PROXY_HANDLER_ERROR:', error);
     return res.status(500).json({ error: 'Internal server error while proxying request' });

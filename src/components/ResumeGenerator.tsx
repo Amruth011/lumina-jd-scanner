@@ -223,13 +223,18 @@ RETURN JSON FORMAT ONLY:
   "certifications": ["Cert Name"]
 }`;
 
+      const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
       let resultText = "";
       const models = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "gemma2-9b-it"];
       let lastError = "";
 
-      for (const model of models) {
+      for (let i = 0; i < models.length; i++) {
+        const model = models[i];
         try {
           console.log(`Lumina Tailoring: Attempting with ${model}...`);
+          // Update toast or state to show which model is active
+          if (i > 0) toast.loading(`Switching to fallback engine: ${model}...`, { id: "gen-toast" });
+
           const { data: rawData, error: invokeError } = await supabase.functions.invoke("analyze", {
             body: {
               model: model,
@@ -241,7 +246,10 @@ RETURN JSON FORMAT ONLY:
 
           if (invokeError) {
             lastError = invokeError.message || "Function invocation failed";
-            console.warn(`Lumina Tailoring: ${model} invocation error:`, lastError);
+            if (invokeError.status === 429) {
+               console.warn(`Lumina Tailoring: Model ${model} rate limited. Waiting 1500ms...`);
+               await sleep(1500);
+            }
             continue;
           }
 
@@ -252,7 +260,10 @@ RETURN JSON FORMAT ONLY:
 
           if (rawData.error) {
             lastError = rawData.error;
-            console.warn(`Lumina Tailoring: ${model} logic error:`, lastError);
+            if (rawData.error.includes("429")) {
+              console.warn(`Lumina Tailoring: Engine reported 429 for ${model}. Waiting 1500ms...`);
+              await sleep(1500);
+            }
             continue;
           }
 
@@ -260,6 +271,7 @@ RETURN JSON FORMAT ONLY:
           if (content) {
             resultText = content;
             console.log(`Lumina Tailoring: Success with ${model}`);
+            if (i > 0) toast.dismiss("gen-toast");
             break;
           }
         } catch (err) {
