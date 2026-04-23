@@ -80,6 +80,7 @@ NativeDeno.serve(async (req: Request) => {
         breakdown: { clarity: "0-20", realistic: "0-15", compensation: "0-15", red_flags: "0-15", benefits: "0-10", growth: "0-10", inclusivity: "0-10", readability: "0-10" }, 
         plain_english_summary: ["string"] 
       },
+      red_flags: [{ phrase: "string", intensity: "number (0-100)", note: "string" }],
       logistics: { 
         salary_range: { min: "number", max: "number", currency: "string", estimate: "boolean", note: "string" }, 
         work_arrangement: { remote_friendly: "yes/no/partial", office_presence: "string", flexible_hours: "boolean" },
@@ -88,7 +89,11 @@ NativeDeno.serve(async (req: Request) => {
       bonus_pulse: { ghost_job_probability: "0-100", desperation_meter: "0-100", skill_rarity: "0-100", interview_difficulty: "0-100" },
       role_reality: { iceberg_above: ["string"], iceberg_below: ["string"] },
       deep_dive: { day_in_life: [{ time: "string", task: "string" }] },
-      interview_kit: { questions: [{ question: "string", type: "technical/behavioral", tip: "string", target_answer: "string" }] }
+      interview_kit: { 
+        questions: [{ question: "string", type: "technical/behavioral", tip: "string", target_answer: "string" }],
+        reverse_questions: ["string"]
+      },
+      resume_help: { keywords: ["string"], bullets: ["string"] }
     };
 
     for (const model of fallbackModels) {
