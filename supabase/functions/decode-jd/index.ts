@@ -109,10 +109,13 @@ NativeDeno.serve(async (req: Request) => {
 Your goal is to deconstruct JDs into hyper-accurate data structures.
 
 MANDATORY RULES:
-1. ESTIMATION IS COMPULSORY: Never return 0, null, or empty for scores or salary. If the JD is vague, use your deep knowledge of the market (Citi, Bengaluru, Data Science) to provide highly probable estimates.
+1. ESTIMATION IS COMPULSORY: Never return 0, null, or empty for scores or salary. If the JD is vague, use your deep knowledge of the market to provide highly probable estimates.
 2. CURRENCY: India roles = INR. 
-3. VERDICT: The "grade.summary" MUST be a unique, insightful sentence about THIS specific job.
-4. ICEBERG: The "role_reality" must contain non-obvious truths about working in this domain.
+3. VERDICT: The "grade.summary" MUST be a unique, insightful sentence. The "grade.plain_english_summary" MUST contain EXACTLY 5 key insight points.
+4. RED FLAGS: You MUST identify EXACTLY 2 red flags in "red_flags". If none exist, identify subtle competitive risks or growth bottlenecks.
+5. INTERVIEW KIT: "interview_kit.questions" MUST contain EXACTLY 10 diverse questions. "interview_kit.reverse_questions" MUST contain EXACTLY 5 strategic questions for the candidate to ask.
+6. STRATEGIC DEFICIT: "resume_help.keywords" MUST contain EXACTLY 10-12 high-impact ATS keywords extracted from the JD.
+7. ICEBERG: The "role_reality" must contain non-obvious truths about working in this domain.
 
 RETURN ONLY RAW JSON.` },
                         { role: "user", content: `ACT ON THIS JD:
