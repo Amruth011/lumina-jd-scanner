@@ -81,6 +81,7 @@ NativeDeno.serve(async (req: Request) => {
         plain_english_summary: ["string"] 
       },
       red_flags: [{ phrase: "string", intensity: "number (0-100)", note: "string" }],
+      recruiter_lens: [{ jargon: "string", reality: "string" }],
       logistics: { 
         salary_range: { min: "number", max: "number", currency: "string", estimate: "boolean", note: "string" }, 
         work_arrangement: { remote_friendly: "yes/no/partial", office_presence: "string", flexible_hours: "boolean" },
@@ -88,7 +89,12 @@ NativeDeno.serve(async (req: Request) => {
       },
       bonus_pulse: { ghost_job_probability: "0-100", desperation_meter: "0-100", skill_rarity: "0-100", interview_difficulty: "0-100" },
       role_reality: { iceberg_above: ["string"], iceberg_below: ["string"] },
-      deep_dive: { day_in_life: [{ time: "string", task: "string" }] },
+      deep_dive: { 
+        day_in_life: [{ time: "string", task: "string" }],
+        bias_analysis: { inclusivity_score: "0-100", gender_meter: "masculine/feminine/neutral", age_bias_graph: "0-100", tonal_map: [{ category: "string", tone: "string" }] },
+        culture_radar: { innovation: "0-100", work_life_balance: "0-100", collaboration: "0-100", hierarchy: "0-100", results_driven: "0-100", stability: "0-100" },
+        health_radar: { market_position: "0-100", tech_innovation: "0-100", transparency: "0-100", client_quality: "0-100", employee_benefits: "0-100" }
+      },
       interview_kit: { 
         questions: [{ question: "string", type: "technical/behavioral", tip: "string", target_answer: "string" }],
         reverse_questions: ["string"]
