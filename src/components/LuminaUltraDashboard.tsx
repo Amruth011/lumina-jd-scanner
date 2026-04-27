@@ -136,7 +136,10 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
                             {(results?.logistics?.salary_range?.estimate || !jdText?.toLowerCase()?.includes('salary')) && (
                                 <LuminaInferenceBadge tooltip="Salary not explicitly stated. Calculated based on role, location, and seniority." />
                             )}
-                <div className="space-y-4 px-6 md:px-12 relative">
+                        </div>
+                    </div>
+
+                    <div className="space-y-4 px-6 md:px-12 relative">
                     <div className="flex items-center gap-3">
                         <DollarSign size={16} className="text-accent-gold" />
                         <span className="text-[10px] uppercase font-black tracking-[0.3em] text-accent-gold/60">Forensic Salary Valuation</span>
@@ -197,6 +200,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
                         </div>
                     </div>
                 </div>
+            </div>
           </div>
       </div>
 
