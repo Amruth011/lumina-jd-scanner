@@ -9,52 +9,52 @@ interface WinningStrategyProps {
 export const WinningStrategy = ({ steps }: WinningStrategyProps) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.4 }}
-      className="premium-card rounded-2xl p-6 relative overflow-hidden"
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      className="premium-card rounded-[3rem] p-10 lg:p-14 relative overflow-hidden bg-white shadow-[0_20px_50px_rgba(0,0,0,0.05)] border-white/20"
     >
-      <div className="absolute top-0 left-6 right-6 h-px bg-border/40" />
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accent-blue/0 via-accent-blue/40 to-accent-blue/0" />
 
-      <div className="flex items-center gap-4 mb-10">
-        <div className="w-11 h-11 rounded-xl bg-accent-blue/10 flex items-center justify-center border border-accent-blue/10">
-          <Trophy className="w-5 h-5 text-accent-blue" />
+      <div className="flex flex-col md:flex-row md:items-center gap-6 mb-16">
+        <div className="w-16 h-16 rounded-[2rem] bg-accent-blue/5 flex items-center justify-center border border-accent-blue/10 shadow-inner">
+          <Trophy className="w-7 h-7 text-accent-blue" />
         </div>
         <div>
-          <h3 className="font-display font-bold text-lg md:text-xl text-foreground tracking-tight">
+          <h3 className="font-serif italic text-4xl text-foreground tracking-tight">
             Winning Strategy
           </h3>
-          <p className="text-tag text-accent-blue/60 mb-1">Executive Level Tactics</p>
+          <p className="text-[10px] uppercase font-black tracking-[0.4em] text-accent-blue/60 mt-2">Elite Strategic Directives & Execution Protocols</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {steps.map((step, i) => (
           <motion.div
             key={i}
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 + i * 0.1, duration: 0.4 }}
-            className="group relative glass rounded-2xl p-6 flex flex-col gap-4 cursor-default transition-all duration-500 border-border/40"
+            transition={{ delay: 0.4 + i * 0.15, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="group relative glass-panel rounded-[2.5rem] p-8 flex flex-col gap-6 cursor-default transition-all duration-700 hover:shadow-2xl hover:shadow-accent-blue/5 hover:border-accent-blue/20"
           >
-            <div className="flex items-center gap-3">
-              <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-muted/20 flex items-center justify-center text-[10px] font-mono font-bold text-muted-foreground/40 group-hover:text-accent-blue group-hover:bg-accent-blue/10 transition-all border border-transparent group-hover:border-accent-blue/20">
-                0{i + 1}
+            <div className="flex items-center gap-4">
+              <span className="flex-shrink-0 w-10 h-10 rounded-2xl bg-foreground/5 flex items-center justify-center text-[11px] font-black text-foreground/20 group-hover:text-accent-blue group-hover:bg-accent-blue/10 transition-all border border-transparent group-hover:border-accent-blue/20">
+                {i + 1}
               </span>
-              <h4 className="text-base font-serif italic text-foreground tracking-[-0.01em] pr-4">
+              <h4 className="text-[17px] font-bold text-foreground tracking-tight group-hover:text-accent-blue transition-colors">
                 {step.title}
               </h4>
             </div>
-            <p className="text-sm text-muted-foreground/80 leading-relaxed font-medium">
+            <p className="text-[14px] text-muted-foreground/80 leading-relaxed font-medium">
               {step.description}
             </p>
-            <div className="flex items-center gap-2 text-tag text-muted-foreground/40 mt-auto uppercase tracking-[0.2em]">
+            <div className="flex items-center gap-2.5 text-[9px] font-black text-muted-foreground/30 mt-auto uppercase tracking-[0.2em] group-hover:text-accent-blue/40 transition-colors">
               <Zap className="w-3 h-3" />
-              Strategic Directive
+              Operational Protocol
             </div>
             
-            <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-              <ArrowRight className="w-4 h-4 text-accent-blue/40" />
+            <div className="absolute top-8 right-8 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-2 group-hover:translate-x-0">
+              <ArrowRight className="w-5 h-5 text-accent-blue/30" />
             </div>
           </motion.div>
         ))}
