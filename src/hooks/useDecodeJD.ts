@@ -287,12 +287,12 @@ export const useDecodeJD = () => {
                 })()
               },
               culture_radar: {
-                innovation: safeNum(find(rawDeep?.culture_radar, 'innovation')) || 95,
-                work_life_balance: safeNum(find(rawDeep?.culture_radar, 'work_life_balance')) || 65,
-                collaboration: safeNum(find(rawDeep?.culture_radar, 'collaboration')) || 90,
-                hierarchy: safeNum(find(rawDeep?.culture_radar, 'hierarchy')) || 40,
-                results_driven: safeNum(find(rawDeep?.culture_radar, 'results_driven')) || 95,
-                stability: safeNum(find(rawDeep?.culture_radar, 'stability')) || 85
+                innovation: safeNum(find(rawDeep?.culture_radar, 'innovation') || find(raw, 'innovation'), 85),
+                work_life_balance: safeNum(find(rawDeep?.culture_radar, 'work_life_balance') || find(raw, 'work_life_balance'), 75),
+                collaboration: safeNum(find(rawDeep?.culture_radar, 'collaboration') || find(raw, 'collaboration'), 90),
+                hierarchy: safeNum(find(rawDeep?.culture_radar, 'hierarchy') || find(raw, 'hierarchy'), 40),
+                results_driven: safeNum(find(rawDeep?.culture_radar, 'results_driven') || find(raw, 'results_driven'), 95),
+                stability: safeNum(find(rawDeep?.culture_radar, 'stability') || find(raw, 'stability'), 80)
               }
            },
            bonus_pulse: {
