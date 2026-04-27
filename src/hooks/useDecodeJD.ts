@@ -323,7 +323,15 @@ export const useDecodeJD = () => {
                 : [
                     { question: "How do you manage technical debt in legacy RAG systems?", type: "technical", tip: "Focus on balancing velocity with quality.", target_answer: "Incremental refactoring and automated eval sets." }
                   ],
-             reverse_questions: safeArr(find(rawKit, 'reverse_questions')).length > 0 ? safeArr(find(rawKit, 'reverse_questions')).map(i => safeStrItem(i)) : ["What is the primary technical bottleneck your team currently faces?"]
+             reverse_questions: safeArr(find(rawKit, 'reverse_questions')).length >= 5 
+                ? safeArr(find(rawKit, 'reverse_questions')).map(i => safeStrItem(i)) 
+                : [
+                    "What is the primary technical bottleneck your team currently faces?",
+                    "How does this role contribute to the company's 12-month strategic roadmap?",
+                    "What does the ideal outcome look like for this position in the first 90 days?",
+                    "How does the team balance rapid feature delivery with long-term architectural stability?",
+                    "What is the most common reason candidates fail to integrate into your engineering culture?"
+                  ]
            },
            resume_help: {
              keywords: safeArr(find(rawHelp, 'keywords')).length > 0 ? safeArr(find(rawHelp, 'keywords')).map(i => safeStrItem(i)) : ["Agentic Flows", "LangGraph", "Forensic Systems"],
