@@ -69,8 +69,9 @@ export const SkillHighlights = ({
             {Object.entries(groupedRequired).map(([category, categorySkills]) => (
               <div key={category} className="space-y-4">
                 <div className="px-4 py-2 rounded-xl bg-primary/5 border border-primary/10 w-fit flex items-center gap-2">
-                    {category === "GenAI" ? <Sparkles size={12} className="text-primary" /> : 
-                     category === "Foundations" ? <Brain size={12} className="text-primary" /> : 
+                    {category === "GenAI" || category === "Agentic AI" ? <Sparkles size={12} className="text-primary" /> : 
+                     category === "Foundations" || category === "Core" ? <Brain size={12} className="text-primary" /> : 
+                     category === "Infrastructure" || category === "Cloud" ? <ShieldCheck size={12} className="text-primary" /> :
                      <Brain size={12} className="text-primary" />}
                     <span className="text-[10px] font-black uppercase text-primary tracking-widest">{category}</span>
                 </div>
