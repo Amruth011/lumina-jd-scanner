@@ -348,21 +348,21 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
   return (
     <div className="glass-panel p-6 lg:p-10 relative overflow-hidden">
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10 mb-16 relative z-10">
-        <div className="flex items-center gap-8">
-          <div className="w-20 h-20 rounded-[2rem] bg-foreground/5 flex items-center justify-center border border-white/10 group-hover:scale-105 transition-transform duration-500">
-            <FileText className="w-10 h-10 text-primary/40" />
+        <div className="flex items-center gap-10">
+          <div className="w-24 h-24 rounded-[2.5rem] bg-foreground/5 flex items-center justify-center border border-white/10 group-hover:rotate-6 transition-transform duration-700">
+            <FileText className="w-12 h-12 text-primary/40" />
           </div>
           <div>
-            <h3 className="font-serif italic text-4xl text-foreground tracking-tight">Resume Intelligence</h3>
-            <p className="text-xs uppercase tracking-[0.3em] font-black text-muted-foreground/50 mt-2">Cross-Reference Resume vs JD Signature</p>
+            <h3 className="font-serif italic text-5xl text-foreground tracking-tighter">Resume Intelligence</h3>
+            <p className="text-[10px] uppercase tracking-[0.5em] font-black text-muted-foreground/40 mt-3">High-Fidelity Semantic Cross-Reference</p>
           </div>
         </div>
         {!isOpen && (
           <button
             onClick={() => setIsOpen(true)}
-            className="px-10 py-5 rounded-full bg-accent-emerald text-background text-[13px] font-black uppercase tracking-widest hover:scale-105 transition-all active:scale-95 shadow-xl shadow-accent-emerald/20"
+            className="px-12 py-6 rounded-full bg-accent-emerald text-background text-[12px] font-black uppercase tracking-[0.3em] hover:scale-105 transition-all active:scale-95 shadow-2xl shadow-accent-emerald/20 group"
           >
-            Launch Diagnostic Scan
+            Launch Diagnostic Scan <ArrowRight className="inline-block ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </button>
         )}
       </div>
