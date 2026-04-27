@@ -479,7 +479,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                                         <span className="text-[14px] font-bold text-foreground pr-4">{d.reason}</span>
                                         <span className="text-[12px] text-red-500 font-black px-3 py-1 rounded-xl bg-red-500/10 border border-red-500/20 whitespace-nowrap">-{d.percent}%</span>
                                     </div>
-                                    <p className="text-[12px] text-muted-foreground leading-relaxed font-medium">This deficit weakens your overall probability of advancing to clinical interviews.</p>
+                                    <p className="text-[12px] text-muted-foreground leading-relaxed font-medium">This deficit weakens your semantic alignment score and reduces your probability of clearing automated clinical screening protocols.</p>
                                 </div>
                                 
                                 {d.fix_snippet && (
