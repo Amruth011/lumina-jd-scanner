@@ -236,13 +236,17 @@ export const useDecodeJD = () => {
                     label: safeStrItem(rm?.label || rm),
                     percent: safeNum(rm?.percent, 50)
                   }))
-                : [{ label: "Systems Architecture", percent: 60 }, { label: "Hands-on RAG Dev", percent: 40 }],
+                : [
+                    { label: "High-Focus Engineering", percent: 45 }, 
+                    { label: "Strategic Architecture", percent: 30 }, 
+                    { label: "Cross-functional Sync", percent: 25 }
+                  ],
               archetype: {
-                label: safeStrItem(find(rawLog.archetype, 'label')) || "Technical Architect",
-                description: safeStrItem(find(rawLog.archetype, 'description')) || "Elite role focusing on agentic flow and RAG pipelines.",
-                primary_focus: safeStrItem(find(rawLog.archetype, 'primary_focus')) || "AI Infrastructure",
-                primary_tool: safeStrItem(find(rawLog.archetype, 'primary_tool')) || "LangGraph/Python",
-                match_score: safeNum(find(rawLog.archetype, 'match_score'), 95)
+                label: safeStrItem(find(rawLog.archetype, 'label')) || "Technical Strategist",
+                description: safeStrItem(find(rawLog.archetype, 'description')) || "Elite role focusing on high-impact systems and architectural delivery.",
+                primary_focus: safeStrItem(find(rawLog.archetype, 'primary_focus')) || "Operational Excellence",
+                primary_tool: safeStrItem(find(rawLog.archetype, 'primary_tool')) || "Modern Tech Stack",
+                match_score: safeNum(find(rawLog.archetype, 'match_score'), 90)
               }
            },
            deep_dive: {
