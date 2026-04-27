@@ -45,38 +45,59 @@ serve(async (req) => {
       throw new Error("Server configuration error: Missing API Key");
     }
     
-    console.log(`True Resilience: Attempting Compare Scan with Groq (Llama-3.3-70b-versatile)...`);
+    const fallbackModels = [
+      "llama-3.3-70b-versatile",
+      "llama-3.1-8b-instant",
+      "gemma2-9b-it"
+    ];
 
-    const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${groqKey}`
-      },
-      body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
-        messages: [
-          { role: "system", content: "You are an expert resume analyst. Return ONLY raw JSON." },
-          { role: "user", content: prompt }
-        ],
-        response_format: { type: "json_object" },
-        temperature: 0,
-      }),
-    });
+    let resultJson = null;
+    let lastError = "";
 
-    if (!groqResponse.ok) {
-      const errorData = await groqResponse.json();
-      throw new Error(`Groq API Error: ${errorData.error?.message || "Unknown error"}`);
+    for (const model of fallbackModels) {
+      try {
+        console.log(`True Resilience: Attempting Compare Scan with ${model}...`);
+        const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${groqKey}`
+          },
+          body: JSON.stringify({
+            model: model,
+            messages: [
+              { role: "system", content: "You are an expert resume analyst specializing in high-fidelity gap analysis. Return ONLY raw JSON." },
+              { role: "user", content: prompt }
+            ],
+            response_format: { type: "json_object" },
+            temperature: 0,
+          }),
+        });
+
+        if (groqResponse.ok) {
+          const data = await groqResponse.json();
+          const resultText = data.choices?.[0]?.message?.content;
+          if (resultText) {
+            const firstBrace = resultText.indexOf('{');
+            const lastBrace = resultText.lastIndexOf('}');
+            resultJson = JSON.parse(resultText.substring(firstBrace, lastBrace + 1));
+            break;
+          }
+        }
+
+        const errText = await groqResponse.text();
+        lastError = `Model ${model} failed: ${errText.substring(0, 100)}`;
+        if (groqResponse.status === 429) {
+            console.warn(`Rate limit hit for ${model}. Waiting 500ms...`);
+            await new Promise(r => setTimeout(r, 500));
+        }
+      } catch (err) {
+        lastError = err instanceof Error ? err.message : String(err);
+        console.error(`Model ${model} crash:`, lastError);
+      }
     }
 
-    const data = await groqResponse.json();
-    const resultText = data.choices?.[0]?.message?.content;
-    if (!resultText) throw new Error("AI returned empty content");
-
-    const firstBrace = resultText.indexOf('{');
-    const lastBrace = resultText.lastIndexOf('}');
-    if (firstBrace === -1 || lastBrace === -1) throw new Error("No JSON object found");
-    const resultJson = JSON.parse(resultText.substring(firstBrace, lastBrace + 1));
+    if (!resultJson) throw new Error(`All analysis engines exhausted: ${lastError}`);
 
     return new Response(JSON.stringify(resultJson), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
