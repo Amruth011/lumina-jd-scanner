@@ -260,11 +260,11 @@ export const useDecodeJD = () => {
                     { time: "17:00", task: "Stakeholder Technical Demo", description: "Presenting agentic flow progress." }
                   ],
               health_radar: {
-                market_position: safeNum(find(rawDeep?.health_radar, 'market_position')) || 85,
-                tech_innovation: safeNum(find(rawDeep?.health_radar, 'tech_innovation')) || 95,
-                transparency: safeNum(find(rawDeep?.health_radar, 'transparency')) || 70,
-                client_quality: safeNum(find(rawDeep?.health_radar, 'client_quality')) || 90,
-                employee_benefits: safeNum(find(rawDeep?.health_radar, 'employee_benefits')) || 80
+                market_position: safeNum(find(rawDeep?.health_radar, 'market_position') || find(raw, 'market_position'), 85),
+                tech_innovation: safeNum(find(rawDeep?.health_radar, 'tech_innovation') || find(raw, 'tech_innovation'), 90),
+                transparency: safeNum(find(rawDeep?.health_radar, 'transparency') || find(raw, 'transparency'), 75),
+                client_quality: safeNum(find(rawDeep?.health_radar, 'client_quality') || find(raw, 'client_quality'), 80),
+                employee_benefits: safeNum(find(rawDeep?.health_radar, 'employee_benefits') || find(raw, 'employee_benefits'), 80)
               },
               bias_analysis: {
                 inclusivity_score: safeNum(find(rawDeep?.bias_analysis, 'inclusivity_score') || find(raw, 'inclusivity_score'), 92),
