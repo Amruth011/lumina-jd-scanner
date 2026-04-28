@@ -92,3 +92,5 @@ Lumina is designed to bridge the gap between technical brilliance and the modern
 <div align="center">
 <i>"Lumina: Where engineering excellence meets career strategy."</i>
 </div>
+
+
