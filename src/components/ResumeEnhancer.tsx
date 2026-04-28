@@ -58,10 +58,10 @@ export const ResumeEnhancer = ({ resumeText, skills, deductions, jobTitle, gapRe
       });
       setIsOpen(true);
       toast.success("ATS-optimized resume generated!");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Resume generation error:", err);
       toast.error("Tailoring engine failed", {
-        description: err.message || "The AI is currently under high load. Please try again in 30 seconds.",
+        description: err instanceof Error ? err.message : "The AI is currently under high load. Please try again in 30 seconds.",
         duration: 6000
       });
     } finally {

@@ -71,6 +71,8 @@ export const scavengeSkills = (initialSkills: Skill[], results: DecodeResult | n
     
     const requiredPatterns = ["essential", "required", "must have", "proficiency in", "solid understanding", "foundational knowledge", "must-to-have", "mandatory", "expected", "proficiency"];
     const optionalPatterns = ["optional", "beneficial", "nice to have", "good to have", "preferred", "plus", "advantage", "desired", "familiarity with", "familiarity"];
+    
+    const firstTwentyPercent = rawJd ? rawJd.substring(0, Math.floor(rawJd.length * 0.2)).toLowerCase() : "";
 
     commonPreferred.forEach(pref => {
       if (!pref || blacklist.includes(pref.toLowerCase())) return;
@@ -86,7 +88,7 @@ export const scavengeSkills = (initialSkills: Skill[], results: DecodeResult | n
       let isMentioned = false;
       let isHighIntensity = false;
       let isExplicitlyOptional = false;
-      let isCoreContext = firstTwentyPercent.includes(prefLower);
+      const isCoreContext = firstTwentyPercent.includes(prefLower);
 
       potentialSources.forEach(source => {
         const sLower = source.toLowerCase();
