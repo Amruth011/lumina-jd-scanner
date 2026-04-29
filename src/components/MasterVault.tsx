@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 // Important: Use static import with ?url so Vite bundler properly packages the worker file for Vercel
 import pdfWorkerUrl from "pdfjs-dist/legacy/build/pdf.worker.mjs?url";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Briefcase, Code, GraduationCap, Award, Trash2, Edit3, Save, X, Loader2, Sparkles, User, Globe, Linkedin, Mail, Phone, MapPin, Github, Import, Zap, Clock } from "lucide-react";
+import { Plus, Briefcase, Code, GraduationCap, Award, Trash2, Edit3, Save, X, Loader2, Sparkles, User, Globe, Linkedin, Mail, Phone, MapPin, Github, Import, Zap, Clock, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -40,28 +40,32 @@ const getFieldLabels = (type?: VaultItemType) => {
 
 const calculateCompletion = (profile: UserProfileWithVault | null, items: VaultItem[]) => {
   if (!profile) return 0;
+  
   let score = 0;
-  const total = 100;
+  // Basic Info (30%)
+  if (profile.full_name?.trim()) score += 5;
+  if (profile.email?.trim()) score += 5;
+  if (profile.phone?.trim()) score += 5;
+  if (profile.location?.trim()) score += 5;
+  if (profile.linkedin_url?.trim()) score += 5;
+  if (profile.website_url?.trim()) score += 5;
 
-  // Identity (30%)
-  if (profile.full_name) score += 5;
-  if (profile.location) score += 5;
-  if (profile.phone) score += 5;
-  if (profile.linkedin_url) score += 5;
+  // Master Summary (10%)
   if (profile.summary_master && profile.summary_master.length > 50) score += 10;
 
-  // Experience (30%) - Must have at least 2 entries
-  const expCount = items.filter(i => i.type === 'professional').length;
+  // Experience (30%)
+  const safeItems = Array.isArray(items) ? items : [];
+  const expCount = safeItems.filter(i => i && i.type === 'professional').length;
   score += Math.min(expCount * 15, 30);
 
-  // Education (15%) - At least 1 entry
-  if (items.some(i => i.type === 'education')) score += 15;
+  // Education & Others (30%)
+  const eduCount = safeItems.filter(i => i && i.type === 'education').length;
+  const certCount = safeItems.filter(i => i && i.type === 'certification').length;
+  const projCount = safeItems.filter(i => i && i.type === 'project').length;
+  
+  score += Math.min(eduCount * 10 + certCount * 10 + projCount * 10, 30);
 
-  // Projects/Certs (25%) - Variety
-  if (items.some(i => i.type === 'project')) score += 15;
-  if (items.some(i => i.type === 'certification')) score += 10;
-
-  return score;
+  return Math.min(score, 100);
 };
 
 export const MasterVault = () => {
@@ -120,15 +124,20 @@ export const MasterVault = () => {
   // Restore drafting item on focus/mount
   useEffect(() => {
     if (user && !editingItem) {
-      const saved = localStorage.getItem(`draft_vault_item_${user.id}`);
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
-          if (parsed && Object.keys(parsed).length > 2) { // Only restore if it's more than just a type
-            setEditingItem(parsed);
+          if (parsed && typeof parsed === 'object' && parsed.type) { 
+            const safeItem = {
+              ...parsed,
+              skills: Array.isArray(parsed.skills) ? parsed.skills : [],
+              bullets: Array.isArray(parsed.bullets) ? parsed.bullets : []
+            };
+            setEditingItem(safeItem);
           }
         } catch (e) {
           console.error("Failed to parse drafted item", e);
+          localStorage.removeItem(`draft_vault_item_${user.id}`);
         }
       }
     }
@@ -136,16 +145,23 @@ export const MasterVault = () => {
   }, [user]);
 
   const fetchData = async () => {
-    setIsLoading(true);
     try {
-      const { data: profileData } = await supabase.from("profiles").select("*").eq("id", user?.id).single();
-      const { data: vaultData } = await supabase.from("master_vault").select("*").eq("user_id", user?.id).order('created_at', { ascending: false });
+      console.log("── VAULT DATA FETCH INITIATED ──");
+      const { data: profileData, error: pError } = await supabase.from("profiles").select("*").eq("id", user?.id).single();
+      const { data: vaultData, error: vError } = await supabase.from("master_vault").select("*").eq("user_id", user?.id).order('created_at', { ascending: false });
+
+      if (pError && pError.code !== 'PGRST116') {
+        console.error("Profile Fetch Error:", pError);
+      }
+      if (vError) {
+        console.error("Vault Fetch Error:", vError);
+      }
 
       setProfile(profileData as UserProfileWithVault);
       setItems(vaultData as VaultItem[] || []);
     } catch (err) {
-      console.error(err);
-      toast.error("Failed to load vault data.");
+      console.error("MasterVault Fetch Fatal Error:", err);
+      toast.error("Initialization Failed", { description: "The tactical library could not be synchronized." });
     } finally {
       setIsLoading(false);
     }
@@ -473,7 +489,7 @@ RETURN JSON FORMAT ONLY:
           disabled={isLoading}
           className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all disabled:opacity-50"
         >
-          {isLoading ? <Loader2 size={14} className="animate-spin" /> : <Refre shCw size={14} />}
+          {isLoading ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
           Refresh Vault
         </button>
       </div>
@@ -929,7 +945,7 @@ RETURN JSON FORMAT ONLY:
                   <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Keyword Tags (Comma separated)</label>
                   <input
                     className="w-full bg-muted/20 border border-border/40 rounded-2xl px-5 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
-                    value={editingItem.skills?.join(", ") || ""}
+                    value={Array.isArray(editingItem.skills) ? editingItem.skills.join(", ") : ""}
                     onChange={(e) => setEditingItem({ ...editingItem, skills: e.target.value.split(",").map(s => s.trim()).filter(s => s) })}
                     placeholder="Vector DBs, LLM Fine-tuning, PyTorch..."
                   />
