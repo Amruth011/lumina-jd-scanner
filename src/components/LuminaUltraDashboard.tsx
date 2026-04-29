@@ -365,7 +365,11 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
                         <div key={i} className="flex gap-4 group/p cursor-pointer" onClick={() => { navigator.clipboard.writeText(point); toast.success("Summary point copied"); }}>
                             <span className="text-[11px] font-black text-accent-emerald/40 mt-1 group-hover/p:text-accent-emerald transition-colors">{String(i+1).padStart(2, '0')}</span>
                             <p className="text-[13px] font-medium text-foreground/80 leading-relaxed group-hover/p:text-foreground transition-colors">
-                                {point.split('**').map((part, idx) => idx % 2 === 1 ? <strong key={idx} className="text-accent-emerald font-black">{part}</strong> : part)}
+                                {point.split(/(\*\*.*?\*\*)/g).map((part, idx) => 
+                                    part.startsWith('**') && part.endsWith('**') 
+                                        ? <strong key={idx} className="text-accent-emerald font-black">{part.slice(2, -2)}</strong> 
+                                        : part
+                                )}
                             </p>
                         </div>
                     ))}

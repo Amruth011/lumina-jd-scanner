@@ -124,6 +124,7 @@ export const MasterVault = () => {
   // Restore drafting item on focus/mount
   useEffect(() => {
     if (user && !editingItem) {
+      const saved = localStorage.getItem(`draft_vault_item_${user.id}`);
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
@@ -145,6 +146,7 @@ export const MasterVault = () => {
   }, [user]);
 
   const fetchData = async () => {
+    setIsLoading(true);
     try {
       console.log("── VAULT DATA FETCH INITIATED ──");
       const { data: profileData, error: pError } = await supabase.from("profiles").select("*").eq("id", user?.id).single();
@@ -694,7 +696,20 @@ RETURN JSON FORMAT ONLY:
               />
             </div>
 
-            <div className="flex justify-end pt-4 border-t border-white/5">
+            <div className="flex justify-between items-center pt-4 border-t border-white/5">
+              <button
+                onClick={() => {
+                  if (confirm("EMERGENCY RESET: This will clear all local drafts and unsaved changes. Your saved vault items remain safe in the cloud. Proceed?")) {
+                    localStorage.removeItem(`draft_summary_${user.id}`);
+                    localStorage.removeItem(`draft_vault_item_${user.id}`);
+                    fetchData();
+                    toast.success("Local state re-synchronized.");
+                  }
+                }}
+                className="text-[9px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 transition-colors"
+              >
+                Emergency Reset
+              </button>
               <button
                 onClick={handleSaveProfile}
                 disabled={isSaving}

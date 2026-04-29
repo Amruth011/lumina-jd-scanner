@@ -69,15 +69,15 @@ export const SkillHighlights = ({
             {Object.entries(groupedRequired).map(([category, categorySkills]) => (
               <div key={category} className="space-y-4">
                 <div className="px-4 py-2 rounded-xl bg-primary/5 border border-primary/10 w-fit flex items-center gap-2">
-                    {category === "GenAI" || category === "Agentic AI" ? <Sparkles size={12} className="text-primary" /> : 
-                     category === "Foundations" || category === "Core" ? <Brain size={12} className="text-primary" /> : 
-                     category === "Infrastructure" || category === "Cloud" ? <ShieldCheck size={12} className="text-primary" /> :
-                     <Brain size={12} className="text-primary" />}
+                    {category.toLowerCase().includes("ai") || category.toLowerCase().includes("gen") ? <Sparkles size={12} className="text-primary" /> : 
+                     category.toLowerCase().includes("found") || category.toLowerCase().includes("core") ? <Brain size={12} className="text-primary" /> : 
+                     category.toLowerCase().includes("infra") || category.toLowerCase().includes("cloud") || category.toLowerCase().includes("security") ? <ShieldCheck size={12} className="text-primary" /> :
+                     <Target size={12} className="text-primary" />}
                     <span className="text-[10px] font-black uppercase text-primary tracking-widest">{category}</span>
                 </div>
                 <div className="space-y-4">
                   {categorySkills.map((skill, idx) => (
-                    <SkillProgressBar key={idx} skill={skill.skill} importance={skill.importance} color="var(--primary)" />
+                    <SkillProgressBar key={idx} skill={skill?.skill || "Technical Skill"} importance={skill?.importance || 80} color="var(--primary)" />
                   ))}
                 </div>
               </div>

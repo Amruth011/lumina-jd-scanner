@@ -122,8 +122,16 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
 
   const handleLoadArchive = (record: ArchiveRecord) => {
     setDraftId(record.id);
-    setResume(record.content);
-    setEditableResume(record.content);
+    
+    // Hardening: Ensure projects and certifications exist in the loaded record
+    const hydratedContent = {
+      ...record.content,
+      projects: record.content.projects || [],
+      certifications: record.content.certifications || []
+    };
+    
+    setResume(hydratedContent);
+    setEditableResume(hydratedContent);
     setEditableHeader(record.header_data);
     setIsOpen(true);
     setShowArchive(false);
@@ -295,8 +303,14 @@ RETURN JSON FORMAT ONLY:
         throw new Error("AI returned malformed candidacy data. Please try again.");
       }
 
-      setResume(structData as GeneratedResume);
-      setEditableResume(structData as GeneratedResume);
+      const hydratedData = {
+        ...structData,
+        projects: structData.projects || [],
+        certifications: structData.certifications || []
+      } as GeneratedResume;
+
+      setResume(hydratedData);
+      setEditableResume(hydratedData);
       setIsOpen(true);
       toast.success("Silicon Valley Modern resume generated!");
     } catch (err: unknown) {
@@ -563,7 +577,8 @@ RETURN JSON FORMAT ONLY:
           pdf.line(margin, y, pageWidth - margin, y);
           y += 3;
           editableResume.projects.forEach(proj => {
-            addText(proj.heading, 9.5, true, [0, 0, 0]);
+            if (!proj) return;
+            addText(proj.heading || "Project", 9.5, true, [0, 0, 0]);
             if (proj.content) {
               addText(proj.content, 8.5, false, [40, 40, 40]);
             }
@@ -575,11 +590,11 @@ RETURN JSON FORMAT ONLY:
         }
 
         // Education
-        if (editableResume.education.length > 0) {
+        if (editableResume.education && editableResume.education.length > 0) {
           addText("EDUCATION", 10, true, [0, 0, 0]);
           pdf.line(margin, y, pageWidth - margin, y);
           y += 3;
-          editableResume.education.forEach(edu => addText(edu, 9, false, [40, 40, 40]));
+          editableResume.education.forEach(edu => edu && addText(edu, 9, false, [40, 40, 40]));
           y += 2;
         }
 
@@ -588,7 +603,7 @@ RETURN JSON FORMAT ONLY:
           addText("CERTIFICATIONS", 10, true, [0, 0, 0]);
           pdf.line(margin, y, pageWidth - margin, y);
           y += 3;
-          editableResume.certifications.forEach(cert => addText(cert, 9, false, [40, 40, 40]));
+          editableResume.certifications.forEach(cert => cert && addText(cert, 9, false, [40, 40, 40]));
         }
       }
 
@@ -1031,11 +1046,11 @@ RETURN JSON FORMAT ONLY:
                   <div className="space-y-4">
                     <h5 className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Strategic Projects</h5>
                     <div className="space-y-6">
-                      {editableResume?.projects.map((proj, i) => (
+                      {editableResume?.projects?.map((proj, i) => (
                         <div key={i} className="group relative space-y-3 p-5 rounded-xl bg-white/10 border border-white/20 shadow-xl transition-all hover:border-secondary/30">
                           <div className="flex justify-between items-start">
                             <input className="w-full bg-transparent border-none text-[11px] font-bold text-foreground outline-none focus:text-secondary transition-colors" value={proj.heading} onChange={e => {
-                              const newProj = [...editableResume.projects];
+                              const newProj = [...(editableResume?.projects || [])];
                               newProj[i].heading = e.target.value;
                               setEditableResume({...editableResume, projects: newProj});
                             }} />
@@ -1048,7 +1063,7 @@ RETURN JSON FORMAT ONLY:
                                <div key={j} className="flex gap-2">
                                  <div className="w-1.5 h-1.5 rounded-full bg-secondary/20 mt-2 shrink-0" />
                                  <textarea className="w-full bg-black/20 p-2 rounded-lg border border-white/5 text-[10px] text-muted-foreground outline-none resize-none overflow-hidden hover:border-white/20 focus:border-secondary/40 transition-all" rows={2} value={bullet} onChange={e => {
-                                   const newProj = [...editableResume.projects];
+                                   const newProj = [...(editableResume?.projects || [])];
                                    newProj[i].bullets[j] = e.target.value;
                                    setEditableResume({...editableResume, projects: newProj});
                                  }} />
@@ -1306,12 +1321,12 @@ RETURN JSON FORMAT ONLY:
                     <div className="space-y-4">
                       {editableResume.projects.map((proj, i) => (
                         <div key={i} className="space-y-1">
-                            <h5 className="font-display font-bold text-[13px] text-black">{proj.heading}</h5>
+                            <h5 className="font-display font-bold text-[13px] text-black">{proj?.heading || "Strategic Project"}</h5>
                           
-                            <p className="text-[11px] text-zinc-900 leading-relaxed font-medium">{proj.content}</p>
+                            <p className="text-[11px] text-zinc-900 leading-relaxed font-medium">{proj?.content}</p>
 
                           <ul className="space-y-1 list-disc pl-4 mt-1">
-                            {proj.bullets?.map((bullet, j) => (
+                            {proj?.bullets?.map((bullet, j) => (
                               <li key={j} className="text-[11px] text-zinc-800 leading-snug">
                                   {bullet}
                               </li>

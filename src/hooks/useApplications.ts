@@ -50,7 +50,8 @@ export const useApplications = () => {
       );
     }
     setLoading(false);
-  }, [user, apps.length]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   useEffect(() => {
     fetchApps();
