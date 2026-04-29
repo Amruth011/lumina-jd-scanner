@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 import type { VaultItem, VaultItemType, UserProfileWithVault } from "@/types/jd";
 
 const getFieldLabels = (type?: VaultItemType) => {
-  switch(type) {
+  switch (type) {
     case 'education': return {
       titleStr: "Degree / Major", titleEx: "e.g. Master of Computer Science",
       orgStr: "University / College", orgEx: "e.g. Stanford University",
@@ -42,25 +42,25 @@ const calculateCompletion = (profile: UserProfileWithVault | null, items: VaultI
   if (!profile) return 0;
   let score = 0;
   const total = 100;
-  
+
   // Identity (30%)
   if (profile.full_name) score += 5;
   if (profile.location) score += 5;
   if (profile.phone) score += 5;
   if (profile.linkedin_url) score += 5;
   if (profile.summary_master && profile.summary_master.length > 50) score += 10;
-  
+
   // Experience (30%) - Must have at least 2 entries
   const expCount = items.filter(i => i.type === 'professional').length;
   score += Math.min(expCount * 15, 30);
-  
+
   // Education (15%) - At least 1 entry
   if (items.some(i => i.type === 'education')) score += 15;
-  
+
   // Projects/Certs (25%) - Variety
   if (items.some(i => i.type === 'project')) score += 15;
   if (items.some(i => i.type === 'certification')) score += 10;
-  
+
   return score;
 };
 
@@ -84,7 +84,7 @@ export const MasterVault = () => {
         if (draftedSummary && !profile?.summary_master) {
           setProfile(prev => prev ? { ...prev, summary_master: draftedSummary } : null);
         }
-        
+
         // Nudge to complete profile
         const hasNudged = sessionStorage.getItem(`nudge_${user.id}`);
         if (!hasNudged) {
@@ -140,7 +140,7 @@ export const MasterVault = () => {
     try {
       const { data: profileData } = await supabase.from("profiles").select("*").eq("id", user?.id).single();
       const { data: vaultData } = await supabase.from("master_vault").select("*").eq("user_id", user?.id).order('created_at', { ascending: false });
-      
+
       setProfile(profileData as UserProfileWithVault);
       setItems(vaultData as VaultItem[] || []);
     } catch (err) {
@@ -155,7 +155,7 @@ export const MasterVault = () => {
     const arrayBuffer = await file.arrayBuffer();
     const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
     pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
-    
+
     const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
     let fullText = "";
     for (let i = 1; i <= pdf.numPages; i++) {
@@ -175,24 +175,24 @@ export const MasterVault = () => {
     const toastId = toast.loading("Smart Sync: Parsing your resume locally...");
     let resultText = "";
 
-      try {
-        let rawText = "";
-        if (file.type === "application/pdf") {
-          rawText = await extractTextFromPDF(file);
-        } else {
-          rawText = await file.text();
-        }
+    try {
+      let rawText = "";
+      if (file.type === "application/pdf") {
+        rawText = await extractTextFromPDF(file);
+      } else {
+        rawText = await file.text();
+      }
 
-        if (!rawText || rawText.trim().length < 50) {
-          throw new Error("Could not extract sufficient text from this file.");
-        }
-        
-        // v2.7 Resilience: Cap resume text to prevent TPM (Tokens Per Minute) spikes
-        const cappedText = rawText.substring(0, 10000);
-        
-        toast.loading("[Lumina AI v2.7] Analysing & Structuring...", { id: toastId });
+      if (!rawText || rawText.trim().length < 50) {
+        throw new Error("Could not extract sufficient text from this file.");
+      }
 
-        const syncPrompt = `You are an expert resume parser. Extract ALL professional experience AND the candidate's personal details from this resume text.
+      // v2.7 Resilience: Cap resume text to prevent TPM (Tokens Per Minute) spikes
+      const cappedText = rawText.substring(0, 10000);
+
+      toast.loading("[Lumina AI v2.7] Analysing & Structuring...", { id: toastId });
+
+      const syncPrompt = `You are an expert resume parser. Extract ALL professional experience AND the candidate's personal details from this resume text.
 
 Resume Text:
 ${cappedText}
@@ -206,60 +206,60 @@ RETURN JSON FORMAT ONLY:
   "certifications": [{ "name": "", "issuer": "", "period": "", "details": [] }]
 }`;
 
-        const techModels = [
-          "llama-3.3-70b-versatile",
-          "llama-3.1-8b-instant",
-          "gemma2-9b-it"
-        ];
+      const techModels = [
+        "llama-3.3-70b-versatile",
+        "llama-3.1-8b-instant",
+        "gemma2-9b-it"
+      ];
 
-        // Helper for exponential backoff
-        const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+      // Helper for exponential backoff
+      const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-        let lastError = "";
-        for (let i = 0; i < techModels.length; i++) {
-          const model = techModels[i];
-          try {
-            if (i > 0) {
-              toast.loading(`Resilience: Engine busy, waiting 2s for slot... (${model.split('-')[2] || 'Alt'})`, { id: toastId });
-              await sleep(2000); // 2 second pause to let TPM reset
-            }
-            
-            console.log(`Smart Sync v2.7: Requesting ${model}...`);
-            const { data: rawData, error: invokeError } = await supabase.functions.invoke("analyze", {
-              body: {
-                model: model,
-                messages: [{ role: "user", content: syncPrompt + "\n\nIMPORTANT: Return ONLY valid JSON." }],
-                response_format: { type: "json_object" }
-              },
-            });
-            
-            if (invokeError) {
-              // Resilience: Continue on Rate Limit (429) OR Discovery Error (400/404)
-              console.warn(`Smart Sync: Model ${model} failed (${invokeError.message}).`);
-              lastError = `Model ${model} failed (${invokeError.message})`;
-              continue;
-            }
-
-            if (!rawData) {
-                lastError = `Model ${model} returned null data`;
-                continue;
-            }
-
-            resultText = rawData.choices?.[0]?.message?.content;
-            if (resultText) {
-              console.log(`Smart Sync: Success with ${model}`);
-              break;
-            }
-          } catch (err: unknown) {
-            lastError = err instanceof Error ? err.message : String(err);
-            if (lastError.includes("429") || lastError.includes("Rate Limit")) continue;
-            throw err;
+      let lastError = "";
+      for (let i = 0; i < techModels.length; i++) {
+        const model = techModels[i];
+        try {
+          if (i > 0) {
+            toast.loading(`Resilience: Engine busy, waiting 2s for slot... (${model.split('-')[2] || 'Alt'})`, { id: toastId });
+            await sleep(2000); // 2 second pause to let TPM reset
           }
-        }
 
-        if (!resultText) {
-          throw new Error(`[SYNC_FAULT_v2.7] ${lastError || "All engines currently reaching capacity."}`);
+          console.log(`Smart Sync v2.7: Requesting ${model}...`);
+          const { data: rawData, error: invokeError } = await supabase.functions.invoke("analyze", {
+            body: {
+              model: model,
+              messages: [{ role: "user", content: syncPrompt + "\n\nIMPORTANT: Return ONLY valid JSON." }],
+              response_format: { type: "json_object" }
+            },
+          });
+
+          if (invokeError) {
+            // Resilience: Continue on Rate Limit (429) OR Discovery Error (400/404)
+            console.warn(`Smart Sync: Model ${model} failed (${invokeError.message}).`);
+            lastError = `Model ${model} failed (${invokeError.message})`;
+            continue;
+          }
+
+          if (!rawData) {
+            lastError = `Model ${model} returned null data`;
+            continue;
+          }
+
+          resultText = rawData.choices?.[0]?.message?.content;
+          if (resultText) {
+            console.log(`Smart Sync: Success with ${model}`);
+            break;
+          }
+        } catch (err: unknown) {
+          lastError = err instanceof Error ? err.message : String(err);
+          if (lastError.includes("429") || lastError.includes("Rate Limit")) continue;
+          throw err;
         }
+      }
+
+      if (!resultText) {
+        throw new Error(`[SYNC_FAULT_v2.7] ${lastError || "All engines currently reaching capacity."}`);
+      }
 
 
       const firstBrace = resultText.indexOf("{");
@@ -315,12 +315,12 @@ RETURN JSON FORMAT ONLY:
         if (pd.location && pd.location !== "City, State") updateParams.location = pd.location;
         if (pd.linkedin && pd.linkedin !== "extracted linkedin url") updateParams.linkedin_url = pd.linkedin;
         if (pd.summary && pd.summary !== "Create a strong executive summary matching their profile (max 3 sentences).") {
-            updateParams.summary_master = pd.summary;
+          updateParams.summary_master = pd.summary;
         }
 
         if (Object.keys(updateParams).length > 0) {
-            const { error: profileError } = await supabase.from("profiles").update(updateParams).eq("id", user.id);
-            if (profileError) console.error("Auto profile update failed:", profileError);
+          const { error: profileError } = await supabase.from("profiles").update(updateParams).eq("id", user.id);
+          if (profileError) console.error("Auto profile update failed:", profileError);
         }
       }
 
@@ -340,16 +340,16 @@ RETURN JSON FORMAT ONLY:
     setIsSaving(true);
     try {
       // Field Sanitization: Only send fields that belong in the profiles table
-      const { id, email, created_at, ...updateData } = profile; 
-      
+      const { id, email, created_at, ...updateData } = profile;
+
       console.log("MasterVault: Updating profile with data:", updateData);
-      
+
       const { error } = await supabase.from("profiles").update(updateData).eq("id", user?.id);
       if (error) {
         console.error("MasterVault Profile Update Error:", error);
         throw error;
       }
-      
+
       localStorage.removeItem(`draft_summary_${user.id}`);
       toast.success("Profile updated in Master Vault.");
     } catch (err) {
@@ -372,8 +372,8 @@ RETURN JSON FORMAT ONLY:
     try {
       // Field Sanitization: Remove system fields & detect quantification
       const hasNumbers = /[\d%]/.test(editingItem.description || "") || (editingItem.bullets || []).some(b => /[\d%]/.test(b));
-      
-      const itemToSave = { 
+
+      const itemToSave = {
         ...editingItem,
         is_quantified: hasNumbers
       };
@@ -387,8 +387,8 @@ RETURN JSON FORMAT ONLY:
           throw error;
         }
       } else {
-        const { error } = await supabase.from("master_vault").insert({ 
-          ...itemToSave, 
+        const { error } = await supabase.from("master_vault").insert({
+          ...itemToSave,
           user_id: user.id,
           type: editingItem.type || 'professional' // Ensure required type is present
         } as unknown as Record<string, unknown>); // Cast to bypass strict Postgrest type checking
@@ -397,7 +397,7 @@ RETURN JSON FORMAT ONLY:
           throw error;
         }
       }
-      
+
       toast.success("Profile entry saved.");
       localStorage.removeItem(`draft_vault_item_${user.id}`);
       setEditingItem(null);
@@ -422,7 +422,7 @@ RETURN JSON FORMAT ONLY:
     }
   };
 
-    if (isLoading) {
+  if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center p-24 text-center space-y-8 min-h-[60vh] animate-in fade-in duration-700">
         <div className="relative">
@@ -468,12 +468,12 @@ RETURN JSON FORMAT ONLY:
           </h2>
           <p className="text-muted-foreground font-medium max-w-lg">Your master career dataset. Every achievement stored here powers the AI generation engine.</p>
         </div>
-        <button 
+        <button
           onClick={fetchData}
           disabled={isLoading}
           className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all disabled:opacity-50"
         >
-          {isLoading ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
+          {isLoading ? <Loader2 size={14} className="animate-spin" /> : <Refre shCw size={14} />}
           Refresh Vault
         </button>
       </div>
@@ -482,7 +482,7 @@ RETURN JSON FORMAT ONLY:
       <div className="space-y-6 pt-4">
         <div className="flex items-center gap-4">
           <div className="flex-1 h-3 w-full max-w-lg bg-white/5 rounded-full overflow-hidden border border-white/5 shadow-inner">
-            <motion.div 
+            <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${calculateCompletion(profile, items)}%` }}
               className="h-full bg-gradient-to-r from-primary via-primary/80 to-primary shadow-[0_0_20px_rgba(59,130,246,0.5)]"
@@ -496,7 +496,7 @@ RETURN JSON FORMAT ONLY:
       </div>
 
       {/* ── SMART SYNC HERO CARD ── */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -504,34 +504,34 @@ RETURN JSON FORMAT ONLY:
       >
         <div className="relative bg-slate-950/90 rounded-[3rem] p-8 lg:p-12 overflow-hidden flex flex-col lg:flex-row items-center gap-10">
           <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-1000">
-             <Zap className="w-64 h-64 text-primary" />
+            <Zap className="w-64 h-64 text-primary" />
           </div>
-          
+
           <div className="flex-1 space-y-6 relative z-10 text-center lg:text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary">
               <Sparkles size={12} className="animate-pulse" />
               <span className="text-[9px] font-black uppercase tracking-[0.2em]">Zero-Effort Architecture</span>
             </div>
-            
+
             <div className="space-y-4">
               <h3 className="text-3xl lg:text-4xl font-serif italic text-white leading-tight">
                 Extract Details From <br className="hidden md:block" /> Your Professional Resume
               </h3>
               <p className="text-muted-foreground text-sm max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
-                Our AI extraction engine instantly structures your historical candidacy data. 
+                Our AI extraction engine instantly structures your historical candidacy data.
                 Upload your resume to automatically populate your tactical profile with 0.1% accuracy.
               </p>
             </div>
 
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4">
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                onChange={handleImportResume} 
-                accept=".pdf,.docx,.txt" 
-                className="hidden" 
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleImportResume}
+                accept=".pdf,.docx,.txt"
+                className="hidden"
               />
-              <button 
+              <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isSyncing}
                 className="group relative flex items-center gap-4 px-10 py-5 rounded-2xl bg-white text-slate-950 text-xs font-black uppercase tracking-[0.2em] shadow-2xl hover:shadow-primary/40 active:scale-95 disabled:opacity-50 transition-all overflow-hidden"
@@ -540,7 +540,7 @@ RETURN JSON FORMAT ONLY:
                 {isSyncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Import className="w-5 h-5 text-primary group-hover:scale-125 transition-transform" />}
                 Attach Resume File
               </button>
-              
+
               <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-black uppercase tracking-widest px-4 border-l border-white/10 h-full">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary/40" />
                 Smart Sync Ready
@@ -549,17 +549,17 @@ RETURN JSON FORMAT ONLY:
           </div>
 
           <div className="lg:w-1/3 flex items-center justify-center relative">
-             <div className="w-32 lg:w-48 h-32 lg:h-48 rounded-full bg-primary/20 blur-[60px] absolute" />
-             <div className="relative p-8 rounded-[2rem] bg-white/5 border border-white/10 backdrop-blur-md transform -rotate-3 hover:rotate-0 transition-transform pointer-events-none">
-                <div className="w-full space-y-3">
-                   <div className="h-2 w-24 bg-white/20 rounded-full" />
-                   <div className="h-2 w-32 bg-white/10 rounded-full" />
-                   <div className="h-2 w-16 bg-white/5 rounded-full" />
-                </div>
-                <div className="absolute -bottom-4 -right-4 p-4 rounded-xl bg-primary shadow-xl">
-                   <Sparkles className="w-6 h-6 text-white" />
-                </div>
-             </div>
+            <div className="w-32 lg:w-48 h-32 lg:h-48 rounded-full bg-primary/20 blur-[60px] absolute" />
+            <div className="relative p-8 rounded-[2rem] bg-white/5 border border-white/10 backdrop-blur-md transform -rotate-3 hover:rotate-0 transition-transform pointer-events-none">
+              <div className="w-full space-y-3">
+                <div className="h-2 w-24 bg-white/20 rounded-full" />
+                <div className="h-2 w-32 bg-white/10 rounded-full" />
+                <div className="h-2 w-16 bg-white/5 rounded-full" />
+              </div>
+              <div className="absolute -bottom-4 -right-4 p-4 rounded-xl bg-primary shadow-xl">
+                <Sparkles className="w-6 h-6 text-white" />
+              </div>
+            </div>
           </div>
         </div>
       </motion.div>
@@ -570,274 +570,274 @@ RETURN JSON FORMAT ONLY:
           <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
         </div>
         <div className="relative px-8 bg-background flex flex-col items-center gap-3 text-center">
-           <div className="flex items-center gap-4">
-              <div className="w-8 h-px bg-primary/30" />
-              <span className="text-[11px] font-black uppercase tracking-[0.5em] text-primary/60">OR</span>
-              <div className="w-8 h-px bg-primary/30" />
-           </div>
-           <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground transition-colors group-hover:text-primary">
-              Refine Your Tactical Profile Manually
-           </p>
+          <div className="flex items-center gap-4">
+            <div className="w-8 h-px bg-primary/30" />
+            <span className="text-[11px] font-black uppercase tracking-[0.5em] text-primary/60">OR</span>
+            <div className="w-8 h-px bg-primary/30" />
+          </div>
+          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground transition-colors group-hover:text-primary">
+            Refine Your Tactical Profile Manually
+          </p>
         </div>
       </div>
 
 
-        <div className="grid grid-cols-1 gap-12 pt-8">
+      <div className="grid grid-cols-1 gap-12 pt-8">
 
         {/* ── SECTION: IDENTITY ── */}
         <div className="space-y-6">
-            <div className="flex items-center gap-4 pl-4">
-                <User size={18} className="text-primary" />
-                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-foreground/70">Personal Identity</h3>
-                <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
-            </div>
-            
-            <div className="premium-card p-8 lg:p-10 space-y-8 relative overflow-hidden">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div className="space-y-3">
-                    <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Identity</label>
-                    <div className="relative group">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                    <input
-                        className="w-full bg-background/40 border border-border/40 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
-                        value={profile?.full_name || ""}
-                        onChange={(e) => setProfile(prev => prev ? ({ ...prev, full_name: e.target.value }) : null)}
-                        placeholder="Full Legal Name"
-                    />
-                    </div>
-                </div>
-                <div className="space-y-3">
-                    <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Base Location</label>
-                    <div className="relative group">
-                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                    <input
-                        className="w-full bg-background/40 border border-border/40 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
-                        value={profile?.location || ""}
-                        onChange={(e) => setProfile(prev => prev ? ({ ...prev, location: e.target.value }) : null)}
-                        placeholder="e.g. Bangalore, KA"
-                    />
-                    </div>
-                </div>
-                <div className="space-y-3">
-                    <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Secure Contact</label>
-                    <div className="relative group">
-                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                    <input
-                        className="w-full bg-background/40 border border-border/40 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
-                        value={profile?.phone || ""}
-                        onChange={(e) => setProfile(prev => prev ? ({ ...prev, phone: e.target.value }) : null)}
-                        placeholder="+91 98765 43210"
-                    />
-                    </div>
-                </div>
-                <div className="space-y-3">
-                    <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">LinkedIn HQ</label>
-                    <div className="relative group">
-                    <Linkedin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                    <input
-                        className="w-full bg-background/40 border border-border/40 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
-                        value={profile?.linkedin_url || ""}
-                        onChange={(e) => setProfile(prev => prev ? ({ ...prev, linkedin_url: e.target.value }) : null)}
-                        placeholder="linkedin.com/in/username"
-                    />
-                    </div>
-                </div>
-                <div className="space-y-3">
-                    <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">GitHub / Code</label>
-                    <div className="relative group">
-                    <Github className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                    <input
-                        className="w-full bg-background/40 border border-border/40 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
-                        value={profile?.github_url || ""}
-                        onChange={(e) => setProfile(prev => prev ? ({ ...prev, github_url: e.target.value }) : null)}
-                        placeholder="github.com/username"
-                    />
-                    </div>
-                </div>
-                <div className="space-y-3">
-                    <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Portfolio / Website</label>
-                    <div className="relative group">
-                    <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                    <input
-                        className="w-full bg-background/40 border border-border/40 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
-                        value={profile?.website_url || ""}
-                        onChange={(e) => setProfile(prev => prev ? ({ ...prev, website_url: e.target.value }) : null)}
-                        placeholder="portfolio.com"
-                    />
-                    </div>
-                </div>
-                </div>
+          <div className="flex items-center gap-4 pl-4">
+            <User size={18} className="text-primary" />
+            <h3 className="text-xs font-black uppercase tracking-[0.3em] text-foreground/70">Personal Identity</h3>
+            <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
+          </div>
 
-                <div className="space-y-3 pt-4">
-                    <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Master Professional Summary</label>
-                    <textarea
-                        className="w-full bg-background/40 border border-border/40 rounded-3xl p-6 text-sm focus:ring-2 ring-primary/20 transition-all h-40 resize-none outline-none"
-                        value={profile?.summary_master || ""}
-                        onChange={(e) => setProfile(prev => prev ? ({ ...prev, summary_master: e.target.value }) : null)}
-                        placeholder="Paste every achievement, skill, and mission statement here. The AI will distill the 0.1% strongest parts for every application."
-                    />
+          <div className="premium-card p-8 lg:p-10 space-y-8 relative overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="space-y-3">
+                <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Identity</label>
+                <div className="relative group">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <input
+                    className="w-full bg-background/40 border border-border/40 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
+                    value={profile?.full_name || ""}
+                    onChange={(e) => setProfile(prev => prev ? ({ ...prev, full_name: e.target.value }) : null)}
+                    placeholder="Full Legal Name"
+                  />
                 </div>
-
-                <div className="flex justify-end pt-4 border-t border-white/5">
-                <button
-                    onClick={handleSaveProfile}
-                    disabled={isSaving}
-                    className="flex items-center gap-3 px-10 py-4 rounded-2xl text-sm font-bold bg-foreground text-background hover:scale-[1.02] transition-all shadow-xl shadow-foreground/10 active:scale-95 disabled:opacity-50"
-                >
-                    {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                    Save Identity Signal
-                </button>
+              </div>
+              <div className="space-y-3">
+                <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Base Location</label>
+                <div className="relative group">
+                  <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <input
+                    className="w-full bg-background/40 border border-border/40 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
+                    value={profile?.location || ""}
+                    onChange={(e) => setProfile(prev => prev ? ({ ...prev, location: e.target.value }) : null)}
+                    placeholder="e.g. Bangalore, KA"
+                  />
                 </div>
+              </div>
+              <div className="space-y-3">
+                <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Secure Contact</label>
+                <div className="relative group">
+                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <input
+                    className="w-full bg-background/40 border border-border/40 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
+                    value={profile?.phone || ""}
+                    onChange={(e) => setProfile(prev => prev ? ({ ...prev, phone: e.target.value }) : null)}
+                    placeholder="+91 98765 43210"
+                  />
+                </div>
+              </div>
+              <div className="space-y-3">
+                <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">LinkedIn HQ</label>
+                <div className="relative group">
+                  <Linkedin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <input
+                    className="w-full bg-background/40 border border-border/40 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
+                    value={profile?.linkedin_url || ""}
+                    onChange={(e) => setProfile(prev => prev ? ({ ...prev, linkedin_url: e.target.value }) : null)}
+                    placeholder="linkedin.com/in/username"
+                  />
+                </div>
+              </div>
+              <div className="space-y-3">
+                <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">GitHub / Code</label>
+                <div className="relative group">
+                  <Github className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <input
+                    className="w-full bg-background/40 border border-border/40 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
+                    value={profile?.github_url || ""}
+                    onChange={(e) => setProfile(prev => prev ? ({ ...prev, github_url: e.target.value }) : null)}
+                    placeholder="github.com/username"
+                  />
+                </div>
+              </div>
+              <div className="space-y-3">
+                <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Portfolio / Website</label>
+                <div className="relative group">
+                  <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <input
+                    className="w-full bg-background/40 border border-border/40 rounded-2xl pl-12 pr-4 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
+                    value={profile?.website_url || ""}
+                    onChange={(e) => setProfile(prev => prev ? ({ ...prev, website_url: e.target.value }) : null)}
+                    placeholder="portfolio.com"
+                  />
+                </div>
+              </div>
             </div>
+
+            <div className="space-y-3 pt-4">
+              <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Master Professional Summary</label>
+              <textarea
+                className="w-full bg-background/40 border border-border/40 rounded-3xl p-6 text-sm focus:ring-2 ring-primary/20 transition-all h-40 resize-none outline-none"
+                value={profile?.summary_master || ""}
+                onChange={(e) => setProfile(prev => prev ? ({ ...prev, summary_master: e.target.value }) : null)}
+                placeholder="Paste every achievement, skill, and mission statement here. The AI will distill the 0.1% strongest parts for every application."
+              />
+            </div>
+
+            <div className="flex justify-end pt-4 border-t border-white/5">
+              <button
+                onClick={handleSaveProfile}
+                disabled={isSaving}
+                className="flex items-center gap-3 px-10 py-4 rounded-2xl text-sm font-bold bg-foreground text-background hover:scale-[1.02] transition-all shadow-xl shadow-foreground/10 active:scale-95 disabled:opacity-50"
+              >
+                {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                Save Identity Signal
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* ── SECTION: EXPERIENCE ── */}
         <div className="space-y-6">
-            <div className="flex items-center justify-between pl-4">
-                <div className="flex items-center gap-4">
-                    <Briefcase size={18} className="text-primary" />
-                    <h3 className="text-xs font-black uppercase tracking-[0.3em] text-foreground/70">Strategic Experience</h3>
-                    <div className="h-px w-32 bg-gradient-to-r from-white/10 to-transparent" />
-                </div>
-                <button 
-                  onClick={() => setEditingItem({ type: 'professional', bullets: [], skills: [], title: '', organization: '', period: '', description: '' })}
-                  className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
+          <div className="flex items-center justify-between pl-4">
+            <div className="flex items-center gap-4">
+              <Briefcase size={18} className="text-primary" />
+              <h3 className="text-xs font-black uppercase tracking-[0.3em] text-foreground/70">Strategic Experience</h3>
+              <div className="h-px w-32 bg-gradient-to-r from-white/10 to-transparent" />
+            </div>
+            <button
+              onClick={() => setEditingItem({ type: 'professional', bullets: [], skills: [], title: '', organization: '', period: '', description: '' })}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
+            >
+              <Plus size={14} /> Add Role
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <AnimatePresence>
+              {items.filter(item => item.type === 'professional').map((item) => (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  key={item.id}
+                  className="premium-card p-8 flex flex-col justify-between gap-6 group hover:border-primary/40 transition-all hover:shadow-2xl hover:shadow-primary/5"
                 >
-                    <Plus size={14} /> Add Role
-                </button>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <AnimatePresence>
-                    {items.filter(item => item.type === 'professional').map((item) => (
-                        <motion.div 
-                          initial={{ opacity: 0, scale: 0.95 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.95 }}
-                          key={item.id} 
-                          className="premium-card p-8 flex flex-col justify-between gap-6 group hover:border-primary/40 transition-all hover:shadow-2xl hover:shadow-primary/5"
-                        >
-                            <div className="space-y-4">
-                                <div className="flex justify-between items-start gap-4">
-                                    <div className="space-y-1">
-                                    <h4 className="font-display font-bold text-xl leading-none">{item.title}</h4>
-                                    <p className="text-[11px] font-bold text-primary uppercase tracking-widest">{item.organization}</p>
-                                    </div>
-                                    {item.is_quantified && (
-                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-green-500/10 border border-green-500/20 text-[9px] font-bold text-green-500 uppercase tracking-tighter">
-                                        <Zap className="w-3 h-3 fill-current" />
-                                        Quantified
-                                    </div>
-                                    )}
-                                </div>
-                                <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-medium bg-muted/30 w-fit px-3 py-1 rounded-full border border-white/5">
-                                    <Clock className="w-3 h-3" />
-                                    {item.period}
-                                </div>
-                                <p className="text-sm leading-relaxed text-foreground/70 line-clamp-3 italic">"{item.description}"</p>
-                            </div>
-                            <div className="flex gap-2 pt-4 border-t border-white/5 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
-                                <button onClick={() => setEditingItem(item)} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-muted/40 hover:bg-muted text-[10px] font-bold uppercase tracking-widest transition-all"><Edit3 className="w-3.5 h-3.5" /> Edit</button>
-                                <button onClick={() => handleDeleteItem(item.id)} className="p-2.5 rounded-xl bg-muted/40 hover:bg-red-500/10 hover:text-red-500 text-muted-foreground transition-all"><Trash2 className="w-4 h-4" /></button>
-                            </div>
-                        </motion.div>
-                    ))}
-                </AnimatePresence>
-                {items.filter(item => item.type === 'professional').length === 0 && (
-                    <div className="col-span-full py-12 border-2 border-dashed border-white/5 rounded-[3rem] text-center text-muted-foreground text-sm font-medium italic opacity-40">
-                        No tactical experience mapped. Use "Smart Sync" or "Add Role" to begin.
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-start gap-4">
+                      <div className="space-y-1">
+                        <h4 className="font-display font-bold text-xl leading-none">{item.title}</h4>
+                        <p className="text-[11px] font-bold text-primary uppercase tracking-widest">{item.organization}</p>
+                      </div>
+                      {item.is_quantified && (
+                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-green-500/10 border border-green-500/20 text-[9px] font-bold text-green-500 uppercase tracking-tighter">
+                          <Zap className="w-3 h-3 fill-current" />
+                          Quantified
+                        </div>
+                      )}
                     </div>
-                )}
-            </div>
+                    <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-medium bg-muted/30 w-fit px-3 py-1 rounded-full border border-white/5">
+                      <Clock className="w-3 h-3" />
+                      {item.period}
+                    </div>
+                    <p className="text-sm leading-relaxed text-foreground/70 line-clamp-3 italic">"{item.description}"</p>
+                  </div>
+                  <div className="flex gap-2 pt-4 border-t border-white/5 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+                    <button onClick={() => setEditingItem(item)} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-muted/40 hover:bg-muted text-[10px] font-bold uppercase tracking-widest transition-all"><Edit3 className="w-3.5 h-3.5" /> Edit</button>
+                    <button onClick={() => handleDeleteItem(item.id)} className="p-2.5 rounded-xl bg-muted/40 hover:bg-red-500/10 hover:text-red-500 text-muted-foreground transition-all"><Trash2 className="w-4 h-4" /></button>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+            {items.filter(item => item.type === 'professional').length === 0 && (
+              <div className="col-span-full py-12 border-2 border-dashed border-white/5 rounded-[3rem] text-center text-muted-foreground text-sm font-medium italic opacity-40">
+                No tactical experience mapped. Use "Smart Sync" or "Add Role" to begin.
+              </div>
+            )}
+          </div>
         </div>
 
         {/* ── SECTION: EDUCATION ── */}
         <div className="space-y-6">
-            <div className="flex items-center justify-between pl-4">
-                <div className="flex items-center gap-4">
-                    <GraduationCap size={18} className="text-primary" />
-                    <h3 className="text-xs font-black uppercase tracking-[0.3em] text-foreground/70">Academic Pedigree</h3>
-                    <div className="h-px w-32 bg-gradient-to-r from-white/10 to-transparent" />
-                </div>
-                <button 
-                  onClick={() => setEditingItem({ type: 'education', bullets: [], skills: [], title: '', organization: '', period: '', description: '' })}
-                  className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
+          <div className="flex items-center justify-between pl-4">
+            <div className="flex items-center gap-4">
+              <GraduationCap size={18} className="text-primary" />
+              <h3 className="text-xs font-black uppercase tracking-[0.3em] text-foreground/70">Academic Pedigree</h3>
+              <div className="h-px w-32 bg-gradient-to-r from-white/10 to-transparent" />
+            </div>
+            <button
+              onClick={() => setEditingItem({ type: 'education', bullets: [], skills: [], title: '', organization: '', period: '', description: '' })}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
+            >
+              <Plus size={14} /> Add Degree
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <AnimatePresence>
+              {items.filter(item => item.type === 'education').map((item) => (
+                <motion.div
+                  key={item.id}
+                  className="premium-card p-8 flex flex-col justify-between gap-4 group"
                 >
-                    <Plus size={14} /> Add Degree
-                </button>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <AnimatePresence>
-                    {items.filter(item => item.type === 'education').map((item) => (
-                        <motion.div 
-                          key={item.id} 
-                          className="premium-card p-8 flex flex-col justify-between gap-4 group"
-                        >
-                            <div className="space-y-2">
-                                <h4 className="font-display font-bold text-lg">{item.title}</h4>
-                                <p className="text-[11px] font-bold text-primary uppercase tracking-widest">{item.organization}</p>
-                                <p className="text-xs text-muted-foreground">{item.period}</p>
-                            </div>
-                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                                <button onClick={() => setEditingItem(item)} className="p-2.5 rounded-xl bg-muted/40 hover:bg-muted font-bold text-[10px] uppercase tracking-widest flex items-center gap-2"><Edit3 size={14}/> Edit</button>
-                                <button onClick={() => handleDeleteItem(item.id)} className="p-2.5 rounded-xl bg-muted/40 hover:text-red-500 transition-all"><Trash2 size={14}/></button>
-                            </div>
-                        </motion.div>
-                    ))}
-                </AnimatePresence>
-            </div>
+                  <div className="space-y-2">
+                    <h4 className="font-display font-bold text-lg">{item.title}</h4>
+                    <p className="text-[11px] font-bold text-primary uppercase tracking-widest">{item.organization}</p>
+                    <p className="text-xs text-muted-foreground">{item.period}</p>
+                  </div>
+                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                    <button onClick={() => setEditingItem(item)} className="p-2.5 rounded-xl bg-muted/40 hover:bg-muted font-bold text-[10px] uppercase tracking-widest flex items-center gap-2"><Edit3 size={14} /> Edit</button>
+                    <button onClick={() => handleDeleteItem(item.id)} className="p-2.5 rounded-xl bg-muted/40 hover:text-red-500 transition-all"><Trash2 size={14} /></button>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
         </div>
 
         {/* ── SECTION: PROJECTS & CERTS ── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <div className="space-y-6">
-                <div className="flex items-center justify-between pl-4">
-                    <div className="flex items-center gap-4">
-                        <Code size={18} className="text-primary" />
-                        <h3 className="text-xs font-black uppercase tracking-[0.3em] text-foreground/70">Projects</h3>
-                    </div>
-                    <button onClick={() => setEditingItem({ type: 'project', bullets: [], skills: [], title: '', organization: '', period: '', description: '' })} className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all"><Plus size={20}/></button>
-                </div>
-                <div className="space-y-4">
-                    {items.filter(item => item.type === 'project').map(item => (
-                        <div key={item.id} className="premium-card p-6 flex justify-between items-center group">
-                            <div>
-                                <h5 className="font-display font-bold text-base">{item.title}</h5>
-                                <p className="text-[10px] text-muted-foreground uppercase">{item.organization}</p>
-                            </div>
-                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                                <button onClick={() => setEditingItem(item)} className="text-muted-foreground hover:text-primary"><Edit3 size={14}/></button>
-                                <button onClick={() => handleDeleteItem(item.id)} className="text-muted-foreground hover:text-red-500"><Trash2 size={14}/></button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+          <div className="space-y-6">
+            <div className="flex items-center justify-between pl-4">
+              <div className="flex items-center gap-4">
+                <Code size={18} className="text-primary" />
+                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-foreground/70">Projects</h3>
+              </div>
+              <button onClick={() => setEditingItem({ type: 'project', bullets: [], skills: [], title: '', organization: '', period: '', description: '' })} className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all"><Plus size={20} /></button>
             </div>
+            <div className="space-y-4">
+              {items.filter(item => item.type === 'project').map(item => (
+                <div key={item.id} className="premium-card p-6 flex justify-between items-center group">
+                  <div>
+                    <h5 className="font-display font-bold text-base">{item.title}</h5>
+                    <p className="text-[10px] text-muted-foreground uppercase">{item.organization}</p>
+                  </div>
+                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                    <button onClick={() => setEditingItem(item)} className="text-muted-foreground hover:text-primary"><Edit3 size={14} /></button>
+                    <button onClick={() => handleDeleteItem(item.id)} className="text-muted-foreground hover:text-red-500"><Trash2 size={14} /></button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
-            <div className="space-y-6">
-                <div className="flex items-center justify-between pl-4">
-                    <div className="flex items-center gap-4">
-                        <Award size={18} className="text-primary" />
-                        <h3 className="text-xs font-black uppercase tracking-[0.3em] text-foreground/70">Credentials</h3>
-                    </div>
-                    <button onClick={() => setEditingItem({ type: 'certification', bullets: [], skills: [], title: '', organization: '', period: '', description: '' })} className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all"><Plus size={20}/></button>
-                </div>
-                <div className="space-y-4">
-                    {items.filter(item => item.type === 'certification').map(item => (
-                        <div key={item.id} className="premium-card p-6 flex justify-between items-center group">
-                            <div>
-                                <h5 className="font-display font-bold text-base">{item.title}</h5>
-                                <p className="text-[10px] text-muted-foreground uppercase">{item.organization}</p>
-                            </div>
-                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                                <button onClick={() => setEditingItem(item)} className="text-muted-foreground hover:text-primary"><Edit3 size={14}/></button>
-                                <button onClick={() => handleDeleteItem(item.id)} className="text-muted-foreground hover:text-red-500"><Trash2 size={14}/></button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+          <div className="space-y-6">
+            <div className="flex items-center justify-between pl-4">
+              <div className="flex items-center gap-4">
+                <Award size={18} className="text-primary" />
+                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-foreground/70">Credentials</h3>
+              </div>
+              <button onClick={() => setEditingItem({ type: 'certification', bullets: [], skills: [], title: '', organization: '', period: '', description: '' })} className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all"><Plus size={20} /></button>
             </div>
+            <div className="space-y-4">
+              {items.filter(item => item.type === 'certification').map(item => (
+                <div key={item.id} className="premium-card p-6 flex justify-between items-center group">
+                  <div>
+                    <h5 className="font-display font-bold text-base">{item.title}</h5>
+                    <p className="text-[10px] text-muted-foreground uppercase">{item.organization}</p>
+                  </div>
+                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                    <button onClick={() => setEditingItem(item)} className="text-muted-foreground hover:text-primary"><Edit3 size={14} /></button>
+                    <button onClick={() => handleDeleteItem(item.id)} className="text-muted-foreground hover:text-red-500"><Trash2 size={14} /></button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -850,7 +850,7 @@ RETURN JSON FORMAT ONLY:
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="absolute inset-0 bg-background/95 backdrop-blur-2xl"
-              // Removed backdrop-click close to prevent accidental data loss
+            // Removed backdrop-click close to prevent accidental data loss
             />
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
@@ -863,12 +863,12 @@ RETURN JSON FORMAT ONLY:
                   <h3 className="text-2xl font-display font-bold">Refine Tactical Detail</h3>
                   <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Type: {editingItem.type}</p>
                 </div>
-                <button 
+                <button
                   onClick={() => {
                     if (confirm("Close without saving? Unsaved changes will be held in draft.")) {
                       setEditingItem(null);
                     }
-                  }} 
+                  }}
                   className="p-3 rounded-2xl hover:bg-muted transition-all"
                 >
                   <X className="w-6 h-6" />
@@ -910,7 +910,7 @@ RETURN JSON FORMAT ONLY:
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">{getFieldLabels(editingItem.type).descStr}</label>
-                    <button 
+                    <button
                       onClick={handleSuggestMetrics}
                       className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[9px] font-bold text-primary uppercase tracking-widest hover:bg-primary/20 transition-all"
                     >
@@ -937,13 +937,13 @@ RETURN JSON FORMAT ONLY:
               </div>
 
               <div className="flex justify-end gap-4 pt-10 mt-6 border-t border-white/5">
-                <button 
+                <button
                   onClick={() => {
                     if (confirm("Discard draft permanently? All typed content in this form will be erased.")) {
                       localStorage.removeItem(`draft_vault_item_${user?.id}`);
                       setEditingItem(null);
                     }
-                  }} 
+                  }}
                   className="px-8 py-4 rounded-2xl text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground hover:bg-muted/30 transition-all"
                 >
                   Discard Draft
