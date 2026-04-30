@@ -19,10 +19,10 @@ export const ATSScoreSimulator = ({ result }: ATSScoreSimulatorProps) => {
       (result.overall_match * 0.5) + (keywordRate * 0.3) + ((hasSnippets ? 10 : 0) + (hasDirectives ? 10 : 0))
     );
 
-    const formattingScore = 85; 
+    const formattingScore = 100; 
 
     const overallScore = Math.round(
-      (result.overall_match * 0.6) + (keywordRate * 0.25) + (formattingScore * 0.15)
+      (result.overall_match * 0.7) + (keywordRate * 0.3)
     );
 
     const pass = overallScore >= 65;
