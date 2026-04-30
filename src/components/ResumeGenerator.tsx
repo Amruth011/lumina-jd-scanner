@@ -60,6 +60,12 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
   const [savedResumes, setSavedResumes] = useState<ArchiveRecord[]>([]);
   const [showArchive, setShowArchive] = useState(false);
   const [isLoadingArchive, setIsLoadingArchive] = useState(false);
+  
+  // Font Size Calibration
+  const [nameFontSize, setNameFontSize] = useState(18);
+  const [headlineFontSize, setHeadlineFontSize] = useState(12);
+  const [subHeadlineFontSize, setSubHeadlineFontSize] = useState(11);
+  const [bodyFontSize, setBodyFontSize] = useState(10);
 
   const formatUrl = (url: string) => {
     if (!url) return "";
@@ -526,14 +532,14 @@ RETURN JSON FORMAT ONLY:
       };
 
       // Header: Ultra-clean center aligned
-      addText(editableHeader.fullName.toUpperCase(), 18, true, [0, 0, 0], "center");
+      addText(editableHeader.fullName.toUpperCase(), nameFontSize, true, [0, 0, 0], "center");
       y += 2;
       const contactLines = [
         editableHeader.location,
         editableHeader.phone,
         editableHeader.email.toLowerCase()
       ].filter(Boolean).join("  •  ");
-      addText(contactLines, 8.5, false, [80, 80, 80], "center");
+      addText(contactLines, bodyFontSize * 0.85, false, [80, 80, 80], "center");
       
       const linkItems = [
         { label: "LINKEDIN", url: editableHeader.linkedin },
@@ -547,7 +553,7 @@ RETURN JSON FORMAT ONLY:
         let currentX = (pageWidth - totalWidth) / 2;
         
         linkItems.forEach((item, idx) => {
-          pdf.setFontSize(8.5);
+          pdf.setFontSize(bodyFontSize * 0.85);
           pdf.setTextColor(0, 102, 204);
           pdf.text(item.label, currentX, y);
           // Add invisible link
@@ -559,54 +565,54 @@ RETURN JSON FORMAT ONLY:
       y += 6;
 
       // Summary
-      addText("PROFESSIONAL SUMMARY", 10, true, [0, 0, 0]);
+      addText("PROFESSIONAL SUMMARY", headlineFontSize, true, [0, 0, 0]);
       pdf.setDrawColor(230, 230, 230);
       pdf.setLineWidth(0.2);
       pdf.line(margin, y, pageWidth - margin, y);
       y += 4;
       if (editableResume) {
-        addText(editableResume.professional_summary, 9.5, false, [40, 40, 40]);
+        addText(editableResume.professional_summary, bodyFontSize, false, [40, 40, 40]);
         y += 4;
 
         // Skills
-        addText("CORE COMPETENCIES", 10, true, [0, 0, 0]);
+        addText("CORE COMPETENCIES", headlineFontSize, true, [0, 0, 0]);
         pdf.line(margin, y, pageWidth - margin, y);
         y += 4;
-        addText(editableResume.skills_section.join("  •  "), 9, false, [40, 40, 40]);
+        addText(editableResume.skills_section.join("  •  "), bodyFontSize * 0.9, false, [40, 40, 40]);
         y += 5;
 
         // Experience
-        addText("EXPERIENCE", 10, true, [0, 0, 0]);
+        addText("EXPERIENCE", headlineFontSize, true, [0, 0, 0]);
         pdf.line(margin, y, pageWidth - margin, y);
         y += 3;
         editableResume.experience.forEach(exp => {
           const [title, company] = exp.heading.split('@');
-          addText(title?.trim() || "", 9.5, true, [0, 0, 0]);
+          addText(title?.trim() || "", subHeadlineFontSize, true, [0, 0, 0]);
           y -= 3.5;
-          addText(company?.trim() || "Organization", 9, true, [80, 80, 80]);
+          addText(company?.trim() || "Organization", subHeadlineFontSize * 0.95, true, [80, 80, 80]);
           if (exp.content) {
-            addText(exp.content, 8, false, [100, 100, 100]);
+            addText(exp.content, bodyFontSize * 0.8, false, [100, 100, 100]);
           }
           y += 0.5;
           exp.bullets?.forEach(bullet => {
-            addText(`•  ${bullet}`, 8.5, false, [0, 0, 0]);
+            addText(`•  ${bullet}`, bodyFontSize, false, [0, 0, 0]);
           });
           y += 1.5;
         });
 
         // Projects
         if (editableResume.projects && editableResume.projects.length > 0) {
-          addText("KEY PROJECTS", 10, true, [0, 0, 0]);
+          addText("KEY PROJECTS", headlineFontSize, true, [0, 0, 0]);
           pdf.line(margin, y, pageWidth - margin, y);
           y += 3;
           editableResume.projects.forEach(proj => {
             if (!proj) return;
-            addText(proj.heading || "Project", 9.5, true, [0, 0, 0]);
+            addText(proj.heading || "Project", subHeadlineFontSize, true, [0, 0, 0]);
             if (proj.content) {
-              addText(proj.content, 8.5, false, [40, 40, 40]);
+              addText(proj.content, bodyFontSize * 0.85, false, [40, 40, 40]);
             }
             proj.bullets?.forEach(bullet => {
-              addText(`•  ${bullet}`, 8.5, false, [40, 40, 40]);
+              addText(`•  ${bullet}`, bodyFontSize * 0.85, false, [40, 40, 40]);
             });
             y += 2;
           });
@@ -614,19 +620,19 @@ RETURN JSON FORMAT ONLY:
 
         // Education
         if (editableResume.education && editableResume.education.length > 0) {
-          addText("EDUCATION", 10, true, [0, 0, 0]);
+          addText("EDUCATION", headlineFontSize, true, [0, 0, 0]);
           pdf.line(margin, y, pageWidth - margin, y);
           y += 3;
-          editableResume.education.forEach(edu => edu && addText(edu, 9, false, [40, 40, 40]));
+          editableResume.education.forEach(edu => edu && addText(edu, bodyFontSize * 0.9, false, [40, 40, 40]));
           y += 2;
         }
 
         // Certifications
         if (editableResume.certifications && editableResume.certifications.length > 0) {
-          addText("CERTIFICATIONS", 10, true, [0, 0, 0]);
+          addText("CERTIFICATIONS", headlineFontSize, true, [0, 0, 0]);
           pdf.line(margin, y, pageWidth - margin, y);
           y += 3;
-          editableResume.certifications.forEach(cert => cert && addText(cert, 9, false, [40, 40, 40]));
+          editableResume.certifications.forEach(cert => cert && addText(cert, bodyFontSize * 0.9, false, [40, 40, 40]));
         }
       }
 
@@ -827,7 +833,7 @@ RETURN JSON FORMAT ONLY:
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-6 pt-2">
+                  <div className="grid grid-cols-2 gap-6 pt-2">
                     <div className="space-y-3">
                       <div className="flex items-center gap-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Typography (PDF)</label>
@@ -842,6 +848,71 @@ RETURN JSON FORMAT ONLY:
                         <option value="Roboto">Classic Sans (Roboto)</option>
                         <option value="Merriweather">Premium Serif (Merriweather)</option>
                         <option value="Arial">Standard (Arial)</option>
+                      </select>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Name Font Size</label>
+                        <div className="h-px flex-1 bg-white/5" />
+                      </div>
+                      <select 
+                        value={nameFontSize} 
+                        onChange={(e) => setNameFontSize(Number(e.target.value))}
+                        className="w-full bg-background/60 border border-white/10 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 ring-primary/40 transition-all font-bold"
+                      >
+                        <option value={14}>14pt</option>
+                        <option value={15}>15pt</option>
+                        <option value={16}>16pt</option>
+                        <option value={17}>17pt</option>
+                        <option value={18}>18pt</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-4 pt-2">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Headlines</label>
+                        <div className="h-px flex-1 bg-white/5" />
+                      </div>
+                      <select 
+                        value={headlineFontSize} 
+                        onChange={(e) => setHeadlineFontSize(Number(e.target.value))}
+                        className="w-full bg-background/60 border border-white/10 rounded-xl px-3 py-2.5 text-[10px] outline-none focus:ring-1 ring-primary/40 transition-all font-bold"
+                      >
+                        <option value={12}>12pt</option>
+                        <option value={13}>13pt</option>
+                        <option value={14}>14pt</option>
+                      </select>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Sub-Headlines</label>
+                        <div className="h-px flex-1 bg-white/5" />
+                      </div>
+                      <select 
+                        value={subHeadlineFontSize} 
+                        onChange={(e) => setSubHeadlineFontSize(Number(e.target.value))}
+                        className="w-full bg-background/60 border border-white/10 rounded-xl px-3 py-2.5 text-[10px] outline-none focus:ring-1 ring-primary/40 transition-all font-bold"
+                      >
+                        <option value={10}>10pt</option>
+                        <option value={11}>11pt</option>
+                        <option value={12}>12pt</option>
+                      </select>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Body Content</label>
+                        <div className="h-px flex-1 bg-white/5" />
+                      </div>
+                      <select 
+                        value={bodyFontSize} 
+                        onChange={(e) => setBodyFontSize(Number(e.target.value))}
+                        className="w-full bg-background/60 border border-white/10 rounded-xl px-3 py-2.5 text-[10px] outline-none focus:ring-1 ring-primary/40 transition-all font-bold"
+                      >
+                        <option value={9}>9pt</option>
+                        <option value={10}>10pt</option>
+                        <option value={11}>11pt</option>
                       </select>
                     </div>
                   </div>
