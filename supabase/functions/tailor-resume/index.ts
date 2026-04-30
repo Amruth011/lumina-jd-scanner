@@ -5,9 +5,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const NativeDeno = (globalThis as unknown as { Deno: { serve: (h: (r: Request) => Response | Promise<Response>) => void; env: { get: (k: string) => string | undefined } } }).Deno;
-
-NativeDeno.serve(async (req) => {
+serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
@@ -38,7 +36,7 @@ NativeDeno.serve(async (req) => {
       }
     `;
 
-    const groqKey = NativeDeno.env.get("GROQ_API_KEY");
+    const groqKey = Deno.env.get("GROQ_API_KEY");
     if (!groqKey) {
       throw new Error("Missing GROQ_API_KEY");
     }

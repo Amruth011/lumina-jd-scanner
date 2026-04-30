@@ -243,13 +243,35 @@ RETURN JSON FORMAT ONLY:
           }
 
           console.log(`Smart Sync v2.7: Requesting ${model}...`);
-          const { data: rawData, error: invokeError } = await supabase.functions.invoke("analyze", {
+          let { data: rawData, error: invokeError } = await supabase.functions.invoke("analyze", {
             body: {
               model: model,
               messages: [{ role: "user", content: syncPrompt + "\n\nIMPORTANT: Return ONLY valid JSON." }],
               response_format: { type: "json_object" }
             },
           });
+
+          // ── EMERGENCY FALLBACK: Try Local API Proxy if Edge Function Fails ──
+          if (invokeError && (invokeError.message?.includes("Failed to send a request") || invokeError.status === 404)) {
+            console.warn(`Smart Sync: Edge Function unreachable. Switching to Local API Proxy for ${model}...`);
+            try {
+              const apiResponse = await fetch("/api/analyze", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  model: model,
+                  messages: [{ role: "user", content: syncPrompt + "\n\nIMPORTANT: Return ONLY valid JSON." }],
+                  response_format: { type: "json_object" }
+                })
+              });
+              if (apiResponse.ok) {
+                rawData = await apiResponse.json();
+                invokeError = null;
+              }
+            } catch (apiErr) {
+              console.error("Local API Proxy also failed:", apiErr);
+            }
+          }
 
           if (invokeError) {
             // Resilience: Continue on Rate Limit (429) OR Discovery Error (400/404)
@@ -260,6 +282,12 @@ RETURN JSON FORMAT ONLY:
 
           if (!rawData) {
             lastError = `Model ${model} returned null data`;
+            continue;
+          }
+
+          if (rawData.error) {
+            lastError = rawData.error;
+            console.warn(`Smart Sync: Model ${model} reported error: ${rawData.error}`);
             continue;
           }
 

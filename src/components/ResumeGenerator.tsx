@@ -243,7 +243,7 @@ RETURN JSON FORMAT ONLY:
           // Update toast or state to show which model is active
           if (i > 0) toast.loading(`Switching to fallback engine: ${model}...`, { id: "gen-toast" });
 
-          const { data: rawData, error: invokeError } = await supabase.functions.invoke("analyze", {
+          let { data: rawData, error: invokeError } = await supabase.functions.invoke("analyze", {
             body: {
               model: model,
               messages: [{ role: "user", content: prompt }],
@@ -251,6 +251,29 @@ RETURN JSON FORMAT ONLY:
               response_format: { type: "json_object" }
             }
           });
+
+          // ── EMERGENCY FALLBACK: Try Local API Proxy if Edge Function Fails ──
+          if (invokeError && (invokeError.message?.includes("Failed to send a request") || invokeError.status === 404)) {
+            console.warn(`Lumina Tailoring: Edge Function unreachable. Switching to Local API Proxy for ${model}...`);
+            try {
+              const apiResponse = await fetch("/api/analyze", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  model: model,
+                  messages: [{ role: "user", content: prompt }],
+                  temperature: 0.3,
+                  response_format: { type: "json_object" }
+                })
+              });
+              if (apiResponse.ok) {
+                rawData = await apiResponse.json();
+                invokeError = null;
+              }
+            } catch (apiErr) {
+              console.error("Local API Proxy also failed:", apiErr);
+            }
+          }
 
           if (invokeError) {
             lastError = invokeError.message || "Function invocation failed";
