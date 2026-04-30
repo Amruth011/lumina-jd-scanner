@@ -1331,8 +1331,8 @@ RETURN JSON FORMAT ONLY:
                 style={{ fontFamily: fontFamily === 'Merriweather' ? 'serif' : 'sans-serif' }}
               >
                 <div className="text-center space-y-4">
-                  <h1 className="text-3xl font-bold uppercase tracking-tight text-black">{editableHeader.fullName}</h1>
-                   <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[11px] text-zinc-700 font-bold uppercase tracking-wider">
+                  <h1 className="font-bold uppercase tracking-tight text-black" style={{ fontSize: `${nameFontSize * 1.5}px` }}>{editableHeader.fullName}</h1>
+                   <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-zinc-700 font-bold uppercase tracking-wider" style={{ fontSize: `${bodyFontSize * 1.1}px` }}>
                      <span className="flex items-center gap-1.5"><MapPin size={10} className="text-zinc-400" /> {editableHeader.location}</span>
                      <span className="opacity-30">|</span>
                      <span className="flex items-center gap-1.5 lowercase font-medium tracking-normal text-zinc-600"><Mail size={10} className="text-zinc-400" /> {editableHeader.email}</span>
@@ -1340,7 +1340,7 @@ RETURN JSON FORMAT ONLY:
                      <span>{editableHeader.phone}</span>
                    </div>
                    
-                    <div className="flex flex-wrap items-center justify-center gap-6 mt-2 text-[10px] font-black tracking-widest">
+                    <div className="flex flex-wrap items-center justify-center gap-6 mt-2 font-black tracking-widest" style={{ fontSize: `${bodyFontSize}px` }}>
                       {editableHeader.linkedin && (
                         <div className="flex items-center gap-2 group/link">
                           <a href={editableHeader.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-accent-blue hover:text-accent-blue/80 transition-colors uppercase border-b border-accent-blue/20 pb-0.5">
@@ -1377,22 +1377,22 @@ RETURN JSON FORMAT ONLY:
                 <div className="space-y-8">
                   <div className="space-y-2">
                     <div className="flex items-center gap-3">
-                      <h4 className="text-[10px] font-black text-black uppercase tracking-widest whitespace-nowrap">Professional Summary</h4>
+                      <h4 className="font-black text-black uppercase tracking-widest whitespace-nowrap" style={{ fontSize: `${headlineFontSize * 1.1}px` }}>Professional Summary</h4>
                       <div className="h-[0.5px] w-full bg-zinc-300" />
                     </div>
-                    <p className="text-[12px] leading-relaxed text-zinc-900 font-medium">{editableResume?.professional_summary}</p>
+                    <p className="leading-relaxed text-zinc-900 font-medium" style={{ fontSize: `${bodyFontSize * 1.2}px` }}>{editableResume?.professional_summary}</p>
                   </div>
                   
                   <div className="space-y-4">
                     <div className="flex items-center gap-3">
-                      <h4 className="text-[10px] font-black text-black uppercase tracking-widest whitespace-nowrap">Professional Experience</h4>
+                      <h4 className="font-black text-black uppercase tracking-widest whitespace-nowrap" style={{ fontSize: `${headlineFontSize * 1.1}px` }}>Professional Experience</h4>
                       <div className="h-[0.5px] w-full bg-zinc-300" />
                     </div>
                     <div className="space-y-5">
                       {editableResume?.experience.map((exp, i) => (
                         <div key={i} className="space-y-1">
                           <div className="flex justify-between items-baseline">
-                              <h5 className="font-display font-bold text-[13px] text-black">{exp.heading}</h5>
+                              <h5 className="font-display font-bold text-black" style={{ fontSize: `${subHeadlineFontSize * 1.2}px` }}>{exp.heading}</h5>
                           </div>
                           <ul className="space-y-1 list-disc pl-4">
                             {exp.bullets?.map((bullet, j) => (
@@ -1409,19 +1409,19 @@ RETURN JSON FORMAT ONLY:
                   {editableResume?.projects && editableResume.projects.length > 0 && (
                   <div className="space-y-4">
                     <div className="flex items-center gap-3">
-                      <h4 className="text-[10px] font-black text-black uppercase tracking-widest whitespace-nowrap">Strategic Projects</h4>
+                      <h4 className="font-black text-black uppercase tracking-widest whitespace-nowrap" style={{ fontSize: `${headlineFontSize * 1.1}px` }}>Strategic Projects</h4>
                       <div className="h-[0.5px] w-full bg-zinc-300" />
                     </div>
                     <div className="space-y-4">
                       {editableResume.projects.map((proj, i) => (
                         <div key={i} className="space-y-1">
-                            <h5 className="font-display font-bold text-[13px] text-black">{proj?.heading || "Strategic Project"}</h5>
+                            <h5 className="font-display font-bold text-black" style={{ fontSize: `${subHeadlineFontSize * 1.2}px` }}>{proj?.heading || "Strategic Project"}</h5>
                           
-                            <p className="text-[11px] text-zinc-900 leading-relaxed font-medium">{proj?.content}</p>
+                            <p className="leading-relaxed font-medium text-zinc-900" style={{ fontSize: `${bodyFontSize * 1.1}px` }}>{proj?.content}</p>
 
                           <ul className="space-y-1 list-disc pl-4 mt-1">
                             {proj?.bullets?.map((bullet, j) => (
-                              <li key={j} className="text-[11px] text-zinc-800 leading-snug">
+                              <li key={j} className="text-zinc-800 leading-snug" style={{ fontSize: `${bodyFontSize * 1.1}px` }}>
                                   {bullet}
                               </li>
                             ))}
@@ -1435,21 +1435,21 @@ RETURN JSON FORMAT ONLY:
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-2">
                       <div className="flex items-center gap-3">
-                        <h4 className="text-[10px] font-black text-black uppercase tracking-widest whitespace-nowrap">Technical Stack</h4>
+                        <h4 className="font-black text-black uppercase tracking-widest whitespace-nowrap" style={{ fontSize: `${headlineFontSize * 1.1}px` }}>Technical Stack</h4>
                         <div className="h-[0.5px] w-full bg-zinc-300" />
                       </div>
-                        <p className="text-[12px] text-zinc-800 leading-relaxed font-medium">{editableResume?.skills_section.join(", ")}</p>
+                        <p className="leading-relaxed font-medium text-zinc-800" style={{ fontSize: `${bodyFontSize * 1.2}px` }}>{editableResume?.skills_section.join(", ")}</p>
                     </div>
 
                     {editableResume?.education && editableResume.education.length > 0 && (
                       <div className="space-y-2">
                         <div className="flex items-center gap-3">
-                          <h4 className="text-[10px] font-black text-black uppercase tracking-widest whitespace-nowrap">Education</h4>
+                          <h4 className="font-black text-black uppercase tracking-widest whitespace-nowrap" style={{ fontSize: `${headlineFontSize * 1.1}px` }}>Education</h4>
                           <div className="h-[0.5px] w-full bg-zinc-300" />
                         </div>
                         <ul className="space-y-1">
                            {editableResume.education.map((edu, idx) => (
-                             <li key={idx} className="text-[12px] text-zinc-800">
+                             <li key={idx} className="text-zinc-800" style={{ fontSize: `${bodyFontSize * 1.2}px` }}>
                                   <span className="font-medium">{edu}</span>
                              </li>
                            ))}
@@ -1459,12 +1459,12 @@ RETURN JSON FORMAT ONLY:
                     {editableResume?.certifications && editableResume.certifications.length > 0 && (
                       <div className="space-y-2">
                         <div className="flex items-center gap-3">
-                          <h4 className="text-[10px] font-black text-black uppercase tracking-widest whitespace-nowrap">Certifications</h4>
+                          <h4 className="font-black text-black uppercase tracking-widest whitespace-nowrap" style={{ fontSize: `${headlineFontSize * 1.1}px` }}>Certifications</h4>
                           <div className="h-[0.5px] w-full bg-zinc-300" />
                         </div>
                         <ul className="space-y-1">
                            {editableResume.certifications.map((cert, idx) => (
-                             <li key={idx} className="text-[12px] text-zinc-800">
+                             <li key={idx} className="text-zinc-800" style={{ fontSize: `${bodyFontSize * 1.2}px` }}>
                                   <span className="font-medium">{cert}</span>
                              </li>
                            ))}
