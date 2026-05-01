@@ -528,14 +528,14 @@ RETURN JSON FORMAT ONLY:
           if (y > 280) { pdf.addPage(); y = margin; }
           const xPos = align === "center" ? (pageWidth - pdf.getTextWidth(line)) / 2 : margin;
           pdf.text(line, xPos, y);
-          y += size * 0.35;
+          y += size * 0.4;
         });
-        y += size * 0.02;
+        y += size * 0.05;
       };
 
       // Header: Ultra-clean center aligned
       addText(editableHeader.fullName.toUpperCase(), nameFontSize, true, [0, 0, 0], "center");
-      y += 0.2;
+      y += 1.2;
       const contactLines = [
         editableHeader.location,
         editableHeader.phone,
@@ -550,7 +550,7 @@ RETURN JSON FORMAT ONLY:
       ].filter(item => item.url);
 
       if (linkItems.length > 0) {
-        y += 0.4;
+        y += 0.6;
         const totalWidth = linkItems.reduce((acc, item) => acc + pdf.getTextWidth(item.label) + 10, 0) - 10;
         let currentX = (pageWidth - totalWidth) / 2;
         
@@ -562,31 +562,31 @@ RETURN JSON FORMAT ONLY:
           pdf.link(currentX, y - 3, pdf.getTextWidth(item.label), 5, { url: item.url });
           currentX += pdf.getTextWidth(item.label) + 10;
         });
-        y += 0.5;
+        y += 2.0;
       }
-      y += 0.5;
+      y += 3.5;
 
       // Summary
       addText("PROFESSIONAL SUMMARY", headlineFontSize, true, [0, 0, 0]);
       pdf.setDrawColor(230, 230, 230);
       pdf.setLineWidth(0.2);
       pdf.line(margin, y, pageWidth - margin, y);
-      y += 0.5;
+      y += 2.0;
       if (editableResume) {
         addText(editableResume.professional_summary, bodyFontSize, false, [40, 40, 40]);
-        y += 0.5;
+        y += 2.0;
 
         // Skills
         addText("CORE COMPETENCIES", headlineFontSize, true, [0, 0, 0]);
         pdf.line(margin, y, pageWidth - margin, y);
-        y += 0.5;
+        y += 2.0;
         addText(editableResume.skills_section.join("  •  "), bodyFontSize * 0.9, false, [40, 40, 40]);
-        y += 0.5;
+        y += 3.0;
 
         // Experience
         addText("EXPERIENCE", headlineFontSize, true, [0, 0, 0]);
         pdf.line(margin, y, pageWidth - margin, y);
-        y += 0.5;
+        y += 1.8;
         editableResume.experience.forEach(exp => {
           const [title, company] = exp.heading.split('@');
           addText(title?.trim() || "", subHeadlineFontSize, true, [0, 0, 0]);
@@ -594,18 +594,18 @@ RETURN JSON FORMAT ONLY:
           if (exp.content) {
             addText(exp.content, bodyFontSize * 0.8, false, [100, 100, 100]);
           }
-          y += 0.4; // Small gap before bullets
+          y += 0.6; // Small gap before bullets
           exp.bullets?.forEach(bullet => {
             addText(`•  ${bullet}`, bodyFontSize, false, [0, 0, 0]);
           });
-          y += 1.0; // Gap between experience entries
+          y += 1.5; // Gap between experience entries
         });
 
         // Projects
         if (editableResume.projects && editableResume.projects.length > 0) {
           addText("KEY PROJECTS", headlineFontSize, true, [0, 0, 0]);
           pdf.line(margin, y, pageWidth - margin, y);
-          y += 1.2;
+          y += 1.8;
           editableResume.projects.forEach(proj => {
             if (!proj) return;
             addText(proj.heading || "Project", subHeadlineFontSize, true, [0, 0, 0]);
@@ -615,7 +615,7 @@ RETURN JSON FORMAT ONLY:
             proj.bullets?.forEach(bullet => {
               addText(`•  ${bullet}`, bodyFontSize * 0.85, false, [40, 40, 40]);
             });
-            y += 1.0;
+            y += 1.5;
           });
         }
 
@@ -623,16 +623,16 @@ RETURN JSON FORMAT ONLY:
         if (editableResume.education && editableResume.education.length > 0) {
           addText("EDUCATION", headlineFontSize, true, [0, 0, 0]);
           pdf.line(margin, y, pageWidth - margin, y);
-          y += 1.2;
+          y += 1.8;
           editableResume.education.forEach(edu => edu && addText(edu, bodyFontSize * 0.9, false, [40, 40, 40]));
-          y += 1.0;
+          y += 1.5;
         }
 
         // Certifications
         if (editableResume.certifications && editableResume.certifications.length > 0) {
           addText("CERTIFICATIONS", headlineFontSize, true, [0, 0, 0]);
           pdf.line(margin, y, pageWidth - margin, y);
-          y += 1.2;
+          y += 1.8;
           editableResume.certifications.forEach(cert => cert && addText(cert, bodyFontSize * 0.9, false, [40, 40, 40]));
         }
       }
@@ -1380,7 +1380,7 @@ RETURN JSON FORMAT ONLY:
                     </div>
                 </div>
 
-                <div className="space-y-8">
+                <div className="space-y-6">
                   <div className="space-y-2">
                     <div className="flex items-center gap-3">
                       <h4 className="font-black text-black uppercase tracking-widest whitespace-nowrap" style={{ fontSize: `${headlineFontSize * 1.1}px`, fontFamily: 'inherit' }}>Professional Summary</h4>
@@ -1389,12 +1389,12 @@ RETURN JSON FORMAT ONLY:
                     <p className="leading-relaxed text-zinc-900 font-medium" style={{ fontSize: `${bodyFontSize * 1.2}px`, fontFamily: 'inherit' }}>{editableResume?.professional_summary}</p>
                   </div>
                   
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     <div className="flex items-center gap-3">
                       <h4 className="font-black text-black uppercase tracking-widest whitespace-nowrap" style={{ fontSize: `${headlineFontSize * 1.1}px`, fontFamily: 'inherit' }}>Professional Experience</h4>
                       <div className="h-[0.5px] w-full bg-zinc-300" />
                     </div>
-                    <div className="space-y-5">
+                    <div className="space-y-4">
                       {editableResume?.experience.map((exp, i) => (
                         <div key={i} className="space-y-1">
                           <div className="flex justify-between items-baseline">
@@ -1413,12 +1413,12 @@ RETURN JSON FORMAT ONLY:
                   </div>
 
                   {editableResume?.projects && editableResume.projects.length > 0 && (
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     <div className="flex items-center gap-3">
                       <h4 className="font-black text-black uppercase tracking-widest whitespace-nowrap" style={{ fontSize: `${headlineFontSize * 1.1}px`, fontFamily: 'inherit' }}>Strategic Projects</h4>
                       <div className="h-[0.5px] w-full bg-zinc-300" />
                     </div>
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {editableResume.projects.map((proj, i) => (
                         <div key={i} className="space-y-1">
                             <h5 className="font-bold text-black" style={{ fontSize: `${subHeadlineFontSize * 1.2}px`, fontFamily: 'inherit' }}>{proj?.heading || "Strategic Project"}</h5>
