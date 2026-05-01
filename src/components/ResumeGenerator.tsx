@@ -590,16 +590,15 @@ RETURN JSON FORMAT ONLY:
         editableResume.experience.forEach(exp => {
           const [title, company] = exp.heading.split('@');
           addText(title?.trim() || "", subHeadlineFontSize, true, [0, 0, 0]);
-          y -= 3.5;
           addText(company?.trim() || "Organization", subHeadlineFontSize * 0.95, true, [80, 80, 80]);
           if (exp.content) {
             addText(exp.content, bodyFontSize * 0.8, false, [100, 100, 100]);
           }
-          y += 0.5;
+          y += 1; // Small gap before bullets
           exp.bullets?.forEach(bullet => {
             addText(`•  ${bullet}`, bodyFontSize, false, [0, 0, 0]);
           });
-          y += 1.5;
+          y += 2; // Gap between experience entries
         });
 
         // Projects
