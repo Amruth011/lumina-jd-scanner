@@ -535,7 +535,7 @@ RETURN JSON FORMAT ONLY:
 
       // Header: Ultra-clean center aligned
       addText(editableHeader.fullName.toUpperCase(), nameFontSize, true, [0, 0, 0], "center");
-      y += 2;
+      y += 1.6;
       const contactLines = [
         editableHeader.location,
         editableHeader.phone,
@@ -550,7 +550,7 @@ RETURN JSON FORMAT ONLY:
       ].filter(item => item.url);
 
       if (linkItems.length > 0) {
-        y += 1;
+        y += 0.8;
         const totalWidth = linkItems.reduce((acc, item) => acc + pdf.getTextWidth(item.label) + 10, 0) - 10;
         let currentX = (pageWidth - totalWidth) / 2;
         
@@ -562,31 +562,31 @@ RETURN JSON FORMAT ONLY:
           pdf.link(currentX, y - 3, pdf.getTextWidth(item.label), 5, { url: item.url });
           currentX += pdf.getTextWidth(item.label) + 10;
         });
-        y += 4;
+        y += 3.2;
       }
-      y += 6;
+      y += 4.8;
 
       // Summary
       addText("PROFESSIONAL SUMMARY", headlineFontSize, true, [0, 0, 0]);
       pdf.setDrawColor(230, 230, 230);
       pdf.setLineWidth(0.2);
       pdf.line(margin, y, pageWidth - margin, y);
-      y += 4;
+      y += 3.2;
       if (editableResume) {
         addText(editableResume.professional_summary, bodyFontSize, false, [40, 40, 40]);
-        y += 4;
+        y += 3.2;
 
         // Skills
         addText("CORE COMPETENCIES", headlineFontSize, true, [0, 0, 0]);
         pdf.line(margin, y, pageWidth - margin, y);
-        y += 4;
+        y += 3.2;
         addText(editableResume.skills_section.join("  •  "), bodyFontSize * 0.9, false, [40, 40, 40]);
-        y += 5;
+        y += 4.0;
 
         // Experience
         addText("EXPERIENCE", headlineFontSize, true, [0, 0, 0]);
         pdf.line(margin, y, pageWidth - margin, y);
-        y += 3;
+        y += 2.4;
         editableResume.experience.forEach(exp => {
           const [title, company] = exp.heading.split('@');
           addText(title?.trim() || "", subHeadlineFontSize, true, [0, 0, 0]);
@@ -594,18 +594,18 @@ RETURN JSON FORMAT ONLY:
           if (exp.content) {
             addText(exp.content, bodyFontSize * 0.8, false, [100, 100, 100]);
           }
-          y += 1; // Small gap before bullets
+          y += 0.8; // Small gap before bullets
           exp.bullets?.forEach(bullet => {
             addText(`•  ${bullet}`, bodyFontSize, false, [0, 0, 0]);
           });
-          y += 2; // Gap between experience entries
+          y += 1.6; // Gap between experience entries
         });
 
         // Projects
         if (editableResume.projects && editableResume.projects.length > 0) {
           addText("KEY PROJECTS", headlineFontSize, true, [0, 0, 0]);
           pdf.line(margin, y, pageWidth - margin, y);
-          y += 3;
+          y += 2.4;
           editableResume.projects.forEach(proj => {
             if (!proj) return;
             addText(proj.heading || "Project", subHeadlineFontSize, true, [0, 0, 0]);
@@ -615,7 +615,7 @@ RETURN JSON FORMAT ONLY:
             proj.bullets?.forEach(bullet => {
               addText(`•  ${bullet}`, bodyFontSize * 0.85, false, [40, 40, 40]);
             });
-            y += 2;
+            y += 1.6;
           });
         }
 
@@ -623,16 +623,16 @@ RETURN JSON FORMAT ONLY:
         if (editableResume.education && editableResume.education.length > 0) {
           addText("EDUCATION", headlineFontSize, true, [0, 0, 0]);
           pdf.line(margin, y, pageWidth - margin, y);
-          y += 3;
+          y += 2.4;
           editableResume.education.forEach(edu => edu && addText(edu, bodyFontSize * 0.9, false, [40, 40, 40]));
-          y += 2;
+          y += 1.6;
         }
 
         // Certifications
         if (editableResume.certifications && editableResume.certifications.length > 0) {
           addText("CERTIFICATIONS", headlineFontSize, true, [0, 0, 0]);
           pdf.line(margin, y, pageWidth - margin, y);
-          y += 3;
+          y += 2.4;
           editableResume.certifications.forEach(cert => cert && addText(cert, bodyFontSize * 0.9, false, [40, 40, 40]));
         }
       }
