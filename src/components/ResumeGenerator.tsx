@@ -528,14 +528,14 @@ RETURN JSON FORMAT ONLY:
           if (y > 280) { pdf.addPage(); y = margin; }
           const xPos = align === "center" ? (pageWidth - pdf.getTextWidth(line)) / 2 : margin;
           pdf.text(line, xPos, y);
-          y += size * 0.4;
+          y += size * 0.35;
         });
-        y += size * 0.05;
+        y += size * 0.02;
       };
 
       // Header: Ultra-clean center aligned
       addText(editableHeader.fullName.toUpperCase(), nameFontSize, true, [0, 0, 0], "center");
-      y += 0.8;
+      y += 0.2;
       const contactLines = [
         editableHeader.location,
         editableHeader.phone,
@@ -562,31 +562,31 @@ RETURN JSON FORMAT ONLY:
           pdf.link(currentX, y - 3, pdf.getTextWidth(item.label), 5, { url: item.url });
           currentX += pdf.getTextWidth(item.label) + 10;
         });
-        y += 1.5;
+        y += 0.5;
       }
-      y += 2.5;
+      y += 0.5;
 
       // Summary
       addText("PROFESSIONAL SUMMARY", headlineFontSize, true, [0, 0, 0]);
       pdf.setDrawColor(230, 230, 230);
       pdf.setLineWidth(0.2);
       pdf.line(margin, y, pageWidth - margin, y);
-      y += 1.5;
+      y += 0.5;
       if (editableResume) {
         addText(editableResume.professional_summary, bodyFontSize, false, [40, 40, 40]);
-        y += 1.5;
+        y += 0.5;
 
         // Skills
         addText("CORE COMPETENCIES", headlineFontSize, true, [0, 0, 0]);
         pdf.line(margin, y, pageWidth - margin, y);
-        y += 1.5;
+        y += 0.5;
         addText(editableResume.skills_section.join("  •  "), bodyFontSize * 0.9, false, [40, 40, 40]);
-        y += 2.0;
+        y += 0.5;
 
         // Experience
         addText("EXPERIENCE", headlineFontSize, true, [0, 0, 0]);
         pdf.line(margin, y, pageWidth - margin, y);
-        y += 1.2;
+        y += 0.5;
         editableResume.experience.forEach(exp => {
           const [title, company] = exp.heading.split('@');
           addText(title?.trim() || "", subHeadlineFontSize, true, [0, 0, 0]);
