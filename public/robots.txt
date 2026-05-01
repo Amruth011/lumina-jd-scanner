@@ -1,33 +1,17 @@
 User-agent: *
 Allow: /
 
-# Specifically allow AI and Search Bots for AEO/SEO
-User-agent: Googlebot
-Allow: /
-
-User-agent: Google-Extended
-Allow: /
-
-User-agent: Bingbot
+# AI Bot Optimization
+User-agent: GPTBot
 Allow: /
 
 User-agent: PerplexityBot
 Allow: /
 
-User-agent: GPTBot
+User-agent: anthropic-ai
 Allow: /
 
-User-agent: ChatGPT-User
+User-agent: Google-Extended
 Allow: /
 
-User-agent: Apify
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
-# Sitemaps (if you have them)
-# Sitemap: https://yourdomain.com/sitemap.xml
+Sitemap: https://lumina-jd-scanner.vercel.app/sitemap.xml

@@ -92,27 +92,27 @@ export const ResumeEnhancer = ({ resumeText, skills, deductions, jobTitle, gapRe
         lines.forEach((line: string) => {
           if (y > pageHeight - margin) { pdf.addPage(); y = margin; }
           pdf.text(line, margin, y);
-          y += size * 0.35;
+          y += size * 0.45;
         });
-        y += size * 0.02;
+        y += size * 0.15;
       };
 
       const addLine = () => {
         if (y > pageHeight - margin) { pdf.addPage(); y = margin; }
         pdf.setDrawColor(180, 180, 180);
         pdf.line(margin, y, pageWidth - margin, y);
-        y += 0.5;
+        y += 4;
       };
 
       addText("PROFESSIONAL SUMMARY", 12, true, [30, 30, 30]);
       addLine();
       addText(resume.professional_summary, 10);
-      y += 0.5;
+      y += 3;
 
       addText("TECHNICAL SKILLS", 12, true, [30, 30, 30]);
       addLine();
       resume.skills_section.forEach(skill => { addText(skill, 10); });
-      y += 0.5;
+      y += 3;
 
       addText("EXPERIENCE & PROJECTS", 12, true, [30, 30, 30]);
       addLine();
@@ -120,7 +120,7 @@ export const ResumeEnhancer = ({ resumeText, skills, deductions, jobTitle, gapRe
         addText(exp.heading, 10.5, true);
         if (exp.content) addText(exp.content, 9.5, false, [70, 70, 70]);
         exp.bullets?.forEach(bullet => { addText(`•  ${bullet}`, 9.5); });
-        y += 0.2;
+        y += 2;
       });
 
       if (resume.education.length > 0) {
@@ -130,7 +130,7 @@ export const ResumeEnhancer = ({ resumeText, skills, deductions, jobTitle, gapRe
       }
 
       if (resume.certifications?.length) {
-        y += 1.0;
+        y += 3;
         addText("CERTIFICATIONS", 12, true, [30, 30, 30]);
         addLine();
         resume.certifications.forEach(cert => { addText(cert, 10); });
