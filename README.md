@@ -1,6 +1,6 @@
 <div align="center">
 
-# 💎 Lumina
+# <img src="public/logo.png" width="48" height="48" style="vertical-align: middle; margin-right: 12px;" /> Lumina
 ### Silicon Valley Standard • Ultra-Low Latency • 100% Reliable
 
 [![Status](https://img.shields.io/badge/Status-Production_Stable-success?style=for-the-badge&logo=vercel)](https://lumina.app/)
