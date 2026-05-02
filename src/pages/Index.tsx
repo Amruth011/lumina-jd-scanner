@@ -125,7 +125,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-noise bg-background font-sans text-foreground selection:bg-accent-emerald/20 selection:text-foreground">
+    <div className="min-h-screen bg-background font-sans text-foreground selection:bg-accent-emerald/20 selection:text-foreground">
       <GlobalNavbar activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* Floating Ambient Mesh Blobs ($1B Tier) */}
