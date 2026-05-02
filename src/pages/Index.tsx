@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useSpring, useMotionValue, useTransform } from "framer-motion";
 import { ArrowRight, BrainCircuit, ShieldCheck, Target, FileText, Check, Star, CheckCircle2, BarChart3, Zap } from "lucide-react";
 import { LuminaLogo } from "@/components/LuminaLogo";
 import { GlobalNavbar } from "@/components/GlobalNavbar";
@@ -103,9 +103,29 @@ const BarMetric = ({ label, score, isTeal = false, delay = 0 }: { label: string,
 const Index = () => {
   const [activeTab, setActiveTab] = useState<Tab>("decode");
   const { user } = useAuth();
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  
+  // Smooth spring physics for Top 0.01% parallax
+  const springConfig = { damping: 25, stiffness: 150, mass: 0.5 };
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [10, -10]), springConfig);
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-10, 10]), springConfig);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+  
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
 
   return (
-    <div className="min-h-screen bg-background font-sans text-foreground selection:bg-accent-emerald/20 selection:text-foreground">
+    <div className="min-h-screen bg-noise bg-background font-sans text-foreground selection:bg-accent-emerald/20 selection:text-foreground">
       <GlobalNavbar activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* Floating Ambient Mesh Blobs ($1B Tier) */}
@@ -118,8 +138,8 @@ const Index = () => {
       <section className="relative z-10 pt-40 pb-24 px-6 max-w-7xl mx-auto flex flex-col items-center text-center">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }} className="space-y-8 flex flex-col items-center w-full">
           
-          <h1 className="text-7xl md:text-[140px] font-serif leading-[0.85] tracking-tight text-foreground max-w-5xl">
-            Land in the <span className="italic text-accent-emerald">top 0.1%</span>
+          <h1 className="text-7xl md:text-[140px] font-serif leading-[0.85] tracking-tighter text-foreground max-w-5xl text-gradient-elite">
+            Land in the <span className="italic text-accent-emerald">top 0.01%</span>
           </h1>
           
           <p className="text-lg md:text-2xl text-foreground/60 font-medium max-w-3xl mx-auto leading-relaxed mt-6">
@@ -137,12 +157,15 @@ const Index = () => {
             </Link>
           </div>
 
-          {/* $1B Hero Terminal Visual */}
+          {/* Top 0.01% 3D Hero Terminal Visual */}
           <motion.div 
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full max-w-5xl mt-24 text-left relative group"
+            className="w-full max-w-5xl mt-24 text-left relative group perspective-1000"
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
           >
             <div className="absolute -inset-4 bg-gradient-to-r from-accent-emerald/30 to-accent-blue/10 rounded-[3rem] blur-2xl opacity-40 group-hover:opacity-70 transition duration-1000" />
             <div className="macos-window p-6 md:p-12 relative overflow-hidden">
@@ -246,7 +269,7 @@ const Index = () => {
         <div className="grid grid-cols-1 md:grid-cols-6 gap-6 auto-rows-[300px]">
           
           {/* Bento Large Card 1 */}
-          <div className="bento-card p-10 md:col-span-4 bg-gradient-to-br from-white to-background flex flex-col justify-between group">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }} className="bento-card p-10 md:col-span-4 bg-gradient-to-br from-white to-background flex flex-col justify-between group">
             <div className="space-y-4 max-w-lg">
               <div className="w-14 h-14 rounded-2xl bg-foreground text-white flex items-center justify-center shadow-soft mb-6 group-hover:scale-110 transition-transform duration-500">
                 <BrainCircuit size={28} />
@@ -259,10 +282,10 @@ const Index = () => {
                 <span key={tag} className="px-4 py-1.5 rounded-full bg-accent-emerald/10 text-accent-emerald text-xs font-bold border border-accent-emerald/20">{tag}</span>
               ))}
             </div>
-          </div>
+          </motion.div>
 
           {/* Bento Card 2 - Teal Dominant */}
-          <div className="bento-card p-10 md:col-span-2 bg-accent-emerald text-white flex flex-col justify-between group relative overflow-hidden">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }} className="bento-card p-10 md:col-span-2 bg-accent-emerald text-white flex flex-col justify-between group relative overflow-hidden">
             <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700" />
              <div className="space-y-4 relative z-10">
               <div className="w-14 h-14 rounded-2xl bg-white/20 text-white flex items-center justify-center mb-6 backdrop-blur-md">
@@ -271,32 +294,32 @@ const Index = () => {
               <h3 className="text-4xl font-serif">Gap Analysis</h3>
               <p className="text-white/80 text-lg font-medium leading-relaxed">Instantly spot what's missing before the recruiter does.</p>
             </div>
-          </div>
+          </motion.div>
 
           {/* Bento Card 3 */}
-          <div className="bento-card p-10 md:col-span-2 group">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }} className="bento-card p-10 md:col-span-2 group">
             <div className="w-12 h-12 rounded-2xl bg-foreground text-white flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-500"><FileText size={24} /></div>
             <h3 className="text-2xl font-bold text-foreground mb-4">Resume Tailor</h3>
             <p className="text-foreground/60 text-base font-medium leading-relaxed mb-8">Rewrites bullets to perfectly match the target role's phrasing.</p>
             <div className="text-xs font-mono p-4 bg-muted rounded-xl line-through text-destructive border border-border">Led team of 5 developers</div>
-          </div>
+          </motion.div>
 
           {/* Bento Card 4 */}
-          <div className="bento-card p-10 md:col-span-2 group flex flex-col justify-between relative overflow-hidden">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }} className="bento-card p-10 md:col-span-2 group flex flex-col justify-between relative overflow-hidden">
              <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-accent-emerald/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
             <div>
               <div className="w-12 h-12 rounded-2xl bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"><BarChart3 size={24} /></div>
               <h3 className="text-2xl font-bold text-foreground mb-4">Market Insights</h3>
               <p className="text-foreground/60 text-base font-medium leading-relaxed">Strategic calibration using current industry data.</p>
             </div>
-          </div>
+          </motion.div>
 
           {/* Bento Card 5 */}
-          <div className="bento-card p-10 md:col-span-2 group glow-border-teal bg-gradient-to-br from-white to-accent-emerald/5">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.4, ease: [0.16, 1, 0.3, 1] }} className="bento-card p-10 md:col-span-2 group glow-border-teal bg-gradient-to-br from-white to-accent-emerald/5">
             <div className="w-12 h-12 rounded-2xl bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/20 flex items-center justify-center mb-6 group-hover:-translate-y-2 transition-transform"><ShieldCheck size={24} /></div>
             <h3 className="text-2xl font-bold text-foreground mb-4">Genuine ATS Score</h3>
             <p className="text-foreground/60 text-base font-medium leading-relaxed">Real before/after metrics. No fake vanity numbers. Just hard math.</p>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -314,7 +337,7 @@ const Index = () => {
               { text: "The Gap Analysis is brutal but exactly what you need. It forces you to write objective-grade bullets.", name: "Priya S.", role: "Data Scientist", lift: "+58 pts" },
               { text: "Used this for campus placements. The JD Decoder feels like having the recruiter's rubric in advance.", name: "Rahul M.", role: "AI Fresher", lift: "+71 pts" }
             ].map((t, i) => (
-              <div key={i} className="p-10 rounded-[2.5rem] bg-white border border-border/50 hover:border-accent-emerald/30 shadow-soft hover:shadow-[0_20px_40px_rgba(16,185,129,0.08)] transition-all duration-300 hover:-translate-y-2">
+              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }} key={i} className="p-10 rounded-[2.5rem] bg-white border border-border/50 hover:border-accent-emerald/30 shadow-soft hover:shadow-[0_20px_40px_rgba(16,185,129,0.08)] transition-all duration-300 hover:-translate-y-2">
                 <div className="flex gap-1 mb-8 text-accent-emerald">
                   {[1,2,3,4,5].map(s => <Star key={s} size={16} fill="currentColor" />)}
                 </div>
@@ -329,7 +352,7 @@ const Index = () => {
                   </div>
                   <div className="text-accent-emerald font-serif italic text-3xl">{t.lift}</div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>

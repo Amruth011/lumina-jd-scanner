@@ -87,27 +87,35 @@
   /* ── $1B Tier Brand Surfaces ── */
   .premium-card {
     background: #FFFFFF;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.03), 0 2px 8px -2px rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    box-shadow: 
+      0 40px 100px -20px rgba(0, 0, 0, 0.08),
+      inset 0 1px 0 0 rgba(255, 255, 255, 1),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.5);
     border-radius: 2.5rem;
     position: relative;
     overflow: hidden;
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(40px);
   }
 
   .bento-card {
     background: #FFFFFF;
-    border: 1px solid rgba(0, 0, 0, 0.04);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    box-shadow: 
+      0 20px 60px -10px rgba(0, 0, 0, 0.03),
+      inset 0 1px 0 0 rgba(255, 255, 255, 1);
     border-radius: 2.5rem;
     position: relative;
     overflow: hidden;
-    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .bento-card:hover {
-    box-shadow: 0 20px 40px rgba(16, 185, 129, 0.08), 0 0 0 1px rgba(16, 185, 129, 0.2);
-    transform: translateY(-4px);
+    box-shadow: 
+      0 30px 80px -15px rgba(16, 185, 129, 0.12), 
+      inset 0 1px 0 0 rgba(255, 255, 255, 1),
+      0 0 0 1px rgba(16, 185, 129, 0.2);
+    transform: translateY(-6px) scale(1.01);
   }
 
   /* ── Mac-OS Style Terminal Window ── */
@@ -154,6 +162,27 @@
     font-family: 'Outfit', sans-serif;
     font-size: 13px;
     font-weight: 700;
+  }
+
+  /* ── Top 0.01% Texture & Utilities ── */
+  .bg-noise {
+    position: relative;
+  }
+  .bg-noise::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0.25;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  }
+
+  .text-gradient-elite {
+    background: linear-gradient(135deg, var(--foreground) 0%, rgba(15, 23, 42, 0.6) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }
 
