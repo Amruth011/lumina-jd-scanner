@@ -173,26 +173,27 @@ const Index = () => {
         </motion.div>
       </section>
 
-      {/* ── SECTION 2 — STATS STRIP (TEAL BRANDING) ── */}
-      <section className="relative z-10 bg-accent-emerald text-white py-24 px-6 overflow-hidden">
-        {/* Abstract Background pattern */}
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white to-transparent" />
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-12 text-center md:divide-x divide-white/20 relative z-10">
+      {/* ── 3D ROADMAP (MOVED TO TOP) ── */}
+      <Roadmap3D />
+
+      {/* ── SECTION 2 — STATS STRIP ── */}
+      <section className="relative z-10 bg-background py-24 px-6 overflow-hidden border-y border-border/40">
+        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-12 text-center md:divide-x divide-border/40 relative z-10">
           <div className="space-y-2">
-            <div className="text-6xl md:text-8xl font-serif italic"><AnimatedCounter end={25} suffix="s" /></div>
-            <div className="text-xs font-bold font-display uppercase tracking-widest text-white/70">Avg. Processing Time</div>
+            <div className="text-6xl md:text-8xl font-serif italic text-foreground"><AnimatedCounter end={25} suffix="s" /></div>
+            <div className="text-xs font-bold font-display uppercase tracking-widest text-foreground/50">Avg. Processing Time</div>
           </div>
           <div className="space-y-2">
-            <div className="text-6xl md:text-8xl font-serif italic"><AnimatedCounter end={65} suffix="+" /></div>
-            <div className="text-xs font-bold font-display uppercase tracking-widest text-white/70">Avg. ATS Score Lift</div>
+            <div className="text-6xl md:text-8xl font-serif italic text-accent-emerald"><AnimatedCounter end={65} suffix="+" /></div>
+            <div className="text-xs font-bold font-display uppercase tracking-widest text-foreground/50">Avg. ATS Score Lift</div>
           </div>
           <div className="space-y-2">
-            <div className="text-6xl md:text-8xl font-serif italic"><AnimatedCounter end={4} /></div>
-            <div className="text-xs font-bold font-display uppercase tracking-widest text-white/70">Intelligence Modules</div>
+            <div className="text-6xl md:text-8xl font-serif italic text-foreground"><AnimatedCounter end={4} /></div>
+            <div className="text-xs font-bold font-display uppercase tracking-widest text-foreground/50">Intelligence Modules</div>
           </div>
           <div className="space-y-2">
-            <div className="text-6xl md:text-8xl font-serif italic"><AnimatedCounter end={100} suffix="%" /></div>
-            <div className="text-xs font-bold font-display uppercase tracking-widest text-white/70">JD-Specific Tailoring</div>
+            <div className="text-6xl md:text-8xl font-serif italic text-accent-emerald"><AnimatedCounter end={100} suffix="%" /></div>
+            <div className="text-xs font-bold font-display uppercase tracking-widest text-foreground/50">JD-Specific Tailoring</div>
           </div>
         </div>
       </section>
@@ -303,15 +304,12 @@ const Index = () => {
         </div>
       </section>
 
-      {/* ── SECTION 5 — 3D ROADMAP ── */}
-      <Roadmap3D />
-
-      {/* ── SECTION 6 — TESTIMONIALS (TEAL DOMINANT) ── */}
-      <section className="relative z-10 py-32 px-6 bg-accent-emerald text-white">
+      {/* ── SECTION 6 — TESTIMONIALS ── */}
+      <section className="relative z-10 py-32 px-6 bg-background">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
-            <h2 className="text-6xl md:text-8xl font-serif tracking-tight mb-4">Trusted by the 0.1%</h2>
-            <p className="text-white/80 font-medium text-xl">The secret weapon of top candidates globally.</p>
+            <h2 className="text-6xl md:text-8xl font-serif tracking-tight text-foreground mb-4">Trusted by the 0.1%</h2>
+            <p className="text-foreground/60 font-medium text-xl">The secret weapon of top candidates globally.</p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
@@ -320,20 +318,20 @@ const Index = () => {
               { text: "The Gap Analysis is brutal but exactly what you need. It forces you to write objective-grade bullets.", name: "Priya S.", role: "Data Scientist", lift: "+58 pts" },
               { text: "Used this for campus placements. The JD Decoder feels like having the recruiter's rubric in advance.", name: "Rahul M.", role: "AI Fresher", lift: "+71 pts" }
             ].map((t, i) => (
-              <div key={i} className="p-10 rounded-[2.5rem] bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300 backdrop-blur-md hover:-translate-y-2">
-                <div className="flex gap-1 mb-8 text-white">
+              <div key={i} className="p-10 rounded-[2.5rem] bg-white border border-border/50 hover:border-accent-emerald/30 shadow-soft hover:shadow-[0_20px_40px_rgba(16,185,129,0.08)] transition-all duration-300 hover:-translate-y-2">
+                <div className="flex gap-1 mb-8 text-accent-emerald">
                   {[1,2,3,4,5].map(s => <Star key={s} size={16} fill="currentColor" />)}
                 </div>
-                <p className="text-xl font-medium leading-relaxed mb-10 text-white/90">"{t.text}"</p>
+                <p className="text-xl font-medium leading-relaxed mb-10 text-foreground/90">"{t.text}"</p>
                 <div className="flex justify-between items-end">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-white text-accent-emerald flex items-center justify-center font-bold font-display text-lg">{t.name[0]}</div>
+                    <div className="w-12 h-12 rounded-full bg-accent-emerald/10 text-accent-emerald flex items-center justify-center font-bold font-display text-lg border border-accent-emerald/20">{t.name[0]}</div>
                     <div>
-                      <div className="font-bold font-display tracking-wider text-sm">{t.name}</div>
-                      <div className="text-xs text-white/70">{t.role}</div>
+                      <div className="font-bold font-display tracking-wider text-sm text-foreground">{t.name}</div>
+                      <div className="text-xs text-foreground/50">{t.role}</div>
                     </div>
                   </div>
-                  <div className="text-white font-serif italic text-3xl">{t.lift}</div>
+                  <div className="text-accent-emerald font-serif italic text-3xl">{t.lift}</div>
                 </div>
               </div>
             ))}
