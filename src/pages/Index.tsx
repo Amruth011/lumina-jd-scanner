@@ -153,8 +153,8 @@ const Index = () => {
       {/* Footer */}
       <footer className="bg-background border-t border-border/40 py-12 px-6">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex items-center">
-            <LuminaLogo size={40} className="object-contain" />
+          <div className="flex items-center group transition-transform hover:scale-105">
+            <LuminaLogo size={120} className="object-contain" />
           </div>
           <p className="text-muted-foreground/60 text-[10px] font-black uppercase tracking-[0.4em]">
             Built for the modern career strategist
