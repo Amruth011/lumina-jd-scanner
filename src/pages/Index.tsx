@@ -35,8 +35,8 @@ const Index = () => {
             transition={{ duration: 0.6 }}
             className="flex flex-col items-center"
           >
-            <div className="rounded-full px-4 py-1.5 flex items-center gap-2 mb-8 border border-border/40 hover:bg-background/40 transition-colors cursor-default group">
-              <LuminaLogo size={18} className="object-contain group-hover:rotate-12 transition-transform" />
+            <div className="rounded-full pl-3 pr-5 py-2 flex items-center gap-3 mb-8 border border-border/40 hover:bg-background/40 transition-colors cursor-default group">
+              <LuminaLogo size={20} className="object-contain transition-transform group-hover:scale-110" />
               <span className="text-muted-foreground text-[10px] font-bold tracking-[0.25em] uppercase">The #1 ATS Optimization Engine</span>
             </div>
             
@@ -153,9 +153,8 @@ const Index = () => {
       {/* Footer */}
       <footer className="bg-background border-t border-border/40 py-12 px-6">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex items-center gap-3">
-            <LuminaLogo size={32} className="object-contain" />
-            <span className="text-foreground font-display font-black text-xl">Lumina</span>
+          <div className="flex items-center">
+            <LuminaLogo size={40} className="object-contain" />
           </div>
           <p className="text-muted-foreground/60 text-[10px] font-black uppercase tracking-[0.4em]">
             Built for the modern career strategist
