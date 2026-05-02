@@ -1,21 +1,21 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Lumina JD Scanner | AI-Powered ATS Resume Optimizer",
+  title: "Lumina | AI-Powered ATS Resume Optimizer",
   description: "AI-powered ATS resume optimizer and job description analyzer. Bridge skill gaps and land top-tier roles.",
   keywords: ["ATS scanner", "resume optimizer", "job description analyzer", "AI career coach"],
-  metadataBase: new URL("https://lumina-jd-scanner.vercel.app"),
+  metadataBase: new URL("https://lumina.app"),
   openGraph: {
-    title: "Lumina JD Scanner | AI-Powered ATS Resume Optimizer",
+    title: "Lumina | AI-Powered ATS Resume Optimizer",
     description: "AI-powered ATS resume optimizer and job description analyzer. Bridge skill gaps and land top-tier roles.",
-    url: "https://lumina-jd-scanner.vercel.app",
-    siteName: "Lumina JD Scanner",
+    url: "https://lumina.app",
+    siteName: "Lumina",
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Lumina JD Scanner | AI-Powered ATS Resume Optimizer",
+    title: "Lumina | AI-Powered ATS Resume Optimizer",
     description: "AI-powered ATS resume optimizer and job description analyzer. Bridge skill gaps and land top-tier roles.",
   },
   robots: {

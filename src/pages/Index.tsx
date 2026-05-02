@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Sparkles, ArrowRight, BrainCircuit, ShieldCheck, Lock } from "lucide-react";
+import { ArrowRight, BrainCircuit, ShieldCheck, Lock, Sparkles } from "lucide-react";
+import { LuminaLogo } from "@/components/LuminaLogo";
 import { GlobalNavbar } from "@/components/GlobalNavbar";
 import { ScannerView } from "@/components/ScannerView";
 import { useAuth } from "@/hooks/useAuth";
@@ -35,7 +36,7 @@ const Index = () => {
             className="flex flex-col items-center"
           >
             <div className="rounded-full px-4 py-1.5 flex items-center gap-2 mb-8 border border-border/40 hover:bg-background/40 transition-colors cursor-default group">
-              <Sparkles size={14} className="text-accent-emerald group-hover:rotate-12 transition-transform" />
+              <LuminaLogo size={14} className="text-accent-emerald group-hover:rotate-12 transition-transform" />
               <span className="text-muted-foreground text-[10px] font-bold tracking-[0.25em] uppercase">The #1 ATS Optimization Engine</span>
             </div>
             
@@ -153,8 +154,8 @@ const Index = () => {
       <footer className="bg-background border-t border-border/40 py-12 px-6">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-2">
-            <Sparkles size={24} className="text-accent-emerald" />
-            <span className="text-foreground font-display font-black text-xl">Lumina JD</span>
+            <LuminaLogo size={24} className="text-accent-emerald" />
+            <span className="text-foreground font-display font-black text-xl">Lumina</span>
           </div>
           <p className="text-muted-foreground/60 text-[10px] font-black uppercase tracking-[0.4em]">
             Built for the modern career strategist

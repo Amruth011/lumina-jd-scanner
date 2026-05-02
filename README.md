@@ -1,23 +1,23 @@
 <div align="center">
 
-# 💎 Lumina AI Career Engine
+# 💎 Lumina
 ### Silicon Valley Standard • Ultra-Low Latency • 100% Reliable
 
-[![Status](https://img.shields.io/badge/Status-Production_Stable-success?style=for-the-badge&logo=vercel)](https://lumina-jd-scanner.vercel.app/)
+[![Status](https://img.shields.io/badge/Status-Production_Stable-success?style=for-the-badge&logo=vercel)](https://lumina.app/)
 [![AI](https://img.shields.io/badge/Engine-Llama_3_70B_(Groq)-orange?style=for-the-badge&logo=meta)](https://groq.com)
 [![Arch](https://img.shields.io/badge/Arch-Client_Side_Inference-blue?style=for-the-badge&logo=react)](https://react.dev/)
 [![License](https://img.shields.io/badge/License-MIT-gray?style=for-the-badge)](LICENSE)
 
-**Lumina AI** is a high-performance career optimization platform designed to move job seekers into the top 1% of applicants. Built with a pristine **Luxury Liquid Glass** aesthetic and powered by ultra-low-latency Groq inference, it deconstructs complex Job Descriptions and perfectly structures your resume data to uncover your competitive advantage.
+**Lumina** is a high-performance career optimization platform designed to move job seekers into the top 1% of applicants. Built with a pristine **Luxury Liquid Glass** aesthetic and powered by ultra-low-latency Groq inference, it deconstructs complex Job Descriptions and perfectly structures your resume data to uncover your competitive advantage.
 
-[**Launch Terminal →**](https://lumina-jd-scanner.vercel.app/)
+[**Launch Terminal →**](https://lumina.app/)
 
 </div>
 
 ---
 
 ## 🛡️ Engineered for Speed & Stability: The Groq Migration
-Lumina recently underwent a complete architectural overhaul, migrating away from cloud edge functions and rate-limited models to deliver a blazingly fast, "unbreakable" client-side inference pipeline.
+Lumina recently underwent a complete architectural overhaul...
 
 - **Groq LPU Processing**: Powered by `llama-3.3-70b-versatile` on Groq's hardware, delivering near-instantaneous token generation.
 - **Client-Side AI Inference**: Bypasses slow serverless edge functions entirely. The browser talks directly to the AI, ensuring zero timeout errors and bypassing Vercel execution limits.
@@ -69,10 +69,10 @@ graph TD
 
 ## 🚀 Getting Started
 
-1. **Deployment URL:** [lumina-jd-scanner.vercel.app](https://lumina-jd-scanner.vercel.app/)
+1. **Deployment URL:** [lumina.app](https://lumina.app/)
 2. **Local Setup:**
    ```bash
-   git clone https://github.com/Amruth011/lumina-jd-scanner.git
+   git clone https://github.com/Amruth011/lumina.git
    npm install
    npm run dev
    ```

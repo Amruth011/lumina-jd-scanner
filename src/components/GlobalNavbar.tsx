@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
-import { Sparkles, LogOut, LogIn, User, Search, ShieldCheck, LayoutDashboard, Zap, Info } from "lucide-react";
+import { LogOut, User, Search, ShieldCheck, Zap, Info } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { LuminaLogo } from "./LuminaLogo";
 import type { Tab } from "./ScannerView";
 
 interface GlobalNavbarProps {
@@ -43,9 +44,9 @@ export const GlobalNavbar = ({ activeTab, onTabChange }: GlobalNavbarProps) => {
         <div className="flex items-center gap-2 pl-6 py-2">
           <Link to="/" className="flex items-center gap-3 group">
             <div className="w-8 h-8 rounded-xl bg-accent-emerald/10 flex items-center justify-center border border-accent-emerald/20 transition-all group-hover:bg-accent-emerald group-hover:border-accent-emerald/50">
-               <Sparkles size={18} className="text-accent-emerald transition-colors group-hover:text-white" />
+               <LuminaLogo size={18} className="text-accent-emerald transition-colors group-hover:text-white" />
             </div>
-            <span className="text-foreground font-display font-black text-xl tracking-tighter whitespace-nowrap">Lumina JD</span>
+            <span className="text-foreground font-display font-black text-xl tracking-tighter whitespace-nowrap">Lumina</span>
           </Link>
         </div>
 

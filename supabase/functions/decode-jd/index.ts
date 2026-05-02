@@ -1,5 +1,5 @@
 /**
- * LUMINA JD DECODING ENGINE v2.5
+ * LUMINA DECODING ENGINE v2.5
  * Native Deno Strategy (Linter-Safe Version)
  */
 

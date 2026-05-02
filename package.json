@@ -1,6 +1,6 @@
 {
-  "name": "vite_react_shadcn_ts",
-  "description": "Lumina AI Career Engine: Silicon Valley Standard AI resume optimization powered by Groq Llama-3 70B.",
+  "name": "lumina",
+  "description": "Lumina AI Career Engine: Silicon Valley Standard AI resume optimization.",
   "private": true,
   "version": "0.0.0",
   "type": "module",
