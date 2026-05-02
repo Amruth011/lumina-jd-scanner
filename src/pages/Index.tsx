@@ -35,10 +35,6 @@ const Index = () => {
             transition={{ duration: 0.6 }}
             className="flex flex-col items-center"
           >
-            <div className="rounded-full pl-3 pr-5 py-2 flex items-center gap-3 mb-8 border border-border/40 hover:bg-background/40 transition-colors cursor-default group">
-              <LuminaLogo size={20} className="object-contain transition-transform group-hover:scale-110" />
-              <span className="text-muted-foreground text-[10px] font-bold tracking-[0.25em] uppercase">The #1 ATS Optimization Engine</span>
-            </div>
             
             <h1 className="text-7xl md:text-9xl text-foreground tracking-[-0.06em] font-serif leading-[0.85] text-balance">
               Land in the <span className="italic text-accent-emerald">top 0.1%</span>
