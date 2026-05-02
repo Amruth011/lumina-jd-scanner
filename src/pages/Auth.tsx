@@ -20,7 +20,7 @@ const Auth = () => {
 
   useEffect(() => {
     if (!authLoading && user) {
-      navigate("/");
+      navigate("/dashboard");
     }
   }, [user, authLoading, navigate]);
 
@@ -47,7 +47,7 @@ const Auth = () => {
         });
         if (error) throw error;
         toast.success("Account created! You are now signed in.");
-        navigate("/");
+        navigate("/dashboard");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ 
           email: email.trim(), 
@@ -55,7 +55,7 @@ const Auth = () => {
         });
         if (error) throw error;
         toast.success("Signed in successfully!");
-        navigate("/");
+        navigate("/dashboard");
       }
     } catch (err) {
       toast.error((err as Error).message || "Authentication failed.");
@@ -88,7 +88,7 @@ const Auth = () => {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
       toast.success("Password updated successfully!");
-      navigate("/");
+      navigate("/dashboard");
     } catch (err) {
       toast.error((err as Error).message || "Failed to update password.");
     } finally {

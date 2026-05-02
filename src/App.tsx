@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Index from "./pages/Index.tsx";
 import Auth from "./pages/Auth.tsx";
+import Dashboard from "./pages/Dashboard.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 import { useAuth } from "@/hooks/useAuth";
@@ -54,6 +55,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

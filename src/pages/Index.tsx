@@ -105,17 +105,6 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState<Tab>("decode");
   const { user } = useAuth();
 
-  if (user) {
-    return (
-      <div className="min-h-screen bg-background font-sans text-foreground">
-        <GlobalNavbar activeTab={activeTab} onTabChange={setActiveTab} />
-        <section id="scanner" className="relative pt-24 pb-12 bg-background min-h-screen">
-          <ScannerView activeTab={activeTab} onTabChange={setActiveTab} />
-        </section>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-background font-sans text-foreground selection:bg-accent-emerald/20 selection:text-primary">
       <GlobalNavbar activeTab={activeTab} onTabChange={setActiveTab} />
@@ -139,7 +128,7 @@ const Index = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-4 mt-8">
-            <Link to="/auth" className="group relative px-8 py-4 bg-primary text-white rounded-full text-xs font-bold uppercase tracking-[0.15em] hover:bg-primary/90 transition-all hover:scale-[1.02] active:scale-95 shadow-soft">
+            <Link to={user ? "/dashboard" : "/auth"} className="group relative px-8 py-4 bg-primary text-white rounded-full text-xs font-bold uppercase tracking-[0.15em] hover:bg-primary/90 transition-all hover:scale-[1.02] active:scale-95 shadow-soft">
               <span className="flex items-center gap-2">
                 Deploy Engine <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform text-accent-emerald" />
               </span>
@@ -418,7 +407,7 @@ const Index = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full justify-center">
-            <Link to="/auth" className="w-full sm:w-auto px-10 py-5 bg-accent-emerald text-primary rounded-full text-sm font-bold uppercase tracking-[0.15em] hover:bg-accent-emerald/90 transition-all hover:scale-[1.02] active:scale-95 shadow-[0_0_40px_rgba(16,185,129,0.3)]">
+            <Link to={user ? "/dashboard" : "/auth"} className="w-full sm:w-auto px-10 py-5 bg-accent-emerald text-primary rounded-full text-sm font-bold uppercase tracking-[0.15em] hover:bg-accent-emerald/90 transition-all hover:scale-[1.02] active:scale-95 shadow-[0_0_40px_rgba(16,185,129,0.3)]">
               Claim Your Free Analysis
             </Link>
             <Link to="/auth" className="w-full sm:w-auto px-10 py-5 bg-white/10 text-white rounded-full text-sm font-bold uppercase tracking-[0.15em] hover:bg-white/20 transition-all">
