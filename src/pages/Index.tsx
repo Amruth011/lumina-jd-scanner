@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { ArrowRight, BrainCircuit, ShieldCheck, Target, FileText, Check, Star, CheckCircle2 } from "lucide-react";
+import { ArrowRight, BrainCircuit, ShieldCheck, Target, FileText, Check, Star, CheckCircle2, BarChart3 } from "lucide-react";
 import { LuminaLogo } from "@/components/LuminaLogo";
 import { GlobalNavbar } from "@/components/GlobalNavbar";
 import { ScannerView } from "@/components/ScannerView";
