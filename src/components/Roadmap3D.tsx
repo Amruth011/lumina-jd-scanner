@@ -1,111 +1,171 @@
 import { useRef } from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { BrainCircuit, FileText, Briefcase, Network, Rocket } from "lucide-react";
+import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
+import { SearchCode, Crosshair, Sparkles, Trophy } from "lucide-react";
 
-const TiltCard = ({ children, className }: { children: React.ReactNode, className?: string }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
+const steps = [
+  {
+    id: 1,
+    title: "Decode Job Description",
+    description: "Llama-3.3 engine extracts hidden ATS metrics.",
+    icon: SearchCode,
+    align: "left",
+  },
+  {
+    id: 2,
+    title: "Resume Analysis",
+    description: "Brutal gap analysis identifies what you are missing.",
+    icon: Crosshair,
+    align: "right",
+  },
+  {
+    id: 3,
+    title: "Resume Generation",
+    description: "AI perfectly tailors bullets to target phrasing.",
+    icon: Sparkles,
+    align: "left",
+  },
+  {
+    id: 4,
+    title: "Cracked Interview",
+    description: "You land in the top 0.1% and dominate the room.",
+    icon: Trophy,
+    align: "right",
+  }
+];
 
-  const mouseXSpring = useSpring(x, { stiffness: 300, damping: 30 });
-  const mouseYSpring = useSpring(y, { stiffness: 300, damping: 30 });
+const StepCard = ({ 
+  step, 
+  index, 
+  scrollYProgress 
+}: { 
+  step: typeof steps[0], 
+  index: number, 
+  scrollYProgress: MotionValue<number> 
+}) => {
+  // Scroll trigger points for each step
+  const stepStart = index * 0.25;
+  const stepEnd = (index + 1) * 0.25;
+  
+  // Scale and opacity driven by the traveling orb reaching this step
+  const opacity = useTransform(scrollYProgress, 
+    [Math.max(0, stepStart - 0.1), stepStart, stepEnd], 
+    [0.3, 1, 1]
+  );
+  const scale = useTransform(scrollYProgress, 
+    [Math.max(0, stepStart - 0.1), stepStart], 
+    [0.8, 1]
+  );
+  const rotateY = useTransform(scrollYProgress,
+    [Math.max(0, stepStart - 0.1), stepStart],
+    [step.align === 'left' ? 45 : -45, 0]
+  );
 
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["15deg", "-15deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-15deg", "15deg"]);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    const xPct = mouseX / width - 0.5;
-    const yPct = mouseY / height - 0.5;
-    x.set(xPct);
-    y.set(yPct);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
+  const markerBorderColor = useTransform(scrollYProgress, [stepStart - 0.05, stepStart], ["rgba(255,255,255,0.2)", "#10B981"]);
+  const markerBgColor = useTransform(scrollYProgress, [stepStart - 0.05, stepStart], ["var(--foreground)", "#10B981"]);
 
   return (
-    <motion.div
-      ref={ref}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      className={className}
-    >
-      {children}
-    </motion.div>
+    <div className="relative w-full flex items-center">
+      {/* Step Node Marker */}
+      <motion.div 
+        className="absolute left-1/2 w-6 h-6 -translate-x-1/2 bg-foreground border-4 border-white/20 rounded-full z-10"
+        style={{ 
+          borderColor: markerBorderColor,
+          backgroundColor: markerBgColor
+        }}
+      />
+
+      {/* Step Card Container */}
+      <div className={`w-1/2 ${step.align === 'left' ? 'pr-12 text-right' : 'pl-12 ml-auto text-left'}`}>
+        <motion.div 
+          style={{ opacity, scale, rotateY }}
+          className="p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md relative overflow-hidden group hover:bg-white/10 transition-colors duration-300 transform-gpu"
+        >
+          {/* Inner Glow */}
+          <div className="absolute inset-0 bg-gradient-to-br from-accent-emerald/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          
+          <div className={`flex flex-col ${step.align === 'left' ? 'items-end' : 'items-start'} relative z-10`}>
+            <div className="w-14 h-14 rounded-2xl bg-white/10 text-accent-emerald flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(16,185,129,0.2)] border border-accent-emerald/20">
+              <step.icon size={28} />
+            </div>
+            <div className="text-xs font-bold font-display uppercase tracking-widest text-accent-emerald mb-2">
+              Phase 0{step.id}
+            </div>
+            <h3 className="text-3xl font-serif text-white mb-3">{step.title}</h3>
+            <p className="text-white/60 font-medium text-lg leading-relaxed">
+              {step.description}
+            </p>
+          </div>
+        </motion.div>
+      </div>
+    </div>
   );
 };
 
-const phases = [
-  { icon: <BrainCircuit size={28} />, title: "ATS Decoding Engine", status: "Live", desc: "Surgical extraction of hidden metrics, keywords, and implicit requirements using Llama-3.3." },
-  { icon: <FileText size={28} />, title: "Resume Tailoring Engine", status: "Live", desc: "Autonomous rewriting of impact bullets to flawlessly match the structural expectations of the JD." },
-  { icon: <Briefcase size={28} />, title: "Cover Letter Generator", status: "Upcoming", desc: "Hyper-personalized, authoritative letters constructed precisely from the extracted JD rubric." },
-  { icon: <Network size={28} />, title: "Autonomous Applications", status: "Upcoming", desc: "Direct integration with major career platforms to auto-fill and submit matched roles instantly." },
-  { icon: <Rocket size={28} />, title: "AI Interview Coach", status: "Future", desc: "Real-time voice agent to run extreme mock interviews calibrated specifically to the JD's exact profile." },
-];
-
 export const Roadmap3D = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // We use scroll position to drive the "animated video" feel
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start center", "end center"],
+  });
+
+  // Calculate the line drawing progress
+  const lineProgress = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+  const glowPosition = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+
   return (
-    <section className="relative w-full py-40 overflow-hidden bg-background">
-      {/* Background glowing line */}
-      <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-accent-emerald to-transparent opacity-20 -translate-x-1/2" />
+    <div ref={containerRef} className="relative py-40 bg-foreground overflow-hidden perspective-1000">
       
-      <div className="text-center mb-32 z-10 relative">
-        <span className="badge-pill bg-white border border-border text-foreground shadow-sm mb-6 inline-block">The Master Plan</span>
-        <h2 className="text-5xl md:text-7xl font-serif text-foreground tracking-tight mb-4">The Lumina Horizon</h2>
-        <p className="text-foreground/60 font-medium text-xl max-w-2xl mx-auto">The definitive 3D roadmap for the ultimate career strategist. Watch our engine evolve.</p>
+      {/* Background Ambient Glows */}
+      <div className="absolute inset-0 pointer-events-none opacity-20">
+        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-accent-emerald rounded-full blur-[150px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-accent-emerald rounded-full blur-[150px]" />
       </div>
 
-      <div className="relative w-full max-w-5xl mx-auto flex flex-col gap-24 perspective-1000 px-6">
-        {phases.map((phase, i) => {
-          const isLeft = i % 2 === 0;
-          return (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, rotateX: 30, y: 150, scale: 0.8, z: -300 }}
-              whileInView={{ opacity: 1, rotateX: 0, y: 0, scale: 1, z: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-              className={`relative flex items-center md:gap-16 ${isLeft ? 'flex-col md:flex-row' : 'flex-col md:flex-row-reverse'}`}
-            >
-              <div className={`w-full md:w-1/2 flex ${isLeft ? 'md:justify-end' : 'md:justify-start'} justify-center z-10`}>
-                <TiltCard className="w-full max-w-md">
-                  <div className={`bento-card p-10 group relative ${phase.status === 'Live' ? 'glow-border-teal' : ''}`}>
-                    {/* 3D Floating elements inside the card */}
-                    <div style={{ transform: "translateZ(40px)" }} className="flex justify-between items-start mb-8 transition-transform duration-300">
-                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${phase.status === 'Live' ? 'bg-accent-emerald text-white shadow-[0_0_30px_rgba(16,185,129,0.5)]' : 'bg-foreground text-white'}`}>
-                        {phase.icon}
-                      </div>
-                      <span className={`text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full ${phase.status === 'Live' ? 'bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/20' : 'bg-muted text-muted-foreground border border-border'}`}>
-                        {phase.status}
-                      </span>
-                    </div>
-                    <h3 style={{ transform: "translateZ(30px)" }} className="text-3xl font-serif text-foreground mb-4 transition-transform duration-300">{phase.title}</h3>
-                    <p style={{ transform: "translateZ(20px)" }} className="text-foreground/60 text-lg font-medium leading-relaxed transition-transform duration-300">{phase.desc}</p>
-                    
-                    {/* Inner highlight for 3D depth */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent pointer-events-none rounded-[2.5rem]" />
-                  </div>
-                </TiltCard>
-              </div>
-              
-              {/* Center Node */}
-              <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-background border-[6px] border-accent-emerald z-20 shadow-[0_0_30px_rgba(16,185,129,0.6)]" />
-              
-              {/* Empty space for the other half */}
-              <div className="hidden md:block w-1/2" />
-            </motion.div>
-          );
-        })}
+      <div className="max-w-5xl mx-auto px-6 relative z-10">
+        <div className="text-center mb-32">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-5xl md:text-7xl font-serif text-white tracking-tight mb-6">
+              The Path to the <span className="italic text-accent-emerald">0.1%</span>
+            </h2>
+            <p className="text-white/60 font-medium text-xl max-w-2xl mx-auto">
+              Watch how Lumina systematically deconstructs the hiring process to guarantee your success.
+            </p>
+          </motion.div>
+        </div>
+
+        {/* 3D Roadmap Container */}
+        <div className="relative max-w-2xl mx-auto">
+          
+          {/* The Central Animated Line */}
+          <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-white/10 -translate-x-1/2 rounded-full overflow-hidden">
+            <motion.div 
+              className="absolute top-0 left-0 right-0 bg-accent-emerald shadow-[0_0_20px_#10B981]"
+              style={{ height: lineProgress }}
+            />
+          </div>
+
+          {/* The Traveling Glowing Orb */}
+          <motion.div 
+            className="absolute left-1/2 w-8 h-8 -translate-x-1/2 -ml-0.5 rounded-full bg-white shadow-[0_0_30px_10px_#10B981] z-20 flex items-center justify-center"
+            style={{ top: glowPosition }}
+          >
+            <div className="w-4 h-4 bg-accent-emerald rounded-full" />
+          </motion.div>
+
+          {/* Roadmap Steps */}
+          <div className="space-y-32 relative z-10 pb-24">
+            {steps.map((step, index) => (
+              <StepCard key={step.id} step={step} index={index} scrollYProgress={scrollYProgress} />
+            ))}
+          </div>
+        </div>
       </div>
-    </section>
+    </div>
   );
 };

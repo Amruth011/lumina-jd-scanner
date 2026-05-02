@@ -3,9 +3,9 @@ import { motion, useInView } from "framer-motion";
 import { ArrowRight, BrainCircuit, ShieldCheck, Target, FileText, Check, Star, CheckCircle2, BarChart3, Zap } from "lucide-react";
 import { LuminaLogo } from "@/components/LuminaLogo";
 import { GlobalNavbar } from "@/components/GlobalNavbar";
+import { Roadmap3D } from "@/components/Roadmap3D";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Roadmap3D } from "@/components/Roadmap3D";
 export type Tab = "decode" | "analysis" | "profile" | "generator" | "guide";
 
 const TypewriterText = ({ text }: { text: string }) => {
@@ -303,10 +303,10 @@ const Index = () => {
         </div>
       </section>
 
-      {/* ── SECTION 4.5 — 3D ROADMAP ── */}
+      {/* ── SECTION 5 — 3D ROADMAP ── */}
       <Roadmap3D />
 
-      {/* ── SECTION 5 — TESTIMONIALS (TEAL DOMINANT) ── */}
+      {/* ── SECTION 6 — TESTIMONIALS (TEAL DOMINANT) ── */}
       <section className="relative z-10 py-32 px-6 bg-accent-emerald text-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
