@@ -118,12 +118,8 @@ const Index = () => {
       <section className="relative z-10 pt-40 pb-24 px-6 max-w-7xl mx-auto flex flex-col items-center text-center">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }} className="space-y-8 flex flex-col items-center w-full">
           
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent-emerald/10 border border-accent-emerald/20 text-accent-emerald text-xs font-bold uppercase tracking-widest mb-4">
-            <Zap size={14} className="animate-pulse" /> Llama-3.3 Intelligence
-          </div>
-
           <h1 className="text-7xl md:text-[140px] font-serif leading-[0.85] tracking-tight text-foreground max-w-5xl">
-            Land in the <span className="italic text-accent-emerald relative">top 0.1%<span className="absolute -inset-4 bg-accent-emerald/10 blur-3xl rounded-full -z-10 animate-pulse-glow" /></span>
+            Land in the <span className="italic text-accent-emerald">top 0.1%</span>
           </h1>
           
           <p className="text-lg md:text-2xl text-foreground/60 font-medium max-w-3xl mx-auto leading-relaxed mt-6">
