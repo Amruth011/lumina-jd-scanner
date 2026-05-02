@@ -167,6 +167,14 @@
     animation-delay: -4s;
   }
 
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+
   .animate-blink {
     animation: blink 1s step-end infinite;
   }

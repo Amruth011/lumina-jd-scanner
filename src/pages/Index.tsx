@@ -5,6 +5,7 @@ import { LuminaLogo } from "@/components/LuminaLogo";
 import { GlobalNavbar } from "@/components/GlobalNavbar";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { Roadmap3D } from "@/components/Roadmap3D";
 export type Tab = "decode" | "analysis" | "profile" | "generator" | "guide";
 
 const TypewriterText = ({ text }: { text: string }) => {
@@ -301,6 +302,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* ── SECTION 4.5 — 3D ROADMAP ── */}
+      <Roadmap3D />
 
       {/* ── SECTION 5 — TESTIMONIALS (TEAL DOMINANT) ── */}
       <section className="relative z-10 py-32 px-6 bg-accent-emerald text-white">
