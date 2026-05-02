@@ -132,3 +132,37 @@
   }
 }
 
+@layer utilities {
+  .animate-float-slow {
+    animation: float 8s ease-in-out infinite;
+  }
+  
+  .animate-float-slower {
+    animation: float 12s ease-in-out infinite;
+    animation-delay: -4s;
+  }
+
+  .animate-blink {
+    animation: blink 1s step-end infinite;
+  }
+
+  .glow-border-teal:hover {
+    box-shadow: 0 0 0 1px hsl(var(--accent-emerald)), 0 4px 20px rgba(16, 185, 129, 0.15);
+    border-color: transparent;
+  }
+
+  .shadow-soft {
+    box-shadow: 0 2px 12px rgba(30, 42, 58, 0.06);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-20px) scale(1.05); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
