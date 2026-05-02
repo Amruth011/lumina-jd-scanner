@@ -65,7 +65,7 @@ export const ATSKeywordScanner = ({ skills, aiInsight }: ATSKeywordScannerProps)
           </div>
           <div>
             <h3 className="font-display font-bold text-lg md:text-xl text-foreground tracking-tight">
-              ATS Keyword Scanner
+              ATS Keyword Intelligence
             </h3>
             <p className="text-tag text-muted-foreground/60">Verify keywords present in your resume</p>
           </div>

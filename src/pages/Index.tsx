@@ -55,7 +55,7 @@ const Index = () => {
                   className="group relative px-10 py-5 bg-foreground text-background rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all hover:scale-[1.05] active:scale-95 shadow-2xl shadow-foreground/20 overflow-hidden"
                 >
                   <span className="relative z-10 flex items-center gap-3">
-                    Deploy Scanner <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                    Deploy Engine <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                   </span>
                 </button>
               ) : (
