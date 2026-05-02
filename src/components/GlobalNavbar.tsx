@@ -44,7 +44,7 @@ export const GlobalNavbar = ({ activeTab, onTabChange }: GlobalNavbarProps) => {
         <div className="flex items-center gap-2 pl-6 py-2">
           <Link to="/" className="flex items-center gap-3 group">
             <div className="w-8 h-8 rounded-xl bg-accent-emerald/10 flex items-center justify-center border border-accent-emerald/20 transition-all group-hover:bg-accent-emerald group-hover:border-accent-emerald/50">
-               <LuminaLogo size={18} className="text-accent-emerald transition-colors group-hover:text-white" />
+               <LuminaLogo size={20} className="object-contain" />
             </div>
             <span className="text-foreground font-display font-black text-xl tracking-tighter whitespace-nowrap">Lumina</span>
           </Link>
