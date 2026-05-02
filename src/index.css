@@ -12,18 +12,18 @@
   :root {
     /* Lumina - Brand Identity System */
     --background: 220 13% 96%; /* #F4F5F7 */
-    --foreground: 0 0% 4%;    /* #0A0A0A */
+    --foreground: 215 25% 10%; /* Very Dark Slate for text */
 
     --card: 0 0% 100%;       /* #FFFFFF */
-    --card-foreground: 0 0% 4%;
+    --card-foreground: 215 25% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 4%;
+    --popover-foreground: 215 25% 10%;
 
-    --primary: 213 32% 17%;  /* #1E2A3A - Lumina Navy (Official) */
+    --primary: 160 84% 39%;  /* #10B981 - Lumina Teal (Identity) */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 160 84% 39%; /* #10B981 - Lumina Teal (Identity) */
+    --secondary: 213 32% 17%; /* #1E2A3A - Lumina Navy (now secondary) */
     --secondary-foreground: 0 0% 100%;
 
     --accent: 147 83% 96%;   /* #ECFDF5 - Teal Light BG */
@@ -84,14 +84,39 @@
 }
 
 @layer components {
-  /* ── Clean Brand Surfaces ── */
-  .glass-panel, .premium-card {
+  /* ── $1B Tier Brand Surfaces ── */
+  .premium-card {
     background: #FFFFFF;
-    border: 0.5px solid rgba(0, 0, 0, 0.08);
-    box-shadow: none;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.03), 0 2px 8px -2px rgba(0, 0, 0, 0.02);
     border-radius: 2.5rem;
     position: relative;
     overflow: hidden;
+    backdrop-filter: blur(20px);
+  }
+
+  .bento-card {
+    background: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.02);
+    border-radius: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .bento-card:hover {
+    box-shadow: 0 20px 40px rgba(16, 185, 129, 0.08), 0 0 0 1px rgba(16, 185, 129, 0.2);
+    transform: translateY(-4px);
+  }
+
+  /* ── Mac-OS Style Terminal Window ── */
+  .macos-window {
+    background: rgba(20, 30, 40, 0.85);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+    border-radius: 1.5rem;
   }
 
   /* Remove all blurs, glows, and complex motions */
@@ -103,7 +128,7 @@
   }
 
   .premium-button-glow:hover, .hover-glow:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.25);
   }
 
   /* ── Clean Section Dividers ── */
@@ -146,23 +171,40 @@
     animation: blink 1s step-end infinite;
   }
 
+  .animate-pulse-glow {
+    animation: pulseGlow 4s ease-in-out infinite;
+  }
+
   .glow-border-teal:hover {
-    box-shadow: 0 0 0 1px hsl(var(--accent-emerald)), 0 4px 20px rgba(16, 185, 129, 0.15);
+    box-shadow: 0 0 0 1px hsl(var(--accent-emerald)), 0 8px 32px rgba(16, 185, 129, 0.2);
     border-color: transparent;
   }
 
   .shadow-soft {
-    box-shadow: 0 2px 12px rgba(30, 42, 58, 0.06);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  }
+
+  .mesh-bg {
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, rgba(245, 158, 11, 0.05) 0px, transparent 50%);
   }
 }
 
 @keyframes float {
   0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-20px) scale(1.05); }
+  50% { transform: translateY(-20px) scale(1.02); }
 }
 
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.2); }
+  50% { box-shadow: 0 0 40px rgba(16, 185, 129, 0.5); }
 }
 
