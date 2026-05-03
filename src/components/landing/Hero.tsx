@@ -6,7 +6,7 @@ import Particles from "@tsparticles/react";
 import { loadSlim } from "@tsparticles/slim";
 import type { Engine } from "@tsparticles/engine";
 import Hero3DCard from './Hero3DCard';
-import { wordFadeIn } from '../../lib/animations';
+import { wordFadeIn } from '@/lib/animations';
 
 export const Hero = () => {
   const particlesInit = useCallback(async (engine: Engine) => {

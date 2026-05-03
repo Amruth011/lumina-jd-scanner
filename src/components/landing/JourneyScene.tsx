@@ -4,7 +4,7 @@ import React, { useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { PerspectiveCamera, Grid, Float, Stars, Bloom, EffectComposer } from '@react-three/drei';
 import * as THREE from 'three';
-import { journeyNodes } from '../../data/journeyNodes';
+import { journeyNodes } from '@/data/journeyNodes';
 import JourneyNode from './JourneyNode';
 import JourneyCharacter from './JourneyCharacter';
 

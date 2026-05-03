@@ -7,8 +7,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import Lenis from 'lenis';
 import confetti from 'canvas-confetti';
-import styles from '../../styles/journey.module.css';
-import { journeyNodes } from '../../data/journeyNodes';
+import styles from '@/styles/journey.module.css';
+import { journeyNodes } from '@/data/journeyNodes';
 import NodeContentPanel from './NodeContentPanel';
 
 // Lazy load Three.js scene for performance

@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import VanillaTilt from 'vanilla-tilt';
 import { motion } from 'framer-motion';
-import { tokens } from '../../styles/tokens';
+import { tokens } from '@/styles/tokens';
 import { Search, BarChart3, Edit3, Globe } from 'lucide-react';
 
 const features = [

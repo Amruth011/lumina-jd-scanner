@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { tokens } from '../../styles/tokens';
+import { tokens } from '@/styles/tokens';
 
 export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
