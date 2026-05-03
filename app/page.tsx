@@ -4,6 +4,7 @@ import Hero from '../components/landing/Hero';
 import SocialProofBar from '../components/landing/SocialProofBar';
 import ProblemSection from '../components/landing/ProblemSection';
 import HowItWorks from '../components/landing/HowItWorks';
+import JourneyRoadmap from '../components/landing/JourneyRoadmap';
 import FeaturesGrid from '../components/landing/FeaturesGrid';
 import LiveDemoStrip from '../components/landing/LiveDemoStrip';
 import Testimonials from '../components/landing/Testimonials';
@@ -20,6 +21,7 @@ export default function LandingPage() {
       <SocialProofBar />
       <ProblemSection />
       <HowItWorks />
+      <JourneyRoadmap />
       <FeaturesGrid />
       <LiveDemoStrip />
       <Testimonials />

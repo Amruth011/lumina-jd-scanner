@@ -2,8 +2,13 @@ import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
-  darkMode: "class",
-  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  darkMode: ["class"],
+  content: [
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   prefix: "",
   theme: {
     container: {
@@ -14,17 +19,7 @@ export default {
       },
     },
     extend: {
-      fontFamily: {
-        sans: ["Inter", "sans-serif"],
-        display: ["Outfit", "sans-serif"],
-        serif: ["Instrument Serif", "serif"],
-        mono: ["JetBrains Mono", "monospace"],
-      },
-      fontSize: {
-        xs: ["0.875rem", { lineHeight: "1.25rem" }],
-        sm: ["1rem", { lineHeight: "1.5rem" }],
-      },
-        colors: {
+      colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -33,17 +28,11 @@ export default {
         lumina: {
           teal: "#10B981",
           navy: "#1E2A3A",
-          "navy-dark": "#0D1520",
+          deep: "#060D14",
+          bg: "#F4F5F7",
           "teal-light": "#ECFDF5",
           "teal-dark": "#065f46",
-          bg: "#F4F5F7",
-        },
-        accent: {
-          blue: "hsl(var(--accent-blue))",
-          emerald: "hsl(var(--accent-emerald))",
-          violet: "hsl(var(--accent-violet))",
-          amber: "hsl(var(--accent-amber))",
-          red: "hsl(var(--accent-red))",
+          "navy-dark": "#0D1520",
         },
         primary: {
           DEFAULT: "hsl(var(--primary))",
@@ -61,7 +50,7 @@ export default {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
         },
-        accent_alt: {
+        accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
@@ -73,21 +62,17 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
-        },
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      fontFamily: {
+        serif: ["Instrument Serif", "serif"],
+        body: ["Inter", "sans-serif"],
+        display: ["Outfit", "sans-serif"],
+        mono: ["JetBrains Mono", "monospace"],
       },
       keyframes: {
         "accordion-down": {
@@ -98,10 +83,9 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        "scan": {
-          "0%": { top: "0%", opacity: "1" },
-          "50%": { opacity: "0.5" },
-          "100%": { top: "100%", opacity: "1" },
+        scan: {
+          "0%, 100%": { top: "0%" },
+          "50%": { top: "100%" },
         },
         "pulse-glow": {
           "0%, 100%": { boxShadow: "0 0 20px hsl(210 100% 55% / 0.3)" },
