@@ -63,7 +63,7 @@ export const JdVerdictCard = ({ grade }: JdVerdictCardProps) => {
             const max = key === "clarity" ? 20 : key === "benefits" || key === "growth" ? 10 : 15;
             
             return (
-              <div key={key} className="space-y-2.5 p-4 rounded-2xl bg-foreground/5 border border-foreground/5 hover:bg-foreground/10 transition-all">
+              <div key={key} className="space-y-2.5 p-4 rounded-[2rem] bg-foreground/5 border border-foreground/5 hover:bg-foreground/10 transition-all">
                 <div className="flex items-center gap-2.5">
                   <Icon size={14} className="text-primary/60" />
                   <span className="text-[12px] uppercase font-black tracking-widest text-muted-foreground/80 truncate">

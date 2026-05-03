@@ -26,7 +26,7 @@ export const InterviewCoach = ({ questions, interviewerQuestions }: InterviewCoa
     <div className="space-y-6">
       <div className="flex items-center justify-between px-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-primary/10 border border-primary/20">
+          <div className="p-2 rounded-2xl bg-primary/10 border border-primary/20">
             <BrainCircuit size={18} className="text-primary" />
           </div>
           <div>
@@ -35,7 +35,7 @@ export const InterviewCoach = ({ questions, interviewerQuestions }: InterviewCoa
           </div>
         </div>
 
-        <div className="flex bg-muted/40 p-1 rounded-xl border border-white/5">
+        <div className="flex bg-muted/40 p-1 rounded-2xl border border-white/5">
             {[
                 { id: "prep", icon: HelpCircle, label: "Your Prep" },
                 { id: "ask", icon: MessageCircle, label: "Ask Them" }
@@ -43,7 +43,7 @@ export const InterviewCoach = ({ questions, interviewerQuestions }: InterviewCoa
                 <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as "prep" | "ask")}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[9px] uppercase font-black tracking-widest transition-all ${
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[9px] uppercase font-black tracking-widest transition-all ${
                         activeTab === tab.id ? "bg-foreground text-background shadow-lg" : "text-muted-foreground hover:text-foreground"
                     }`}
                 >
@@ -70,7 +70,7 @@ export const InterviewCoach = ({ questions, interviewerQuestions }: InterviewCoa
                 onClick={() => handleCopy(q.question, `prep-${idx}`)}
               >
                 <div className="flex items-start justify-between gap-4">
-                  <div className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${
+                  <div className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest ${
                     q.type === 'technical' ? 'bg-accent-blue/10 text-accent-blue' : 
                     q.type === 'behavioral' ? 'bg-accent-emerald/10 text-accent-emerald' : 
                     'bg-accent-gold/10 text-accent-gold'
@@ -86,7 +86,7 @@ export const InterviewCoach = ({ questions, interviewerQuestions }: InterviewCoa
                 </p>
                 {q.target_answer && (
                    <div className="pt-2">
-                     <div className="p-3 rounded-xl bg-white/5 border border-white/5 text-[11px] font-serif italic text-muted-foreground leading-relaxed">
+                     <div className="p-3.5 rounded-2xl bg-white/5 border border-white/5 text-[11px] font-serif italic text-muted-foreground leading-relaxed">
                         <span className="text-primary/60 not-italic font-display font-black uppercase text-[8px] tracking-widest mr-2">Strategy:</span>
                         {q.target_answer}
                      </div>

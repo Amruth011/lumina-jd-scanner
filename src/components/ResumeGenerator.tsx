@@ -654,7 +654,7 @@ RETURN JSON FORMAT ONLY:
       <div className="relative z-10 flex flex-col xl:flex-row items-center justify-between gap-12">
         <div className="space-y-6 text-center xl:text-left">
           <div className="flex items-center justify-center xl:justify-start gap-5">
-            <div className="w-14 h-14 rounded-[22px] bg-primary/10 flex items-center justify-center border border-primary/20">
+            <div className="w-14 h-14 rounded-[1.5rem] bg-primary/10 flex items-center justify-center border border-primary/20">
               <Wand2 className="w-8 h-8 text-primary" />
             </div>
             <h3 className="text-3xl font-serif italic text-foreground tracking-tight">Candidacy Synthesizer</h3>
@@ -713,7 +713,7 @@ RETURN JSON FORMAT ONLY:
                       <div 
                         key={record.id}
                         onClick={() => handleLoadArchive(record)}
-                        className="group p-4 rounded-2xl bg-slate-50/50 border border-border/10 hover:border-primary/40 hover:bg-slate-50 transition-all cursor-pointer relative"
+                        className="group p-4 rounded-[1.5rem] bg-slate-50/50 border border-border/10 hover:border-primary/40 hover:bg-slate-50 transition-all cursor-pointer relative"
                       >
                         <div className="flex justify-between items-start mb-2">
                           <div className="space-y-1">
@@ -956,20 +956,20 @@ RETURN JSON FORMAT ONLY:
               <div className="flex flex-col md:flex-row gap-4">
                 <button
                   onClick={handleSaveDraft}
-                  className="flex items-center gap-4 px-8 py-5 rounded-2xl bg-white/10 border border-primary/30 text-xs font-black uppercase tracking-[0.2em] text-primary hover:bg-primary hover:text-primary-foreground transition-all shadow-[0_0_20px_rgba(var(--primary-rgb),0.1)] active:scale-95"
+                  className="flex items-center gap-4 px-8 py-5 rounded-[1.5rem] bg-white/10 border border-primary/30 text-xs font-black uppercase tracking-[0.2em] text-primary hover:bg-primary hover:text-primary-foreground transition-all shadow-[0_0_20px_rgba(var(--primary-rgb),0.1)] active:scale-95"
                 >
                   <Archive className="w-5 h-5" /> 
                   Save as Draft
                 </button>
                 <button
                   onClick={handleDownloadPDF}
-                  className="flex items-center gap-4 px-10 py-5 rounded-2xl bg-primary text-primary-foreground text-xs font-black uppercase tracking-[0.2em] transition-all active:scale-95"
+                  className="flex items-center gap-4 px-10 py-5 rounded-[1.5rem] bg-primary text-primary-foreground text-xs font-black uppercase tracking-[0.2em] transition-all active:scale-95"
                 >
                   <Download className="w-5 h-5" /> Export Premium PDF
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-5 rounded-2xl bg-slate-50 border border-border/10 hover:bg-slate-100 text-muted-foreground transition-all"
+                  className="p-5 rounded-[1.5rem] bg-slate-50 border border-border/10 hover:bg-slate-100 text-muted-foreground transition-all"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -991,12 +991,12 @@ RETURN JSON FORMAT ONLY:
                   {/* Header Section */}
                   <div className="space-y-4">
                     <h5 className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Primary Identity</h5>
-                    <input className="w-full bg-slate-50 border border-border/10 rounded-xl px-4 py-3 text-xs text-foreground outline-none focus:ring-1 ring-primary/40" value={editableHeader.fullName} onChange={e => setEditableHeader({...editableHeader, fullName: e.target.value})} placeholder="Full Name" />
+                    <input className="w-full bg-slate-50 border border-border/10 rounded-2xl px-4 py-3 text-xs text-foreground outline-none focus:ring-1 ring-primary/40" value={editableHeader.fullName} onChange={e => setEditableHeader({...editableHeader, fullName: e.target.value})} placeholder="Full Name" />
                     <div className="grid grid-cols-2 gap-3">
-                      <input className="bg-slate-50 border border-border/10 rounded-xl px-4 py-2 text-[10px] text-foreground outline-none focus:ring-1 ring-primary/40" value={editableHeader.email} onChange={e => setEditableHeader({...editableHeader, email: e.target.value})} placeholder="Email" />
-                      <input className="bg-slate-50 border border-border/10 rounded-xl px-4 py-2 text-[10px] text-foreground outline-none focus:ring-1 ring-primary/40" value={editableHeader.phone} onChange={e => setEditableHeader({...editableHeader, phone: e.target.value})} placeholder="Phone" />
+                      <input className="bg-slate-50 border border-border/10 rounded-2xl px-4 py-2 text-[10px] text-foreground outline-none focus:ring-1 ring-primary/40" value={editableHeader.email} onChange={e => setEditableHeader({...editableHeader, email: e.target.value})} placeholder="Email" />
+                      <input className="bg-slate-50 border border-border/10 rounded-2xl px-4 py-2 text-[10px] text-foreground outline-none focus:ring-1 ring-primary/40" value={editableHeader.phone} onChange={e => setEditableHeader({...editableHeader, phone: e.target.value})} placeholder="Phone" />
                     </div>
-                    <input className="w-full bg-slate-50 border border-border/10 rounded-xl px-4 py-2 text-[10px] text-foreground outline-none focus:ring-1 ring-primary/40" value={editableHeader.location} onChange={e => setEditableHeader({...editableHeader, location: e.target.value})} placeholder="Location (e.g. New York, NY)" />
+                    <input className="w-full bg-slate-50 border border-border/10 rounded-2xl px-4 py-2 text-[10px] text-foreground outline-none focus:ring-1 ring-primary/40" value={editableHeader.location} onChange={e => setEditableHeader({...editableHeader, location: e.target.value})} placeholder="Location (e.g. New York, NY)" />
                   </div>
 
                   {/* Social/Links Section */}

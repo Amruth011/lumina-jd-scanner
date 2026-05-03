@@ -91,7 +91,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
   };
 
   const LuminaInferenceBadge = ({ tooltip }: { tooltip: string }) => (
-    <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-primary/5 border border-primary/10 cursor-help group/badge" title={tooltip}>
+    <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-primary/5 border border-primary/10 cursor-help group/badge" title={tooltip}>
         <Sparkles size={10} className="text-primary animate-pulse" />
         <span className="text-[8px] font-black uppercase tracking-widest text-primary/60 group-hover/badge:text-primary transition-colors">Inferred Intelligence</span>
     </div>
@@ -423,7 +423,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
                 </div>
                 <div className="flex flex-wrap gap-2 pt-2">
                     {(results?.resume_help?.keywords || []).slice(0, 12).map((word, i) => (
-                        <div key={i} className="px-3 py-1.5 rounded-lg bg-slate-50 border border-border/10 hover:border-primary/30 transition-all cursor-pointer" onClick={() => { navigator.clipboard.writeText(word); toast.success(`"${word}" copied`); }}>
+                        <div key={i} className="px-3 py-1.5 rounded-xl bg-slate-50 border border-border/10 hover:border-primary/30 transition-all cursor-pointer" onClick={() => { navigator.clipboard.writeText(word); toast.success(`"${word}" copied`); }}>
                             <span className="text-[12px] font-bold text-foreground/80 tracking-tight">{word}</span>
                         </div>
                     ))}
@@ -522,7 +522,7 @@ const PhaseLabel = ({ number, title, sub }: { number: string, title: string, sub
 const BonusCard = ({ icon: Icon, label, value, sub, color }: { icon: LucideIcon, label: string, value: number, sub: string, color: string }) => (
   <div className="glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-border/10 p-8 rounded-[2.5rem] space-y-6 flex flex-col justify-between hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-700">
       <div className="flex items-start justify-between">
-        <div className="w-10 h-10 rounded-xl bg-foreground/5 border border-foreground/10 flex items-center justify-center text-foreground/40 group-hover:text-primary transition-colors" style={{ color: color.startsWith('var') ? color : '' }}>
+        <div className="w-10 h-10 rounded-2xl bg-foreground/5 border border-foreground/10 flex items-center justify-center text-foreground/40 group-hover:text-primary transition-colors" style={{ color: color.startsWith('var') ? color : '' }}>
             <Icon size={18} className={!color.startsWith('var') ? `text-${color}` : ''} />
         </div>
         <div className="text-right">

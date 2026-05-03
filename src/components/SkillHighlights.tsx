@@ -68,7 +68,7 @@ export const SkillHighlights = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
             {Object.entries(groupedRequired).map(([category, categorySkills]) => (
               <div key={category} className="space-y-4">
-                <div className="px-4 py-2 rounded-xl bg-primary/5 border border-primary/10 w-fit flex items-center gap-2">
+                <div className="px-4 py-2 rounded-full bg-primary/5 border border-primary/10 w-fit flex items-center gap-2">
                     {category.toLowerCase().includes("ai") || category.toLowerCase().includes("gen") ? <Sparkles size={12} className="text-primary" /> : 
                      category.toLowerCase().includes("found") || category.toLowerCase().includes("core") ? <Brain size={12} className="text-primary" /> : 
                      category.toLowerCase().includes("infra") || category.toLowerCase().includes("cloud") || category.toLowerCase().includes("security") ? <ShieldCheck size={12} className="text-primary" /> :
@@ -108,7 +108,7 @@ export const SkillHighlights = ({
             {niceToHaveSkills.map((skill, idx) => (
               <div 
                 key={idx} 
-                className="px-4 py-3 rounded-2xl bg-accent-emerald/5 border border-accent-emerald/10 hover:bg-accent-emerald/10 transition-all cursor-default group"
+                className="px-4 py-3 rounded-[1.5rem] bg-accent-emerald/5 border border-accent-emerald/10 hover:bg-accent-emerald/10 transition-all cursor-default group"
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-[11px] font-bold text-foreground/80 truncate">{skill.skill}</span>

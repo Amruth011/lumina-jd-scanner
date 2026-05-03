@@ -291,7 +291,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {result.deductions.map((d, i) => (
-                    <div key={i} className="p-4 rounded-2xl bg-white border border-border/40 flex items-start justify-between gap-4 shadow-sm">
+                    <div key={i} className="p-5 rounded-[2rem] bg-white border border-border/40 flex items-start justify-between gap-4 shadow-sm hover:shadow-md transition-all">
                         <div>
                             <span className="text-xs font-bold text-foreground block mb-1">{d.reason}</span>
                             <span className="text-[9px] text-accent-red font-bold px-2 py-0.5 rounded bg-accent-red/10 border border-accent-red/20">-{d.percent} Impact</span>
@@ -310,7 +310,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {(result.skill_matches || []).slice(0, 10).map((sm, i) => (
-                        <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-slate-50/50 border border-border/20">
+                        <div key={i} className="flex items-center justify-between p-3.5 rounded-[1.5rem] bg-slate-50/50 border border-border/20">
                             <div className="flex items-center gap-2 overflow-hidden">
                                 {getVerdictIcon(sm.verdict)}
                                 <span className="text-xs font-medium truncate">{sm.skill}</span>
@@ -330,7 +330,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                         { action: "Optimize", description: "Quantify your achievements in core skill areas." },
                         { action: "Inject", description: "Integrate JD keyword tokens into your professional summary." }
                     ]).map((d, i) => (
-                        <div key={i} className="flex gap-4 items-start p-4 rounded-2xl bg-white border border-border/10 shadow-sm">
+                        <div key={i} className="flex gap-4 items-start p-5 rounded-[2rem] bg-white border border-border/10 shadow-sm">
                             <div className="w-6 h-6 rounded flex-shrink-0 bg-accent-blue/10 flex items-center justify-center text-[10px] font-black text-accent-blue">{i+1}</div>
                             <div>
                                 <span className="text-[10px] font-black uppercase text-foreground block mb-0.5">{d.action}</span>
