@@ -19,7 +19,8 @@ export const Hero = () => {
   return (
     <section className="relative min-h-[100dvh] flex flex-col items-center justify-center bg-[#0D1520] overflow-hidden pt-20">
       {/* Background Particles */}
-      <Particles
+      {/* Background Particles - temporarily disabled for troubleshooting */}
+      {/* <Particles
         id="tsparticles"
         init={particlesInit}
         options={{
@@ -59,7 +60,7 @@ export const Hero = () => {
           detectRetina: true,
         }}
         className="absolute inset-0 z-0"
-      />
+      /> */}
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 text-center space-y-8">
         {/* Headline */}

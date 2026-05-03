@@ -10,10 +10,9 @@ import confetti from 'canvas-confetti';
 import styles from '../../styles/journey.module.css';
 import { journeyNodes } from '../../data/journeyNodes';
 import NodeContentPanel from './NodeContentPanel';
-import dynamic from 'next/dynamic';
 
-// Dynamic import for Three.js scene to avoid SSR issues
-const JourneyScene = dynamic(() => import('./JourneyScene'), { ssr: false });
+// Lazy load Three.js scene for performance
+const JourneyScene = React.lazy(() => import('./JourneyScene'));
 
 gsap.registerPlugin(ScrollTrigger);
 

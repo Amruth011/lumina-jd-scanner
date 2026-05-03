@@ -1,17 +1,17 @@
 import React from 'react';
-import Navbar from '../../components/landing/Navbar';
-import Hero from '../../components/landing/Hero';
-import SocialProofBar from '../../components/landing/SocialProofBar';
-import ProblemSection from '../../components/landing/ProblemSection';
-import HowItWorks from '../../components/landing/HowItWorks';
-import JourneyRoadmap from '../../components/landing/JourneyRoadmap';
-import FeaturesGrid from '../../components/landing/FeaturesGrid';
-import LiveDemoStrip from '../../components/landing/LiveDemoStrip';
-import Testimonials from '../../components/landing/Testimonials';
-import StatsSection from '../../components/landing/StatsSection';
-import PricingSection from '../../components/landing/PricingSection';
-import FinalCTA from '../../components/landing/FinalCTA';
-import Footer from '../../components/landing/Footer';
+import Navbar from '../components/landing/Navbar';
+import Hero from '../components/landing/Hero';
+import SocialProofBar from '../components/landing/SocialProofBar';
+import ProblemSection from '../components/landing/ProblemSection';
+import HowItWorks from '../components/landing/HowItWorks';
+import JourneyRoadmap from '../components/landing/JourneyRoadmap';
+import FeaturesGrid from '../components/landing/FeaturesGrid';
+import LiveDemoStrip from '../components/landing/LiveDemoStrip';
+import Testimonials from '../components/landing/Testimonials';
+import StatsSection from '../components/landing/StatsSection';
+import PricingSection from '../components/landing/PricingSection';
+import FinalCTA from '../components/landing/FinalCTA';
+import Footer from '../components/landing/Footer';
 
 const Index = () => {
   return (

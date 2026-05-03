@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { journeyNodes } from '../../../data/journeyNodes';
-import styles from '../../../styles/journey.module.css';
+import { journeyNodes } from '../../data/journeyNodes';
+import styles from '../../styles/journey.module.css';
 import JDDecoderAnim from './MiniAnimations/JDDecoderAnim';
 import GapAnalysisAnim from './MiniAnimations/GapAnalysisAnim';
 import ResumeTailorAnim from './MiniAnimations/ResumeTailorAnim';
