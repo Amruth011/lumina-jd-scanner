@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { LogOut, User, Search, ShieldCheck, Zap, Info } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 import { LuminaLogo } from "./LuminaLogo";
 import type { Tab } from "./ScannerView";
 
@@ -17,12 +18,17 @@ export const GlobalNavbar = ({ activeTab, onTabChange }: GlobalNavbarProps) => {
   const isHomePage = location.pathname === "/";
 
   const handleTabClick = (tabKey: Tab) => {
-    if (onTabChange) {
-      onTabChange(tabKey);
-      if (isHomePage) {
-        document.querySelector("#scanner")?.scrollIntoView({ behavior: "smooth" });
-      } else {
-        navigate("/#scanner");
+    if (!user) {
+      toast.info("Please sign in to access Lumina services.");
+      navigate("/auth");
+      return;
+    }
+
+    if (isHomePage) {
+      navigate("/dashboard", { state: { activeTab: tabKey } });
+    } else {
+      if (onTabChange) {
+        onTabChange(tabKey);
       }
     }
   };
