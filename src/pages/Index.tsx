@@ -101,7 +101,6 @@ const BarMetric = ({ label, score, isTeal = false, delay = 0 }: { label: string,
 );
 
 const Index = () => {
-  const [activeTab, setActiveTab] = useState<Tab>("decode");
   const navigate = useNavigate();
   const { user } = useAuth();
   const mouseX = useMotionValue(0);
@@ -127,7 +126,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background font-sans text-foreground selection:bg-accent-emerald/20 selection:text-foreground">
-      <GlobalNavbar activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* Floating Ambient Mesh Blobs ($1B Tier) */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden mesh-bg opacity-40">
