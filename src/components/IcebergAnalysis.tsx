@@ -33,7 +33,7 @@ export const IcebergAnalysis = ({ reality, archetype }: IcebergAnalysisProps) =>
         </div>
       </div>
 
-      <div className="relative glass-panel p-4 md:p-6 rounded-[2.5rem] border-white/5 flex flex-col h-fit gap-4 overflow-hidden">
+      <div className="relative glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-4 md:p-6 rounded-[2.5rem] border-white/20 flex flex-col h-fit gap-4 overflow-hidden">
         {/* Above Water */}
         <div className="space-y-2 z-10 flex-1">
           <div className="flex items-center gap-3 mb-2">

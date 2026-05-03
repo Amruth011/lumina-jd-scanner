@@ -18,7 +18,7 @@ export const ResumeBulletGenerator = ({ bullets }: ResumeBulletGeneratorProps) =
   if (!bullets || bullets.length === 0) return null;
 
   return (
-    <div className="glass-panel p-8 rounded-[2.5rem] border-white/5 space-y-8 relative overflow-hidden group">
+    <div className="glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-8 rounded-[2.5rem] border-white/20 space-y-8 relative overflow-hidden group">
       <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity pointer-events-none">
         <Sparkles size={160} />
       </div>

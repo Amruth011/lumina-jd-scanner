@@ -351,7 +351,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
         <PhaseLabel number="02" title="Gap Analysis" sub="Deep Extraction & Analysis" />
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             {/* Plain English Summary */}
-            <div className="lg:col-span-12 lg:col-span-5 glass-panel p-10 space-y-8 relative overflow-hidden group">
+            <div className="lg:col-span-12 lg:col-span-5 glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-10 space-y-8 relative overflow-hidden group border-white/20 rounded-[3rem]">
                 <div className="absolute inset-0 bg-primary/2 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="flex items-center justify-between relative z-10">
                     <div>
@@ -377,7 +377,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
             </div>
 
             {/* Vital Mandates Card [NEW POWER FEATURE] */}
-            <div className="lg:col-span-12 lg:col-span-4 glass-panel p-10 space-y-10 relative overflow-hidden group border-accent-blue/10">
+            <div className="lg:col-span-12 lg:col-span-4 glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-10 space-y-10 relative overflow-hidden group border-white/20 rounded-[3rem]">
                 <div className="flex items-center justify-between">
                     <div>
                         <h3 className="text-3xl font-serif italic text-foreground">Vital Mandates</h3>
@@ -414,7 +414,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
             </div>
 
             {/* Strategic Deficit (Keywords) */}
-            <div className="lg:col-span-12 lg:col-span-3 glass-panel p-8 space-y-8 border-primary/10">
+            <div className="lg:col-span-12 lg:col-span-3 glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-8 space-y-8 border-white/20 rounded-[3rem]">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <SearchCheck size={18} className="text-primary" />
@@ -466,7 +466,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
         </div>
 
         {/* Row 2: Interview Prep (Full Width Integrated) */}
-        <div className="glass-panel p-2 rounded-[3.5rem] border-white/5 relative group">
+        <div className="glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-2 rounded-[3.5rem] border-white/20 relative group">
             <div className="absolute top-8 right-8 z-20">
                 {(!jdText?.toLowerCase()?.includes('question') && !jdText?.toLowerCase()?.includes('interview')) && (
                     <LuminaInferenceBadge tooltip="Questions synthesized via Lumina Engine based on role requirements." />
@@ -482,7 +482,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
 
         {/* Row 3: Timeline & Archetype Deep Dive */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-            <div className="lg:col-span-8 glass-panel p-8 rounded-[3rem] space-y-8 h-full">
+            <div className="lg:col-span-8 glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-white/20 p-8 rounded-[3rem] space-y-8 h-full">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Clock size={20} className="text-accent-blue" />
@@ -496,7 +496,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
             </div>
             <div className="lg:col-span-4 flex flex-col gap-6 h-full">
                 <IcebergAnalysis reality={results?.role_reality} archetype={results?.logistics?.archetype?.label} />
-                <div className="glass-panel p-8 rounded-[2.5rem] flex-1 flex flex-col justify-center">
+                <div className="glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-white/20 p-8 rounded-[2.5rem] flex-1 flex flex-col justify-center">
                     <RecruiterLens insights={results?.recruiter_lens || []} />
                 </div>
             </div>
@@ -520,7 +520,7 @@ const PhaseLabel = ({ number, title, sub }: { number: string, title: string, sub
 );
 
 const BonusCard = ({ icon: Icon, label, value, sub, color }: { icon: LucideIcon, label: string, value: number, sub: string, color: string }) => (
-  <div className="glass-panel p-8 rounded-[2.5rem] border-white/5 space-y-6 flex flex-col justify-between hover:bg-white/5 transition-all duration-700">
+  <div className="glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-white/20 p-8 rounded-[2.5rem] space-y-6 flex flex-col justify-between hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-700">
       <div className="flex items-start justify-between">
         <div className="w-10 h-10 rounded-xl bg-foreground/5 border border-foreground/10 flex items-center justify-center text-foreground/40 group-hover:text-primary transition-colors" style={{ color: color.startsWith('var') ? color : '' }}>
             <Icon size={18} className={!color.startsWith('var') ? `text-${color}` : ''} />
