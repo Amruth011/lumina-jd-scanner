@@ -28,7 +28,11 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
           className="relative"
         >
           <div className="w-16 h-16 rounded-full border-2 border-primary/20 border-t-primary" />
-          <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-primary animate-pulse" />
+          <img 
+            src="/favicon.png" 
+            alt="Lumina" 
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 animate-pulse" 
+          />
         </motion.div>
         <div className="space-y-1 text-center">
           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Authenticating</p>

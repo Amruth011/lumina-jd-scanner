@@ -473,7 +473,11 @@ RETURN JSON FORMAT ONLY:
       <div className="flex flex-col items-center justify-center p-24 text-center space-y-8 min-h-[60vh] animate-in fade-in duration-700">
         <div className="relative">
           <div className="w-16 h-16 rounded-full border-2 border-primary/10 border-t-primary animate-spin" />
-          <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-primary animate-pulse" />
+          <img 
+            src="/favicon.png" 
+            alt="Lumina" 
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 animate-pulse" 
+          />
         </div>
         <div className="space-y-2">
           <h3 className="text-xl font-serif italic text-foreground">Initializing Tactical Library...</h3>
@@ -555,7 +559,7 @@ RETURN JSON FORMAT ONLY:
 
           <div className="flex-1 space-y-6 relative z-10 text-center lg:text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary">
-              <Sparkles size={12} className="animate-pulse" />
+              <img src="/favicon.png" alt="" className="w-3 h-3 animate-pulse" />
               <span className="text-[9px] font-black uppercase tracking-[0.2em]">Zero-Effort Architecture</span>
             </div>
 
@@ -603,7 +607,7 @@ RETURN JSON FORMAT ONLY:
                 <div className="h-2 w-16 bg-white/5 rounded-full" />
               </div>
               <div className="absolute -bottom-4 -right-4 p-4 rounded-xl bg-primary shadow-xl">
-                <Sparkles className="w-6 h-6 text-white" />
+                <img src="/favicon.png" alt="" className="w-6 h-6" />
               </div>
             </div>
           </div>

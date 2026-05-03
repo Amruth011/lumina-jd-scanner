@@ -1104,7 +1104,7 @@ RETURN JSON FORMAT ONLY:
                       {addingSection === 'experience' && (
                         <div className="p-8 rounded-[2rem] bg-white border border-primary/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] space-y-6 animate-in fade-in zoom-in-95 duration-300 overflow-hidden relative">
                           <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
-                             <Sparkles className="w-24 h-24 text-primary" />
+                             <img src="/favicon.png" alt="" className="w-24 h-24 opacity-[0.05]" />
                           </div>
                           <div className="flex justify-between items-center relative z-10">
                             <div className="space-y-1">

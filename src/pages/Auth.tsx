@@ -111,7 +111,7 @@ const Auth = () => {
         <div className="glass-strong rounded-2xl p-8">
           {/* Logo */}
           <div className="flex items-center justify-center gap-2 mb-6">
-            <Sparkles className="w-6 h-6 text-primary" />
+            <img src="/favicon.png" alt="Lumina" className="w-6 h-6" />
             <h1 className="font-display font-bold text-xl text-foreground">
               Lumina <span className="text-primary">JD</span>
             </h1>
