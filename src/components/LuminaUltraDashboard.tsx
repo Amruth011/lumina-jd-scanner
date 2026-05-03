@@ -103,7 +103,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Total Score & Grade */}
           <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-            <div className="glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-white/20 p-8 rounded-[3rem] flex flex-col items-center justify-center relative overflow-hidden group min-h-[400px]">
+            <div className="glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-border/10 p-8 rounded-[3rem] flex flex-col items-center justify-center relative overflow-hidden group min-h-[400px]">
                 <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                 <LuminaGauge 
                     value={grade.score} 
@@ -123,7 +123,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
 
           {/* Salary Range Card */}
           <div 
-            className="lg:col-span-4 glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-white/20 p-10 rounded-[3.5rem] flex flex-col justify-center space-y-10 relative overflow-hidden group cursor-pointer"
+            className="lg:col-span-4 glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-border/10 p-10 rounded-[3.5rem] flex flex-col justify-center space-y-10 relative overflow-hidden group cursor-pointer"
             onClick={handleCopySalary}
           >
                 <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-1000">
@@ -179,7 +179,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
                 </div>
 
                 <div className="space-y-6 pt-4 relative z-10">
-                    <div className="h-6 w-full bg-white/5 rounded-full p-1 border border-white/5 relative overflow-hidden">
+                    <div className="h-6 w-full bg-slate-50 rounded-full p-1 border border-border/10 relative overflow-hidden">
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent animate-shimmer" />
                         <div className="h-full bg-gradient-to-r from-primary/20 via-accent-emerald/40 to-accent-gold/20 rounded-full relative z-10">
                             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-white border-4 border-accent-emerald z-20 shadow-xl" />
@@ -217,7 +217,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
             {/* Strategic Details & Risk Decoder [NEW: Moving Seniority here] */}
             <div className="lg:col-span-12 xl:col-span-5 flex flex-col gap-6">
                 {/* Seniority Dashboard (Moved from left side to optimize space) */}
-                <div className="glass-panel p-8 flex flex-col items-center group relative overflow-hidden bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-white/20 rounded-[3rem]">
+                <div className="glass-panel p-8 flex flex-col items-center group relative overflow-hidden bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-border/10 rounded-[3rem]">
                     <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-700">
                         <Activity size={60} className="text-accent-emerald" />
                     </div>
@@ -259,8 +259,8 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
                         </div>
                     </div>
 
-                    <div className="w-full grid grid-cols-2 md:grid-cols-3 gap-3 mt-8 pt-6 border-t border-black/5 relative z-10">
-                        <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5">
+                    <div className="w-full grid grid-cols-2 md:grid-cols-3 gap-3 mt-8 pt-6 border-t border-border/10 relative z-10">
+                        <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-border/10">
                             <Target size={14} className="text-accent-blue opacity-40 shrink-0" />
                             <div className="flex flex-col overflow-hidden">
                                 <span className="text-[8px] font-black uppercase text-muted-foreground/50">Base Ops</span>
@@ -269,14 +269,14 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
                                 </span>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5">
+                        <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-border/10">
                             <Activity size={14} className="text-accent-emerald opacity-40 shrink-0" />
                             <div className="flex flex-col">
                                 <span className="text-[8px] font-black uppercase text-muted-foreground/50">Intensity</span>
                                 <span className="text-[10px] font-bold text-foreground uppercase tracking-tighter">High Impact</span>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5">
+                        <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-border/10">
                             <Target size={14} className="text-accent-emerald opacity-40 shrink-0" />
                             <div className="flex flex-col">
                                 <span className="text-[8px] font-black uppercase text-muted-foreground/50">Threshold</span>
@@ -290,7 +290,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
                 </div>
 
                 {/* Red Flag Decoder */}
-                <div className="glass-panel p-8 rounded-[3rem] border-white/20 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-5 relative overflow-hidden group">
+                <div className="glass-panel p-8 rounded-[3rem] border-border/10 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-5 relative overflow-hidden group">
                     <div className="absolute inset-0 bg-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div className="flex items-center justify-between relative z-10">
                         <div className="flex items-center gap-3">
@@ -318,7 +318,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
                 </div>
 
                 {/* Green Flag Decoder */}
-                <div className="glass-panel p-8 rounded-[3rem] border-white/20 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-5 relative overflow-hidden group">
+                <div className="glass-panel p-8 rounded-[3rem] border-border/10 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-5 relative overflow-hidden group">
                     <div className="absolute inset-0 bg-accent-emerald/[0.01] opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div className="flex items-center justify-between relative z-10">
                         <div className="flex items-center gap-3">
@@ -351,7 +351,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
         <PhaseLabel number="02" title="Gap Analysis" sub="Deep Extraction & Analysis" />
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             {/* Plain English Summary */}
-            <div className="lg:col-span-12 lg:col-span-5 glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-10 space-y-8 relative overflow-hidden group border-white/20 rounded-[3rem]">
+            <div className="lg:col-span-12 lg:col-span-5 glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-10 space-y-8 relative overflow-hidden group border-border/10 rounded-[3rem]">
                 <div className="absolute inset-0 bg-primary/2 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="flex items-center justify-between relative z-10">
                     <div>
@@ -377,7 +377,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
             </div>
 
             {/* Vital Mandates Card [NEW POWER FEATURE] */}
-            <div className="lg:col-span-12 lg:col-span-4 glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-10 space-y-10 relative overflow-hidden group border-white/20 rounded-[3rem]">
+            <div className="lg:col-span-12 lg:col-span-4 glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-10 space-y-10 relative overflow-hidden group border-border/10 rounded-[3rem]">
                 <div className="flex items-center justify-between">
                     <div>
                         <h3 className="text-3xl font-serif italic text-foreground">Vital Mandates</h3>
@@ -414,7 +414,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
             </div>
 
             {/* Strategic Deficit (Keywords) */}
-            <div className="lg:col-span-12 lg:col-span-3 glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-8 space-y-8 border-white/20 rounded-[3rem]">
+            <div className="lg:col-span-12 lg:col-span-3 glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-8 space-y-8 border-border/10 rounded-[3rem]">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <SearchCheck size={18} className="text-primary" />
@@ -423,14 +423,14 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
                 </div>
                 <div className="flex flex-wrap gap-2 pt-2">
                     {(results?.resume_help?.keywords || []).slice(0, 12).map((word, i) => (
-                        <div key={i} className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 hover:border-primary/30 transition-all cursor-pointer" onClick={() => { navigator.clipboard.writeText(word); toast.success(`"${word}" copied`); }}>
+                        <div key={i} className="px-3 py-1.5 rounded-lg bg-slate-50 border border-border/10 hover:border-primary/30 transition-all cursor-pointer" onClick={() => { navigator.clipboard.writeText(word); toast.success(`"${word}" copied`); }}>
                             <span className="text-[12px] font-bold text-foreground/80 tracking-tight">{word}</span>
                         </div>
                     ))}
                 </div>
                 <button 
                     onClick={copyAllKeywords}
-                    className="w-full mt-4 flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 text-[9px] font-black uppercase tracking-widest transition-all"
+                    className="w-full mt-4 flex items-center justify-center gap-2 py-3 rounded-2xl bg-slate-50 border border-border/10 hover:bg-slate-100 text-[9px] font-black uppercase tracking-widest transition-all"
                 >
                     <Copy size={10} />
                     Copy Keywords
@@ -466,7 +466,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
         </div>
 
         {/* Row 2: Interview Prep (Full Width Integrated) */}
-        <div className="glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-2 rounded-[3.5rem] border-white/20 relative group">
+        <div className="glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-2 rounded-[3.5rem] border-border/10 relative group">
             <div className="absolute top-8 right-8 z-20">
                 {(!jdText?.toLowerCase()?.includes('question') && !jdText?.toLowerCase()?.includes('interview')) && (
                     <LuminaInferenceBadge tooltip="Questions synthesized via Lumina Engine based on role requirements." />
@@ -482,7 +482,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
 
         {/* Row 3: Timeline & Archetype Deep Dive */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-            <div className="lg:col-span-8 glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-white/20 p-8 rounded-[3rem] space-y-8 h-full">
+            <div className="lg:col-span-8 glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-border/10 p-8 rounded-[3rem] space-y-8 h-full">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Clock size={20} className="text-accent-blue" />
@@ -496,7 +496,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
             </div>
             <div className="lg:col-span-4 flex flex-col gap-6 h-full">
                 <IcebergAnalysis reality={results?.role_reality} archetype={results?.logistics?.archetype?.label} />
-                <div className="glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-white/20 p-8 rounded-[2.5rem] flex-1 flex flex-col justify-center">
+                <div className="glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-border/10 p-8 rounded-[2.5rem] flex-1 flex flex-col justify-center">
                     <RecruiterLens insights={results?.recruiter_lens || []} />
                 </div>
             </div>
@@ -520,7 +520,7 @@ const PhaseLabel = ({ number, title, sub }: { number: string, title: string, sub
 );
 
 const BonusCard = ({ icon: Icon, label, value, sub, color }: { icon: LucideIcon, label: string, value: number, sub: string, color: string }) => (
-  <div className="glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-white/20 p-8 rounded-[2.5rem] space-y-6 flex flex-col justify-between hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-700">
+  <div className="glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-border/10 p-8 rounded-[2.5rem] space-y-6 flex flex-col justify-between hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-700">
       <div className="flex items-start justify-between">
         <div className="w-10 h-10 rounded-xl bg-foreground/5 border border-foreground/10 flex items-center justify-center text-foreground/40 group-hover:text-primary transition-colors" style={{ color: color.startsWith('var') ? color : '' }}>
             <Icon size={18} className={!color.startsWith('var') ? `text-${color}` : ''} />
@@ -533,7 +533,7 @@ const BonusCard = ({ icon: Icon, label, value, sub, color }: { icon: LucideIcon,
       
       <div className="space-y-2.5">
         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/80 block leading-none">{label}</span>
-        <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden p-0.5 border border-white/5">
+        <div className="h-1.5 w-full bg-slate-50 rounded-full overflow-hidden p-0.5 border border-border/10">
             <motion.div 
               initial={{ width: 0 }} 
               animate={{ width: `${value}%` }} 

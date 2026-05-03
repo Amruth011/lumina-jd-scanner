@@ -4,7 +4,7 @@ import { ArrowRight, BrainCircuit, ShieldCheck, Target, FileText, Check, Star, C
 import { LuminaLogo } from "@/components/LuminaLogo";
 import { GlobalNavbar } from "@/components/GlobalNavbar";
 import { Roadmap3D } from "@/components/Roadmap3D";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 export type Tab = "decode" | "analysis" | "profile" | "generator" | "guide";
 
@@ -102,6 +102,7 @@ const BarMetric = ({ label, score, isTeal = false, delay = 0 }: { label: string,
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<Tab>("decode");
+  const navigate = useNavigate();
   const { user } = useAuth();
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -152,8 +153,8 @@ const Index = () => {
                 Deploy Engine <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform text-accent-emerald" />
               </span>
             </Link>
-            <Link to="/auth" className="px-10 py-5 bg-white text-foreground border border-border rounded-full text-sm font-bold uppercase tracking-[0.15em] hover:bg-muted/50 transition-all hover:scale-[1.02] active:scale-95 shadow-soft">
-              Try with Sample Resume
+            <Link to={user ? "/dashboard" : "/auth"} className="px-10 py-5 bg-white text-foreground border border-border rounded-full text-sm font-bold uppercase tracking-[0.15em] hover:bg-muted/50 transition-all hover:scale-[1.02] active:scale-95 shadow-soft">
+              View Prototype
             </Link>
           </div>
 
@@ -269,13 +270,24 @@ const Index = () => {
         <div className="grid grid-cols-1 md:grid-cols-6 gap-6 auto-rows-[300px]">
           
           {/* Bento Large Card 1 */}
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }} className="bento-card p-10 md:col-span-4 bg-gradient-to-br from-white to-background flex flex-col justify-between group">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} 
+            whileInView={{ opacity: 1, y: 0 }} 
+            viewport={{ once: true }} 
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }} 
+            className="bento-card p-10 md:col-span-4 bg-gradient-to-br from-white to-background flex flex-col justify-between group cursor-pointer"
+            onClick={() => navigate(user ? "/dashboard" : "/auth", { state: { activeTab: "decode" } })}
+          >
             <div className="space-y-4 max-w-lg">
               <div className="w-14 h-14 rounded-2xl bg-foreground text-white flex items-center justify-center shadow-soft mb-6 group-hover:scale-110 transition-transform duration-500">
                 <BrainCircuit size={28} />
               </div>
               <h3 className="text-4xl font-serif text-foreground">Strategic JD Decoder</h3>
               <p className="text-foreground/60 text-lg font-medium leading-relaxed">Extracts hidden metrics, ATS keywords, and implicit requirements the human eye misses. Powered by Llama-3.3.</p>
+              
+              <button className="mt-4 flex items-center gap-2 text-accent-emerald font-bold text-xs uppercase tracking-widest group-hover:translate-x-2 transition-transform">
+                Start Decoding <ArrowRight size={14} />
+              </button>
             </div>
             <div className="mt-8 flex flex-wrap gap-2">
               {['RAG Intelligence', 'Vector Matching', 'NLP Analysis'].map(tag => (
@@ -285,22 +297,43 @@ const Index = () => {
           </motion.div>
 
           {/* Bento Card 2 - Teal Dominant */}
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }} className="bento-card p-10 md:col-span-2 bg-accent-emerald text-white flex flex-col justify-between group relative overflow-hidden">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} 
+            whileInView={{ opacity: 1, y: 0 }} 
+            viewport={{ once: true }} 
+            transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }} 
+            className="bento-card p-10 md:col-span-2 bg-accent-emerald text-white flex flex-col justify-between group relative overflow-hidden cursor-pointer"
+            onClick={() => navigate(user ? "/dashboard" : "/auth", { state: { activeTab: "analysis" } })}
+          >
             <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700" />
              <div className="space-y-4 relative z-10">
               <div className="w-14 h-14 rounded-2xl bg-white/20 text-white flex items-center justify-center mb-6 backdrop-blur-md">
                 <Target size={28} />
               </div>
               <h3 className="text-4xl font-serif">Gap Analysis</h3>
-              <p className="text-white/80 text-lg font-medium leading-relaxed">Instantly spot what's missing before the recruiter does.</p>
+              <p className="text-white/80 text-lg font-medium leading-relaxed mb-4">Instantly spot what's missing before the recruiter does.</p>
+              
+              <button className="flex items-center gap-2 text-white font-bold text-xs uppercase tracking-widest group-hover:translate-x-2 transition-transform">
+                Audit Resume <ArrowRight size={14} />
+              </button>
             </div>
           </motion.div>
 
           {/* Bento Card 3 */}
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }} className="bento-card p-10 md:col-span-2 group">
-            <div className="w-12 h-12 rounded-2xl bg-foreground text-white flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-500"><FileText size={24} /></div>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} 
+            whileInView={{ opacity: 1, y: 0 }} 
+            viewport={{ once: true }} 
+            transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }} 
+            className="bento-card p-10 md:col-span-2 group cursor-pointer"
+            onClick={() => navigate(user ? "/dashboard" : "/auth", { state: { activeTab: "generator" } })}
+          >
+            <div className="w-12 h-12 rounded-2xl bg-foreground text-white flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-500"><Zap size={24} /></div>
             <h3 className="text-2xl font-bold text-foreground mb-4">Resume Tailor</h3>
-            <p className="text-foreground/60 text-base font-medium leading-relaxed mb-8">Rewrites bullets to perfectly match the target role's phrasing.</p>
+            <p className="text-foreground/60 text-base font-medium leading-relaxed mb-6">Rewrites bullets to perfectly match the target role's phrasing.</p>
+            <button className="flex items-center gap-2 text-accent-emerald font-bold text-xs uppercase tracking-widest group-hover:translate-x-2 transition-transform mb-4">
+                Tailor Now <ArrowRight size={14} />
+              </button>
             <div className="text-xs font-mono p-4 bg-muted rounded-xl line-through text-destructive border border-border">Led team of 5 developers</div>
           </motion.div>
 
@@ -392,7 +425,7 @@ const Index = () => {
       <footer className="bg-background border-t border-border/40 py-16 px-6">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center">
-            <LuminaLogo size={120} className="object-contain" />
+            <LuminaLogo size={32} />
           </div>
           <p className="text-foreground/40 text-[10px] font-black font-display uppercase tracking-[0.4em] text-center md:text-left">
             Built for the top 0.1% of career strategists

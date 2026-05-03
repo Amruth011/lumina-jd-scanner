@@ -646,9 +646,9 @@ RETURN JSON FORMAT ONLY:
   };
 
   return (
-    <div className="glass-panel rounded-[3rem] p-6 lg:p-10 relative overflow-hidden group border border-white/5">
+    <div className="glass-panel rounded-[3rem] p-6 lg:p-10 relative overflow-hidden group border-white/20">
       <div className="absolute top-0 right-0 p-16 opacity-5 scale-150 group-hover:opacity-10 transition-opacity duration-1000 pointer-events-none">
-        <Sparkles className="w-80 h-80 rotate-12" />
+        <img src="/favicon.png" alt="Lumina Icon" className="w-80 h-80 rotate-12 grayscale" />
       </div>
 
       <div className="relative z-10 flex flex-col xl:flex-row items-center justify-between gap-12">
@@ -668,7 +668,7 @@ RETURN JSON FORMAT ONLY:
               "ATS-Gold Template",
               "Semantic Gap Injection"
             ].map((feature, i) => (
-              <div key={feature} className="flex items-center gap-2.5 px-5 py-2 rounded-full bg-white/5 border border-white/10 text-xs font-black text-primary tracking-widest uppercase opacity-70">
+              <div key={feature} className="flex items-center gap-2.5 px-5 py-2 rounded-full bg-slate-50 border border-border/10 text-xs font-black text-primary tracking-widest uppercase opacity-70">
                 <CheckCircle2 className="w-4 h-4 text-accent-emerald" />
                 {feature}
               </div>
@@ -678,7 +678,7 @@ RETURN JSON FORMAT ONLY:
               className={`flex items-center gap-2.5 px-6 py-2 rounded-full border text-xs font-black tracking-widest uppercase transition-all ${
                 showArchive 
                   ? "bg-primary text-primary-foreground border-primary" 
-                  : "bg-white/5 border-white/10 text-primary hover:bg-white/10 shadow-xl"
+                  : "bg-slate-50 border-border/10 text-primary hover:bg-slate-100 shadow-xl"
               }`}
             >
               <Archive className="w-4 h-4" />
@@ -713,7 +713,7 @@ RETURN JSON FORMAT ONLY:
                       <div 
                         key={record.id}
                         onClick={() => handleLoadArchive(record)}
-                        className="group p-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-primary/40 hover:bg-white/[0.05] transition-all cursor-pointer relative"
+                        className="group p-4 rounded-2xl bg-slate-50/50 border border-border/10 hover:border-primary/40 hover:bg-slate-50 transition-all cursor-pointer relative"
                       >
                         <div className="flex justify-between items-start mb-2">
                           <div className="space-y-1">
@@ -743,7 +743,7 @@ RETURN JSON FORMAT ONLY:
             )}
           </AnimatePresence>
 
-          <div className="mt-8 p-6 rounded-[2rem] bg-white/[0.03] border border-white/10 space-y-4 relative group">
+          <div className="mt-8 p-6 rounded-[2rem] bg-slate-50/50 border border-border/10 space-y-4 relative group">
             <div className="absolute -top-3 left-6 px-3 py-1 rounded-full bg-primary text-background text-[8px] font-black uppercase tracking-widest shadow-xl opacity-0 group-hover:opacity-100 transition-opacity">
               Strategic Calibration Hub
             </div>
@@ -909,7 +909,7 @@ RETURN JSON FORMAT ONLY:
                       <select 
                         value={bodyFontSize} 
                         onChange={(e) => setBodyFontSize(Number(e.target.value))}
-                        className="w-full bg-background/60 border border-white/10 rounded-xl px-3 py-2.5 text-[10px] outline-none focus:ring-1 ring-primary/40 transition-all font-bold"
+                        className="w-full bg-white border border-border/40 rounded-xl px-3 py-2.5 text-[10px] outline-none focus:ring-1 ring-primary/40 transition-all font-bold"
                       >
                         <option value={9}>9pt</option>
                         <option value={10}>10pt</option>
@@ -943,9 +943,9 @@ RETURN JSON FORMAT ONLY:
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 40 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="mt-20 pt-20 border-t border-white/5 space-y-16"
+            className="mt-20 pt-20 border-t border-border/10 space-y-16"
           >
-            <div className="flex flex-col lg:flex-row justify-between items-center premium-card p-10 gap-8">
+            <div className="flex flex-col lg:flex-row justify-between items-center glass-panel p-10 gap-8 shadow-2xl">
               <div className="space-y-3 text-center lg:text-left">
                 <div className="flex items-center gap-3 justify-center lg:justify-start">
                   <div className="w-2.5 h-2.5 rounded-full bg-accent-emerald animate-pulse" />
@@ -969,7 +969,7 @@ RETURN JSON FORMAT ONLY:
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-muted-foreground transition-all"
+                  className="p-5 rounded-2xl bg-slate-50 border border-border/10 hover:bg-slate-100 text-muted-foreground transition-all"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -979,7 +979,7 @@ RETURN JSON FORMAT ONLY:
             {/* PREVIEW CONTAINER */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
               {/* ELITE EDITOR (Left Panel) */}
-              <div className="md:col-span-4 glass-panel p-8 flex flex-col gap-8 h-fit max-h-[1100px] overflow-y-auto custom-scrollbar border border-white/5">
+              <div className="md:col-span-4 glass-panel p-8 flex flex-col gap-8 h-fit max-h-[1100px] overflow-y-auto custom-scrollbar border-border/10">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <Wand2 className="w-5 h-5 text-primary" />
@@ -991,19 +991,19 @@ RETURN JSON FORMAT ONLY:
                   {/* Header Section */}
                   <div className="space-y-4">
                     <h5 className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Primary Identity</h5>
-                    <input className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-foreground outline-none focus:ring-1 ring-primary/40" value={editableHeader.fullName} onChange={e => setEditableHeader({...editableHeader, fullName: e.target.value})} placeholder="Full Name" />
+                    <input className="w-full bg-slate-50 border border-border/10 rounded-xl px-4 py-3 text-xs text-foreground outline-none focus:ring-1 ring-primary/40" value={editableHeader.fullName} onChange={e => setEditableHeader({...editableHeader, fullName: e.target.value})} placeholder="Full Name" />
                     <div className="grid grid-cols-2 gap-3">
-                      <input className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-[10px] text-foreground outline-none focus:ring-1 ring-primary/40" value={editableHeader.email} onChange={e => setEditableHeader({...editableHeader, email: e.target.value})} placeholder="Email" />
-                      <input className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-[10px] text-foreground outline-none focus:ring-1 ring-primary/40" value={editableHeader.phone} onChange={e => setEditableHeader({...editableHeader, phone: e.target.value})} placeholder="Phone" />
+                      <input className="bg-slate-50 border border-border/10 rounded-xl px-4 py-2 text-[10px] text-foreground outline-none focus:ring-1 ring-primary/40" value={editableHeader.email} onChange={e => setEditableHeader({...editableHeader, email: e.target.value})} placeholder="Email" />
+                      <input className="bg-slate-50 border border-border/10 rounded-xl px-4 py-2 text-[10px] text-foreground outline-none focus:ring-1 ring-primary/40" value={editableHeader.phone} onChange={e => setEditableHeader({...editableHeader, phone: e.target.value})} placeholder="Phone" />
                     </div>
-                    <input className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-[10px] text-foreground outline-none focus:ring-1 ring-primary/40" value={editableHeader.location} onChange={e => setEditableHeader({...editableHeader, location: e.target.value})} placeholder="Location (e.g. New York, NY)" />
+                    <input className="w-full bg-slate-50 border border-border/10 rounded-xl px-4 py-2 text-[10px] text-foreground outline-none focus:ring-1 ring-primary/40" value={editableHeader.location} onChange={e => setEditableHeader({...editableHeader, location: e.target.value})} placeholder="Location (e.g. New York, NY)" />
                   </div>
 
                   {/* Social/Links Section */}
                   <div className="space-y-4">
                     <h5 className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Digital Footprint</h5>
                     <div className="space-y-3">
-                      <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-2 ring-primary/20 focus-within:ring-2 transition-all">
+                      <div className="flex items-center gap-3 bg-slate-50 border border-border/10 rounded-xl px-4 py-2 ring-primary/20 focus-within:ring-2 transition-all">
                         <Linkedin size={14} className="text-[#0077B5]" />
                         <input 
                           id="edit-linkedin"
@@ -1025,7 +1025,7 @@ RETURN JSON FORMAT ONLY:
                           placeholder="github.com/..." 
                         />
                       </div>
-                      <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-2 ring-primary/20 focus-within:ring-2 transition-all">
+                      <div className="flex items-center gap-3 bg-slate-50 border border-border/10 rounded-xl px-4 py-2 ring-primary/20 focus-within:ring-2 transition-all">
                         <FileText size={14} className="text-secondary" />
                         <input 
                           id="edit-portfolio"
@@ -1043,7 +1043,7 @@ RETURN JSON FORMAT ONLY:
                   <div className="space-y-4">
                     <h5 className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Professional Narrative</h5>
                     <textarea 
-                      className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-xs text-foreground outline-none focus:ring-1 ring-primary/40 min-h-[120px] resize-none shadow-xl hover:border-white/30 transition-all font-medium"
+                      className="w-full bg-slate-50 border border-border/10 rounded-xl px-4 py-3 text-xs text-foreground outline-none focus:ring-1 ring-primary/40 min-h-[120px] resize-none shadow-sm hover:border-border/30 transition-all font-medium"
                       value={editableResume?.professional_summary}
                       onChange={e => setEditableResume(prev => prev ? {...prev, professional_summary: e.target.value} : null)}
                     />
@@ -1053,7 +1053,7 @@ RETURN JSON FORMAT ONLY:
                   <div className="space-y-4">
                     <h5 className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Core Competencies</h5>
                     <textarea 
-                      className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-[11px] text-foreground outline-none focus:ring-1 ring-primary/40 min-h-[80px] shadow-xl hover:border-white/30 transition-all font-bold"
+                      className="w-full bg-slate-50 border border-border/10 rounded-xl px-4 py-3 text-[11px] text-foreground outline-none focus:ring-1 ring-primary/40 min-h-[80px] shadow-sm hover:border-border/30 transition-all font-bold"
                       value={editableResume?.skills_section.join(", ")}
                       onChange={e => {
                         const newSkills = e.target.value.split(",").map(s => s.trim());
@@ -1068,7 +1068,7 @@ RETURN JSON FORMAT ONLY:
                     <h5 className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Experience & Impact</h5>
                     <div className="space-y-6">
                       {editableResume?.experience.map((exp, i) => (
-                        <div key={i} className="group relative space-y-3 p-5 rounded-xl bg-white/10 border border-white/20 shadow-xl transition-all hover:border-primary/30">
+                        <div key={i} className="group relative space-y-3 p-5 rounded-xl bg-slate-50 border border-border/10 shadow-sm transition-all hover:border-primary/30">
                           <div className="flex justify-between items-start">
                             <input className="w-full bg-transparent border-none text-[11px] font-bold text-foreground outline-none focus:text-primary transition-colors" value={exp.heading} onChange={e => {
                               const newExp = [...editableResume.experience];
@@ -1083,7 +1083,7 @@ RETURN JSON FORMAT ONLY:
                              {exp.bullets?.map((bullet, j) => (
                                <div key={j} className="flex gap-2">
                                  <div className="w-1.5 h-1.5 rounded-full bg-primary/20 mt-2 shrink-0" />
-                                 <textarea className="w-full bg-black/20 p-2 rounded-lg border border-white/5 text-[10px] text-muted-foreground outline-none resize-none overflow-hidden hover:border-white/20 focus:border-primary/40 transition-all" rows={2} value={bullet} onChange={e => {
+                                 <textarea className="w-full bg-white p-2 rounded-lg border border-border/10 text-[10px] text-muted-foreground outline-none resize-none overflow-hidden hover:border-border/20 focus:border-primary/40 transition-all" rows={2} value={bullet} onChange={e => {
                                    const newExp = [...editableResume.experience];
                                    newExp[i].bullets[j] = e.target.value;
                                    setEditableResume({...editableResume, experience: newExp});
@@ -1117,7 +1117,7 @@ RETURN JSON FORMAT ONLY:
                           </div>
                           <div className="space-y-2 max-h-[240px] overflow-y-auto custom-scrollbar pr-1">
                             {vaultItems.filter(v => v.type === 'professional').map((v, i) => (
-                              <button key={i} onClick={() => handleAddFromVault(v)} className="w-full text-left p-3 rounded-lg bg-white/5 border border-white/5 hover:border-primary/40 transition-all group">
+                              <button key={i} onClick={() => handleAddFromVault(v)} className="w-full text-left p-3 rounded-lg bg-slate-50 border border-border/10 hover:border-primary/40 transition-all group">
                                 <p className="text-[10px] font-bold text-foreground group-hover:text-primary transition-colors">{v.title}</p>
                                 <p className="text-[8px] text-muted-foreground uppercase mt-0.5">{v.organization} • {v.period}</p>
                               </button>
@@ -1142,7 +1142,7 @@ RETURN JSON FORMAT ONLY:
                     <h5 className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Strategic Projects</h5>
                     <div className="space-y-6">
                       {editableResume?.projects?.map((proj, i) => (
-                        <div key={i} className="group relative space-y-3 p-5 rounded-xl bg-white/10 border border-white/20 shadow-xl transition-all hover:border-secondary/30">
+                        <div key={i} className="group relative space-y-3 p-5 rounded-xl bg-slate-50 border border-border/10 shadow-sm transition-all hover:border-secondary/30">
                           <div className="flex justify-between items-start">
                             <input className="w-full bg-transparent border-none text-[11px] font-bold text-foreground outline-none focus:text-secondary transition-colors" value={proj.heading} onChange={e => {
                               const newProj = [...(editableResume?.projects || [])];
@@ -1157,7 +1157,7 @@ RETURN JSON FORMAT ONLY:
                              {proj.bullets?.map((bullet, j) => (
                                <div key={j} className="flex gap-2">
                                  <div className="w-1.5 h-1.5 rounded-full bg-secondary/20 mt-2 shrink-0" />
-                                 <textarea className="w-full bg-black/20 p-2 rounded-lg border border-white/5 text-[10px] text-muted-foreground outline-none resize-none overflow-hidden hover:border-white/20 focus:border-secondary/40 transition-all" rows={2} value={bullet} onChange={e => {
+                                 <textarea className="w-full bg-white p-2 rounded-lg border border-border/10 text-[10px] text-muted-foreground outline-none resize-none overflow-hidden hover:border-border/20 focus:border-secondary/40 transition-all" rows={2} value={bullet} onChange={e => {
                                    const newProj = [...(editableResume?.projects || [])];
                                    newProj[i].bullets[j] = e.target.value;
                                    setEditableResume({...editableResume, projects: newProj});
@@ -1191,7 +1191,7 @@ RETURN JSON FORMAT ONLY:
                           </div>
                           <div className="space-y-2 max-h-[240px] overflow-y-auto custom-scrollbar pr-1">
                             {vaultItems.filter(v => v.type === 'project').map((v, i) => (
-                              <button key={i} onClick={() => handleAddFromVault(v)} className="w-full text-left p-3 rounded-lg bg-white/5 border border-white/5 hover:border-secondary/40 transition-all group">
+                              <button key={i} onClick={() => handleAddFromVault(v)} className="w-full text-left p-3 rounded-lg bg-slate-50 border border-border/10 hover:border-secondary/40 transition-all group">
                                 <p className="text-[10px] font-bold text-foreground group-hover:text-secondary transition-colors">{v.title}</p>
                                 <p className="text-[8px] text-muted-foreground uppercase mt-0.5">{v.organization || "Independent Project"} • {v.period}</p>
                               </button>
@@ -1216,7 +1216,7 @@ RETURN JSON FORMAT ONLY:
                     <h5 className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Academic Foundation</h5>
                     <div className="space-y-4">
                       {editableResume?.education.map((edu, i) => (
-                        <div key={i} className="group relative flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-primary/20 transition-all">
+                        <div key={i} className="group relative flex items-center gap-3 p-4 rounded-xl bg-slate-50 border border-border/10 hover:border-primary/20 transition-all">
                           <input className="flex-1 bg-transparent border-none text-[11px] font-bold text-foreground outline-none focus:text-primary transition-colors" value={edu} onChange={e => {
                             const newEdu = [...editableResume.education];
                             newEdu[i] = e.target.value;
@@ -1241,7 +1241,7 @@ RETURN JSON FORMAT ONLY:
                           </div>
                           <div className="space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-1">
                             {vaultItems.filter(v => v.type === 'education').map((v, i) => (
-                              <button key={i} onClick={() => handleAddFromVault(v)} className="w-full text-left p-3 rounded-lg bg-white/5 border border-white/5 hover:border-primary/40 transition-all group">
+                              <button key={i} onClick={() => handleAddFromVault(v)} className="w-full text-left p-3 rounded-lg bg-slate-50 border border-border/10 hover:border-primary/40 transition-all group">
                                 <p className="text-[10px] font-bold text-foreground group-hover:text-primary transition-colors">{v.title}</p>
                                 <p className="text-[8px] text-muted-foreground uppercase mt-0.5">{v.organization} • {v.period}</p>
                               </button>
@@ -1266,7 +1266,7 @@ RETURN JSON FORMAT ONLY:
                     <h5 className="text-[10px] font-black uppercase tracking-widest text-secondary/60 mb-2">Industry Credentials</h5>
                     <div className="space-y-4">
                       {editableResume?.certifications?.map((cert, i) => (
-                        <div key={i} className="group relative flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-secondary/20 transition-all">
+                        <div key={i} className="group relative flex items-center gap-3 p-4 rounded-xl bg-slate-50 border border-border/10 hover:border-secondary/20 transition-all">
                           <input className="flex-1 bg-transparent border-none text-[11px] font-bold text-foreground outline-none focus:text-secondary transition-colors" value={cert} onChange={e => {
                             const newCerts = [...(editableResume.certifications || [])];
                             newCerts[i] = e.target.value;
@@ -1291,7 +1291,7 @@ RETURN JSON FORMAT ONLY:
                           </div>
                           <div className="space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-1">
                             {vaultItems.filter(v => v.type === 'certification').map((v, i) => (
-                              <button key={i} onClick={() => handleAddFromVault(v)} className="w-full text-left p-3 rounded-lg bg-white/5 border border-white/5 hover:border-secondary/40 transition-all group">
+                              <button key={i} onClick={() => handleAddFromVault(v)} className="w-full text-left p-3 rounded-lg bg-slate-50 border border-border/10 hover:border-secondary/40 transition-all group">
                                 <p className="text-[10px] font-bold text-foreground group-hover:text-secondary transition-colors">{v.title}</p>
                                 <p className="text-[8px] text-muted-foreground uppercase mt-0.5">{v.organization} • {v.period}</p>
                               </button>
@@ -1316,7 +1316,7 @@ RETURN JSON FORMAT ONLY:
                     <h5 className="text-[10px] font-black uppercase tracking-widest text-primary/40 mb-2">Import from Tactical Vault</h5>
                     <div className="grid grid-cols-1 gap-2">
                       {vaultItems.slice(0, 3).map((item, i) => (
-                        <button key={i} onClick={() => handleAddFromVault(item)} className="p-3 bg-white/5 border border-white/10 rounded-lg text-left hover:bg-white/10 transition-all group">
+                        <button key={i} onClick={() => handleAddFromVault(item)} className="p-3 bg-slate-50 border border-border/10 rounded-lg text-left hover:bg-slate-100 transition-all group">
                           <p className="text-[10px] font-bold text-foreground group-hover:text-primary">{item.title}</p>
                           <p className="text-[8px] text-muted-foreground uppercase tracking-wider">{item.organization} • {item.type}</p>
                         </button>

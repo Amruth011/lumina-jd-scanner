@@ -5,14 +5,19 @@ interface LuminaLogoProps {
   size?: number;
 }
 
-export const LuminaLogo = ({ className = "", size = 24 }: LuminaLogoProps) => {
+export const LuminaLogo = ({ className = "", size = 32 }: LuminaLogoProps) => {
   return (
-    <img 
-      src="/logo.png" 
-      alt="Lumina Logo"
-      width={size}
-      height={size}
-      className={`object-contain ${className}`}
-    />
+    <div className={`flex items-center gap-2 ${className}`}>
+      <img 
+        src="/favicon.png" 
+        alt="Lumina Logo"
+        width={size}
+        height={size}
+        className="object-contain"
+      />
+      <span className="font-serif italic text-xl tracking-tighter text-foreground">
+        Lumina
+      </span>
+    </div>
   );
 };

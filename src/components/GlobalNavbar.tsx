@@ -45,14 +45,14 @@ export const GlobalNavbar = ({ activeTab, onTabChange }: GlobalNavbarProps) => {
     <nav className="fixed top-0 left-0 right-0 z-[100] px-6 py-2 w-full pointer-events-none">
       <div className="h-[50px] rounded-full max-w-5xl mx-auto px-0 py-0 flex items-center justify-between pointer-events-auto relative overflow-hidden">
         {/* The Brand Pill Backdrop */}
-        <div className="absolute inset-0 rounded-full bg-white border border-border/10 -z-10" />
+        <div className="absolute inset-0 rounded-full bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/10 -z-10" />
         
           <Link to="/" className="flex items-center group pl-4 transition-transform hover:scale-105">
-            <LuminaLogo size={120} className="object-contain" />
+            <LuminaLogo size={32} className="object-contain" />
           </Link>
 
         {/* Global Tactical Tabs */}
-        <div className="flex items-center gap-1.5 bg-white/5 p-1 rounded-full border border-white/5 shadow-inner overflow-x-auto no-scrollbar max-w-[50%] md:max-w-none">
+        <div className="flex items-center gap-1.5 bg-slate-50 p-1 rounded-full border border-border/10 shadow-inner overflow-x-auto no-scrollbar max-w-[50%] md:max-w-none">
           {tabs.map((tab) => (
             <button 
               key={tab.key} 
@@ -89,7 +89,7 @@ export const GlobalNavbar = ({ activeTab, onTabChange }: GlobalNavbarProps) => {
               </div>
               <button
                 onClick={signOut}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-accent-red/5 hover:bg-accent-red/10 border border-accent-red/10 text-accent-red transition-all"
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-red-50 hover:bg-red-100 border border-red-200 text-red-500 transition-all"
                 title="Sign Out"
               >
                 <LogOut size={16} />

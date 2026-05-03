@@ -40,7 +40,7 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
   const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const { isScanning, results, decodeJD, wasCached } = useDecodeJD();
-  const [jdText, setJdText] = useState("");
+  const [jdText, setJdText] = useState(() => localStorage.getItem("lumina_last_jd") || "");
   const [priorityFilter, setPriorityFilter] = useState(false);
   const [savingJd, setSavingJd] = useState(false);
   const [savedJdId, setSavedJdId] = useState<string | null>(null);
@@ -48,6 +48,22 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
   const [gapResult, setGapResult] = useState<ResumeGapResult | null>(null);
 
   useEffect(() => { setSavedJdId(null); }, [results]);
+  
+  // v2.9 Persistence: Restore results on mount if jdText exists
+  useEffect(() => {
+    if (jdText.trim().length >= 20 && !results && !isScanning) {
+      // Small delay to ensure everything is ready
+      const timer = setTimeout(() => {
+        handleDecode();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  // v2.9 Persistence: Save jdText to localStorage
+  useEffect(() => {
+    localStorage.setItem("lumina_last_jd", jdText);
+  }, [jdText]);
   
   // v2.8 State Sync: Listener for cross-component tab switching
   useEffect(() => {
@@ -218,7 +234,25 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
             className="space-y-16"
           >
             {results ? (
-              <>
+              <div className="space-y-12">
+                <div className="flex justify-between items-center bg-white border border-border/10 p-6 rounded-[2.5rem] shadow-sm">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-accent-blue/10 flex items-center justify-center text-accent-blue">
+                      <ShieldCheck size={20} />
+                    </div>
+                    <div>
+                      <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Strategic Analysis</h4>
+                      <p className="text-sm font-bold text-foreground">Gap Intelligence Active</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => handleTabSwitch("decode")}
+                    className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-slate-50 border border-border/10 text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 transition-all"
+                  >
+                    <LayoutDashboard size={14} className="text-primary" /> View Intelligence Dashboard
+                  </button>
+                </div>
+
                 <ResumeGapAnalyzer
                   skills={scavengeSkills(results.skills, results, jdText)}
                   jobTitle={results.title}
@@ -238,7 +272,7 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
                     </div>
                   </motion.div>
                 )}
-              </>
+              </div>
             ) : (
               <div className="py-16 text-center glass-panel rounded-[3rem] border border-dashed border-foreground/10">
                 <Search size={48} className="mx-auto text-primary/40 mb-6" />
@@ -262,7 +296,25 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
             className="space-y-16"
           >
             {results ? (
-              <>
+              <div className="space-y-12">
+                <div className="flex justify-between items-center bg-white border border-border/10 p-6 rounded-[2.5rem] shadow-sm">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-accent-emerald/10 flex items-center justify-center text-accent-emerald">
+                      <Zap size={20} />
+                    </div>
+                    <div>
+                      <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Resume Generation</h4>
+                      <p className="text-sm font-bold text-foreground">Drafting Engine Online</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => handleTabSwitch("decode")}
+                    className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-slate-50 border border-border/10 text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 transition-all"
+                  >
+                    <LayoutDashboard size={14} className="text-primary" /> View Intelligence Dashboard
+                  </button>
+                </div>
+
                 <ResumeGenerator
                   jdTitle={results.title}
                   jdSkills={results.skills}
@@ -276,7 +328,7 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
                     gapResult={gapResult}
                   />
                 )}
-              </>
+              </div>
             ) : (
               <div className="py-16 text-center glass-panel rounded-[3rem] border border-dashed border-foreground/10">
                 <Zap size={48} className="mx-auto text-primary/40 mb-6" />

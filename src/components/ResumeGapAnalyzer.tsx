@@ -273,11 +273,11 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
     return (
       <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="grid grid-cols-1 md:grid-cols-[120px,1fr] gap-4">
-            <div className="premium-card rounded-2xl p-4 flex flex-col items-center justify-center text-center">
+            <div className="premium-card p-4 flex flex-col items-center justify-center text-center">
                 <span className="text-4xl font-black text-foreground">{result.overall_match}%</span>
                 <span className="text-[12px] font-black uppercase text-accent-emerald tracking-widest mt-1 block">Match</span>
             </div>
-            <div className="premium-card rounded-2xl p-4 bg-white/5 border border-white/10 flex items-center">
+            <div className="premium-card p-4 flex items-center">
                 <p className="text-sm font-medium text-foreground/80 leading-relaxed italic pl-4">
                     "{result.summary}"
                 </p>
@@ -285,16 +285,16 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
         </div>
 
         {result.deductions && result.deductions.length > 0 && (
-          <div className="premium-card rounded-2xl p-4 border border-accent-red/20 bg-accent-red/5">
-            <h4 className="text-xs font-bold mb-3 flex items-center gap-2 uppercase tracking-widest text-accent-red">
+          <div className="premium-card p-6 border-red-500/10 bg-red-500/[0.02]">
+            <h4 className="text-xs font-bold mb-4 flex items-center gap-2 uppercase tracking-widest text-accent-red">
                 <Zap className="w-4 h-4" /> Gap Analysis
             </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {result.deductions.map((d, i) => (
-                    <div key={i} className="p-4 rounded-xl bg-background/50 border border-border/40 flex items-start justify-between gap-4">
+                    <div key={i} className="p-4 rounded-2xl bg-white border border-border/40 flex items-start justify-between gap-4 shadow-sm">
                         <div>
                             <span className="text-xs font-bold text-foreground block mb-1">{d.reason}</span>
-                            <span className="text-[9px] text-accent-red font-bold px-2 py-0.5 rounded bg-accent-red/10 border border-accent-red/20">-{d.percent}% Impact</span>
+                            <span className="text-[9px] text-accent-red font-bold px-2 py-0.5 rounded bg-accent-red/10 border border-accent-red/20">-{d.percent} Impact</span>
                         </div>
                         {d.fix_snippet && <button onClick={() => handleCopyBullet(d.fix_snippet!)} className="p-2 rounded-lg bg-accent-blue/10 text-accent-blue hover:bg-accent-blue/20 transition-all shrink-0"><Copy className="w-3.5 h-3.5" /></button>}
                     </div>
@@ -304,13 +304,13 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="premium-card rounded-2xl p-4 border border-white/5 bg-white/5">
-                <h4 className="font-bold mb-3 uppercase tracking-widest text-[9px] text-muted-foreground flex items-center gap-2">
+            <div className="premium-card p-6 border-zinc-100">
+                <h4 className="font-bold mb-4 uppercase tracking-widest text-[9px] text-muted-foreground flex items-center gap-2">
                     <ShieldCheck className="w-3.5 h-3.5 opacity-50" /> Skill Signatures
                 </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {(result.skill_matches || []).slice(0, 10).map((sm, i) => (
-                        <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-background/40 border border-border/40">
+                        <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-slate-50/50 border border-border/20">
                             <div className="flex items-center gap-2 overflow-hidden">
                                 {getVerdictIcon(sm.verdict)}
                                 <span className="text-xs font-medium truncate">{sm.skill}</span>
@@ -321,8 +321,8 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                 </div>
             </div>
 
-            <div className="premium-card rounded-2xl p-4 bg-accent-emerald/5 border border-accent-emerald/20">
-                <h4 className="font-bold mb-3 uppercase tracking-[0.15em] text-[9px] text-accent-emerald flex items-center gap-2">
+            <div className="premium-card p-6 bg-accent-emerald/[0.02] border-accent-emerald/10">
+                <h4 className="font-bold mb-4 uppercase tracking-[0.15em] text-[9px] text-accent-emerald flex items-center gap-2">
                     <TrendingUp className="w-3.5 h-3.5" /> Action Roadmap
                 </h4>
                 <div className="space-y-3">
@@ -330,8 +330,8 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                         { action: "Optimize", description: "Quantify your achievements in core skill areas." },
                         { action: "Inject", description: "Integrate JD keyword tokens into your professional summary." }
                     ]).map((d, i) => (
-                        <div key={i} className="flex gap-3 items-start p-3 rounded-xl bg-background/40 border border-white/10">
-                            <div className="w-5 h-5 rounded flex-shrink-0 bg-accent-blue/10 flex items-center justify-center text-[10px] font-black text-accent-blue">{i+1}</div>
+                        <div key={i} className="flex gap-4 items-start p-4 rounded-2xl bg-white border border-border/10 shadow-sm">
+                            <div className="w-6 h-6 rounded flex-shrink-0 bg-accent-blue/10 flex items-center justify-center text-[10px] font-black text-accent-blue">{i+1}</div>
                             <div>
                                 <span className="text-[10px] font-black uppercase text-foreground block mb-0.5">{d.action}</span>
                                 <p className="text-xs text-muted-foreground leading-relaxed font-medium">{d.description}</p>
@@ -392,15 +392,15 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                 </div>
 
                 <div className="md:col-span-4 space-y-6">
-                    <div className="p-8 rounded-[2.5rem] bg-white/5 border border-white/5 space-y-4">
+                    <div className="p-8 rounded-[2.5rem] bg-slate-50/50 border border-border/10 space-y-4">
                         <div className="flex items-center gap-3">
                             <ShieldCheck className="w-5 h-5 text-accent-emerald" />
                             <span className="text-xs font-black uppercase tracking-widest text-foreground/70">Secure Buffer</span>
                         </div>
                         <p className="text-[13px] text-muted-foreground leading-relaxed font-medium">Intelligence processing is strictly localized and non-custodial.</p>
                     </div>
-                    <div className="flex items-center gap-4 px-8 py-5 rounded-[2.5rem] bg-white/5 border border-white/5 hover:bg-white/10 transition-colors cursor-pointer" onClick={() => setIsAutoRunEnabled(!isAutoRunEnabled)}>
-                        <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${isAutoRunEnabled ? 'bg-accent-emerald border-accent-emerald' : 'border-white/20'}`}>
+                    <div className="flex items-center gap-4 px-8 py-5 rounded-[2.5rem] bg-slate-50/50 border border-border/10 hover:bg-slate-50 transition-colors cursor-pointer" onClick={() => setIsAutoRunEnabled(!isAutoRunEnabled)}>
+                        <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${isAutoRunEnabled ? 'bg-accent-emerald border-accent-emerald' : 'border-border'}`}>
                             {isAutoRunEnabled && <CheckCircle2 className="w-3.5 h-3.5 text-background" />}
                         </div>
                         <span className="text-xs font-black uppercase tracking-widest text-foreground/80">Auto-Run Diagnostic</span>
@@ -414,7 +414,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                   value={resumeText}
                   onChange={(e) => setResumeText(e.target.value)}
                   placeholder="Paste raw intent here for a deep-tissue semantic scan..."
-                  className="w-full h-48 bg-white/5 border border-white/10 rounded-[3rem] p-10 text-[15px] outline-none focus:border-primary/40 transition-all resize-none relative z-10 font-medium placeholder:text-muted-foreground/30"
+                  className="w-full h-48 bg-slate-50 border border-border/40 rounded-[3rem] p-10 text-[15px] outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all resize-none relative z-10 font-medium placeholder:text-muted-foreground/30"
               />
             </div>
 
@@ -437,12 +437,12 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                         <span className="text-6xl font-display font-black tracking-tighter text-foreground relative z-10">{result.overall_match}%</span>
                         <span className="text-[12px] font-black uppercase text-primary tracking-[0.4em] mt-3 relative z-10 opacity-70">Intelligence Match</span>
                         
-                        <div className="w-full h-1.5 bg-white/5 rounded-full mt-8 relative z-10 overflow-hidden">
+                        <div className="w-full h-1.5 bg-slate-100 rounded-full mt-8 relative z-10 overflow-hidden">
                             <motion.div 
-                              initial={{ width: 0 }}
-                              animate={{ width: `${result.overall_match}%` }}
-                              transition={{ duration: 1.5, ease: "easeOut" }}
-                              className="h-full bg-primary" 
+                               initial={{ width: 0 }}
+                               animate={{ width: `${result.overall_match}%` }}
+                               transition={{ duration: 1.5, ease: "easeOut" }}
+                               className="h-full bg-primary" 
                             />
                         </div>
                     </div>
@@ -473,7 +473,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {result.deductions.map((d, i) => (
-                            <div key={i} className="p-8 rounded-[2.5rem] bg-background/40 border border-white/5 flex flex-col justify-between group hover:border-red-500/20 transition-all duration-500 min-h-[160px]">
+                            <div key={i} className="p-8 rounded-[2.5rem] bg-white border border-border/40 flex flex-col justify-between group hover:border-red-500/20 hover:shadow-xl hover:shadow-red-500/5 transition-all duration-500 min-h-[160px]">
                                 <div className="space-y-3">
                                     <div className="flex justify-between items-start">
                                         <span className="text-[14px] font-bold text-foreground pr-4">{d.reason}</span>
@@ -513,7 +513,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             {(result.skill_matches || []).slice(0, 10).map((sm, i) => (
-                                <div key={i} className="flex flex-col gap-2.5 p-5 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all duration-500">
+                                <div key={i} className="flex flex-col gap-2.5 p-5 rounded-2xl bg-slate-50/50 border border-border/10 hover:bg-slate-50 transition-all duration-500">
                                     <div className="flex items-center justify-between">
                                         <span className="text-[13px] font-bold text-foreground/90 truncate">{sm.skill}</span>
                                         {getVerdictIcon(sm.verdict)}
@@ -544,7 +544,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                                 { action: "Optimize", description: "Quantify your achievements in core skill areas with hard metrics." },
                                 { action: "Inject", description: "Integrate specific JD keyword tokens into your professional summary." }
                             ]).map((d, i) => (
-                                <div key={i} className="flex gap-6 items-start p-6 rounded-[2rem] bg-white/5 border border-white/5 hover:bg-white/10 transition-all duration-500">
+                                <div key={i} className="flex gap-6 items-start p-6 rounded-[2rem] bg-white border border-border/10 hover:shadow-lg transition-all duration-500">
                                     <div className="w-8 h-8 rounded-xl bg-accent-emerald/10 flex items-center justify-center text-[13px] font-black text-accent-emerald border border-accent-emerald/20">{i+1}</div>
                                     <div className="space-y-1.5 pt-1">
                                         <span className="text-xs font-black uppercase text-foreground tracking-widest block">{d.action}</span>
