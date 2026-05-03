@@ -17,6 +17,7 @@ const JourneyScene = React.lazy(() => import('./JourneyScene'));
 gsap.registerPlugin(ScrollTrigger);
 
 export const JourneyRoadmap = () => {
+  console.log("JourneyRoadmap mounting...");
   const containerRef = useRef<HTMLDivElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
   const headlineRef = useRef<HTMLDivElement>(null);
