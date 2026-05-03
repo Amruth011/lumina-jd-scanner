@@ -103,7 +103,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Total Score & Grade */}
           <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-            <div className="glass-panel p-8 rounded-[3rem] flex flex-col items-center justify-center relative overflow-hidden group min-h-[400px]">
+            <div className="glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-white/20 p-8 rounded-[3rem] flex flex-col items-center justify-center relative overflow-hidden group min-h-[400px]">
                 <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                 <LuminaGauge 
                     value={grade.score} 
@@ -123,7 +123,7 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
 
           {/* Salary Range Card */}
           <div 
-            className="lg:col-span-4 glass-panel p-10 rounded-[3.5rem] flex flex-col justify-center space-y-10 border-accent-gold/10 relative overflow-hidden group cursor-pointer"
+            className="lg:col-span-4 glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-white/20 p-10 rounded-[3.5rem] flex flex-col justify-center space-y-10 relative overflow-hidden group cursor-pointer"
             onClick={handleCopySalary}
           >
                 <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-1000">

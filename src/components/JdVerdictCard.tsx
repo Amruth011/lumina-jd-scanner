@@ -38,7 +38,7 @@ export const JdVerdictCard = ({ grade }: JdVerdictCardProps) => {
     <motion.div 
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="glass-panel p-10 h-full relative overflow-hidden flex flex-col items-center justify-between"
+      className="glass-panel bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-white/20 rounded-[3rem] p-10 h-full relative overflow-hidden flex flex-col items-center justify-between"
     >
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-primary/5 rounded-full -mt-24 pointer-events-none" />
       
