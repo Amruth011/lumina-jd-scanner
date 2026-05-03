@@ -1,4 +1,5 @@
 # Logs
+.gemini/
 logs
 *.log
 npm-debug.log*
