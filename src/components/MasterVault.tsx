@@ -606,8 +606,8 @@ RETURN JSON FORMAT ONLY:
                 <div className="h-2 w-32 bg-white/10 rounded-full" />
                 <div className="h-2 w-16 bg-white/5 rounded-full" />
               </div>
-              <div className="absolute -bottom-4 -right-4 p-4 rounded-xl bg-primary shadow-xl">
-                <img src="/favicon.png" alt="" className="w-6 h-6" />
+              <div className="absolute -bottom-4 -right-4 p-4 rounded-xl bg-white shadow-xl border border-border/10">
+                <img src="/favicon.png" alt="" className="w-6 h-6 object-contain" />
               </div>
             </div>
           </div>
