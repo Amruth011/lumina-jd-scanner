@@ -16,6 +16,9 @@ export default defineConfig(({ mode }) => ({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
-    dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
+    dedupe: ["react", "react-dom", "three", "@react-three/fiber", "@react-three/drei"],
+  },
+  optimizeDeps: {
+    include: ["three", "@react-three/fiber", "@react-three/drei", "gsap"],
   },
 }));
