@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy } from "react";
+import { useState, useEffect, lazy, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Brain, Filter, LayoutDashboard, Search, LogOut, LogIn, Loader2, Save, BookmarkCheck, CheckCircle2, RefreshCw, ArrowRight, Shield, Zap, BarChart3, Briefcase, BrainCircuit, ShieldCheck, Info } from "lucide-react";
@@ -49,16 +49,18 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
 
   useEffect(() => { setSavedJdId(null); }, [results]);
   
+  const restorationStarted = useRef(false);
+
   // v2.9 Persistence: Restore results on mount if jdText exists
   useEffect(() => {
-    if (jdText.trim().length >= 20 && !results && !isScanning) {
-      // Small delay to ensure everything is ready
+    if (!loading && user && jdText.trim().length >= 20 && !results && !isScanning && !restorationStarted.current) {
+      restorationStarted.current = true;
       const timer = setTimeout(() => {
         handleDecode();
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [loading, user, results, isScanning]);
 
   // v2.9 Persistence: Save jdText to localStorage
   useEffect(() => {
@@ -235,23 +237,6 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
           >
             {results ? (
               <div className="space-y-12">
-                <div className="flex justify-between items-center bg-white border border-border/10 p-6 rounded-[2.5rem] shadow-sm">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-accent-blue/10 flex items-center justify-center text-accent-blue">
-                      <ShieldCheck size={20} />
-                    </div>
-                    <div>
-                      <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Strategic Analysis</h4>
-                      <p className="text-sm font-bold text-foreground">Gap Intelligence Active</p>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => handleTabSwitch("decode")}
-                    className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-slate-50 border border-border/10 text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 transition-all"
-                  >
-                    <LayoutDashboard size={14} className="text-primary" /> View Intelligence Dashboard
-                  </button>
-                </div>
 
                 <ResumeGapAnalyzer
                   skills={scavengeSkills(results.skills, results, jdText)}
@@ -297,23 +282,6 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
           >
             {results ? (
               <div className="space-y-12">
-                <div className="flex justify-between items-center bg-white border border-border/10 p-6 rounded-[2.5rem] shadow-sm">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-accent-emerald/10 flex items-center justify-center text-accent-emerald">
-                      <Zap size={20} />
-                    </div>
-                    <div>
-                      <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Resume Generation</h4>
-                      <p className="text-sm font-bold text-foreground">Drafting Engine Online</p>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => handleTabSwitch("decode")}
-                    className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-slate-50 border border-border/10 text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 transition-all"
-                  >
-                    <LayoutDashboard size={14} className="text-primary" /> View Intelligence Dashboard
-                  </button>
-                </div>
 
                 <ResumeGenerator
                   jdTitle={results.title}
