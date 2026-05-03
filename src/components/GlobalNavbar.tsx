@@ -48,7 +48,7 @@ export const GlobalNavbar = ({ activeTab, onTabChange }: GlobalNavbarProps) => {
         <div className="absolute inset-0 rounded-full bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/10 -z-10" />
         
           <Link to="/" className="flex items-center group pl-4 transition-transform hover:scale-105">
-            <LuminaLogo size={32} className="object-contain" />
+            <LuminaLogo size={120} className="object-contain" />
           </Link>
 
         {/* Global Tactical Tabs */}

@@ -425,7 +425,7 @@ const Index = () => {
       <footer className="bg-background border-t border-border/40 py-16 px-6">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center">
-            <LuminaLogo size={32} />
+            <LuminaLogo size={120} />
           </div>
           <p className="text-foreground/40 text-[10px] font-black font-display uppercase tracking-[0.4em] text-center md:text-left">
             Built for the top 0.1% of career strategists

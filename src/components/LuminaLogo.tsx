@@ -5,13 +5,13 @@ interface LuminaLogoProps {
   size?: number;
 }
 
-export const LuminaLogo = ({ className = "", size = 32 }: LuminaLogoProps) => {
+export const LuminaLogo = ({ className = "", size = 120 }: LuminaLogoProps) => {
   return (
     <img 
       src="/logo.png" 
       alt="Lumina"
-      style={{ height: size }}
-      className={`object-contain w-auto ${className}`}
+      style={{ width: size }}
+      className={`object-contain h-auto ${className}`}
     />
   );
 };
