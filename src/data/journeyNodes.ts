@@ -1,51 +1,42 @@
-export interface JourneyNode {
-  id: string;
-  step: string;
-  title: string;
-  description: string;
-  icon: string;
-  t: number; // position on curve (0 to 1)
-}
-
-export const journeyNodes: JourneyNode[] = [
+export const journeyNodes = [
   {
-    id: 'n1',
-    step: 'STEP 01',
-    title: 'YOU',
-    description: 'Raw candidate. Great talent. Zero visibility.',
-    icon: '👤',
+    id: 1,
+    label: "YOU",
+    emoji: "👤",
+    desc: "Raw candidate. Great talent. Zero visibility.",
+    align: "left",
     t: 0,
   },
   {
-    id: 'n2',
-    step: 'STEP 02',
-    title: 'JD DECODER',
-    description: 'Every hidden keyword. Every ATS requirement. Decoded.',
-    icon: '📄',
+    id: 2,
+    label: "JD DECODER",
+    emoji: "📄",
+    desc: "Every hidden keyword. Every ATS requirement. Decoded.",
+    align: "right",
     t: 0.25,
   },
   {
-    id: 'n3',
-    step: 'STEP 03',
-    title: 'GAP ANALYSIS',
-    description: 'Your gaps. Your strengths. Machine-precision clarity.',
-    icon: '🔬',
+    id: 3,
+    label: "GAP ANALYSIS",
+    emoji: "🔬",
+    desc: "Your gaps. Your strengths. Machine‑precision clarity.",
+    align: "left",
     t: 0.5,
   },
   {
-    id: 'n4',
-    step: 'STEP 04',
-    title: 'RESUME TAILOR',
-    description: 'ATS score: 42 → 94. Built to win.',
-    icon: '✍️',
+    id: 4,
+    label: "RESUME TAILOR",
+    emoji: "✍️",
+    desc: "ATS score: 42 → 94. Built to win.",
+    align: "right",
     t: 0.75,
   },
   {
-    id: 'n5',
-    step: 'STEP 05',
-    title: 'INTERVIEW WON',
-    description: 'Offer in hand. Top 0.1%. You made it.',
-    icon: '🏆',
-    t: 1.0,
+    id: 5,
+    label: "INTERVIEW WON",
+    emoji: "🏆",
+    desc: "Offer in hand. Top 0.1%. You made it.",
+    align: "center",
+    t: 1,
   },
 ];

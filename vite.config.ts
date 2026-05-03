@@ -19,6 +19,6 @@ export default defineConfig(({ mode }) => ({
     dedupe: ["react", "react-dom", "three", "@react-three/fiber", "@react-three/drei"],
   },
   optimizeDeps: {
-    include: ["three", "@react-three/fiber", "@react-three/drei", "gsap"],
+    include: ["three", "@react-three/fiber", "@react-three/drei", "gsap", "lenis", "canvas-confetti", "@react-spring/three"],
   },
 }));

@@ -1,190 +1,102 @@
-"use client";
-
-import React, { useMemo, useRef } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
-import { PerspectiveCamera, Grid, Float, Stars, Bloom, EffectComposer } from '@react-three/drei';
-import * as THREE from 'three';
-import { journeyNodes } from '@/data/journeyNodes';
-import JourneyNode from './JourneyNode';
-import JourneyCharacter from './JourneyCharacter';
+import React, { useRef, useEffect } from 'react';
+import { Canvas, useThree, extend } from '@react-three/fiber';
+import { EffectComposer, Bloom } from '@react-three/postprocessing';
+import { PerspectiveCamera, Vector3, CatmullRomCurve3 } from 'three';
+import { Road } from './Road';
+import { JourneyCharacter } from './JourneyCharacter';
+import { JourneyNode } from './JourneyNode';
+import { AmbientParticles } from './AmbientParticles';
+import { CityLights } from './CityLights';
+import { RoadEdgeParticles } from './RoadEdgeParticles';
+import { journeyNodes } from '../../data/journeyNodes';
 
 interface JourneySceneProps {
-  progress: number;
+  scrollProgressRef: React.MutableRefObject<number>;
 }
 
-export const JourneyScene = ({ progress }: JourneySceneProps) => {
-  const { mouse } = useThree();
-  const cameraRef = useRef<THREE.PerspectiveCamera>(null);
-  const roadGroupRef = useRef<THREE.Group>(null);
+export const JourneyScene: React.FC<JourneySceneProps> = ({ scrollProgressRef }) => {
+  const cameraRef = useRef<PerspectiveCamera>(null);
+  const mouse = useRef({ x: 0, y: 0 });
 
-  // Define the snake road curve
-  const curve = useMemo(() => {
-    return new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-5, 0, -8),
-      new THREE.Vector3(-2, 0, -5),
-      new THREE.Vector3(5, 0, -4),
-      new THREE.Vector3(3, 0, -1),
-      new THREE.Vector3(-5, 0, 0),
-      new THREE.Vector3(-2, 0, 3),
-      new THREE.Vector3(5, 0, 4),
-      new THREE.Vector3(2, 0, 6),
-      new THREE.Vector3(0, 0, 8),
-    ]);
+  // Camera drift & mouse parallax
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      mouse.current.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Road Particles
-  const particles = useMemo(() => {
-    const pts = [];
-    for (let i = 0; i < 80; i++) {
-      const p = curve.getPointAt(i / 80);
-      pts.push(p);
-    }
-    return pts;
-  }, [curve]);
+  useThree(({ camera }) => {
+    cameraRef.current = camera as PerspectiveCamera;
+  });
 
-  // City Lights / Background depth
-  const cityLights = useMemo(() => {
-    const lights = [];
-    for (let i = 0; i < 200; i++) {
-      lights.push({
-        position: [
-          (Math.random() - 0.5) * 60,
-          Math.random() * 10,
-          -20 - Math.random() * 30
-        ],
-        color: Math.random() > 0.5 ? '#10B981' : '#FFFFFF',
-        intensity: 0.5 + Math.random() * 1.5
-      });
-    }
-    return lights;
-  }, []);
-
-  useFrame((state) => {
-    if (cameraRef.current) {
-      // Camera breathing effect
-      const t = state.clock.getElapsedTime();
-      const driftY = Math.sin(t * 0.5) * 0.1;
-      
-      // Mouse parallax
-      const targetX = mouse.x * 0.5;
-      const targetY = 8 + mouse.y * 0.5;
-      
-      cameraRef.current.position.x += (targetX - cameraRef.current.position.x) * 0.05;
-      cameraRef.current.position.y += (targetY - cameraRef.current.position.y) * 0.05;
-      cameraRef.current.lookAt(0, 0, 0);
-
-      // FOV zoom for end node
-      const targetFOV = progress > 0.9 ? 44 : 50;
-      cameraRef.current.fov += (targetFOV - cameraRef.current.fov) * 0.05;
-      cameraRef.current.updateProjectionMatrix();
-    }
+  useThree(({ clock }) => {
+    const tick = () => {
+      const cam = cameraRef.current;
+      if (!cam) return;
+      // Slow sinusoidal Y‑rotation drift
+      const time = clock.getElapsedTime();
+      cam.rotation.y = Math.sin(time * 0.2) * (3 * Math.PI / 180); // ±3°
+      // Mouse parallax (small X/Y offsets)
+      cam.position.x += (mouse.current.x * 0.5 - cam.position.x) * 0.05;
+      cam.position.y += (mouse.current.y * 0.5 - cam.position.y) * 0.05;
+      requestAnimationFrame(tick);
+    };
+    tick();
   });
 
   return (
-    <>
-      <PerspectiveCamera 
-        ref={cameraRef} 
-        makeDefault 
-        position={[0, 8, 18]} 
-        fov={50} 
-      />
-
-      <color attach="background" args={['#060D14']} />
-      <fog attach="fog" args={['#060D14', 15, 35]} />
-
-      {/* Lighting */}
+    <Canvas
+      dpr={Math.min(window.devicePixelRatio, 1.5)}
+      frameloop="demand"
+      gl={{ antialias: true }}
+      camera={{ position: [0, 8, 18], fov: 50 }}
+    >
+      {/* Lights */}
       <ambientLight intensity={0.3} />
-      <pointLight position={[0, 5, 0]} intensity={40} color="#1E2A3A" />
-      <hemisphereLight args={['#10B981', '#060D14', 0.1]} />
-
-      {/* Background Ambience */}
-      <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-      {cityLights.map((light, i) => (
-        <mesh key={i} position={light.position as [number, number, number]}>
-          <boxGeometry args={[0.05, 0.05, 0.05]} />
-          <meshStandardMaterial color={light.color} emissive={light.color} emissiveIntensity={light.intensity} />
-        </mesh>
-      ))}
-
-      {/* Ground Plane */}
-      <Grid 
-        infiniteGrid 
-        fadeDistance={30} 
-        fadeStrength={5} 
-        cellSize={1} 
-        sectionSize={5} 
-        sectionColor="#10B981" 
-        sectionThickness={1} 
-        cellColor="#10B981" 
-        cellThickness={0.5} 
-        position={[0, -0.01, 0]} 
+      {/* The point light that follows the character will be added inside JourneyCharacter */}
+      <pointLight color="#1E2A3A" intensity={40} position={[0, 5, 0]} />
+      <spotLight
+        color="#ffffff"
+        intensity={60}
+        position={[0, 10, 0]}
+        angle={0.3}
+        penumbra={0.5}
+        castShadow
       />
+      <hemisphereLight skyColor="#10B981" groundColor="#060D14" intensity={0.1} />
+      {/* Fog */}
+      <fog attach="fog" args={['#060D14', 20, 60]} />
 
-      {/* The Road */}
-      <group ref={roadGroupRef}>
-        {/* Unlit path */}
-        <mesh>
-          <tubeGeometry args={[curve, 200, 0.18, 12, false]} />
-          <meshStandardMaterial 
-            color="#0F2A1E" 
-            emissive="#061A10" 
-            roughness={0.8} 
-            transparent 
-            opacity={0.8}
-          />
-        </mesh>
+      {/* Ground plane with grid */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[40, 40]} />
+        <meshStandardMaterial color="#060D14" roughness={1} metalness={0} />
+      </mesh>
+      <gridHelper args={[40, 40, '#10B981', '#10B981']} rotation={[-Math.PI / 2, 0, 0]} />
 
-        {/* Traveled path - built dynamically or using custom shader */}
-        {/* Simplified: just show a thin glowing wire for the traveled part */}
-        <mesh>
-           <tubeGeometry args={[curve, 200, 0.2, 12, false]} />
-           <meshStandardMaterial 
-             color="#10B981" 
-             emissive="#10B981" 
-             emissiveIntensity={0.6} 
-             transparent 
-             opacity={0.3} 
-             depthWrite={false}
-           />
-        </mesh>
+      {/* Road */}
+      <Road scrollProgressRef={scrollProgressRef} />
 
-        {/* Road Edge Particles */}
-        {particles.map((pt, i) => (
-          <Float key={i} speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
-            <mesh position={pt}>
-              <sphereGeometry args={[0.02, 8, 8]} />
-              <meshBasicMaterial color="#10B981" transparent opacity={0.4} />
-            </mesh>
-          </Float>
-        ))}
-      </group>
+      {/* Ambient particles */}
+      <AmbientParticles />
+      <CityLights />
+      <RoadEdgeParticles />
 
       {/* Character */}
-      <JourneyCharacter curve={curve} progress={progress} />
+      <JourneyCharacter scrollProgressRef={scrollProgressRef} />
 
       {/* Nodes */}
-      {journeyNodes.map((node, i) => (
-        <JourneyNode 
-          key={node.id}
-          position={curve.getPointAt(node.t)}
-          label={node.title}
-          step={node.step}
-          active={progress >= node.t}
-          isLast={i === journeyNodes.length - 1}
-        />
+      {journeyNodes.map((node) => (
+        <JourneyNode key={node.id} data={node} scrollProgressRef={scrollProgressRef} />
       ))}
 
-      {/* Effects */}
-      <EffectComposer disableNormalPass>
-        <Bloom 
-          luminanceThreshold={0.6} 
-          mipmapBlur 
-          intensity={0.8} 
-          radius={0.4} 
-        />
+      {/* Bloom post‑processing */}
+      <EffectComposer>
+        <Bloom intensity={0.8} luminanceThreshold={0.6} luminanceSmoothing={0.3} />
       </EffectComposer>
-    </>
+    </Canvas>
   );
 };
-
-export default JourneyScene;
