@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { tokens } from '@/styles/tokens';
+import { LuminaLogo } from '../LuminaLogo';
 
 export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -21,9 +22,8 @@ export const Navbar = () => {
     }`}>
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center gap-1">
-          <span className="text-2xl font-serif font-bold text-lumina-navy">Lumina</span>
-          <div className="w-2 h-2 rounded-full bg-lumina-teal shadow-[0_0_8px_#10B981]" />
+        <div className="flex items-center">
+          <LuminaLogo size={120} />
         </div>
 
         {/* Nav Links */}

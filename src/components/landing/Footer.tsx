@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Twitter, Linkedin, Github, Mail } from 'lucide-react';
+import { LuminaLogo } from '../LuminaLogo';
 
 export const Footer = () => {
   return (
@@ -10,10 +11,7 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8">
           {/* Brand Col */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="flex items-center gap-1">
-              <span className="text-2xl font-serif font-bold text-white">Lumina</span>
-              <div className="w-2 h-2 rounded-full bg-lumina-teal shadow-[0_0_8px_#10B981]" />
-            </div>
+            <LuminaLogo size={120} />
             <p className="text-white/40 font-body text-sm max-w-xs leading-relaxed">
               The world's most advanced intelligence engine for career strategists. Optimized for the top 0.1% of global engineering talent.
             </p>
