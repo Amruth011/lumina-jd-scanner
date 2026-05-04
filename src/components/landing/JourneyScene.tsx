@@ -23,6 +23,7 @@ export const JourneyScene: React.FC<JourneySceneProps> = ({ progressRef }) => {
   const { camera, mouse } = useThree();
   const roadRef = useRef<THREE.Mesh>(null);
   const traveledRoadRef = useRef<THREE.Mesh>(null);
+  const spotLightRef = useRef<THREE.SpotLight>(null);
   
   // Define the snake curve
   const curve = useMemo(() => {
@@ -63,6 +64,10 @@ export const JourneyScene: React.FC<JourneySceneProps> = ({ progressRef }) => {
     camera.position.x += (mouse.x * 2 - camera.position.x) * 0.05;
     camera.position.y += (8 + Math.sin(time) * 0.2 - camera.position.y) * 0.05;
     camera.lookAt(0, 0, 0);
+
+    if (spotLightRef.current) {
+      spotLightRef.current.intensity = progress > 0.95 ? 250 : 120;
+    }
 
     // Node 5 Celebration
     if (progress >= 0.99 && !window.confettiActive) {
@@ -115,8 +120,8 @@ export const JourneyScene: React.FC<JourneySceneProps> = ({ progressRef }) => {
       <ambientLight intensity={0.8} color="#10B981" />
       <pointLight position={[0, 5, 0]} intensity={100} color="#1E2A3A" />
       <spotLight 
+        ref={spotLightRef}
         position={[0, 10, 8]} 
-        intensity={progress > 0.95 ? 250 : 120} 
         color="#10B981" 
         angle={0.4}
         penumbra={1}
