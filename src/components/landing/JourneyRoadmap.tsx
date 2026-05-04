@@ -14,7 +14,9 @@ const JourneyRoadmap: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const progressBarRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef(0);
+  const [activeNodeIndex, setActiveNodeIndex] = useState(0);
 
   useGSAP(() => {
     // Pin section and track progress
@@ -25,7 +27,25 @@ const JourneyRoadmap: React.FC = () => {
       pin: true,
       scrub: 1.5,
       onUpdate: (self) => {
-        setScrollProgress(self.progress);
+        const p = self.progress;
+        progressRef.current = p;
+        
+        // Update progress bar DOM directly for performance
+        if (progressBarRef.current) {
+          progressBarRef.current.style.width = `${p * 100}%`;
+        }
+
+        // Only trigger React re-render when the active node changes
+        let newIndex = 0;
+        for (let i = 0; i < journeyNodes.length; i++) {
+          if (p >= journeyNodes[i].t) {
+            newIndex = i;
+          }
+        }
+        
+        if (newIndex !== activeNodeIndex) {
+          setActiveNodeIndex(newIndex);
+        }
       }
     });
 
@@ -64,8 +84,9 @@ const JourneyRoadmap: React.FC = () => {
         {/* Progress Bar */}
         <div className={styles.progressBarContainer}>
           <div 
+            ref={progressBarRef}
             className={styles.progressBar} 
-            style={{ width: `${scrollProgress * 100}%` }} 
+            style={{ width: "0%" }} 
           />
         </div>
 
@@ -90,13 +111,13 @@ const JourneyRoadmap: React.FC = () => {
               }}
               camera={{ position: [0, 8, 18], fov: 50 }}
             >
-              <JourneyScene progress={scrollProgress} />
+              <JourneyScene progressRef={progressRef} />
             </Canvas>
           </Suspense>
         </div>
 
         {/* Side Panel */}
-        <NodeContentPanel progress={scrollProgress} />
+        <NodeContentPanel activeIndex={activeNodeIndex} />
       </div>
 
       {/* Mobile Fallback - Static SVG */}

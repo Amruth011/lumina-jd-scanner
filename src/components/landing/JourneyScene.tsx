@@ -16,10 +16,10 @@ import confetti from 'canvas-confetti';
 import gsap from 'gsap';
 
 interface JourneySceneProps {
-  progress: number;
+  progressRef: React.MutableRefObject<number>;
 }
 
-export const JourneyScene: React.FC<JourneySceneProps> = ({ progress }) => {
+export const JourneyScene: React.FC<JourneySceneProps> = ({ progressRef }) => {
   const { camera, mouse } = useThree();
   const roadRef = useRef<THREE.Mesh>(null);
   const traveledRoadRef = useRef<THREE.Mesh>(null);
@@ -41,6 +41,7 @@ export const JourneyScene: React.FC<JourneySceneProps> = ({ progress }) => {
 
   // Update traveled road geometry
   useFrame(() => {
+    const progress = progressRef.current;
     if (traveledRoadRef.current && progress > 0) {
       // We rebuild the tube for the traveled path
       // This is the requested method for the "glowing traveled road"
@@ -174,7 +175,7 @@ export const JourneyScene: React.FC<JourneySceneProps> = ({ progress }) => {
       ))}
 
       {/* The Character */}
-      <JourneyCharacter curve={curve} progress={progress} />
+      <JourneyCharacter curve={curve} progressRef={progressRef} />
 
       {/* The Nodes */}
       {journeyNodes.map((node, index) => (
@@ -183,7 +184,8 @@ export const JourneyScene: React.FC<JourneySceneProps> = ({ progress }) => {
           position={curve.getPointAt(node.t)}
           number={(index + 1).toString().padStart(2, '0')}
           label={node.title}
-          isActive={progress >= node.t}
+          progressRef={progressRef}
+          nodeT={node.t}
           isSpecial={index === 4}
         />
       ))}

@@ -1,6 +1,7 @@
 import React from 'react';
 import Navbar from '@/components/landing/Navbar';
 import Hero from '@/components/landing/Hero';
+import { ProductPreview } from '@/components/landing/ProductPreview';
 import SocialProofBar from '@/components/landing/SocialProofBar';
 import ProblemSection from '@/components/landing/ProblemSection';
 import HowItWorks from '@/components/landing/HowItWorks';
@@ -18,6 +19,7 @@ const Index = () => {
     <main className="min-h-screen bg-[#F4F5F7] selection:bg-[#10B981]/30 selection:text-[#1E2A3A]">
       <Navbar />
       <Hero />
+      <ProductPreview />
       <SocialProofBar />
       <ProblemSection />
       <HowItWorks />

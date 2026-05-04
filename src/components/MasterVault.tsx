@@ -7,6 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
+import { UsageMeter } from "./ui/UsageMeter";
+import { useUsage } from "@/hooks/useUsage";
 import type { VaultItem, VaultItemType, UserProfileWithVault } from "@/types/jd";
 
 const getFieldLabels = (type?: VaultItemType) => {
@@ -71,6 +73,7 @@ const calculateCompletion = (profile: UserProfileWithVault | null, items: VaultI
 export const MasterVault = () => {
   // Version: 1.0.1 - Force build to resolve production ReferenceError
   const { user, loading: authLoading } = useAuth();
+  const { scansUsed, scansTotal, tailorsUsed, tailorsTotal, refreshUsage } = useUsage();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState<VaultItemType | 'profile'>('profile');
   const [items, setItems] = useState<VaultItem[]>([]);
@@ -529,19 +532,26 @@ RETURN JSON FORMAT ONLY:
       </div>
 
       {/* ── READINESS PROGRESS BAR (RELOCATED) ── */}
-      <div className="space-y-6 pt-4">
-        <div className="flex items-center gap-4">
-          <div className="flex-1 h-3 w-full max-w-lg bg-white/5 rounded-full overflow-hidden border border-white/5 shadow-inner">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${calculateCompletion(profile, items)}%` }}
-              className="h-full bg-gradient-to-r from-primary via-primary/80 to-primary shadow-[0_0_20px_rgba(59,130,246,0.5)]"
-            />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-4">
+        <div className="space-y-6">
+          <div className="flex items-center gap-4">
+            <div className="flex-1 h-3 w-full bg-white/5 rounded-full overflow-hidden border border-white/5 shadow-inner">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${calculateCompletion(profile, items)}%` }}
+                className="h-full bg-gradient-to-r from-primary via-primary/80 to-primary shadow-[0_0_20px_rgba(59,130,246,0.5)]"
+              />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[11px] font-black uppercase tracking-[0.2em] text-primary">{calculateCompletion(profile, items)}% Integrity</span>
+              <span className="text-[8px] font-bold text-muted-foreground uppercase">Readiness Signal</span>
+            </div>
           </div>
-          <div className="flex flex-col">
-            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-primary">{calculateCompletion(profile, items)}% Integrity</span>
-            <span className="text-[8px] font-bold text-muted-foreground uppercase">Readiness Signal</span>
-          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-8">
+          <UsageMeter label="Intelligence Scans" used={scansUsed} total={scansTotal} color="#10B981" />
+          <UsageMeter label="Elite Tailorings" used={tailorsUsed} total={tailorsTotal} color="#3B82F6" />
         </div>
       </div>
 
@@ -584,7 +594,7 @@ RETURN JSON FORMAT ONLY:
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isSyncing}
-                className="group relative flex items-center gap-4 px-10 py-5 rounded-2xl bg-black text-white text-xs font-black uppercase tracking-[0.2em] shadow-2xl hover:scale-105 active:scale-95 disabled:opacity-50 transition-all overflow-hidden border border-white/10"
+                className="group relative flex items-center gap-4 px-10 py-5 rounded-2xl bg-lumina-navy text-white text-xs font-black uppercase tracking-[0.2em] shadow-2xl hover:scale-105 active:scale-95 disabled:opacity-50 transition-all overflow-hidden border border-white/10"
               >
                 <div className="absolute inset-0 bg-primary opacity-0 group-hover:opacity-10 transition-opacity" />
                 {isSyncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Import className="w-5 h-5 text-primary group-hover:scale-125 transition-transform" />}

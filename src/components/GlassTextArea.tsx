@@ -26,7 +26,7 @@ export const GlassTextArea = ({ value, onChange, isScanning }: GlassTextAreaProp
 
         <div className="relative rounded-2xl overflow-hidden">
           {/* Line numbers gutter */}
-          <div className="absolute left-0 top-0 bottom-0 w-12 bg-muted/20 border-r border-border/20 pointer-events-none flex flex-col items-end pt-6 pr-3 gap-[1px]">
+          <div className="absolute left-0 top-0 bottom-0 w-12 bg-muted/20 border-r border-border/20 pointer-events-none hidden sm:flex flex-col items-end pt-6 pr-3 gap-[1px]">
             {Array.from({ length: 12 }).map((_, i) => (
               <span key={i} className="text-[10px] font-mono font-bold text-muted-foreground/60 leading-[1.625rem]">
                 {String(i + 1).padStart(2, '0')}
@@ -38,7 +38,7 @@ export const GlassTextArea = ({ value, onChange, isScanning }: GlassTextAreaProp
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder="Paste complete 'About the Job' for objective-grade analysis extraction..."
-            className="w-full h-80 bg-transparent rounded-2xl pl-16 pr-8 py-6 text-foreground placeholder:text-muted-foreground/70 resize-none focus:outline-none text-[13.5px] leading-relaxed transition-all font-mono font-medium"
+            className="w-full h-80 bg-transparent rounded-2xl pl-6 sm:pl-16 pr-8 py-6 text-foreground placeholder:text-muted-foreground/70 resize-none focus:outline-none text-[13.5px] leading-relaxed transition-all font-mono font-medium"
             disabled={isScanning}
           />
         </div>

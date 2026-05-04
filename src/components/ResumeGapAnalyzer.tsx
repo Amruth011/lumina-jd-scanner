@@ -9,6 +9,10 @@ import { saveApplication, type TrackedApplication } from "@/hooks/useApplication
 import type { Skill, ResumeGapResult, ResumeDeduction } from "@/types/jd";
 import { computeDeterministicScore } from "@/lib/deterministicScorer";
 import { getCachedResumeAnalysis, setCachedResumeAnalysis } from "@/lib/resumeAnalysisCache";
+import { MatchHero } from "./gap-analysis/MatchHero";
+import { ComparisonMatrix } from "./gap-analysis/ComparisonMatrix";
+import { GapRecommendations } from "./gap-analysis/GapRecommendations";
+import { DashboardSkeleton } from "./dashboard/DashboardSkeleton";
 import jsPDF from "jspdf";
 
 interface ResumeGapAnalyzerProps {
@@ -419,156 +423,47 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
             </div>
 
             {isAnalyzing && (
-                <div className="py-24 text-center space-y-10 glass-panel rounded-[3rem] border border-primary/20 bg-primary/5 relative overflow-hidden mt-12">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,var(--primary)_0%,transparent_70%)] opacity-10 animate-pulse" />
-                    <Loader2 className="w-20 h-20 text-primary animate-spin mx-auto opacity-40" />
-                    <div className="space-y-3">
-                      <h4 className="text-4xl font-serif italic text-foreground tracking-tight">Processing Intelligence Pulse</h4>
-                      <p className="text-xs uppercase font-black tracking-[0.4em] text-primary/40">Aligning experience vs job requirements</p>
-                    </div>
-                </div>
+              <div className="mt-12">
+                <DashboardSkeleton />
+              </div>
             )}
 
             {!isAnalyzing && result && (
-              <div className="space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-                {/* ── CINEMATIC SCORE OVERVIEW ── */}
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                    <div className="md:col-span-4 glass-panel p-10 flex flex-col items-center justify-center text-center relative overflow-hidden group">
-                        <span className="text-6xl font-display font-black tracking-tighter text-foreground relative z-10">{result.overall_match}%</span>
-                        <span className="text-[12px] font-black uppercase text-primary tracking-[0.4em] mt-3 relative z-10 opacity-70">Intelligence Match</span>
-                        
-                        <div className="w-full h-1.5 bg-slate-100 rounded-full mt-8 relative z-10 overflow-hidden">
-                            <motion.div 
-                               initial={{ width: 0 }}
-                               animate={{ width: `${result.overall_match}%` }}
-                               transition={{ duration: 1.5, ease: "easeOut" }}
-                               className="h-full bg-primary" 
-                            />
-                        </div>
-                    </div>
-                    
-                    <div className="md:col-span-8 glass-panel p-10 rounded-[2.5rem] border-white/5 flex flex-col justify-center relative overflow-hidden">
-                         <div className="flex items-center gap-3 mb-4 opacity-40">
-                            <MessageSquare size={18} />
-                            <span className="text-[12px] font-black uppercase tracking-widest">Executive Summary</span>
-                         </div>
-                         <p className="text-[17px] font-medium text-foreground/90 leading-relaxed font-serif italic">
-                            &ldquo;{result.summary}&rdquo;
-                         </p>
-                    </div>
-                </div>
+              <div className="space-y-16 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+                <MatchHero score={result.overall_match} summary={result.summary} />
 
-                {/* ── GAP DIAGNOSTIC ── */}
-                {result.deductions && result.deductions.length > 0 && (
-                  <div className="glass-panel p-10 lg:p-12 rounded-[3.5rem] border-red-500/10 bg-red-500/[0.02] space-y-10">
-                    <div className="space-y-3">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2.5 rounded-2xl bg-red-500/10 text-red-500">
-                                <Zap size={20} />
-                            </div>
-                            <h4 className="text-3xl font-serif italic text-foreground">Critical Misalignments</h4>
-                        </div>
-                        <p className="text-[12px] uppercase font-black tracking-widest text-red-500/70">Strategic Gaps & Nice-to-Have Bonus Opportunities</p>
-                    </div>
+                <div className="space-y-12">
+                  <ComparisonMatrix 
+                    items={(result.skill_matches || []).map(sm => ({
+                      skill: sm.skill,
+                      required: true, // Assuming all skills in result are high-priority
+                      present: sm.match_percent > 50,
+                      evidence: sm.note
+                    }))}
+                  />
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {result.deductions.map((d, i) => (
-                            <div key={i} className="p-8 rounded-[2.5rem] bg-white border border-border/40 flex flex-col justify-between group hover:border-red-500/20 hover:shadow-xl hover:shadow-red-500/5 transition-all duration-500 min-h-[160px]">
-                                <div className="space-y-3">
-                                    <div className="flex justify-between items-start">
-                                        <span className="text-[14px] font-bold text-foreground pr-4">{d.reason}</span>
-                                        <span className="text-[12px] text-red-500 font-black px-3 py-1 rounded-xl bg-red-500/10 border border-red-500/20 whitespace-nowrap">-{d.percent}%</span>
-                                    </div>
-                                    <p className="text-[12px] text-muted-foreground leading-relaxed font-medium">This deficit weakens your semantic alignment score and reduces your probability of clearing automated clinical screening protocols.</p>
-                                </div>
-                                
-                                {d.fix_snippet && (
-                                  <div className="mt-6 pt-6 flex items-center justify-between group/fix">
-                                      <span className="text-[12px] font-black uppercase text-accent-blue tracking-widest opacity-80">Strategic Counter</span>
-                                      <button 
-                                        onClick={() => handleCopyBullet(d.fix_snippet!)} 
-                                        className="flex items-center gap-2 text-xs font-bold text-accent-blue hover:text-white transition-colors"
-                                      >
-                                          Copy Injection <Copy size={14} />
-                                      </button>
-                                  </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* ── DETAIL GRIDS ── */}
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-                    {/* Skills Breakdown */}
-                    <div className="md:col-span-7 glass-panel p-10 rounded-[3rem] border-white/5 space-y-8">
-                        <div className="flex items-center justify-between">
-                            <div className="space-y-2">
-                                <div className="flex items-center gap-3 text-accent-emerald">
-                                    <ShieldCheck size={18} />
-                                    <span className="text-xs uppercase font-black tracking-widest opacity-80">Skill Signature Match</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {(result.skill_matches || []).slice(0, 10).map((sm, i) => (
-                                <div key={i} className="flex flex-col gap-2.5 p-5 rounded-2xl bg-slate-50/50 border border-border/10 hover:bg-slate-50 transition-all duration-500">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-[13px] font-bold text-foreground/90 truncate">{sm.skill}</span>
-                                        {getVerdictIcon(sm.verdict)}
-                                    </div>
-                                    <div className="flex items-end justify-between">
-                                      <div className="flex-1 mr-4 h-1 bg-foreground/5 rounded-full overflow-hidden">
-                                        <div className="h-full bg-accent-emerald/40" style={{ width: `${sm.match_percent}%` }} />
-                                      </div>
-                                      <span className="text-[12px] font-black text-foreground/30">{sm.match_percent}%</span>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Action Roadmap */}
-                    <div className="md:col-span-5 glass-panel p-10 rounded-[3rem] bg-accent-blue/[0.02] border-accent-blue/10 space-y-10">
-                        <div className="space-y-3">
-                            <div className="flex items-center gap-3 text-accent-emerald">
-                                <TrendingUp size={20} />
-                                <h4 className="text-2xl font-serif italic text-foreground">Action Roadmap</h4>
-                            </div>
-                            <p className="text-xs uppercase font-black tracking-widest text-accent-emerald/40">Strategic directives for 100% match</p>
-                        </div>
-                        
-                        <div className="space-y-6">
-                            {(result.actionable_directives?.length ? result.actionable_directives : [
-                                { action: "Optimize", description: "Quantify your achievements in core skill areas with hard metrics." },
-                                { action: "Inject", description: "Integrate specific JD keyword tokens into your professional summary." }
-                            ]).map((d, i) => (
-                                <div key={i} className="flex gap-6 items-start p-6 rounded-[2rem] bg-white border border-border/10 hover:shadow-lg transition-all duration-500">
-                                    <div className="w-8 h-8 rounded-xl bg-accent-emerald/10 flex items-center justify-center text-[13px] font-black text-accent-emerald border border-accent-emerald/20">{i+1}</div>
-                                    <div className="space-y-1.5 pt-1">
-                                        <span className="text-xs font-black uppercase text-foreground tracking-widest block">{d.action}</span>
-                                        <p className="text-[14px] text-muted-foreground leading-relaxed font-medium">{d.description}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                  <GapRecommendations 
+                    recommendations={(result.actionable_directives || []).map(d => ({
+                      title: d.action,
+                      description: d.description,
+                      type: "strategy" as const
+                    }))}
+                  />
                 </div>
 
                 {/* ── FINAL ACTIONS ── */}
                 <div className="mt-20 flex flex-col items-center gap-10">
-                    <button 
-                      onClick={handleAddToTracker} 
-                      disabled={addedToTracker} 
-                      className="px-16 py-7 rounded-full bg-lumina-teal text-white font-black uppercase tracking-[0.4em] text-[13px] hover:scale-110 active:scale-95 transition-all flex items-center gap-5 group shadow-2xl shadow-teal-500/20"
-                    >
-                      {addedToTracker ? <CheckCircle2 className="w-6 h-6" /> : <Plus className="w-6 h-6 group-hover:rotate-90 transition-transform" />}
-                      {addedToTracker ? "Application Tracked" : "Initiate Pipeline Tracking"}
-                    </button>
-                    <button onClick={handleExportPDF} className="text-xs font-black uppercase tracking-[0.5em] text-muted-foreground hover:text-foreground transition-all duration-500 pb-1">
-                      Download Intelligence Strategy
-                    </button>
+                  <button 
+                    onClick={handleAddToTracker} 
+                    disabled={addedToTracker} 
+                    className="px-16 py-7 rounded-full bg-[#10B981] text-[#1E2A3A] font-black uppercase tracking-[0.4em] text-[13px] hover:scale-110 active:scale-95 transition-all flex items-center gap-5 group shadow-2xl shadow-[#10B981]/20"
+                  >
+                    {addedToTracker ? <CheckCircle2 className="w-6 h-6" /> : <Plus className="w-6 h-6 group-hover:rotate-90 transition-transform" />}
+                    {addedToTracker ? "Application Tracked" : "Initiate Pipeline Tracking"}
+                  </button>
+                  <button onClick={handleExportPDF} className="text-xs font-display font-bold uppercase tracking-[0.5em] text-[#1E2A3A]/40 hover:text-[#1E2A3A] transition-all duration-500 pb-1 border-b border-transparent hover:border-[#1E2A3A]/10">
+                    Download Intelligence Strategy
+                  </button>
                 </div>
               </div>
             )}

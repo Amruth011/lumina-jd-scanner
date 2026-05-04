@@ -37,8 +37,8 @@ export const ProblemSection = () => {
         {/* Left Column: Stats */}
         <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="md:col-span-2">
-            <h2 className="text-5xl md:text-7xl font-serif font-bold text-lumina-navy leading-tight mb-8">
-              The ATS Black Hole <br /> <span className="italic text-lumina-teal">Is Real.</span>
+            <h2 className="text-5xl md:text-7xl font-serif italic font-bold text-lumina-navy leading-tight mb-8">
+              The ATS Black Hole <br /> <span className="text-lumina-teal">Is Real.</span>
             </h2>
           </div>
           <StatCard value={75} suffix="%" label="resumes never seen by humans" />

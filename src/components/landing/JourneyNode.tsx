@@ -9,7 +9,8 @@ interface JourneyNodeProps {
   position: THREE.Vector3;
   number: string;
   label: string;
-  isActive: boolean;
+  progressRef: React.MutableRefObject<number>;
+  nodeT: number;
   isSpecial?: boolean;
 }
 
@@ -17,7 +18,8 @@ export const JourneyNode: React.FC<JourneyNodeProps> = ({
   position, 
   number, 
   label, 
-  isActive,
+  progressRef,
+  nodeT,
   isSpecial 
 }) => {
   const meshRef = useRef<THREE.Group>(null);
@@ -25,6 +27,7 @@ export const JourneyNode: React.FC<JourneyNodeProps> = ({
   const ringRef = useRef<THREE.Mesh>(null);
   const lightRef = useRef<THREE.PointLight>(null);
   
+  const [isActive, setIsActive] = useState(false);
   const [hasActivated, setHasActivated] = useState(false);
 
   // Spring for scaling the platform
@@ -61,6 +64,13 @@ export const JourneyNode: React.FC<JourneyNodeProps> = ({
   }, [isActive, hasActivated, isSpecial]);
 
   useFrame((state) => {
+    const p = progressRef.current;
+    if (p >= nodeT && !isActive) {
+      setIsActive(true);
+    } else if (p < nodeT && isActive) {
+      setIsActive(false);
+    }
+
     if (isActive && ringRef.current) {
       // Sonar ping effect
       const t = (state.clock.elapsedTime * 0.8) % 1;
@@ -120,7 +130,7 @@ export const JourneyNode: React.FC<JourneyNodeProps> = ({
       {/* HTML Labels */}
       <Html position={[0, 2.2, 0]} center distanceFactor={10}>
         <div style={{ 
-          fontFamily: 'JetBrains Mono', 
+          fontFamily: 'var(--font-mono)', 
           color: '#10B981', 
           fontSize: '14px',
           fontWeight: 'bold',
@@ -132,7 +142,7 @@ export const JourneyNode: React.FC<JourneyNodeProps> = ({
       
       <Html position={[0, -0.8, 0]} center distanceFactor={10}>
         <div style={{ 
-          fontFamily: 'Inter', 
+          fontFamily: 'var(--font-body)', 
           color: 'white', 
           fontSize: '12px',
           whiteSpace: 'nowrap',

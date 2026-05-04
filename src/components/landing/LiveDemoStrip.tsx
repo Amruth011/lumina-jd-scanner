@@ -23,7 +23,7 @@ export const LiveDemoStrip = () => {
   return (
     <section className="bg-lumina-bg py-32 px-6">
       <div className="max-w-7xl mx-auto space-y-12">
-        <h2 className="text-4xl md:text-5xl font-serif font-bold text-lumina-navy text-center">See It In <span className="italic text-lumina-teal">10 Seconds.</span></h2>
+        <h2 className="text-4xl md:text-5xl font-serif italic font-bold text-lumina-navy text-center">See It In <span className="text-lumina-teal">10 Seconds.</span></h2>
         
         <div className="bg-lumina-navy rounded-[3rem] p-8 md:p-12 shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left: Input */}
@@ -57,7 +57,7 @@ export const LiveDemoStrip = () => {
                         transition={{ duration: 2, delay: 2 }}
                       />
                    </svg>
-                   <span className="absolute text-2xl font-serif font-bold text-lumina-teal">94</span>
+                   <span className="absolute text-2xl font-display font-bold text-lumina-teal">94</span>
                 </div>
                 <p className="text-center text-[10px] text-white/40 font-display mt-2 uppercase tracking-widest">Match Score</p>
              </div>

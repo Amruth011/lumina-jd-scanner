@@ -62,7 +62,7 @@ const FeatureCard = ({ feature, index }: { feature: Feature, index: number }) =>
         {feature.icon}
       </div>
       <div className="space-y-4">
-        <h3 className="text-2xl md:text-3xl font-serif font-bold text-lumina-navy">{feature.title}</h3>
+        <h3 className="text-2xl md:text-3xl font-display font-bold text-lumina-navy tracking-tight">{feature.title}</h3>
         <p className="text-lumina-navy/60 font-body leading-relaxed">
           {feature.description}
         </p>
@@ -77,7 +77,7 @@ export const FeaturesGrid = () => {
       <div className="max-w-7xl mx-auto space-y-20">
         <div className="text-center space-y-6 max-w-3xl mx-auto">
           <span className="text-lumina-teal font-display font-bold text-xs uppercase tracking-[0.3em]">Total Intelligence Ecosystem</span>
-          <h2 className="text-5xl md:text-7xl font-serif font-bold text-lumina-navy">Everything you need to <span className="italic text-lumina-teal">beat the system.</span></h2>
+          <h2 className="text-5xl md:text-7xl font-serif italic font-bold text-lumina-navy">Everything you need to <span className="text-lumina-teal">beat the system.</span></h2>
           <p className="text-lg md:text-xl text-lumina-navy/60 font-body">Not just keyword stuffing — real, strategic career intelligence built for the most ambitious engineers.</p>
         </div>
 

@@ -9,25 +9,14 @@ import { GoalAnim } from './MiniAnimations/GoalAnim';
 import { User } from 'lucide-react';
 
 interface NodeContentPanelProps {
-  progress: number;
+  activeIndex: number;
 }
 
-export const NodeContentPanel: React.FC<NodeContentPanelProps> = ({ progress }) => {
-  // Determine which node is currently "active" based on progress
-  const activeNodeIndex = useMemo(() => {
-    let index = 0;
-    for (let i = 0; i < journeyNodes.length; i++) {
-      if (progress >= journeyNodes[i].t) {
-        index = i;
-      }
-    }
-    return index;
-  }, [progress]);
-
-  const activeNode = journeyNodes[activeNodeIndex];
+export const NodeContentPanel: React.FC<NodeContentPanelProps> = ({ activeIndex }) => {
+  const activeNode = journeyNodes[activeIndex];
 
   const renderAnimation = () => {
-    switch (activeNodeIndex) {
+    switch (activeIndex) {
       case 0:
         return (
           <div className={styles.avatarPulse}>
@@ -74,7 +63,7 @@ export const NodeContentPanel: React.FC<NodeContentPanelProps> = ({ progress }) 
         {journeyNodes.map((_, i) => (
           <div 
             key={i} 
-            className={`${styles.dot} ${i === activeNodeIndex ? styles.dotActive : ''}`} 
+            className={`${styles.dot} ${i === activeIndex ? styles.dotActive : ''}`} 
           />
         ))}
       </div>

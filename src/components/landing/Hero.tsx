@@ -9,6 +9,35 @@ import type { Engine } from "@tsparticles/engine";
 import Hero3DCard from './Hero3DCard';
 import { wordFadeIn } from '@/lib/animations';
 
+const MagneticButton = ({ children }: { children: React.ReactNode }) => {
+  const ref = React.useRef<HTMLDivElement>(null);
+  const [position, setPosition] = React.useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const { clientX, clientY } = e;
+    const { left, top, width, height } = ref.current?.getBoundingClientRect() || { left: 0, top: 0, width: 0, height: 0 };
+    const x = clientX - (left + width / 2);
+    const y = clientY - (top + height / 2);
+    setPosition({ x: x * 0.15, y: y * 0.15 });
+  };
+
+  const handleMouseLeave = () => {
+    setPosition({ x: 0, y: 0 });
+  };
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      animate={{ x: position.x, y: position.y }}
+      transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
+    >
+      {children}
+    </motion.div>
+  );
+};
+
 export const Hero = () => {
   const particlesInit = useCallback(async (engine: Engine) => {
     await loadSlim(engine);
@@ -76,8 +105,8 @@ export const Hero = () => {
         </motion.div>
 
         {/* Headline */}
-        <h1 className="text-6xl md:text-[110px] font-serif font-bold text-lumina-navy leading-[0.95] tracking-tight max-w-4xl mx-auto">
-          Land in the <span className="italic text-lumina-teal">top 0.1%</span>
+        <h1 className="text-6xl md:text-[110px] font-serif italic font-bold text-lumina-navy leading-[0.95] tracking-tight max-w-5xl mx-auto">
+          Land in the <span className="text-lumina-teal">top 0.1%</span>
         </h1>
 
         {/* Subheadline */}
@@ -95,53 +124,37 @@ export const Hero = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.8 }}
+          className="flex flex-col items-center gap-8"
         >
-         <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-10 relative z-10">
-          <Link to="/dashboard" className="w-full sm:w-auto">
-            <button className="w-full sm:w-auto px-12 py-5 bg-lumina-navy text-white font-bold rounded-full transition-all hover:scale-105 active:scale-95 shadow-xl flex items-center justify-center gap-3 group">
-              DEPLOY ENGINE 
-              <span className="text-lumina-teal group-hover:translate-x-1 transition-transform font-bold text-xl">→</span>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+            <Link to="/dashboard">
+              <MagneticButton>
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="px-9 py-4 bg-[#10B981] text-[#1E2A3A] font-semibold font-body rounded-full text-lg shadow-[0_20px_50px_rgba(16,185,129,0.2)] transition-all flex items-center gap-2 group"
+                >
+                  Analyze My Resume Free <span className="group-hover:translate-x-1 transition-transform">→</span>
+                </motion.button>
+              </MagneticButton>
+            </Link>
+            <button className="px-9 py-4 border-1.5 border-[#10B981] text-[#10B981] font-semibold font-body rounded-full text-lg flex items-center gap-2 hover:bg-[#10B981]/5 transition-all">
+              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+              Watch 90s Demo
             </button>
-          </Link>
-          <Link to="/dashboard" className="w-full sm:w-auto">
-            <button className="w-full sm:w-auto px-12 py-5 bg-white border border-lumina-navy/10 text-lumina-navy font-bold rounded-full transition-all hover:bg-lumina-navy/5 shadow-sm">
-              TRY WITH SAMPLE RESUME
-            </button>
-          </Link>
-        </div>
-        </motion.div>
-
-        {/* Social Proof Strip */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 1 }}
-          className="pt-10 space-y-8"
-        >
-          <div className="flex items-center justify-center -space-x-3 mb-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-lumina-navy/10 flex items-center justify-center overflow-hidden">
-                <div className={`w-full h-full bg-gradient-to-br ${i === 1 ? 'from-lumina-navy to-lumina-teal' : i === 2 ? 'from-lumina-teal to-lumina-navy' : 'from-blue-500 to-teal-400'}`} />
-              </div>
-            ))}
-            <div className="pl-6 text-sm font-body font-bold text-lumina-navy">
-              <span className="text-lumina-navy">1,240+ Scientists</span> <span className="text-lumina-navy/40 font-medium">already deployed</span>
-            </div>
           </div>
 
-          <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-4 text-[10px] font-display font-bold text-lumina-navy/30 tracking-[0.15em] uppercase">
-            <div className="flex items-center gap-2">
-              <span className="text-lumina-teal">✓</span> NO DATA SOLD
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-lumina-teal">✓</span> ~25S RESULTS
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-lumina-teal">✓</span> FREE TO START
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-lumina-teal">✓</span> 0.1% CAREER OUTCOMES
-            </div>
+          {/* Social Proof Microtext */}
+          <div className="flex flex-col items-center gap-4">
+            <p className="font-display text-[11px] md:text-[13px] text-[#1E2A3A]/40 flex flex-col md:flex-row items-center gap-2 md:gap-3">
+              <span className="whitespace-nowrap">94,000+ resumes analyzed</span>
+              <span className="hidden md:block w-1.5 h-1.5 rounded-full bg-[#10B981] animate-logo-pulse" />
+              <span className="whitespace-nowrap">3.2× avg interview rate</span>
+              <span className="hidden md:block w-1.5 h-1.5 rounded-full bg-[#10B981] animate-logo-pulse" />
+              <span className="whitespace-nowrap">Used at Google, Meta, Amazon</span>
+            </p>
           </div>
         </motion.div>
 

@@ -5,16 +5,18 @@ import { Trail, Float } from '@react-three/drei';
 
 interface JourneyCharacterProps {
   curve: CatmullRomCurve3;
-  progress: number;
+  progressRef: React.MutableRefObject<number>;
 }
 
-export const JourneyCharacter: React.FC<JourneyCharacterProps> = ({ curve, progress }) => {
+export const JourneyCharacter: React.FC<JourneyCharacterProps> = ({ curve, progressRef }) => {
   const meshRef = useRef<Mesh>(null);
   const ringRef = useRef<Mesh>(null);
   
   // Base bobbing and floating handled by Float component, but we need manual position
   useFrame((state) => {
     if (!meshRef.current) return;
+    
+    const progress = progressRef.current;
     
     // Get position on curve
     const pos = curve.getPointAt(progress);

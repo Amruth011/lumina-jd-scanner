@@ -52,7 +52,7 @@ export const GlobalNavbar = ({ activeTab, onTabChange }: GlobalNavbarProps) => {
           </Link>
 
         {/* Global Tactical Tabs */}
-        <div className="flex items-center gap-1.5 bg-slate-50 p-1 rounded-full border border-border/10 shadow-inner overflow-x-auto no-scrollbar max-w-[50%] md:max-w-none">
+        <div className="flex items-center gap-1.5 bg-slate-50 p-1 rounded-full border border-border/10 shadow-inner overflow-x-auto no-scrollbar flex-1 md:flex-none">
           {tabs.map((tab) => (
             <button 
               key={tab.key} 

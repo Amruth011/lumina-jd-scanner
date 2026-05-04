@@ -43,7 +43,7 @@ const DashboardCard = () => {
             position={[0, 0, 0.01]}
             fontSize={0.4}
             color="#10B981"
-            font="https://fonts.gstatic.com/s/instrumentserif/v1/9a6PjS0Y9Y9m3j9j9j9j.ttf"
+            font="https://fonts.gstatic.com/s/outfit/v11/QGYsz_OByL2Gf4T6YN6E.ttf"
           >
             94
           </Text>

@@ -17,6 +17,10 @@ import { MasterVault } from "@/components/MasterVault";
 import { ResumeGenerator } from "@/components/ResumeGenerator";
 import { scavengeSkills } from "@/lib/skillScavenger";
 import { HowItWorksSection } from "@/components/HowItWorksSection";
+import { EmptyState } from "./dashboard/EmptyState";
+import { ATSScoreWidget } from "./dashboard/ATSScoreWidget";
+import { LoadingSequence } from "./jd-decoder/LoadingSequence";
+import { StructuredOutput } from "./jd-decoder/StructuredOutput";
 import type { DecodeResult, ResumeGapResult } from "@/types/jd";
 
 const ApplicationTracker = lazy(() => import("@/components/ApplicationTracker").then(module => ({ default: module.ApplicationTracker })));
@@ -28,14 +32,6 @@ interface ScannerViewProps {
   onTabChange?: (tab: Tab) => void;
 }
 
-const stagger = {
-  animate: { transition: { staggerChildren: 0.08 } }
-};
-const fadeUp = {
-  initial: { opacity: 0, y: 16 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const } }
-};
-
 export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewProps) => {
   const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
@@ -46,6 +42,8 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
   const [savedJdId, setSavedJdId] = useState<string | null>(null);
   const [userResumeText, setUserResumeText] = useState("");
   const [gapResult, setGapResult] = useState<ResumeGapResult | null>(null);
+  const [inputMode, setInputMode] = useState<"text" | "url">("text");
+  const [jdUrl, setJdUrl] = useState("");
 
   useEffect(() => { setSavedJdId(null); }, [results]);
   
@@ -101,14 +99,6 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
     if (onTabChange) onTabChange(tab);
   };
 
-  const filteredSkills = results?.skills ? (priorityFilter ? results.skills.filter((s) => s.importance > 80) : results.skills) : [];
-
-  const getAiInsight = (skills: DecodeResult["skills"] = []) => {
-    const critical = (skills || []).filter((s) => s.importance > 80).slice(0, 3).map((s) => s.skill);
-    if (critical.length === 0) return "All skills have moderate importance — a well-rounded generalist role.";
-    return `Focus on ${critical.join(", ")} for this role; the rest are secondary infrastructure skills.`;
-  };
-
   const handleDecode = async () => { 
     if (!user) {
       toast.error("Authentication required to decode JD intelligence.", {
@@ -118,20 +108,29 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
       return;
     }
     console.log("Decoding started for Lumina 2.0...");
-    await decodeJD(jdText); 
-  };
-  
-  const handleForceRedecode = async () => { 
-    if (!user) {
-      toast.error("Authentication required for Total Intelligence reboots.");
-      navigate("/auth");
-      return;
+    const res = await decodeJD(jdText);
+    
+    if (res) {
+      saveToHistory(res.title, jdText);
     }
-    console.log("Force rebooting Total Intelligence engine...");
-    await decodeJD(jdText, true); 
   };
 
-  const displayName = user?.email || user?.phone || "User";
+  const saveToHistory = (title: string, text: string) => {
+    const historyJson = localStorage.getItem("lumina_history");
+    let history = historyJson ? JSON.parse(historyJson) : [];
+    
+    const newItem = {
+      id: Math.random().toString(36).substring(2, 9),
+      title,
+      jdText: text,
+      timestamp: Date.now()
+    };
+    
+    // Add to start, limit to 10
+    history = [newItem, ...history].slice(0, 10);
+    localStorage.setItem("lumina_history", JSON.stringify(history));
+    window.dispatchEvent(new Event("lumina_history_updated"));
+  };
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 md:px-8 pb-24">
@@ -144,34 +143,79 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
           >
-            {/* ── Text Input ── */}
-            <div className="space-y-4">
-              <GlassTextArea value={jdText} onChange={setJdText} isScanning={isScanning} />
-              <div className="flex justify-between items-center px-4">
-                <span className={`text-[10px] font-black uppercase tracking-widest ${jdText.length > 15000 ? 'text-red-500' : 'text-muted-foreground/40'}`}>
-                  {jdText.length.toLocaleString()} / 15,000 Characters
-                </span>
-                {jdText.length > 15000 && (
-                  <span className="text-[10px] font-black uppercase tracking-widest text-red-500 animate-pulse">
-                    Limit Crossed
-                  </span>
-                )}
+            {/* ── Tab Switcher ── */}
+            {!results && (
+              <div className="flex justify-center mb-10">
+                <div className="inline-flex p-1.5 bg-white border border-[#1E2A3A]/5 rounded-2xl shadow-sm">
+                  <button
+                    onClick={() => setInputMode("text")}
+                    className={`px-6 py-2 rounded-xl text-xs font-display font-bold uppercase tracking-widest transition-all ${
+                      inputMode === "text" ? "bg-[#1E2A3A] text-white shadow-lg" : "text-[#1E2A3A]/40 hover:text-[#1E2A3A]"
+                    }`}
+                  >
+                    Raw Text
+                  </button>
+                  <button
+                    onClick={() => setInputMode("url")}
+                    className={`px-6 py-2 rounded-xl text-xs font-display font-bold uppercase tracking-widest transition-all ${
+                      inputMode === "url" ? "bg-[#1E2A3A] text-white shadow-lg" : "text-[#1E2A3A]/40 hover:text-[#1E2A3A]"
+                    }`}
+                  >
+                    Job URL
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-              className="flex justify-center mt-8"
-            >
-              <DecodeButton
-                onClick={handleDecode}
-                isLoading={isScanning}
-                disabled={jdText.trim().length < 20 || jdText.length > 15000}
-                isDecoded={!!results}
-              />
-            </motion.div>
+            {/* ── Input Section ── */}
+            {isScanning ? (
+              <LoadingSequence />
+            ) : !results ? (
+              <div className="space-y-4">
+                {inputMode === "text" ? (
+                  <>
+                    <GlassTextArea value={jdText} onChange={setJdText} isScanning={isScanning} />
+                    <div className="flex justify-between items-center px-4">
+                      <span className={`text-[10px] font-black uppercase tracking-widest ${jdText.length > 15000 ? 'text-red-500' : 'text-muted-foreground/40'}`}>
+                        {jdText.length.toLocaleString()} / 15,000 Characters
+                      </span>
+                      {jdText.length > 15000 && (
+                        <span className="text-[10px] font-black uppercase tracking-widest text-red-500 animate-pulse">
+                          Limit Crossed
+                        </span>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <div className="relative group">
+                    <input
+                      type="url"
+                      placeholder="Paste LinkedIn, Indeed, or Greenhouse URL..."
+                      value={jdUrl}
+                      onChange={(e) => setJdUrl(e.target.value)}
+                      className="w-full p-8 rounded-[2rem] bg-white border border-[#1E2A3A]/5 shadow-sm text-lg font-body focus:ring-2 focus:ring-[#10B981]/20 focus:border-[#10B981] outline-none transition-all placeholder:text-[#1E2A3A]/20"
+                    />
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 p-4 rounded-xl bg-[#10B981]/10 text-[#10B981]">
+                      <Search className="w-6 h-6" />
+                    </div>
+                  </div>
+                )}
+
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="flex justify-center mt-8"
+                >
+                  <DecodeButton
+                    onClick={handleDecode}
+                    isLoading={isScanning}
+                    disabled={(inputMode === "text" ? jdText.trim().length < 20 : jdUrl.trim().length < 10) || jdText.length > 15000}
+                    isDecoded={!!results}
+                  />
+                </motion.div>
+              </div>
+            ) : null}
 
             {/* ── Results ── */}
             <AnimatePresence>
@@ -181,48 +225,25 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 20 }}
                   transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                  className="mt-16 w-full mx-auto space-y-8"
+                  className="mt-16 w-full mx-auto space-y-16"
                 >
-                  <div className="text-center space-y-6">
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.98 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.1, type: "spring", stiffness: 150 }}
-                    >
-                      <div className="flex justify-center mb-6">
-                        <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-[12px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${
-                          wasCached 
-                            ? "bg-accent-blue/10 border-accent-blue/20 text-accent-blue"
-                            : "bg-accent-emerald/10 border-accent-emerald/20 text-accent-emerald"
-                        }`}>
-                          <Shield size={10} className={wasCached ? "animate-pulse" : ""} />
-                          {wasCached ? "Consistency Verified" : "Strategic Intelligence Active"}
-                        </div>
-                      </div>
-                      <h3 className="font-serif italic text-4xl md:text-5xl lg:text-7xl text-foreground tracking-[-0.04em] leading-[0.9] max-w-5xl mx-auto px-4 mt-4 text-balance">
-                        {results.title}
-                      </h3>
-                    </motion.div>
-
-                  </div>
-
+                  <StructuredOutput results={results} />
+                  
                   {/* ── INTELLIGENCE ENGINE: THE DASHBOARD ── */}
-                  {results && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 40 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                      className="space-y-4"
-                    >
-                      <LuminaUltraDashboard results={results} resumeResults={gapResult} jdText={jdText} />
-                      
-                      <JdActionCta 
-                        onCheckResume={() => handleTabSwitch("analysis")} 
-                        onGenerateResume={() => handleTabSwitch("generator")}
-                      />
+                  <motion.div
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                    className="space-y-4"
+                  >
+                    <LuminaUltraDashboard results={results} resumeResults={gapResult} jdText={jdText} />
+                    
+                    <JdActionCta 
+                      onCheckResume={() => handleTabSwitch("analysis")} 
+                      onGenerateResume={() => handleTabSwitch("generator")}
+                    />
 
-                    </motion.div>
-                  )}
+                  </motion.div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -237,7 +258,6 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
           >
             {results ? (
               <div className="space-y-12">
-
                 <ResumeGapAnalyzer
                   skills={scavengeSkills(results.skills, results, jdText)}
                   jobTitle={results.title}
@@ -246,6 +266,15 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
                 />
                 {gapResult && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                      <ATSScoreWidget score={gapResult.overall_match} />
+                      <div className="md:col-span-2 bg-white/50 backdrop-blur-sm p-8 rounded-[2.5rem] border border-[#1E2A3A]/5 flex flex-col justify-center">
+                        <h4 className="text-2xl font-serif font-bold text-[#1E2A3A] mb-4">Strategic Summary</h4>
+                        <p className="text-[#1E2A3A]/60 font-body leading-relaxed text-lg italic">
+                          "{gapResult.summary}"
+                        </p>
+                      </div>
+                    </div>
                     <ATSScoreSimulator result={gapResult} />
                     <div className="flex justify-center mt-12">
                       <button 
@@ -259,17 +288,13 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
                 )}
               </div>
             ) : (
-              <div className="py-16 text-center glass-panel rounded-[3rem] border border-dashed border-foreground/10">
-                <Search size={48} className="mx-auto text-primary/40 mb-6" />
-                <h3 className="text-3xl font-serif italic mb-4 text-foreground">Intelligence Required</h3>
-                <p className="text-muted-foreground max-w-md mx-auto mb-8 font-medium">You must decode a Job Description before activating the Resume Intelligence engine.</p>
-                <button 
-                  onClick={() => handleTabSwitch("decode")}
-                  className="px-8 py-3 rounded-full bg-lumina-teal text-white text-xs font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-teal-500/10"
-                >
-                  Return to Decoder
-                </button>
-              </div>
+              <EmptyState 
+                icon="analysis"
+                title="Intelligence Required"
+                description="You must decode a Job Description before activating the Resume Intelligence engine."
+                actionLabel="Return to Decoder"
+                onAction={() => handleTabSwitch("decode")}
+              />
             )}
           </motion.div>
         ) : activeTab === "generator" ? (
@@ -282,7 +307,6 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
           >
             {results ? (
               <div className="space-y-12">
-
                 <ResumeGenerator
                   jdTitle={results.title}
                   jdSkills={results.skills}
@@ -298,17 +322,13 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
                 )}
               </div>
             ) : (
-              <div className="py-16 text-center glass-panel rounded-[3rem] border border-dashed border-foreground/10">
-                <Zap size={48} className="mx-auto text-primary/40 mb-6" />
-                <h3 className="text-3xl font-serif italic mb-4 text-foreground">Signal Lost</h3>
-                <p className="text-muted-foreground max-w-md mx-auto mb-8 font-medium">The Resume Generator requires a Job Description signal to structure its outputs.</p>
-                <button 
-                  onClick={() => handleTabSwitch("decode")}
-                  className="px-8 py-3 rounded-full bg-accent-emerald text-background text-xs font-black uppercase tracking-widest hover:scale-105 transition-all"
-                >
-                  Return to Decoder
-                </button>
-              </div>
+              <EmptyState 
+                icon="generator"
+                title="Signal Lost"
+                description="The Resume Generator requires a Job Description signal to structure its outputs."
+                actionLabel="Return to Decoder"
+                onAction={() => handleTabSwitch("decode")}
+              />
             )}
           </motion.div>
         ) : (activeTab === "profile" || (activeTab as string) === "vault") ? (

@@ -20,6 +20,7 @@ import { CultureRadar } from "./CultureRadar";
 import { LucideIcon } from "lucide-react";
 import { generateUnifiedReport } from "@/lib/pdfExporter";
 import { toast } from "sonner";
+import { BonusInsights } from "./BonusInsights";
 
 interface LuminaUltraDashboardProps {
   results: DecodeResult;
@@ -441,13 +442,12 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
             </div>
         </div>
 
-        {/* Bonus Pulse Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-             <BonusCard icon={Ghost} label="Ghost Job Risk" value={results?.bonus_pulse?.ghost_job_probability ?? 0} sub="Entity Urgency" color="red-400" />
-             <BonusCard icon={Activity} label="Desperation Meter" value={results?.bonus_pulse?.desperation_meter ?? 0} sub="Market Sentiment" color="var(--accent-emerald)" />
-             <BonusCard icon={Users} label="Interview Intensity" value={results?.bonus_pulse?.interview_difficulty ?? 0} sub="Friction Index" color="var(--accent-gold)" />
-             <BonusCard icon={TrendingUp} label="Rarity Premium" value={results?.bonus_pulse?.skill_rarity ?? 0} sub="Arbitrage Score" color="var(--accent-blue)" />
-        </div>
+        {/* Bonus Pulse Grid (Replaced with Premium Insights) */}
+        <BonusInsights 
+          insights={results?.bonus_pulse} 
+          salary={results?.logistics?.salary_range} 
+          skills={results?.skills_impact || []}
+        />
       </div>
 
       {/* ── PHASE 3: RESUME TAILOR ── */}

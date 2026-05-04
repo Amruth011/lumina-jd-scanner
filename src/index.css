@@ -247,3 +247,12 @@
   50% { box-shadow: 0 0 40px rgba(16, 185, 129, 0.5); }
 }
 
+@keyframes logo-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; filter: blur(0px); }
+  50% { transform: scale(1.5); opacity: 0.5; filter: blur(2px); }
+}
+
+.animate-logo-pulse {
+  animation: logo-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+

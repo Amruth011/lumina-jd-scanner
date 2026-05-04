@@ -54,12 +54,12 @@ export const FinalCTA = () => {
           </Link>
         </div>
 
-        <div className="pt-12 flex items-center justify-center gap-8 text-[10px] font-display font-bold uppercase tracking-[0.4em] text-white/20">
-          <span>Secure Process</span>
-          <div className="w-1.5 h-1.5 rounded-full bg-lumina-teal/40" />
-          <span>LLAMA-3.3 Intelligence</span>
-          <div className="w-1.5 h-1.5 rounded-full bg-lumina-teal/40" />
-          <span>ATS Certified</span>
+        <div className="pt-12 flex flex-wrap items-center justify-center gap-4 md:gap-8 text-[10px] font-display font-bold uppercase tracking-[0.2em] md:tracking-[0.4em] text-white/20">
+          <span className="whitespace-nowrap">Secure Process</span>
+          <div className="hidden md:block w-1.5 h-1.5 rounded-full bg-lumina-teal/40" />
+          <span className="whitespace-nowrap">LLAMA-3.3 Intelligence</span>
+          <div className="hidden md:block w-1.5 h-1.5 rounded-full bg-lumina-teal/40" />
+          <span className="whitespace-nowrap">ATS Certified</span>
         </div>
       </div>
     </section>
