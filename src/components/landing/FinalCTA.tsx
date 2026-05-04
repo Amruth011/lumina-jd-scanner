@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 export const FinalCTA = () => {
   return (
@@ -40,15 +41,17 @@ export const FinalCTA = () => {
         </p>
 
         <div className="pt-8">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="group relative px-12 py-6 bg-lumina-teal text-lumina-navy font-bold text-lg rounded-full shadow-[0_0_40px_rgba(16,185,129,0.3)] transition-all overflow-hidden"
-          >
-            {/* Shimmer sweep */}
-            <div className="absolute top-0 -left-full w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-[-20deg] animate-shimmer" />
-            <span className="relative z-10">Land in the Top 0.1% →</span>
-          </motion.button>
+          <Link to="/dashboard">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="group relative px-12 py-6 bg-lumina-teal text-lumina-navy font-bold text-lg rounded-full shadow-[0_0_40px_rgba(16,185,129,0.3)] transition-all overflow-hidden"
+            >
+              {/* Shimmer sweep */}
+              <div className="absolute top-0 -left-full w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-[-20deg] animate-shimmer" />
+              <span className="relative z-10">Land in the Top 0.1% →</span>
+            </motion.button>
+          </Link>
         </div>
 
         <div className="pt-12 flex items-center justify-center gap-8 text-[10px] font-display font-bold uppercase tracking-[0.4em] text-white/20">

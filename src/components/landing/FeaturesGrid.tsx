@@ -73,7 +73,7 @@ const FeatureCard = ({ feature, index }: { feature: Feature, index: number }) =>
 
 export const FeaturesGrid = () => {
   return (
-    <section className="bg-lumina-bg py-32 px-6">
+    <section id="features" className="bg-lumina-bg py-32 px-6">
       <div className="max-w-7xl mx-auto space-y-20">
         <div className="text-center space-y-6 max-w-3xl mx-auto">
           <span className="text-lumina-teal font-display font-bold text-xs uppercase tracking-[0.3em]">Total Intelligence Ecosystem</span>

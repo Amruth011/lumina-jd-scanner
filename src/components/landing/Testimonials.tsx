@@ -32,7 +32,7 @@ const testimonials = [
 
 export const Testimonials = () => {
   return (
-    <section className="bg-white py-32 overflow-hidden border-t border-black/5">
+    <section id="testimonials" className="bg-white py-32 overflow-hidden border-t border-black/5">
       <div className="max-w-7xl mx-auto px-6 mb-20 flex flex-col md:flex-row items-end justify-between gap-8">
         <div className="space-y-4">
           <span className="text-lumina-teal font-display font-bold text-xs uppercase tracking-[0.3em]">Success Stories</span>

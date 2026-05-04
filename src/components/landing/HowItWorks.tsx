@@ -149,7 +149,7 @@ export const HowItWorks = () => {
   }, []);
 
   return (
-    <section ref={containerRef} className="bg-white text-lumina-navy min-h-screen overflow-hidden">
+    <section id="how-it-works" ref={containerRef} className="bg-white text-lumina-navy min-h-screen overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 h-screen flex items-center gap-16">
         {/* Left: Dynamic Visuals */}
         <div className="flex-1 h-[500px] relative hidden lg:block">

@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import styles from '../../styles/journey.module.css';
 import { journeyNodes } from '../../data/journeyNodes';
 import { JDDecoderAnim } from './MiniAnimations/JDDecoderAnim';
@@ -61,6 +62,14 @@ export const NodeContentPanel: React.FC<NodeContentPanelProps> = ({ progress }) 
       
       <p className={styles.description}>{activeNode.description}</p>
       
+      <div className="mt-8">
+        <Link to="/dashboard">
+          <button className="w-full py-4 bg-lumina-teal text-lumina-navy font-bold rounded-xl text-xs uppercase tracking-widest hover:scale-[1.02] transition-all shadow-lg shadow-lumina-teal/20">
+            Activate This Step →
+          </button>
+        </Link>
+      </div>
+
       <div className={styles.dots}>
         {journeyNodes.map((_, i) => (
           <div 
