@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 const skills = ["RAG", "Vector DBs", "LLM Fine-tuning", "FastAPI", "Next.js", "Redis"];
 
@@ -100,9 +101,11 @@ export const LiveDemoStrip = () => {
         </div>
 
         <div className="flex justify-center">
-          <button className="px-10 py-5 bg-lumina-teal text-lumina-navy font-bold rounded-full transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
-            Get your full analysis free →
-          </button>
+          <Link to="/dashboard">
+            <button className="px-10 py-5 bg-lumina-teal text-lumina-navy font-bold rounded-full transition-all hover:scale-105 active:scale-95 shadow-[0_0_30_rgba(16,185,129,0.3)]">
+              Get your full analysis free →
+            </button>
+          </Link>
         </div>
       </div>
     </section>

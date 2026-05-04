@@ -2,6 +2,7 @@
 
 import React, { useCallback } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import Particles from "@tsparticles/react";
 import { loadSlim } from "@tsparticles/slim";
 import type { Engine } from "@tsparticles/engine";
@@ -96,13 +97,17 @@ export const Hero = () => {
           transition={{ delay: 0.8, duration: 0.8 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-4"
         >
-          <button className="px-12 py-5 bg-lumina-navy text-white font-bold rounded-full transition-all hover:scale-105 active:scale-95 shadow-xl flex items-center gap-3 group">
-            DEPLOY ENGINE 
-            <span className="text-lumina-teal group-hover:translate-x-1 transition-transform">→</span>
-          </button>
-          <button className="px-12 py-5 bg-white border border-lumina-navy/10 text-lumina-navy font-bold rounded-full transition-all hover:bg-lumina-navy/5 shadow-sm">
-            TRY WITH SAMPLE RESUME
-          </button>
+          <Link to="/dashboard">
+            <button className="px-12 py-5 bg-lumina-navy text-white font-bold rounded-full transition-all hover:scale-105 active:scale-95 shadow-xl flex items-center gap-3 group">
+              DEPLOY ENGINE 
+              <span className="text-lumina-teal group-hover:translate-x-1 transition-transform">→</span>
+            </button>
+          </Link>
+          <Link to="/dashboard">
+            <button className="px-12 py-5 bg-white border border-lumina-navy/10 text-lumina-navy font-bold rounded-full transition-all hover:bg-lumina-navy/5 shadow-sm">
+              TRY WITH SAMPLE RESUME
+            </button>
+          </Link>
         </motion.div>
 
         {/* Social Proof Strip */}

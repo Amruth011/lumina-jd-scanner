@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { Check, X } from 'lucide-react';
 
 const tiers = [
@@ -110,13 +111,15 @@ export const PricingSection = () => {
                 ))}
               </div>
 
-              <button className={`w-full py-4 rounded-full font-bold text-sm transition-all ${
-                tier.highlight 
-                ? 'bg-lumina-teal text-lumina-navy hover:shadow-[0_0_25px_rgba(16,185,129,0.4)]' 
-                : 'bg-lumina-navy text-white hover:bg-lumina-navy-dark'
-              }`}>
-                {tier.cta}
-              </button>
+              <Link to="/dashboard" className="w-full">
+                <button className={`w-full py-4 rounded-full font-bold text-sm transition-all ${
+                  tier.highlight 
+                  ? 'bg-lumina-teal text-lumina-navy hover:shadow-[0_0_25px_rgba(16,185,129,0.4)]' 
+                  : 'bg-lumina-navy text-white hover:bg-lumina-navy-dark'
+                }`}>
+                  {tier.cta}
+                </button>
+              </Link>
             </motion.div>
           ))}
         </div>

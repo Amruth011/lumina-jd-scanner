@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { tokens } from '@/styles/tokens';
 import { LuminaLogo } from '../LuminaLogo';
 
@@ -40,13 +41,15 @@ export const Navbar = () => {
         </div>
 
         {/* CTA */}
-        <motion.button
-          whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)' }}
-          whileTap={{ scale: 0.95 }}
-          className="px-6 py-2.5 bg-lumina-teal text-lumina-navy font-bold rounded-full text-sm transition-all"
-        >
-          Start Free
-        </motion.button>
+        <Link to="/dashboard">
+          <motion.button
+            whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)' }}
+            whileTap={{ scale: 0.95 }}
+            className="px-6 py-2.5 bg-lumina-teal text-lumina-navy font-bold rounded-full text-sm transition-all"
+          >
+            Start Free
+          </motion.button>
+        </Link>
       </div>
     </nav>
   );
