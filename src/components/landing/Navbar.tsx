@@ -18,13 +18,13 @@ export const Navbar = () => {
   }, []);
 
   return (
-    <nav className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 w-[95%] max-w-5xl mx-auto rounded-full ${
-      isScrolled ? 'py-2 bg-white/70 backdrop-blur-md border border-lumina-teal/20 shadow-lg' : 'py-3 bg-white/10 backdrop-blur-sm border border-white/10'
+    <nav className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 w-[95%] max-w-7xl mx-auto rounded-full ${
+      isScrolled ? 'py-1 bg-white/80 backdrop-blur-md border border-lumina-teal/20 shadow-lg' : 'py-2 bg-white/5 backdrop-blur-sm border border-white/10'
     }`}>
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center">
-          <LuminaLogo size={120} />
+          <LuminaLogo size={80} />
         </div>
 
         {/* Nav Links */}
