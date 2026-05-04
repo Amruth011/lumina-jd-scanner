@@ -106,49 +106,50 @@ export const JourneyScene: React.FC<JourneySceneProps> = ({ progress }) => {
 
   return (
     <>
-      <color attach="background" args={['#0A1118']} />
-      <fog attach="fog" args={['#0A1118', 20, 60]} />
+      <color attach="background" args={['#0D1F2D']} />
+      <fog attach="fog" args={['#0D1F2D', 15, 50]} />
       
       <PerspectiveCamera makeDefault position={[0, 8, 18]} fov={50} />
       
-      <ambientLight intensity={0.6} color="#10B981" />
-      <pointLight position={[0, 5, 0]} intensity={60} color="#1E2A3A" />
+      <ambientLight intensity={0.8} color="#10B981" />
+      <pointLight position={[0, 5, 0]} intensity={100} color="#1E2A3A" />
       <spotLight 
         position={[0, 10, 8]} 
-        intensity={progress > 0.95 ? 180 : 80} 
+        intensity={progress > 0.95 ? 250 : 120} 
         color="#10B981" 
-        angle={0.3}
+        angle={0.4}
         penumbra={1}
         castShadow
       />
-      <hemisphereLight args={['#10B981', '#1E2A3A', 0.2]} />
+      <hemisphereLight args={['#10B981', '#1E2A3A', 0.4]} />
 
       {/* Ground Plane */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
-        <planeGeometry args={[40, 40]} />
-        <meshStandardMaterial color="#060D14" roughness={1} metalness={0} />
+        <planeGeometry args={[50, 50]} />
+        <meshStandardMaterial color="#0D1F2D" roughness={0.8} metalness={0.2} />
       </mesh>
       
       <Grid 
         infiniteGrid 
-        fadeDistance={30} 
-        fadeStrength={5} 
+        fadeDistance={40} 
+        fadeStrength={8} 
         cellSize={1} 
         sectionSize={5} 
         sectionColor="#10B981"
-        sectionThickness={2}
+        sectionThickness={2.5}
         cellColor="#1E2A3A"
-        cellThickness={1}
-        opacity={0.15}
+        cellThickness={1.5}
+        opacity={0.25}
       />
 
       {/* The Road */}
       <mesh ref={roadRef}>
-        <tubeGeometry args={[curve, 200, 0.18, 12, false]} />
+        <tubeGeometry args={[curve, 200, 0.2, 12, false]} />
         <meshStandardMaterial 
           color="#1E2A3A" 
-          emissive="#0A1118" 
-          roughness={0.6} 
+          emissive="#1E2A3A" 
+          emissiveIntensity={0.2}
+          roughness={0.4} 
         />
       </mesh>
 
@@ -158,7 +159,7 @@ export const JourneyScene: React.FC<JourneySceneProps> = ({ progress }) => {
         <meshStandardMaterial 
           color="#10B981" 
           emissive="#10B981" 
-          emissiveIntensity={1.2} 
+          emissiveIntensity={2.0} 
         />
       </mesh>
 
