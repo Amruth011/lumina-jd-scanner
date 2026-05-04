@@ -110,11 +110,8 @@ const Auth = () => {
       >
         <div className="glass-strong rounded-2xl p-8">
           {/* Logo */}
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <img src="/favicon.png" alt="Lumina" className="w-6 h-6" />
-            <h1 className="font-display font-bold text-xl text-foreground">
-              Lumina <span className="text-primary">JD</span>
-            </h1>
+          <div className="flex items-center justify-center mb-10">
+            <img src="/logo.png" alt="Lumina" className="w-[120px] h-auto object-contain" />
           </div>
 
           <h2 className="font-display font-semibold text-xl text-foreground text-center mb-1">

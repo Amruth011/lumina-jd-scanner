@@ -33,9 +33,8 @@ export const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* Left: Logo */}
-        <Link to="/" className="flex items-center gap-2 group">
+        <Link to="/" className="flex items-center group">
           <LuminaLogo size={120} />
-          <div className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-logo-pulse" />
         </Link>
 
         {/* Center: Desktop Nav */}

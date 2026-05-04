@@ -143,63 +143,22 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
           >
-            {/* ── Tab Switcher ── */}
-            {!results && (
-              <div className="flex justify-center mb-10">
-                <div className="inline-flex p-1.5 bg-white border border-[#1E2A3A]/5 rounded-2xl shadow-sm">
-                  <button
-                    onClick={() => setInputMode("text")}
-                    className={`px-6 py-2 rounded-xl text-xs font-display font-bold uppercase tracking-widest transition-all ${
-                      inputMode === "text" ? "bg-[#1E2A3A] text-white shadow-lg" : "text-[#1E2A3A]/40 hover:text-[#1E2A3A]"
-                    }`}
-                  >
-                    Raw Text
-                  </button>
-                  <button
-                    onClick={() => setInputMode("url")}
-                    className={`px-6 py-2 rounded-xl text-xs font-display font-bold uppercase tracking-widest transition-all ${
-                      inputMode === "url" ? "bg-[#1E2A3A] text-white shadow-lg" : "text-[#1E2A3A]/40 hover:text-[#1E2A3A]"
-                    }`}
-                  >
-                    Job URL
-                  </button>
-                </div>
-              </div>
-            )}
-
             {/* ── Input Section ── */}
             {isScanning ? (
               <LoadingSequence />
             ) : !results ? (
               <div className="space-y-4">
-                {inputMode === "text" ? (
-                  <>
-                    <GlassTextArea value={jdText} onChange={setJdText} isScanning={isScanning} />
-                    <div className="flex justify-between items-center px-4">
-                      <span className={`text-[10px] font-black uppercase tracking-widest ${jdText.length > 15000 ? 'text-red-500' : 'text-muted-foreground/40'}`}>
-                        {jdText.length.toLocaleString()} / 15,000 Characters
-                      </span>
-                      {jdText.length > 15000 && (
-                        <span className="text-[10px] font-black uppercase tracking-widest text-red-500 animate-pulse">
-                          Limit Crossed
-                        </span>
-                      )}
-                    </div>
-                  </>
-                ) : (
-                  <div className="relative group">
-                    <input
-                      type="url"
-                      placeholder="Paste LinkedIn, Indeed, or Greenhouse URL..."
-                      value={jdUrl}
-                      onChange={(e) => setJdUrl(e.target.value)}
-                      className="w-full p-8 rounded-[2rem] bg-white border border-[#1E2A3A]/5 shadow-sm text-lg font-body focus:ring-2 focus:ring-[#10B981]/20 focus:border-[#10B981] outline-none transition-all placeholder:text-[#1E2A3A]/20"
-                    />
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 p-4 rounded-xl bg-[#10B981]/10 text-[#10B981]">
-                      <Search className="w-6 h-6" />
-                    </div>
-                  </div>
-                )}
+                <GlassTextArea value={jdText} onChange={setJdText} isScanning={isScanning} />
+                <div className="flex justify-between items-center px-4">
+                  <span className={`text-[10px] font-black uppercase tracking-widest ${jdText.length > 15000 ? 'text-red-500' : 'text-muted-foreground/40'}`}>
+                    {jdText.length.toLocaleString()} / 15,000 Characters
+                  </span>
+                  {jdText.length > 15000 && (
+                    <span className="text-[10px] font-black uppercase tracking-widest text-red-500 animate-pulse">
+                      Limit Crossed
+                    </span>
+                  )}
+                </div>
 
                 <motion.div
                   initial={{ opacity: 0 }}

@@ -26,7 +26,7 @@ export const WelcomeScreen = () => {
     {
       title: "Welcome to Lumina",
       description: "Let's get you ready to land your dream role. It takes less than 30 seconds to set up your first analysis.",
-      icon: <Sparkles className="w-12 h-12 text-[#10B981]" />,
+      icon: <Sparkles className="w-12 h-12" />,
       button: "Let's Go"
     },
     {
@@ -65,8 +65,14 @@ export const WelcomeScreen = () => {
             transition={{ duration: 0.5, ease: "circOut" }}
             className="bg-white rounded-[2.5rem] p-12 text-center space-y-8 shadow-[0_50px_100px_-20px_rgba(16,185,129,0.3)]"
           >
-            <div className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-[#10B981]/10 mb-4">
-              {currentStep.icon}
+            <div className="inline-flex items-center justify-center w-[120px] h-[120px] mb-4">
+              {step === 1 ? (
+                <img src="/favicon.png" alt="Lumina" className="w-full h-full object-contain" />
+              ) : (
+                <div className="w-16 h-16 text-[#10B981]">
+                  {currentStep.icon}
+                </div>
+              )}
             </div>
 
             <div className="space-y-4">

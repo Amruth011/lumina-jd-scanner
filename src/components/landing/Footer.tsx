@@ -11,7 +11,7 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8">
           {/* Brand Col */}
           <div className="lg:col-span-2 space-y-6">
-            <LuminaLogo size={90} />
+            <LuminaLogo size={120} />
             <p className="text-white/40 font-body text-sm max-w-xs leading-relaxed">
               The world's most advanced intelligence engine for career strategists. Optimized for the top 0.1% of global engineering talent.
             </p>
