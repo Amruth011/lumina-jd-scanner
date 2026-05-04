@@ -11,23 +11,23 @@
 @layer base {
   :root {
     /* Lumina - Brand Identity System */
-    --background: 220 13% 96%; /* #F4F5F7 */
-    --foreground: 215 25% 10%; /* Very Dark Slate for text */
+    --background: 220 13% 98%; /* Lighter #F9FAFB */
+    --foreground: 213 32% 17%; /* Navy for text */
 
-    --card: 0 0% 100%;       /* #FFFFFF */
-    --card-foreground: 215 25% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 213 32% 17%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 10%;
+    --popover-foreground: 213 32% 17%;
 
-    --primary: 160 84% 39%;  /* #10B981 - Lumina Teal (Identity) */
+    --primary: 160 84% 39%;  /* #10B981 - Lumina Teal */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 213 32% 17%; /* #1E2A3A - Lumina Navy (now secondary) */
+    --secondary: 213 32% 17%; /* #1E2A3A - Lumina Navy */
     --secondary-foreground: 0 0% 100%;
 
-    --accent: 147 83% 96%;   /* #ECFDF5 - Teal Light BG */
-    --accent-foreground: 160 84% 39%;
+    --accent: 160 84% 39%;   /* Teal as accent */
+    --accent-foreground: 213 32% 17%;
 
     --muted: 220 13% 94%;
     --muted-foreground: 220 5% 45%;

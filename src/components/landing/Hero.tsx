@@ -17,7 +17,8 @@ export const Hero = () => {
   const words = headline.split(" ");
 
   return (
-    <section className="relative min-h-[100dvh] flex flex-col items-center justify-center bg-[#0D1520] overflow-hidden pt-20">
+    <section className="relative min-h-[100dvh] flex flex-col items-center justify-center bg-[#F9FAFB] overflow-hidden pt-20">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.05),transparent_70%)]" />
       {/* Background Particles */}
       {/* Background Particles - temporarily disabled for troubleshooting */}
       {/* <Particles
@@ -64,7 +65,7 @@ export const Hero = () => {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 text-center space-y-8">
         {/* Headline */}
-        <h1 className="text-5xl md:text-[96px] font-serif font-bold text-white leading-[1.1] tracking-tight max-w-5xl mx-auto">
+        <h1 className="text-5xl md:text-[96px] font-serif font-bold text-[#1E2A3A] leading-[1.1] tracking-tight max-w-5xl mx-auto">
           {words.map((word, i) => (
             <motion.span
               key={i}
@@ -84,7 +85,7 @@ export const Hero = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2, duration: 0.8 }}
-          className="text-lg md:text-2xl text-white/60 font-body max-w-2xl mx-auto leading-relaxed"
+          className="text-lg md:text-2xl text-[#1E2A3A]/70 font-body max-w-2xl mx-auto leading-relaxed"
         >
           Decode any job description in seconds. Identify every gap. Build the resume that wins.
         </motion.p>
@@ -110,7 +111,7 @@ export const Hero = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 2, duration: 1 }}
-          className="pt-12 flex flex-wrap justify-center items-center gap-4 text-xs font-display text-white/40 tracking-widest uppercase"
+          className="pt-12 flex flex-wrap justify-center items-center gap-4 text-xs font-display text-[#1E2A3A]/40 tracking-widest uppercase"
         >
           <span>94,000 resumes analyzed</span>
           <div className="w-1.5 h-1.5 rounded-full bg-lumina-teal animate-pulse" />
@@ -130,7 +131,7 @@ export const Hero = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 3, duration: 1 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/30 text-[10px] font-display tracking-[0.2em] uppercase"
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-[#1E2A3A]/30 text-[10px] font-display tracking-[0.2em] uppercase"
       >
         <span>Scroll to explore</span>
         <motion.div
