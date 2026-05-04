@@ -6,10 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import type { Skill, VaultItem, UserProfileWithVault, GeneratedResume } from "@/types/jd";
 import jsPDF from "jspdf";
-import { BeforeAfterView } from "./resume-tailor/BeforeAfterView";
-import { ResumeEditor } from "./resume-tailor/ResumeEditor";
-import { DownloadPanel } from "./resume-tailor/DownloadPanel";
-import { RegenerateOptions } from "./resume-tailor/RegenerateOptions";
+import { ResumePreview } from "./resume-tailor/ResumePreview";
 
 interface ResumeGeneratorProps {
   jdTitle: string;
@@ -960,54 +957,18 @@ RETURN JSON FORMAT ONLY:
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="mt-20 pt-20 border-t border-[#1E2A3A]/10 space-y-24"
           >
-            {/* 1. Comparison View */}
-            <BeforeAfterView 
-              pairs={[
-                { 
-                  label: "Professional Summary", 
-                  before: vaultItems.find(v => v.type === 'professional')?.description || "Incomplete tactical profile.", 
-                  after: resume.professional_summary 
-                },
-                {
-                  label: "Primary Experience",
-                  before: vaultItems.find(v => v.type === 'professional')?.bullets?.[0] || "No base bullet found.",
-                  after: resume.experience[0]?.bullets[0] || "Synthesis in progress."
-                }
-              ]} 
-            />
-
-            {/* 2. Editor Section */}
-            <ResumeEditor 
-              initialContent={JSON.stringify(resume, null, 2)} 
-              onSave={(content) => {
-                try {
-                  const updated = JSON.parse(content);
-                  setResume(updated);
-                  setEditableResume(updated);
-                  toast.success("Blueprint updated!");
-                } catch (e) {
-                  toast.error("Invalid JSON format. Please check your edits.");
-                }
+            {/* ── Unified Preview & Edit Experience ── */}
+            <ResumePreview 
+              resume={resume}
+              header={editableHeader}
+              isGenerating={isGenerating}
+              onUpdate={(updatedResume, updatedHeader) => {
+                setResume(updatedResume);
+                setEditableResume(updatedResume);
+                setEditableHeader(updatedHeader);
               }}
-            />
-
-            {/* 3. Download Options */}
-            <DownloadPanel 
-              onDownload={(format) => {
-                if (format === "pdf") handleDownloadPDF();
-                else {
-                  toast.info(`${format.toUpperCase()} export is being optimized for ATS signature protocols.`);
-                }
-              }}
-            />
-
-            {/* 4. Regenerate / Strategy Refinement */}
-            <RegenerateOptions 
-              onRegenerate={(strategy) => {
-                toast.loading(`Recalibrating for ${strategy} strategy...`);
-                handleGenerate();
-              }}
-              isRegenerating={isGenerating}
+              onRegenerate={handleGenerate}
+              onDownload={handleDownloadPDF}
             />
 
             <div className="flex justify-center pb-20">
@@ -1015,7 +976,7 @@ RETURN JSON FORMAT ONLY:
                 onClick={() => setIsOpen(false)}
                 className="text-xs font-display font-bold uppercase tracking-[0.5em] text-[#1E2A3A]/40 hover:text-[#1E2A3A] transition-all"
               >
-                Close Synthesis Preview
+                Close Blueprint Preview
               </button>
             </div>
           </motion.div>
