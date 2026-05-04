@@ -110,7 +110,7 @@ const Auth = () => {
       >
         <div className="glass-strong rounded-2xl p-8">
           {/* Logo */}
-          <div className="flex items-center justify-center mb-10">
+          <div className="flex items-center justify-center mb-0">
             <img src="/logo.png" alt="Lumina" className="w-[120px] h-auto object-contain" />
           </div>
 

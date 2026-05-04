@@ -65,7 +65,7 @@ export const WelcomeScreen = () => {
             transition={{ duration: 0.5, ease: "circOut" }}
             className="bg-white rounded-[2.5rem] p-12 text-center space-y-8 shadow-[0_50px_100px_-20px_rgba(16,185,129,0.3)]"
           >
-            <div className="inline-flex items-center justify-center w-[120px] h-[120px] mb-4">
+            <div className="inline-flex items-center justify-center w-[120px] h-[120px] mb-0">
               {step === 1 ? (
                 <img src="/favicon.png" alt="Lumina" className="w-full h-full object-contain" />
               ) : (
