@@ -926,7 +926,7 @@ RETURN JSON FORMAT ONLY:
         <button
           onClick={handleGenerate}
           disabled={isGenerating}
-          className="relative overflow-hidden group/btn flex items-center gap-5 px-14 py-7 rounded-full text-[13px] font-black uppercase tracking-[0.3em] bg-primary text-primary-foreground hover:scale-105 transition-all duration-500 active:scale-95 disabled:opacity-50"
+          className="relative overflow-hidden group/btn flex items-center gap-5 px-14 py-7 rounded-full text-[13px] font-black uppercase tracking-[0.3em] bg-accent-emerald text-white hover:scale-110 transition-all duration-500 active:scale-95 disabled:opacity-70"
         >
           {isGenerating ? (
             <><Loader2 className="w-6 h-6 animate-spin" /> Synthesizing Intelligence...</>
@@ -956,14 +956,14 @@ RETURN JSON FORMAT ONLY:
               <div className="flex flex-col md:flex-row gap-4">
                 <button
                   onClick={handleSaveDraft}
-                  className="flex items-center gap-4 px-8 py-5 rounded-[1.5rem] bg-white/10 border border-primary/30 text-xs font-black uppercase tracking-[0.2em] text-primary hover:bg-primary hover:text-primary-foreground transition-all shadow-[0_0_20px_rgba(var(--primary-rgb),0.1)] active:scale-95"
+                  className="flex items-center gap-4 px-8 py-5 rounded-[1.5rem] bg-accent-emerald/10 border border-accent-emerald/30 text-xs font-black uppercase tracking-[0.2em] text-accent-emerald hover:bg-accent-emerald hover:text-white transition-all active:scale-95 shadow-lg"
                 >
                   <Archive className="w-5 h-5" /> 
                   Save as Draft
                 </button>
                 <button
                   onClick={handleDownloadPDF}
-                  className="flex items-center gap-4 px-10 py-5 rounded-[1.5rem] bg-primary text-primary-foreground text-xs font-black uppercase tracking-[0.2em] transition-all active:scale-95"
+                  className="flex items-center gap-4 px-10 py-5 rounded-[1.5rem] bg-accent-emerald text-white text-xs font-black uppercase tracking-[0.2em] transition-all hover:scale-105 active:scale-95 shadow-xl"
                 >
                   <Download className="w-5 h-5" /> Export Premium PDF
                 </button>

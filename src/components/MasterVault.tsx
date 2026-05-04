@@ -497,7 +497,7 @@ RETURN JSON FORMAT ONLY:
           <h3 className="text-3xl font-display font-bold tracking-tight text-foreground">Tactical Profile Restricted</h3>
           <p className="text-muted-foreground text-sm max-w-sm mx-auto leading-relaxed">Your persistent career library is securely encrypted. Sign in to access smart-sync and AI tailoring features.</p>
         </div>
-        <Link to="/auth" className="group relative px-10 py-4 bg-foreground text-background rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-[1.05] active:scale-95 shadow-2xl overflow-hidden">
+        <Link to="/auth" className="group relative px-10 py-4 bg-accent-emerald text-white rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:scale-[1.05] active:scale-95 shadow-2xl overflow-hidden">
           <span className="relative z-10">Proceed to Secure Login</span>
           <div className="absolute inset-0 bg-accent-blue translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
         </Link>
@@ -584,7 +584,7 @@ RETURN JSON FORMAT ONLY:
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isSyncing}
-                className="group relative flex items-center gap-4 px-10 py-5 rounded-2xl bg-white text-slate-950 text-xs font-black uppercase tracking-[0.2em] shadow-2xl hover:shadow-primary/40 active:scale-95 disabled:opacity-50 transition-all overflow-hidden"
+                className="group relative flex items-center gap-4 px-10 py-5 rounded-2xl bg-accent-emerald text-white text-xs font-black uppercase tracking-[0.2em] shadow-2xl hover:scale-105 active:scale-95 disabled:opacity-50 transition-all overflow-hidden"
               >
                 <div className="absolute inset-0 bg-primary opacity-0 group-hover:opacity-10 transition-opacity" />
                 {isSyncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Import className="w-5 h-5 text-primary group-hover:scale-125 transition-transform" />}
@@ -749,7 +749,7 @@ RETURN JSON FORMAT ONLY:
               <button
                 onClick={handleSaveProfile}
                 disabled={isSaving}
-                className="flex items-center gap-3 px-10 py-4 rounded-2xl text-sm font-bold bg-foreground text-background hover:scale-[1.02] transition-all shadow-xl shadow-foreground/10 active:scale-95 disabled:opacity-50"
+                className="flex items-center gap-3 px-10 py-4 rounded-2xl text-sm font-bold bg-accent-emerald text-white hover:scale-[1.05] transition-all shadow-xl shadow-accent-emerald/10 active:scale-95 disabled:opacity-50"
               >
                 {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 Save Identity Signal
