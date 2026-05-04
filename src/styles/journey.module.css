@@ -2,7 +2,7 @@
   position: relative;
   width: 100%;
   height: 600vh;
-  background-color: #060d14;
+  background: radial-gradient(circle at center, #0a1b15 0%, #060d14 100%);
   overflow: clip;
 }
 
@@ -74,13 +74,13 @@
   top: 50%;
   transform: translateY(-50%);
   width: 360px;
-  background: rgba(6, 13, 20, 0.85);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  background: rgba(30, 42, 58, 0.8);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(16, 185, 129, 0.4);
   border-radius: 1.5rem;
   padding: 2rem;
   z-index: 20;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 40px rgba(16, 185, 129, 0.1), 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 

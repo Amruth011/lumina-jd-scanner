@@ -106,22 +106,22 @@ export const JourneyScene: React.FC<JourneySceneProps> = ({ progress }) => {
 
   return (
     <>
-      <color attach="background" args={['#060D14']} />
-      <fog attach="fog" args={['#060D14', 20, 60]} />
+      <color attach="background" args={['#0A1118']} />
+      <fog attach="fog" args={['#0A1118', 20, 60]} />
       
       <PerspectiveCamera makeDefault position={[0, 8, 18]} fov={50} />
       
-      <ambientLight intensity={0.3} />
-      <pointLight position={[0, 5, 0]} intensity={40} color="#1E2A3A" />
+      <ambientLight intensity={0.6} color="#10B981" />
+      <pointLight position={[0, 5, 0]} intensity={60} color="#1E2A3A" />
       <spotLight 
         position={[0, 10, 8]} 
-        intensity={progress > 0.95 ? 150 : 60} 
-        color="white" 
+        intensity={progress > 0.95 ? 180 : 80} 
+        color="#10B981" 
         angle={0.3}
         penumbra={1}
         castShadow
       />
-      <hemisphereLight args={['#10B981', '#060D14', 0.1]} />
+      <hemisphereLight args={['#10B981', '#1E2A3A', 0.2]} />
 
       {/* Ground Plane */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
@@ -136,19 +136,19 @@ export const JourneyScene: React.FC<JourneySceneProps> = ({ progress }) => {
         cellSize={1} 
         sectionSize={5} 
         sectionColor="#10B981"
-        sectionThickness={1.5}
-        cellColor="#10B981"
-        cellThickness={0.5}
-        opacity={0.08}
+        sectionThickness={2}
+        cellColor="#1E2A3A"
+        cellThickness={1}
+        opacity={0.15}
       />
 
       {/* The Road */}
       <mesh ref={roadRef}>
         <tubeGeometry args={[curve, 200, 0.18, 12, false]} />
         <meshStandardMaterial 
-          color="#0F2A1E" 
-          emissive="#061A10" 
-          roughness={0.8} 
+          color="#1E2A3A" 
+          emissive="#0A1118" 
+          roughness={0.6} 
         />
       </mesh>
 
@@ -158,7 +158,7 @@ export const JourneyScene: React.FC<JourneySceneProps> = ({ progress }) => {
         <meshStandardMaterial 
           color="#10B981" 
           emissive="#10B981" 
-          emissiveIntensity={0.6} 
+          emissiveIntensity={1.2} 
         />
       </mesh>
 

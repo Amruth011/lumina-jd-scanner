@@ -76,9 +76,9 @@ export const JourneyNode: React.FC<JourneyNodeProps> = ({
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, 0]}>
         <cylinderGeometry args={[0.6, 0.6, 0.08, 32]} />
         <meshStandardMaterial 
-          color="#0A1520" 
+          color={isActive ? "#10B981" : "#1E2A3A"} 
           emissive={isActive ? "#10B981" : "#0A1520"}
-          emissiveIntensity={isActive ? 0.5 : 0.1}
+          emissiveIntensity={isActive ? 0.8 : 0.1}
         />
       </mesh>
 
