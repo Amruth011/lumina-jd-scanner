@@ -69,7 +69,7 @@
 
 /* Side Panel */
 .panel {
-  position: fixed;
+  position: absolute;
   right: 2rem;
   top: 50%;
   transform: translateY(-50%);
