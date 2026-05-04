@@ -106,8 +106,8 @@ export const JourneyScene: React.FC<JourneySceneProps> = ({ progress }) => {
 
   return (
     <>
-      <color attach="background" args={['#0D1F2D']} />
-      <fog attach="fog" args={['#0D1F2D', 15, 50]} />
+      <color attach="background" args={['#10B981']} />
+      <fog attach="fog" args={['#10B981', 10, 40]} />
       
       <PerspectiveCamera makeDefault position={[0, 8, 18]} fov={50} />
       

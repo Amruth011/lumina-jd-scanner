@@ -14,11 +14,11 @@ const chapters = [
     title: 'Decode Every Hidden Requirement',
     description: 'Our neural analysis engine scans the JD to surface implicit keywords, mission-critical skills, and cultural signals that typical scanners miss.',
     visual: (
-      <div className="bg-white/5 rounded-2xl p-8 font-mono text-sm border border-white/10 w-full h-full flex flex-col gap-4">
-        <div className="text-white/40 border-b border-white/10 pb-4">scanning_job_description.raw</div>
+      <div className="bg-lumina-navy/5 rounded-2xl p-8 font-mono text-sm border border-lumina-navy/10 w-full h-full flex flex-col gap-4">
+        <div className="text-lumina-navy/40 border-b border-lumina-navy/10 pb-4">scanning_job_description.raw</div>
         <div className="space-y-2">
-          <p className="text-white/80">"Seeking a <span className="bg-lumina-teal/20 text-lumina-teal rounded px-1">Senior AI Engineer</span> with experience in <span className="bg-lumina-teal/20 text-lumina-teal rounded px-1">RAG systems</span> and <span className="bg-lumina-teal/20 text-lumina-teal rounded px-1">LLM orchestration</span>..."</p>
-          <p className="text-white/30">Candidate must demonstrate leadership in distributed...</p>
+          <p className="text-lumina-navy/80">"Seeking a <span className="bg-lumina-teal/20 text-lumina-teal rounded px-1">Senior AI Engineer</span> with experience in <span className="bg-lumina-teal/20 text-lumina-teal rounded px-1">RAG systems</span> and <span className="bg-lumina-teal/20 text-lumina-teal rounded px-1">LLM orchestration</span>..."</p>
+          <p className="text-lumina-navy/30">Candidate must demonstrate leadership in distributed...</p>
         </div>
         <div className="mt-auto flex gap-2">
           <div className="w-2 h-2 rounded-full bg-lumina-teal animate-pulse" />
@@ -33,8 +33,8 @@ const chapters = [
     description: 'We map your profile directly against the target role, highlighting exactly where you fall short and where you exceed expectations.',
     visual: (
       <div className="grid grid-cols-2 gap-4 h-full w-full">
-        <div className="bg-white/5 rounded-xl p-4 flex flex-col gap-4 border border-white/10">
-          <p className="text-[10px] text-white/40 uppercase font-bold">Your Profile</p>
+        <div className="bg-lumina-navy/5 rounded-xl p-4 flex flex-col gap-4 border border-lumina-navy/10">
+          <p className="text-[10px] text-lumina-navy/40 uppercase font-bold">Your Profile</p>
           <div className="space-y-3">
             <div className="h-2 w-full bg-lumina-teal/40 rounded-full" />
             <div className="h-2 w-3/4 bg-lumina-teal/40 rounded-full" />
@@ -43,12 +43,12 @@ const chapters = [
             </div>
           </div>
         </div>
-        <div className="bg-white/5 rounded-xl p-4 flex flex-col gap-4 border border-white/10">
-          <p className="text-[10px] text-white/40 uppercase font-bold">Target Role</p>
+        <div className="bg-lumina-navy/5 rounded-xl p-4 flex flex-col gap-4 border border-lumina-navy/10">
+          <p className="text-[10px] text-lumina-navy/40 uppercase font-bold">Target Role</p>
           <div className="space-y-3">
-            <div className="h-2 w-full bg-white/20 rounded-full" />
-            <div className="h-2 w-full bg-white/20 rounded-full" />
-            <div className="h-2 w-full bg-white/20 rounded-full" />
+            <div className="h-2 w-full bg-lumina-navy/10 rounded-full" />
+            <div className="h-2 w-full bg-lumina-navy/10 rounded-full" />
+            <div className="h-2 w-full bg-lumina-navy/10 rounded-full" />
           </div>
         </div>
       </div>
@@ -82,11 +82,11 @@ const chapters = [
     title: 'Know the Market Better Than Your Interviewer',
     description: 'Get real-time data on salary ranges, competitor trends, and seniority calibration for the specific role you are targeting.',
     visual: (
-      <div className="bg-lumina-navy-dark rounded-2xl p-8 h-full w-full border border-white/5 flex flex-col gap-6">
+      <div className="bg-lumina-navy/5 rounded-2xl p-8 h-full w-full border border-lumina-navy/10 flex flex-col gap-6">
         <div className="flex justify-between items-end">
           <div className="space-y-2">
-            <p className="text-[10px] text-white/40 uppercase font-bold">Market Average</p>
-            <p className="text-2xl font-serif text-white">$165,000</p>
+            <p className="text-[10px] text-lumina-navy/40 uppercase font-bold">Market Average</p>
+            <p className="text-2xl font-serif text-lumina-navy">$165,000</p>
           </div>
           <div className="h-20 w-32 relative">
             <svg viewBox="0 0 100 50" className="w-full h-full">
@@ -101,7 +101,7 @@ const chapters = [
           </div>
         </div>
         <div className="grid grid-cols-3 gap-2">
-          {[1, 2, 3].map(i => <div key={i} className="h-1 bg-white/10 rounded-full overflow-hidden">
+          {[1, 2, 3].map(i => <div key={i} className="h-1 bg-lumina-navy/10 rounded-full overflow-hidden">
             <div className="h-full bg-lumina-teal w-1/2" />
           </div>)}
         </div>
@@ -149,7 +149,7 @@ export const HowItWorks = () => {
   }, []);
 
   return (
-    <section ref={containerRef} className="bg-lumina-navy text-white min-h-screen overflow-hidden">
+    <section ref={containerRef} className="bg-white text-lumina-navy min-h-screen overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 h-screen flex items-center gap-16">
         {/* Left: Dynamic Visuals */}
         <div className="flex-1 h-[500px] relative hidden lg:block">
@@ -174,7 +174,7 @@ export const HowItWorks = () => {
             >
               <span className="text-lumina-teal font-display font-bold text-xs uppercase tracking-widest">Chapter {i + 1}</span>
               <h3 className="text-4xl md:text-5xl font-serif font-bold leading-tight">{chapter.title}</h3>
-              <p className="text-lg text-white/60 font-body leading-relaxed max-w-md">
+              <p className="text-lg text-lumina-navy/60 font-body leading-relaxed max-w-md">
                 {chapter.description}
               </p>
             </div>
