@@ -144,10 +144,7 @@ export const Hero = () => {
           </div>
         </motion.div>
 
-        {/* 3D Dashboard Preview */}
-        <div className="pt-20">
-          <Hero3DCard />
-        </div>
+        {/* Dashboard Preview space removed for cleaner look */}
       </div>
 
       {/* Scroll Indicator */}
