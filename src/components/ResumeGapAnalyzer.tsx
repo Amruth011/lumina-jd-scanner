@@ -561,7 +561,7 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
                     <button 
                       onClick={handleAddToTracker} 
                       disabled={addedToTracker} 
-                      className="px-16 py-7 rounded-full bg-accent-emerald text-white font-black uppercase tracking-[0.4em] text-[13px] hover:scale-110 active:scale-95 transition-all flex items-center gap-5 group shadow-2xl shadow-accent-emerald/20"
+                      className="px-16 py-7 rounded-full bg-lumina-teal text-white font-black uppercase tracking-[0.4em] text-[13px] hover:scale-110 active:scale-95 transition-all flex items-center gap-5 group shadow-2xl shadow-teal-500/20"
                     >
                       {addedToTracker ? <CheckCircle2 className="w-6 h-6" /> : <Plus className="w-6 h-6 group-hover:rotate-90 transition-transform" />}
                       {addedToTracker ? "Application Tracked" : "Initiate Pipeline Tracking"}

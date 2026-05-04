@@ -17,53 +17,51 @@ export const JdActionCta = ({ onCheckResume, onGenerateResume }: JdActionCtaProp
       className="relative w-full rounded-[3.5rem] overflow-hidden group"
     >
       {/* ── Background Logic ── */}
-      <div className="absolute inset-0 bg-[#10B981] transition-transform duration-1000 group-hover:scale-105" />
-      <div className="absolute inset-0 bg-gradient-to-br from-accent-emerald/50 via-transparent to-accent-emerald/30" />
+      <div className="absolute inset-0 bg-lumina-teal" />
       
-      {/* ── Animated Orbs ── */}
-      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[140%] bg-white/10 blur-[100px] rounded-full animate-pulse" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[140%] bg-accent-emerald/20 blur-[100px] rounded-full" />
+      {/* ── Subtle Texture ── */}
+      <div className="absolute inset-0 bg-black/5" />
 
-      <div className="relative z-10 px-6 py-6 md:py-10 flex flex-col items-center text-center space-y-6">
+      <div className="relative z-10 px-6 py-10 md:py-16 flex flex-col items-center text-center space-y-8">
         <div className="space-y-4 max-w-3xl">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 backdrop-blur-md"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 border border-white/20"
           >
-            <Sparkles size={12} className="text-white animate-pulse" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Next Strategic Step</span>
+            <Sparkles size={12} className="text-white" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Strategic Next Step</span>
           </motion.div>
           
-          <h2 className="text-3xl md:text-4xl font-serif italic text-white tracking-tight leading-tight">
-            Found a Role That Looks Good?
+          <h2 className="text-4xl md:text-5xl font-serif italic text-white tracking-tight leading-tight">
+            Ready to Dominate this Role?
           </h2>
           
-          <p className="text-white/90 text-[12px] md:text-sm max-w-xl mx-auto font-medium leading-relaxed px-4">
-            Check if your professional profile matches these requirements or jump straight to generating a high-impact tailored resume.
+          <p className="text-white/90 text-sm md:text-base max-w-xl mx-auto font-medium leading-relaxed px-4">
+            Check your semantic match score or generate a world-class tailored resume in seconds.
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-center gap-6 pt-4">
           <motion.button
-            whileHover={{ scale: 1.05, y: -4 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.98 }}
             onClick={onCheckResume}
-            className="group flex items-center gap-4 px-8 py-3 rounded-full bg-white text-accent-emerald text-[11px] font-black uppercase tracking-widest shadow-[0_10px_20px_rgba(0,0,0,0.1)] hover:shadow-[0_15px_30px_rgba(0,0,0,0.2)] transition-all"
+            className="group flex items-center gap-4 px-10 py-4 rounded-full bg-white text-lumina-teal text-[12px] font-black uppercase tracking-widest shadow-2xl transition-all"
           >
             Check Your Resume 
-            <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />
+            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </motion.button>
 
           <motion.button
-            whileHover={{ scale: 1.05, y: -4 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.98 }}
             onClick={onGenerateResume}
-            className="group flex items-center gap-4 px-8 py-3 rounded-full bg-white/10 border border-white/30 text-white text-[11px] font-black uppercase tracking-widest backdrop-blur-md hover:bg-white/20 transition-all"
+            className="group flex items-center gap-4 px-10 py-4 rounded-full bg-lumina-teal border-2 border-white text-white text-[12px] font-black uppercase tracking-widest hover:bg-white hover:text-lumina-teal transition-all"
           >
-            Generate Your Resume 
-            <Sparkles size={14} className="group-hover:rotate-12 transition-transform" />
+            Tailor My Resume
+            <Sparkles size={16} className="group-hover:rotate-12 transition-transform" />
           </motion.button>
         </div>
       </div>

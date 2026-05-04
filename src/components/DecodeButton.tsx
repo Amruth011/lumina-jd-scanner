@@ -18,11 +18,11 @@ export const DecodeButton = ({ onClick, isLoading, disabled, isDecoded }: Decode
       className={`
         relative group rounded-2xl px-12 py-5 font-display font-bold text-base tracking-tight
         ${isDecoded
-          ? "bg-accent-emerald text-white border border-accent-emerald/30"
-          : "bg-accent-emerald text-white border border-black/10"
+          ? "bg-lumina-teal text-white"
+          : "bg-lumina-teal text-white"
         }
-        transition-all duration-500 disabled:opacity-70 disabled:cursor-not-allowed
-        overflow-hidden
+        transition-all duration-500 disabled:cursor-not-allowed
+        overflow-hidden shadow-xl shadow-teal-500/20
       `}
     >
       <span className="relative z-10 flex items-center justify-center gap-3">

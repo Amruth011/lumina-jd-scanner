@@ -250,7 +250,7 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
                     <div className="flex justify-center mt-12">
                       <button 
                         onClick={() => handleTabSwitch("generator")}
-                        className="group flex items-center gap-4 px-12 py-6 rounded-full bg-accent-emerald text-white text-[13px] font-black uppercase tracking-widest hover:scale-110 active:scale-95 transition-all shadow-xl shadow-accent-emerald/20"
+                        className="group flex items-center gap-4 px-12 py-6 rounded-full bg-lumina-teal text-white text-[13px] font-black uppercase tracking-widest hover:scale-110 active:scale-95 transition-all shadow-xl shadow-teal-500/20"
                       >
                         Generate Tailored Resume <Zap size={18} className="animate-pulse" />
                       </button>
@@ -265,7 +265,7 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
                 <p className="text-muted-foreground max-w-md mx-auto mb-8 font-medium">You must decode a Job Description before activating the Resume Intelligence engine.</p>
                 <button 
                   onClick={() => handleTabSwitch("decode")}
-                  className="px-8 py-3 rounded-full bg-accent-emerald text-white text-xs font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg"
+                  className="px-8 py-3 rounded-full bg-lumina-teal text-white text-xs font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-teal-500/10"
                 >
                   Return to Decoder
                 </button>

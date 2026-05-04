@@ -269,7 +269,7 @@ export const ApplicationTracker = () => {
                             <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 z-20">
                               {isEditing ? (
                                 <>
-                                  <button onClick={() => saveEdit(app.id)} className="p-2 bg-accent-emerald text-white rounded-xl shadow-lg shadow-accent-emerald/10 hover:scale-110 transition-transform"><Check className="w-3.5 h-3.5" /></button>
+                                  <button onClick={() => saveEdit(app.id)} className="p-2 bg-lumina-teal text-white rounded-xl shadow-lg shadow-teal-500/10 hover:scale-110 transition-transform"><Check className="w-3.5 h-3.5" /></button>
                                   <button onClick={cancelEdit} className="p-2 bg-background/80 text-muted-foreground rounded-xl border border-border/40 hover:scale-110 transition-transform"><X className="w-3.5 h-3.5" /></button>
                                 </>
                               ) : (

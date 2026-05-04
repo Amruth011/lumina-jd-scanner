@@ -926,7 +926,7 @@ RETURN JSON FORMAT ONLY:
         <button
           onClick={handleGenerate}
           disabled={isGenerating}
-          className="relative overflow-hidden group/btn flex items-center gap-5 px-14 py-7 rounded-full text-[13px] font-black uppercase tracking-[0.3em] bg-accent-emerald text-white hover:scale-110 transition-all duration-500 active:scale-95 disabled:opacity-70"
+          className="relative overflow-hidden group/btn flex items-center gap-5 px-14 py-7 rounded-full text-[13px] font-black uppercase tracking-[0.3em] bg-lumina-teal text-white hover:scale-110 transition-all duration-500 active:scale-95 disabled:opacity-70"
         >
           {isGenerating ? (
             <><Loader2 className="w-6 h-6 animate-spin" /> Synthesizing Intelligence...</>

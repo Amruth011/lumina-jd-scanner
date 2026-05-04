@@ -59,19 +59,19 @@ export const GlobalNavbar = ({ activeTab, onTabChange }: GlobalNavbarProps) => {
               onClick={() => handleTabClick(tab.key)} 
               className={`relative flex items-center gap-2 px-5 py-2.5 rounded-full text-[12px] font-display font-bold transition-all duration-500 whitespace-nowrap ${
                 activeTab === tab.key
-                  ? "text-primary-foreground"
+                  ? "text-white"
                   : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
               }`}
             >
               {activeTab === tab.key && (
                 <motion.div
                   layoutId="globalActiveTab"
-                  className="absolute inset-0 bg-accent-emerald rounded-full"
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  className="absolute inset-0 bg-lumina-teal rounded-full shadow-lg shadow-teal-500/20"
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
               )}
               <span className="relative z-10 flex items-center gap-2">
-                <tab.icon size={14} className={activeTab === tab.key ? 'text-background' : 'text-primary/40'} />
+                <tab.icon size={14} className={activeTab === tab.key ? 'text-white' : 'text-primary/40'} />
                 <span className="tracking-tight">{tab.label}</span>
               </span>
             </button>
