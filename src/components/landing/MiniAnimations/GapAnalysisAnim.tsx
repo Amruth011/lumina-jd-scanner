@@ -1,13 +1,5 @@
-"use client";
-
 import React, { useEffect, useState } from 'react';
-
-const rows = [
-  { label: 'System Design', match: true },
-  { label: 'LLM Expertise', match: false },
-  { label: 'Cloud Architecture', match: true },
-  { label: 'Team Mentoring', match: true },
-];
+import { Check, X } from 'lucide-react';
 
 export const GapAnalysisAnim = () => {
   const [active, setActive] = useState(false);
@@ -16,34 +8,43 @@ export const GapAnalysisAnim = () => {
     setActive(true);
   }, []);
 
+  const skills = [
+    { name: 'Cloud Arch', matched: true },
+    { name: 'Go/Rust', matched: false },
+    { name: 'System Design', matched: true },
+    { name: 'Team Lead', matched: true },
+  ];
+
   return (
-    <div className="h-full flex flex-col justify-center gap-3 p-4 bg-white/5 rounded-lg border border-white/10">
-      <div className="flex justify-between text-[10px] uppercase font-bold tracking-widest text-white/40 mb-2">
+    <div className="w-full flex flex-col gap-3 px-4">
+      <div className="flex justify-between text-[10px] text-white/40 uppercase tracking-widest font-mono">
         <span>You</span>
         <span>Target</span>
       </div>
-      {rows.map((row, i) => (
-        <div key={i} className="relative flex items-center justify-between">
-          <div className="w-1/3 h-1.5 bg-emerald-500/20 rounded-full" />
-          <svg className="absolute inset-0 w-full h-full pointer-events-none">
+      {skills.map((skill, i) => (
+        <div key={skill.name} className="flex items-center justify-between relative">
+          <span className="text-[11px] text-white/80 font-medium">{skill.name}</span>
+          
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: -1 }}>
             <line 
-              x1="33%" y1="50%" x2="66%" y2="50%" 
-              stroke={row.match ? "#10B981" : "#EF4444"} 
+              x1="30%" y1="50%" x2="70%" y2="50%" 
+              stroke={skill.matched ? "#10B981" : "#EF4444"} 
               strokeWidth="1" 
-              strokeDasharray={row.match ? "0" : "2,2"}
-              className={`transition-all duration-1000 ${active ? 'opacity-100' : 'opacity-0'}`}
-              style={{ strokeDashoffset: active ? 0 : 100 }}
+              strokeDasharray={skill.matched ? "0" : "4 2"}
+              style={{ 
+                strokeDashoffset: active ? 0 : 100, 
+                transition: `stroke-dashoffset 1s ease-out ${i * 0.2}s` 
+              }}
             />
           </svg>
-          <div className="w-1/3 h-1.5 bg-white/10 rounded-full flex justify-end items-center">
-            <span className={`text-[8px] mr-1 ${row.match ? 'text-emerald-500' : 'text-red-500'}`}>
-              {row.match ? '✓' : '✗'}
-            </span>
-          </div>
+
+          {skill.matched ? (
+            <Check size={14} className="text-[#10B981]" />
+          ) : (
+            <X size={14} className="text-[#EF4444]" />
+          )}
         </div>
       ))}
     </div>
   );
 };
-
-export default GapAnalysisAnim;

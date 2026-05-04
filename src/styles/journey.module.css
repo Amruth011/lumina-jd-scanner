@@ -1,105 +1,248 @@
-.section {
+.journeySection {
   position: relative;
   width: 100%;
-  background: #060D14;
-  overflow: hidden;
+  height: 600vh;
+  background-color: #060d14;
+  overflow: clip;
 }
 
 .stickyContainer {
-  position: relative;
+  position: sticky;
+  top: 0;
   width: 100%;
   height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
-.canvasContainer {
+.header {
   position: absolute;
-  inset: 0;
-  z-index: 1;
-}
-
-.contentOverlay {
-  position: relative;
-  z-index: 10;
-  width: 100%;
-  max-width: 1280px;
-  height: 100%;
-  margin: 0 auto;
-  pointer-events: none;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 4rem 2rem;
-}
-
-.headlineContainer {
+  top: 5vh;
+  left: 0;
+  right: 0;
   text-align: center;
-  pointer-events: auto;
+  z-index: 10;
+  pointer-events: none;
 }
 
 .headline {
   font-family: 'Instrument Serif', serif;
-  font-size: 72px;
-  color: white;
-  margin-bottom: 1rem;
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.1;
 }
 
 .subtitle {
   font-family: 'Inter', sans-serif;
-  font-size: 20px;
+  font-size: clamp(1rem, 2vw, 1.25rem);
   color: rgba(255, 255, 255, 0.5);
+  margin-top: 1rem;
 }
 
-.panelContainer {
+.progressBarContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: 100;
+}
+
+.progressBar {
+  height: 100%;
+  background: #10b981;
+  transition: width 0.1s linear;
+}
+
+.canvasWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Side Panel */
+.panel {
   position: fixed;
   right: 2rem;
   top: 50%;
   transform: translateY(-50%);
   width: 360px;
-  pointer-events: auto;
-  z-index: 20;
-}
-
-.glassCard {
   background: rgba(6, 13, 20, 0.85);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(16, 185, 129, 0.2);
   border-radius: 1.5rem;
   padding: 2rem;
-  color: white;
-  transition: all 0.3s ease;
+  z-index: 20;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-.progressBar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 4px;
-  background: #10B981;
-  box-shadow: 0 0 10px #10B981;
-  z-index: 100;
-  transition: width 0.1s ease;
+.stepLabel {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #10b981;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.panelTitle {
+  font-family: 'Instrument Serif', serif;
+  font-size: 38px;
+  color: #ffffff;
+  margin: 0 0 1rem 0;
+  line-height: 1;
+}
+
+.divider {
+  height: 1px;
+  background: rgba(16, 185, 129, 0.2);
+  margin: 1.5rem 0;
+}
+
+.animArea {
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.description {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.dots {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: background 0.3s ease;
+}
+
+.dotActive {
+  background: #10b981;
+  box-shadow: 0 0 10px #10b981;
+}
+
+/* Mobile Fallback */
+.mobileRoadmap {
+  display: none;
+  padding: 4rem 2rem;
+  background: #060d14;
 }
 
 @media (max-width: 1024px) {
-  .panelContainer {
-    position: absolute;
-    right: 2rem;
-    left: 2rem;
-    bottom: 2rem;
+  .panel {
+    right: 50%;
     top: auto;
-    width: auto;
-    transform: none;
+    bottom: 2rem;
+    transform: translateX(50%);
+    width: calc(100% - 4rem);
+    max-width: 500px;
   }
 }
 
 @media (max-width: 768px) {
-  .headline {
-    font-size: 48px;
+  .journeySection {
+    height: auto !important;
   }
-  .subtitle {
-    font-size: 16px;
+  .stickyContainer {
+    display: none;
   }
+  .mobileRoadmap {
+    display: block;
+  }
+}
+
+/* Animations */
+.fadeUp {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+/* Mini Animations */
+.avatarPulse {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border: 2px solid #10b981;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+}
+
+.avatarPulse::after {
+  content: '';
+  position: absolute;
+  inset: -10px;
+  border: 2px solid #10b981;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+  opacity: 0;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.8); opacity: 0.5; }
+  100% { transform: scale(1.3); opacity: 0; }
+}
+
+.jdLines {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.jdLine {
+  height: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.jdLineHighlight {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: #10b981;
+  transition: width 0.4s ease;
+}
+
+.resumeScore {
+  font-family: 'Instrument Serif', serif;
+  font-size: 72px;
+  color: #10b981;
+  text-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+}
+
+.trophy {
+  font-size: 64px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }

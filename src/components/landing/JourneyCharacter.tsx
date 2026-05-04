@@ -1,65 +1,75 @@
-/* use client */
 import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Trail } from '@react-three/drei';
-import * as THREE from 'three';
-import { journeyNodes } from '../../data/journeyNodes';
+import { Mesh, Vector3, CatmullRomCurve3, Quaternion } from 'three';
+import { Trail, Float } from '@react-three/drei';
 
 interface JourneyCharacterProps {
-  scrollProgressRef: React.MutableRefObject<number>;
+  curve: CatmullRomCurve3;
+  progress: number;
 }
 
-export const JourneyCharacter: React.FC<JourneyCharacterProps> = ({ scrollProgressRef }) => {
-  const meshRef = useRef<THREE.Group>(null);
-  const pointLightRef = useRef<THREE.PointLight>(null);
-
-  // Build same curve as Road component
-  const points = useMemo(() => {
-    const pts: THREE.Vector3[] = [];
-    const spacing = 30;
-    journeyNodes.forEach((_, i) => {
-      pts.push(new THREE.Vector3(0, 0, -i * spacing));
-    });
-    return pts;
-  }, []);
-  const curve = useMemo(() => new THREE.CatmullRomCurve3(points, false, 'catmullrom', 0.2), [points]);
-
+export const JourneyCharacter: React.FC<JourneyCharacterProps> = ({ curve, progress }) => {
+  const meshRef = useRef<Mesh>(null);
+  const ringRef = useRef<Mesh>(null);
+  
+  // Base bobbing and floating handled by Float component, but we need manual position
   useFrame((state) => {
     if (!meshRef.current) return;
-    const progress = scrollProgressRef.current; // 0..1
-    const point = curve.getPointAt(progress);
-    const time = state.clock.getElapsedTime();
-    const bob = Math.sin(time * 2) * 0.08;
-
-    meshRef.current.position.set(point.x, point.y + 0.5 + bob, point.z);
-    // orient forward a bit
-    const lookAtPoint = curve.getPointAt(Math.min(progress + 0.01, 1));
-    meshRef.current.lookAt(lookAtPoint.x, lookAtPoint.y + 0.5 + bob, lookAtPoint.z);
-
-    if (pointLightRef.current) {
-      pointLightRef.current.position.copy(meshRef.current.position);
+    
+    // Get position on curve
+    const pos = curve.getPointAt(progress);
+    meshRef.current.position.set(pos.x, pos.y + 0.3, pos.z);
+    
+    // Get tangent for rotation
+    const tangent = curve.getTangentAt(progress).normalize();
+    const up = new Vector3(0, 1, 0);
+    const axis = new Vector3().crossVectors(up, tangent).normalize();
+    const angle = Math.acos(up.dot(tangent));
+    meshRef.current.quaternion.setFromAxisAngle(axis, angle);
+    
+    // Ring rotation
+    if (ringRef.current) {
+      ringRef.current.rotation.z += 0.05;
+      ringRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 2) * 0.2;
     }
   });
 
   return (
     <group>
-      <group ref={meshRef}>
-        {/* Glow Ring */}
-        <mesh rotation={[Math.PI / 4, 0, 0]}>
+      <mesh ref={meshRef}>
+        <capsuleGeometry args={[0.2, 0.3, 8, 16]} />
+        <meshStandardMaterial 
+          color="#10B981" 
+          emissive="#10B981" 
+          emissiveIntensity={1.2} 
+        />
+        
+        {/* Outer glow ring */}
+        <mesh ref={ringRef} rotation={[Math.PI / 2, 0, 0]}>
           <torusGeometry args={[0.35, 0.02, 8, 32]} />
-          <meshStandardMaterial color="#10B981" emissive="#10B981" emissiveIntensity={2} />
+          <meshStandardMaterial 
+            color="#10B981" 
+            emissive="#10B981" 
+            emissiveIntensity={2} 
+          />
         </mesh>
-        {/* Character Capsule */}
-        <mesh>
-          <capsuleGeometry args={[0.2, 0.3, 8, 16]} />
-          <meshStandardMaterial color="#10B981" emissive="#10B981" emissiveIntensity={1.5} />
-        </mesh>
+
         {/* Trail effect */}
-        <Trail width={1.5} length={4} color={new THREE.Color('#10B981')} attenuation={(t) => t * t} />
-      </group>
-      <pointLight ref={pointLightRef} intensity={80} distance={5} color="#10B981" decay={2} />
+        <Trail
+          width={1.5}
+          length={8}
+          color="#10B981"
+          attenuation={(t) => t * t}
+        />
+      </mesh>
+      
+      {/* Light that follows the character */}
+      <pointLight 
+        intensity={80} 
+        distance={10} 
+        color="#10B981" 
+        position={[0, 0.5, 0]} 
+      />
     </group>
   );
 };
-
-export default JourneyCharacter;

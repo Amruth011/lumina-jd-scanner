@@ -1,6 +1,5 @@
-"use client";
-
 import React, { useState, useEffect } from 'react';
+import styles from '../../../styles/journey.module.css';
 
 const words = ["React", "TypeScript", "ATS-optimized", "Leadership", "Node.js"];
 
@@ -15,19 +14,28 @@ export const JDDecoderAnim = () => {
   }, []);
 
   return (
-    <div className="h-full flex flex-col justify-center gap-2 font-mono text-xs p-4 bg-white/5 rounded-lg border border-white/10">
+    <div className={styles.jdLines}>
       {words.map((word, i) => (
-        <div 
-          key={i} 
-          className={`px-2 py-1 rounded transition-colors duration-200 ${
-            i === activeIndex ? 'bg-emerald-500 text-slate-900' : 'bg-transparent text-white/40'
-          }`}
-        >
-          {word}
+        <div key={word} className={styles.jdLine}>
+          <div 
+            className={styles.jdLineHighlight} 
+            style={{ 
+              width: activeIndex === i ? '100%' : '0%',
+              transitionDelay: activeIndex === i ? '0s' : '0.1s'
+            }} 
+          />
+          <span style={{ 
+            position: 'relative', 
+            zIndex: 1, 
+            fontSize: '10px', 
+            paddingLeft: '8px',
+            color: activeIndex === i ? 'black' : 'white',
+            fontFamily: 'JetBrains Mono'
+          }}>
+            {word}
+          </span>
         </div>
       ))}
     </div>
   );
 };
-
-export default JDDecoderAnim;

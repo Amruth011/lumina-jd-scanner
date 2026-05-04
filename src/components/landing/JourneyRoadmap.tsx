@@ -1,105 +1,121 @@
-import React, { useEffect, useRef, useState, Suspense, lazy } from 'react';
+import React, { useRef, useEffect, useState, Suspense } from 'react';
+import { Canvas } from '@react-three/fiber';
+import styles from '../../styles/journey.module.css';
+import { JourneyScene } from './JourneyScene';
+import { NodeContentPanel } from './NodeContentPanel';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Lenis from '@studio-freight/lenis';
+import { useGSAP } from '@gsap/react';
 import { journeyNodes } from '../../data/journeyNodes';
-import styles from '../../styles/journey.module.css';
 
-// Register GSAP plugins
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
-}
-
-// Lazy load heavy 3D scene (client‑only)
-const JourneyScene = lazy(() => import('./JourneyScene'));
-const MobileFallback = lazy(() => import('./MobileFallback'));
+gsap.registerPlugin(ScrollTrigger);
 
 const JourneyRoadmap: React.FC = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const progressRef = useRef<HTMLDivElement>(null);
-  const scrollProgress = useRef<number>(0);
-  const [activeNodeId, setActiveNodeId] = useState<number>(journeyNodes[0].id);
-  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const sectionRef = useRef<HTMLElement>(null);
+  const headlineRef = useRef<HTMLHeadingElement>(null);
+  const subtitleRef = useRef<HTMLParagraphElement>(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
-  // Initialize Lenis for smooth scrolling
-  useEffect(() => {
-    const lenis = new Lenis({
-      smooth: true,
-      lerp: 0.1,
+  useGSAP(() => {
+    // Pin section and track progress
+    ScrollTrigger.create({
+      trigger: sectionRef.current,
+      start: "top top",
+      end: "+=600%",
+      pin: true,
+      scrub: 1.5,
+      onUpdate: (self) => {
+        setScrollProgress(self.progress);
+      }
     });
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
-    return () => {
-      lenis.destroy();
-    };
-  }, []);
 
-  // Detect viewport width for fallback
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
-  }, []);
+    // Header animations
+    gsap.fromTo(headlineRef.current, 
+      { opacity: 0, y: 30 },
+      { 
+        opacity: 1, 
+        y: 0, 
+        duration: 1, 
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 80%",
+        }
+      }
+    );
 
-  // Setup GSAP ScrollTrigger once container is ready
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const ctx = gsap.context(() => {
-      ScrollTrigger.create({
-        trigger: '#journey-section',
-        start: 'top top',
-        end: '+=600%', // 600% of viewport height for cinematic pacing
-        pin: true,
-        scrub: 1.5,
-        onUpdate: (self) => {
-          scrollProgress.current = self.progress;
-          // Update thin progress bar width
-          if (progressRef.current) {
-            progressRef.current.style.width = `${self.progress * 100}%`;
-          }
-          // Determine active node based on progress
-          const active = journeyNodes
-            .filter((n) => self.progress >= n.t)
-            .pop();
-          if (active && active.id !== activeNodeId) {
-            setActiveNodeId(active.id);
-          }
-        },
-      });
-    }, containerRef);
-    return () => ctx.revert();
-  }, [activeNodeId]);
-
-  const activeNode = journeyNodes.find((n) => n.id === activeNodeId) ?? journeyNodes[0];
+    gsap.fromTo(subtitleRef.current,
+      { opacity: 0, y: 20 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        delay: 0.3,
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 80%",
+        }
+      }
+    );
+  }, { scope: sectionRef });
 
   return (
-    <section id="journey-section" className={styles.section} ref={containerRef}>
-      {/* Thin teal progress bar at the top */}
-      <div className={styles.topBar} ref={progressRef} />
+    <section ref={sectionRef} className={styles.journeySection}>
+      <div className={styles.stickyContainer}>
+        {/* Progress Bar */}
+        <div className={styles.progressBarContainer}>
+          <div 
+            className={styles.progressBar} 
+            style={{ width: `${scrollProgress * 100}%` }} 
+          />
+        </div>
 
-      <div className={styles.layout}>
-        {/* 3D canvas or mobile fallback */}
-        <div className={styles.canvasContainer}>
-          <Suspense fallback={null}>
-            {isMobile ? <MobileFallback /> : <JourneyScene scrollProgressRef={scrollProgress} />}
+        {/* Header */}
+        <div className={styles.header}>
+          <h2 ref={headlineRef} className={styles.headline}>
+            Your Transformation. Step by Step.
+          </h2>
+          <p ref={subtitleRef} className={styles.subtitle}>
+            From invisible to unstoppable — in four moves.
+          </p>
+        </div>
+
+        {/* 3D Scene */}
+        <div className={styles.canvasWrapper}>
+          <Suspense fallback={<div className="w-full h-full bg-[#060D14]" />}>
+            <Canvas
+              shadows
+              gl={{ 
+                antialias: true, 
+                pixelRatio: Math.min(window.devicePixelRatio, 1.5) 
+              }}
+              camera={{ position: [0, 8, 18], fov: 50 }}
+            >
+              <JourneyScene progress={scrollProgress} />
+            </Canvas>
           </Suspense>
         </div>
-        {/* Side glass‑morphism panel */}
-        <div className={styles.panelContainer}>
-          <Suspense fallback={null}>
-            {/* Lazy load panel to keep bundle small */}
-            {React.createElement(
-              // Dynamically import will be resolved by bundler
-              // eslint-disable-next-line @typescript-eslint/no-var-requires
-              require('./NodeContentPanel').default,
-              { activeNode }
-            )}
-          </Suspense>
+
+        {/* Side Panel */}
+        <NodeContentPanel progress={scrollProgress} />
+      </div>
+
+      {/* Mobile Fallback - Static SVG */}
+      <div className={styles.mobileRoadmap}>
+        <h2 className="text-3xl font-serif text-white text-center mb-8">Your Journey</h2>
+        <div className="space-y-12 relative">
+          <div className="absolute left-4 top-0 bottom-0 w-1 bg-[#10B981]/20" />
+          {journeyNodes.map((node, i) => (
+            <div key={node.id} className="flex gap-6 relative z-10">
+              <div className="w-8 h-8 rounded-full bg-[#10B981] flex items-center justify-center font-mono text-black font-bold text-xs">
+                0{i + 1}
+              </div>
+              <div>
+                <h4 className="text-[#10B981] font-mono text-xs mb-1">{node.step}</h4>
+                <h3 className="text-xl text-white font-serif">{node.title}</h3>
+                <p className="text-white/60 text-sm mt-1">{node.description}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
