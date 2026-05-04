@@ -63,46 +63,45 @@ export const Hero = () => {
         className="absolute inset-0 z-0"
       /> */}
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 text-center space-y-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 text-center space-y-10">
+        {/* Signal Badge */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-lumina-teal/20 text-[10px] font-display font-bold text-lumina-teal uppercase tracking-[0.2em] shadow-sm mb-4"
+        >
+          <div className="w-2 h-2 rounded-full bg-lumina-teal animate-pulse" />
+          V3.0 Signal Live
+        </motion.div>
+
         {/* Headline */}
-        <h1 className="text-5xl md:text-[96px] font-serif font-bold text-[#1E2A3A] leading-[1.1] tracking-tight max-w-5xl mx-auto">
-          {words.map((word, i) => (
-            <motion.span
-              key={i}
-              variants={wordFadeIn}
-              initial="hidden"
-              animate="visible"
-              custom={i}
-              className="inline-block mr-[0.2em]"
-            >
-              {word}
-            </motion.span>
-          ))}
+        <h1 className="text-6xl md:text-[110px] font-serif font-bold text-lumina-navy leading-[0.95] tracking-tight max-w-4xl mx-auto">
+          Land in the <span className="italic text-lumina-teal">top 0.1%</span>
         </h1>
 
         {/* Subheadline */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2, duration: 0.8 }}
-          className="text-lg md:text-2xl text-[#1E2A3A]/70 font-body max-w-2xl mx-auto leading-relaxed"
+          transition={{ delay: 0.5, duration: 0.8 }}
+          className="text-lg md:text-2xl text-lumina-navy/60 font-body max-w-3xl mx-auto leading-relaxed"
         >
-          Decode any job description in seconds. Identify every gap. Build the resume that wins.
+          Paste a job description. Upload your resume. Get your exact match score, skill gaps, and a winning playbook — in seconds.
         </motion.p>
 
         {/* CTAs */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.5, duration: 0.8 }}
+          transition={{ delay: 0.8, duration: 0.8 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-4"
         >
-          <button className="px-10 py-5 bg-lumina-teal text-lumina-navy font-bold rounded-full transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
-            Analyze My Resume Free →
+          <button className="px-12 py-5 bg-lumina-navy text-white font-bold rounded-full transition-all hover:scale-105 active:scale-95 shadow-xl flex items-center gap-3 group">
+            DEPLOY ENGINE 
+            <span className="text-lumina-teal group-hover:translate-x-1 transition-transform">→</span>
           </button>
-          <button className="px-10 py-5 border border-lumina-teal text-lumina-teal font-bold rounded-full transition-all hover:bg-lumina-teal/10 flex items-center gap-2">
-            <span className="w-5 h-5 flex items-center justify-center rounded-full border border-current text-[10px]">▶</span>
-            Watch 90s Demo
+          <button className="px-12 py-5 bg-white border border-lumina-navy/10 text-lumina-navy font-bold rounded-full transition-all hover:bg-lumina-navy/5 shadow-sm">
+            TRY WITH SAMPLE RESUME
           </button>
         </motion.div>
 
@@ -110,14 +109,34 @@ export const Hero = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 2, duration: 1 }}
-          className="pt-12 flex flex-wrap justify-center items-center gap-4 text-xs font-display text-[#1E2A3A]/40 tracking-widest uppercase"
+          transition={{ delay: 1.2, duration: 1 }}
+          className="pt-10 space-y-8"
         >
-          <span>94,000 resumes analyzed</span>
-          <div className="w-1.5 h-1.5 rounded-full bg-lumina-teal animate-pulse" />
-          <span>3.2× avg interview rate</span>
-          <div className="w-1.5 h-1.5 rounded-full bg-lumina-teal animate-pulse" />
-          <span>Used by engineers at Google, Meta, Amazon</span>
+          <div className="flex items-center justify-center -space-x-3 mb-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-lumina-navy/10 flex items-center justify-center overflow-hidden">
+                <div className={`w-full h-full bg-gradient-to-br ${i === 1 ? 'from-lumina-navy to-lumina-teal' : i === 2 ? 'from-lumina-teal to-lumina-navy' : 'from-blue-500 to-teal-400'}`} />
+              </div>
+            ))}
+            <div className="pl-6 text-sm font-body font-bold text-lumina-navy">
+              <span className="text-lumina-navy">1,240+ Scientists</span> <span className="text-lumina-navy/40 font-medium">already deployed</span>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-4 text-[10px] font-display font-bold text-lumina-navy/30 tracking-[0.15em] uppercase">
+            <div className="flex items-center gap-2">
+              <span className="text-lumina-teal">✓</span> NO DATA SOLD
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-lumina-teal">✓</span> ~25S RESULTS
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-lumina-teal">✓</span> FREE TO START
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-lumina-teal">✓</span> 0.1% CAREER OUTCOMES
+            </div>
+          </div>
         </motion.div>
 
         {/* 3D Dashboard Preview */}
