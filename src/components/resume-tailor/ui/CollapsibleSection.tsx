@@ -15,6 +15,16 @@ interface CollapsibleSectionProps {
  * A premium accordion component for the Lumina editor.
  * Features smooth Framer Motion transitions and high-fidelity styling.
  */
+/**
+ * CollapsibleSection: Elite Accordion Component
+ * ============================================
+ * Provides a highly animated, accessible container for dashboard control panels.
+ * Features:
+ * - Independent open/close state.
+ * - Interactive action slots (e.g., '+ Vault' button).
+ * - Smooth [0.16, 1, 0.3, 1] cubic-bezier animations.
+ * - ARIA-compliant role and state attributes.
+ */
 export const CollapsibleSection = ({ 
   title, 
   icon: Icon, 
@@ -24,6 +34,7 @@ export const CollapsibleSection = ({
   action 
 }: CollapsibleSectionProps) => (
   <div className={`p-5 rounded-[1.5rem] border transition-all duration-300 ${isOpen ? 'bg-white border-lumina-teal/10 shadow-lg' : 'bg-white/50 border-[#1E2A3A]/5 hover:border-lumina-teal/20'}`}>
+    {/* Header Trigger */}
     <div 
       className="flex items-center justify-between cursor-pointer" 
       onClick={onToggle}
