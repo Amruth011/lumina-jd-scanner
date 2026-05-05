@@ -32,6 +32,12 @@ interface ScannerViewProps {
   onTabChange?: (tab: Tab) => void;
 }
 
+/**
+ * ScannerView: Main Dashboard Orchestrator
+ * ======================================
+ * Manages the transition between JD Decoding, Analysis, Resume Generation,
+ * and the Master Vault. Handles global history and state synchronization.
+ */
 export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewProps) => {
   const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
