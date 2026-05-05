@@ -200,7 +200,7 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
   const handleGenerateResume = async () => {
     if (vaultItems.length === 0) {
       toast.error("Tactical Profile Empty", {
-        description: "You must sync your resume or add roles in the Profile tab before we can tailor your candidacy.",
+        description: "Please synchronize your Master Vault or add roles in the Profile tab to enable automated tailoring.",
         action: {
           label: "Go to Profile",
           onClick: () => {
