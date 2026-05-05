@@ -22,6 +22,7 @@ serve(async (req: Request) => {
 
     const fallbackModels = [
       requestedModel || "llama-3.3-70b-versatile",
+      "gemma2-27b-it",
       "llama-3.1-8b-instant",
       "gemma2-9b-it"
     ].filter((v, i, a) => a.indexOf(v) === i);
