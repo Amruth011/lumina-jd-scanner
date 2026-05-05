@@ -44,9 +44,44 @@ export const useDecodeJD = () => {
 
       // ── CALL TOTAL INTELLIGENCE ENGINE (Supabase Edge Function) ──
       console.log("── LUMINA ENGINE REQUEST INITIATED ──");
-      const { data, error } = await supabase.functions.invoke('decode-jd', {
-        body: { jdText }
-      });
+      let data = null;
+      let error = null;
+
+      try {
+        const response = await supabase.functions.invoke('decode-jd', {
+          body: { jdText }
+        });
+        data = response.data;
+        error = response.error;
+      } catch (e) {
+        error = e;
+      }
+
+      // ── EMERGENCY FALLBACK: Try Local API Proxy if Edge Function Fails ──
+      if (error && (error.message?.includes("Failed to send a request") || error.status === 404 || error.status === 500)) {
+        console.warn("Lumina Engine: Edge Function bottleneck. Switching to Local API Proxy...");
+        try {
+          const apiResponse = await fetch("/api/analyze", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              jdText,
+              messages: [{ 
+                role: "user", 
+                content: `You are the Lumina Forensic Intelligence Architect. Act on this JD: ${jdText.substring(0, 5000)}... 
+                Return exactly the JSON schema for JD decoding including grade, skills, red_flags, logistics, and deep_dive.` 
+              }],
+              response_format: { type: "json_object" }
+            })
+          });
+          if (apiResponse.ok) {
+            data = await apiResponse.json();
+            error = null;
+          }
+        } catch (apiErr) {
+          console.error("Local API Proxy also failed:", apiErr);
+        }
+      }
 
       if (error) throw error;
       if (!data) throw new Error("AI Engine returned empty data");
