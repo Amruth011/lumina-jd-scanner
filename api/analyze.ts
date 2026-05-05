@@ -13,6 +13,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // 2. Load API Key from Environment
   const groqKey = process.env.GROQ_API_KEY;
 
   if (!groqKey) {
@@ -21,6 +22,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+  /**
+   * Multi-Model Fallback List
+   * ========================
+   * 1. Primary: Requested or Llama 3.3 70B (Intelligence)
+   * 2. Secondary: Gemma 2 27B (Stability/Rate Limits)
+   * 3. Tertiary: Llama 3.1 8B (Speed)
+   * 4. Base: Gemma 2 9B (Ultra-fast)
+   */
   const fallbackModels = [
     req.body.model || 'llama-3.3-70b-versatile',
     'gemma2-27b-it',
