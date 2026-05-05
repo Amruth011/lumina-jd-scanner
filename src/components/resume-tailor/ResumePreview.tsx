@@ -28,7 +28,8 @@ import {
   Trash2,
   Type,
   Maximize2,
-  Layers
+  Layers,
+  Cpu
 } from "lucide-react";
 import { GeneratedResume, VaultItem } from "@/types/jd";
 import { toast } from "sonner";
@@ -69,21 +70,21 @@ const CollapsibleSection = ({
   onToggle: () => void;
   action?: React.ReactNode;
 }) => (
-  <div className={`p-6 rounded-[2rem] border transition-all duration-300 ${isOpen ? 'bg-white border-lumina-teal/10 shadow-lg' : 'bg-white/50 border-[#1E2A3A]/5 hover:border-lumina-teal/20'}`}>
+  <div className={`p-5 rounded-[1.5rem] border transition-all duration-300 ${isOpen ? 'bg-white border-lumina-teal/10 shadow-lg' : 'bg-white/50 border-[#1E2A3A]/5 hover:border-lumina-teal/20'}`}>
     <div className="flex items-center justify-between cursor-pointer" onClick={onToggle}>
-      <div className="flex items-center gap-4">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${isOpen ? 'bg-lumina-teal text-white' : 'bg-lumina-teal/10 text-lumina-teal'}`}>
-          <Icon className="w-5 h-5" />
+      <div className="flex items-center gap-3">
+        <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${isOpen ? 'bg-lumina-teal text-white' : 'bg-lumina-teal/10 text-lumina-teal'}`}>
+          <Icon className="w-4 h-4" />
         </div>
         <div>
-          <h4 className="text-xs font-black uppercase tracking-widest text-[#1E2A3A]">{title}</h4>
-          <p className="text-[9px] font-bold text-[#1E2A3A]/30 uppercase tracking-tighter">{isOpen ? 'Active Calibration' : 'Tap to Expand'}</p>
+          <h4 className="text-[11px] font-black uppercase tracking-widest text-[#1E2A3A]">{title}</h4>
+          <p className="text-[8px] font-bold text-[#1E2A3A]/30 uppercase tracking-tighter">{isOpen ? 'Active Calibration' : 'Tap to Expand'}</p>
         </div>
       </div>
       <div className="flex items-center gap-4">
         {action && <div onClick={(e) => e.stopPropagation()}>{action}</div>}
         <motion.div animate={{ rotate: isOpen ? 180 : 0 }}>
-          <ChevronDown size={18} className="text-[#1E2A3A]/30" />
+          <ChevronDown size={16} className="text-[#1E2A3A]/30" />
         </motion.div>
       </div>
     </div>
@@ -97,7 +98,7 @@ const CollapsibleSection = ({
           transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
           className="overflow-hidden"
         >
-          <div className="pt-8 space-y-6">
+          <div className="pt-6 space-y-5">
             {children}
           </div>
         </motion.div>
@@ -120,7 +121,7 @@ export const ResumePreview = ({
   const [localHeader, setLocalHeader] = useState<ResumeHeader>(header);
   
   // ── UI Logic State ──
-  const [openSection, setOpenSection] = useState<string | null>("settings");
+  const [openSection, setOpenSection] = useState<string | null>("strategy");
   const [showVaultPicker, setShowVaultPicker] = useState<{ section: 'experience' | 'projects' | 'education' | 'certifications', index?: number } | null>(null);
   
   // ── Typography & Layout State ──
@@ -214,242 +215,239 @@ export const ResumePreview = ({
   };
 
   // ── Dynamic Style Mappings ──
-  const resumeStyles = {
-    padding: `${marginSize * 2}rem`,
-    lineHeight: lineSpacing.toString(),
-    fontSize: `${baseFontSize}px`,
-  };
-
   const fontSizes = {
     name: `${baseFontSize + 10}px`,
     header: `${baseFontSize + 4}px`,
     body: `${baseFontSize}px`,
-    meta: `10px`, // Fixed at 10 as requested
+    meta: `10px`,
   };
 
   return (
-    <div className="max-w-[1400px] mx-auto pb-24">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
+    <div className="max-w-[1400px] mx-auto min-h-[calc(100vh-140px)]">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch h-full">
         
-        {/* ── LEFT PANEL: COMPACT ACCORDION EDITOR ── */}
-        <div className="lg:col-span-5 space-y-4 lg:sticky lg:top-8 max-h-[90vh] overflow-y-auto pr-2 custom-scrollbar pb-10">
+        {/* ── LEFT PANEL: OPTIMIZED STRATEGY HUB ── */}
+        <div className="lg:col-span-5 flex flex-col h-full lg:sticky lg:top-8 max-h-[calc(100vh-160px)] pb-4">
           
-          <div className="flex items-center justify-between p-6 bg-white rounded-[2rem] border border-[#1E2A3A]/5 shadow-sm mb-6">
-            <h3 className="text-lg font-serif font-bold text-[#1E2A3A]">Blueprint Control</h3>
+          <div className="flex items-center justify-between p-5 bg-white rounded-[1.5rem] border border-[#1E2A3A]/5 shadow-sm mb-4 shrink-0">
+            <div className="flex items-center gap-3">
+              <Cpu className="w-5 h-5 text-lumina-teal" />
+              <h3 className="text-base font-serif font-bold text-[#1E2A3A]">Candidacy Hub</h3>
+            </div>
             <div className="flex items-center gap-2">
-              <button onClick={onRegenerate} disabled={isGenerating} className="p-2.5 rounded-xl bg-slate-50 text-[#1E2A3A]/40 hover:text-lumina-teal transition-all"><RotateCcw size={18} className={isGenerating ? 'animate-spin' : ''} /></button>
-              <button onClick={handleSave} className="p-2.5 rounded-xl bg-lumina-teal text-white shadow-lg shadow-lumina-teal/20 transition-all hover:scale-105"><Save size={18} /></button>
-              <button onClick={onDownload} className="p-2.5 rounded-xl bg-[#1E2A3A] text-white shadow-lg shadow-[#1E2A3A]/20 transition-all hover:scale-105"><Download size={18} /></button>
+              <button onClick={onRegenerate} disabled={isGenerating} className="p-2 rounded-xl bg-slate-50 text-[#1E2A3A]/40 hover:text-lumina-teal transition-all"><RotateCcw size={16} className={isGenerating ? 'animate-spin' : ''} /></button>
+              <button onClick={handleSave} className="p-2 rounded-xl bg-lumina-teal text-white shadow-lg shadow-lumina-teal/20 transition-all hover:scale-105"><Save size={16} /></button>
+              <button onClick={onDownload} className="p-2 rounded-xl bg-[#1E2A3A] text-white shadow-lg shadow-[#1E2A3A]/20 transition-all hover:scale-105"><Download size={16} /></button>
             </div>
           </div>
 
-          {/* ── Section: Global Typography ── */}
-          <CollapsibleSection 
-            title="Global Typography" 
-            icon={Type} 
-            isOpen={openSection === "settings"} 
-            onToggle={() => setOpenSection(openSection === "settings" ? null : "settings")}
-          >
-            <div className="space-y-8 p-2">
+          <div className="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar h-full">
+            {/* ── Combined Section: Strategy & Typography ── */}
+            <CollapsibleSection 
+              title="Strategy & Typography" 
+              icon={Layers} 
+              isOpen={openSection === "strategy"} 
+              onToggle={() => setOpenSection(openSection === "strategy" ? null : "strategy")}
+            >
+              <div className="space-y-6 p-1">
+                {/* Executive Summary Editor */}
+                <div className="space-y-3">
+                  <label className="text-[9px] font-black uppercase tracking-widest text-[#1E2A3A]/40 ml-1">Professional Narrative</label>
+                  <textarea 
+                    value={localResume.professional_summary}
+                    onChange={(e) => updateSummary(e.target.value)}
+                    className="w-full min-h-[100px] bg-slate-50 rounded-2xl p-4 text-xs font-body leading-relaxed outline-none border border-transparent focus:border-lumina-teal/30 transition-all resize-none"
+                    placeholder="Inject your high-impact professional narrative here..."
+                  />
+                </div>
+
+                {/* Typography Controls */}
+                <div className="grid grid-cols-1 gap-6 pt-2 border-t border-[#1E2A3A]/5">
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <label className="text-[9px] font-black uppercase tracking-widest text-[#1E2A3A]/40">Blueprint Font Scale</label>
+                      <span className="text-[10px] font-black text-lumina-teal">{baseFontSize}px</span>
+                    </div>
+                    <input 
+                      type="range" min="10" max="12" step="0.5" 
+                      value={baseFontSize} 
+                      onChange={(e) => setBaseFontSize(parseFloat(e.target.value))}
+                      className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-lumina-teal"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-3">
+                      <label className="text-[9px] font-black uppercase tracking-widest text-[#1E2A3A]/40">Line Density</label>
+                      <div className="flex gap-1.5">
+                        {[1.0, 1.15, 1.4].map((s) => (
+                          <button 
+                            key={s} 
+                            onClick={() => setLineSpacing(s as 1.0 | 1.15 | 1.4)}
+                            className={`flex-1 py-1.5 rounded-lg text-[9px] font-black border transition-all ${lineSpacing === s ? 'bg-lumina-teal border-lumina-teal text-white' : 'bg-slate-50 border-transparent text-[#1E2A3A]/40 hover:bg-slate-100'}`}
+                          >
+                            {s.toFixed(2)}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-[9px] font-black uppercase tracking-widest text-[#1E2A3A]/40">Blueprint Margins</label>
+                      <div className="flex gap-1.5">
+                        {[0.5, 1.0].map((m) => (
+                          <button 
+                            key={m} 
+                            onClick={() => setMarginSize(m as 0.5 | 1.0)}
+                            className={`flex-1 py-1.5 rounded-lg text-[9px] font-black border transition-all ${marginSize === m ? 'bg-[#1E2A3A] border-[#1E2A3A] text-white' : 'bg-slate-50 border-transparent text-[#1E2A3A]/40 hover:bg-slate-100'}`}
+                          >
+                            {m.toFixed(1)}"
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CollapsibleSection>
+
+            {/* ── Section: Profile ── */}
+            <CollapsibleSection 
+              title="Profile Identity" 
+              icon={User} 
+              isOpen={openSection === "profile"} 
+              onToggle={() => setOpenSection(openSection === "profile" ? null : "profile")}
+            >
+              <div className="grid grid-cols-1 gap-3">
+                <input value={localHeader.fullName} onChange={(e) => updateHeader('fullName', e.target.value)} className="w-full bg-slate-50 rounded-xl px-4 py-2.5 text-xs font-medium outline-none" placeholder="Full Name" />
+                <div className="grid grid-cols-2 gap-3">
+                  <input value={localHeader.email} onChange={(e) => updateHeader('email', e.target.value)} className="w-full bg-slate-50 rounded-xl px-4 py-2.5 text-xs font-medium outline-none" placeholder="Email" />
+                  <input value={localHeader.phone} onChange={(e) => updateHeader('phone', e.target.value)} className="w-full bg-slate-50 rounded-xl px-4 py-2.5 text-xs font-medium outline-none" placeholder="Phone" />
+                </div>
+                <input value={localHeader.location} onChange={(e) => updateHeader('location', e.target.value)} className="w-full bg-slate-50 rounded-xl px-4 py-2.5 text-xs font-medium outline-none" placeholder="Location" />
+                <div className="grid grid-cols-3 gap-2">
+                   <input value={localHeader.linkedin} onChange={(e) => updateHeader('linkedin', e.target.value)} className="bg-slate-50 rounded-xl px-3 py-2.5 text-[9px] font-bold outline-none" placeholder="LinkedIn" />
+                   <input value={localHeader.github} onChange={(e) => updateHeader('github', e.target.value)} className="bg-slate-50 rounded-xl px-3 py-2.5 text-[9px] font-bold outline-none" placeholder="GitHub" />
+                   <input value={localHeader.portfolio} onChange={(e) => updateHeader('portfolio', e.target.value)} className="bg-slate-50 rounded-xl px-3 py-2.5 text-[9px] font-bold outline-none" placeholder="Portfolio" />
+                </div>
+              </div>
+            </CollapsibleSection>
+
+            {/* ── Section: Experience ── */}
+            <CollapsibleSection 
+              title="Professional Experience" 
+              icon={Briefcase} 
+              isOpen={openSection === "experience"} 
+              onToggle={() => setOpenSection(openSection === "experience" ? null : "experience")}
+              action={<button onClick={() => setShowVaultPicker({ section: 'experience' })} className="text-[8px] font-black uppercase text-lumina-teal flex items-center gap-1"><Plus size={10}/> Vault</button>}
+            >
               <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[#1E2A3A]/40">Base Font Size</label>
-                  <span className="text-xs font-black text-lumina-teal">{baseFontSize}px</span>
-                </div>
-                <input 
-                  type="range" min="10" max="12" step="0.5" 
-                  value={baseFontSize} 
-                  onChange={(e) => setBaseFontSize(parseFloat(e.target.value))}
-                  className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-lumina-teal"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-8">
-                <div className="space-y-4">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[#1E2A3A]/40">Line Spacing</label>
-                  <div className="flex gap-2">
-                    {[1.0, 1.15, 1.4].map((s) => (
-                      <button 
-                        key={s} 
-                        onClick={() => setLineSpacing(s as 1.0 | 1.15 | 1.4)}
-                        className={`flex-1 py-2 rounded-lg text-[10px] font-black border transition-all ${lineSpacing === s ? 'bg-lumina-teal border-lumina-teal text-white' : 'bg-slate-50 border-transparent text-[#1E2A3A]/40 hover:bg-slate-100'}`}
-                      >
-                        {s.toFixed(2)}
-                      </button>
-                    ))}
+                {localResume.experience.map((exp, idx) => (
+                  <div key={idx} className="p-4 rounded-xl bg-slate-50/50 border border-border/10 space-y-3 relative group/exp">
+                    <button onClick={() => setLocalResume({...localResume, experience: localResume.experience.filter((_, i) => i !== idx)})} className="absolute top-3 right-3 p-1.5 text-red-500 opacity-0 group-hover/exp:opacity-100 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={12} /></button>
+                    <input value={exp.heading} onChange={(e) => updateExperience(idx, 'heading', e.target.value)} className="w-full bg-transparent font-serif font-bold text-sm outline-none border-b border-transparent focus:border-lumina-teal/20" />
+                    <div className="space-y-2">
+                      {exp.bullets?.map((bullet, bullIdx) => (
+                        <div key={bullIdx} className="flex gap-2 items-start group/bull">
+                          <textarea value={bullet} onChange={(e) => updateBullet('experience', idx, bullIdx, e.target.value)} className="flex-1 bg-white/50 rounded-xl px-3 py-1.5 text-[11px] font-body outline-none min-h-[36px] border border-transparent focus:border-lumina-teal/20" />
+                          <button onClick={() => removeBullet('experience', idx, bullIdx)} className="p-1.5 text-red-500 opacity-0 group-hover/bull:opacity-100"><Minus size={10} /></button>
+                        </div>
+                      ))}
+                      <button onClick={() => addBullet('experience', idx)} className="text-[8px] font-bold text-lumina-teal flex items-center gap-1 uppercase tracking-widest"><Plus size={10} /> Add Bullet</button>
+                    </div>
                   </div>
-                </div>
-                <div className="space-y-4">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[#1E2A3A]/40">Margins</label>
-                  <div className="flex gap-2">
-                    {[0.5, 1.0].map((m) => (
-                      <button 
-                        key={m} 
-                        onClick={() => setMarginSize(m as 0.5 | 1.0)}
-                        className={`flex-1 py-2 rounded-lg text-[10px] font-black border transition-all ${marginSize === m ? 'bg-[#1E2A3A] border-[#1E2A3A] text-white' : 'bg-slate-50 border-transparent text-[#1E2A3A]/40 hover:bg-slate-100'}`}
-                      >
-                        {m.toFixed(1)}"
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
-            </div>
-          </CollapsibleSection>
+            </CollapsibleSection>
 
-          {/* ── Section: Profile ── */}
-          <CollapsibleSection 
-            title="Profile Identity" 
-            icon={User} 
-            isOpen={openSection === "profile"} 
-            onToggle={() => setOpenSection(openSection === "profile" ? null : "profile")}
-          >
-            <div className="grid grid-cols-1 gap-4">
-              <input value={localHeader.fullName} onChange={(e) => updateHeader('fullName', e.target.value)} className="w-full bg-slate-50 rounded-xl px-4 py-3 text-sm font-medium outline-none" placeholder="Full Name" />
-              <div className="grid grid-cols-2 gap-4">
-                <input value={localHeader.email} onChange={(e) => updateHeader('email', e.target.value)} className="w-full bg-slate-50 rounded-xl px-4 py-3 text-sm font-medium outline-none" placeholder="Email" />
-                <input value={localHeader.phone} onChange={(e) => updateHeader('phone', e.target.value)} className="w-full bg-slate-50 rounded-xl px-4 py-3 text-sm font-medium outline-none" placeholder="Phone" />
-              </div>
-              <input value={localHeader.location} onChange={(e) => updateHeader('location', e.target.value)} className="w-full bg-slate-50 rounded-xl px-4 py-3 text-sm font-medium outline-none" placeholder="Location" />
-              <div className="grid grid-cols-3 gap-3">
-                 <input value={localHeader.linkedin} onChange={(e) => updateHeader('linkedin', e.target.value)} className="bg-slate-50 rounded-xl px-3 py-3 text-[10px] font-bold outline-none" placeholder="LinkedIn" />
-                 <input value={localHeader.github} onChange={(e) => updateHeader('github', e.target.value)} className="bg-slate-50 rounded-xl px-3 py-3 text-[10px] font-bold outline-none" placeholder="GitHub" />
-                 <input value={localHeader.portfolio} onChange={(e) => updateHeader('portfolio', e.target.value)} className="bg-slate-50 rounded-xl px-3 py-3 text-[10px] font-bold outline-none" placeholder="Portfolio" />
-              </div>
-            </div>
-          </CollapsibleSection>
-
-          {/* ── Section: Summary ── */}
-          <CollapsibleSection 
-            title="Executive Summary" 
-            icon={FileText} 
-            isOpen={openSection === "summary"} 
-            onToggle={() => setOpenSection(openSection === "summary" ? null : "summary")}
-          >
-            <textarea 
-              value={localResume.professional_summary}
-              onChange={(e) => updateSummary(e.target.value)}
-              className="w-full min-h-[120px] bg-slate-50 rounded-[1.5rem] p-6 text-sm font-body leading-relaxed outline-none resize-none"
-              placeholder="Inject your high-impact narrative..."
-            />
-          </CollapsibleSection>
-
-          {/* ── Section: Experience ── */}
-          <CollapsibleSection 
-            title="Professional Experience" 
-            icon={Briefcase} 
-            isOpen={openSection === "experience"} 
-            onToggle={() => setOpenSection(openSection === "experience" ? null : "experience")}
-            action={<button onClick={() => setShowVaultPicker({ section: 'experience' })} className="text-[9px] font-black uppercase text-lumina-teal flex items-center gap-1.5"><Plus size={12}/> Vault</button>}
-          >
-            <div className="space-y-6">
-              {localResume.experience.map((exp, idx) => (
-                <div key={idx} className="p-6 rounded-2xl bg-slate-50/50 border border-border/10 space-y-4 relative group/exp">
-                  <button onClick={() => setLocalResume({...localResume, experience: localResume.experience.filter((_, i) => i !== idx)})} className="absolute top-4 right-4 p-2 text-red-500 opacity-0 group-hover/exp:opacity-100 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={14} /></button>
-                  <input value={exp.heading} onChange={(e) => updateExperience(idx, 'heading', e.target.value)} className="w-full bg-transparent font-serif font-bold text-base outline-none border-b border-transparent focus:border-lumina-teal/20" />
-                  <div className="space-y-2">
-                    {exp.bullets?.map((bullet, bullIdx) => (
-                      <div key={bullIdx} className="flex gap-3 items-start group/bull">
-                        <textarea value={bullet} onChange={(e) => updateBullet('experience', idx, bullIdx, e.target.value)} className="flex-1 bg-white/50 rounded-xl px-4 py-2 text-xs font-body outline-none min-h-[40px] border border-transparent focus:border-lumina-teal/20" />
-                        <button onClick={() => removeBullet('experience', idx, bullIdx)} className="p-2 text-red-500 opacity-0 group-hover/bull:opacity-100"><Minus size={12} /></button>
-                      </div>
-                    ))}
-                    <button onClick={() => addBullet('experience', idx)} className="text-[9px] font-bold text-lumina-teal flex items-center gap-1.5 px-1 uppercase tracking-widest"><Plus size={10} /> Add Bullet</button>
+            {/* ── Section: Projects ── */}
+            <CollapsibleSection 
+              title="Technical Projects" 
+              icon={Database} 
+              isOpen={openSection === "projects"} 
+              onToggle={() => setOpenSection(openSection === "projects" ? null : "projects")}
+              action={<button onClick={() => setShowVaultPicker({ section: 'projects' })} className="text-[8px] font-black uppercase text-lumina-teal flex items-center gap-1"><Plus size={10}/> Vault</button>}
+            >
+              <div className="space-y-4">
+                {(localResume.projects || []).map((proj, idx) => (
+                  <div key={idx} className="p-4 rounded-xl bg-slate-50/50 border border-border/10 space-y-3 relative group/proj">
+                    <button onClick={() => setLocalResume({...localResume, projects: (localResume.projects || []).filter((_, i) => i !== idx)})} className="absolute top-3 right-3 p-1.5 text-red-500 opacity-0 group-hover/proj:opacity-100 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={12} /></button>
+                    <input value={proj.heading} onChange={(e) => {
+                      const newProjects = [...(localResume.projects || [])];
+                      newProjects[idx] = { ...newProjects[idx], heading: e.target.value };
+                      setLocalResume({ ...localResume, projects: newProjects });
+                    }} className="w-full bg-transparent font-serif font-bold text-sm outline-none border-b border-transparent focus:border-lumina-teal/20" />
+                    <div className="space-y-2">
+                      {proj.bullets?.map((bullet, bullIdx) => (
+                        <div key={bullIdx} className="flex gap-2 items-start group/bull">
+                          <textarea value={bullet} onChange={(e) => updateBullet('projects', idx, bullIdx, e.target.value)} className="flex-1 bg-white/50 rounded-xl px-3 py-1.5 text-[11px] font-body outline-none min-h-[36px] border border-transparent focus:border-lumina-teal/20" />
+                          <button onClick={() => removeBullet('projects', idx, bullIdx)} className="p-1.5 text-red-500 opacity-0 group-hover/bull:opacity-100"><Minus size={10} /></button>
+                        </div>
+                      ))}
+                      <button onClick={() => addBullet('projects', idx)} className="text-[8px] font-bold text-lumina-teal flex items-center gap-1 uppercase tracking-widest"><Plus size={10} /> Add Bullet</button>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </CollapsibleSection>
+                ))}
+              </div>
+            </CollapsibleSection>
 
-          {/* ── Section: Projects ── */}
-          <CollapsibleSection 
-            title="Technical Projects" 
-            icon={Database} 
-            isOpen={openSection === "projects"} 
-            onToggle={() => setOpenSection(openSection === "projects" ? null : "projects")}
-            action={<button onClick={() => setShowVaultPicker({ section: 'projects' })} className="text-[9px] font-black uppercase text-lumina-teal flex items-center gap-1.5"><Plus size={12}/> Vault</button>}
-          >
-            <div className="space-y-6">
-              {(localResume.projects || []).map((proj, idx) => (
-                <div key={idx} className="p-6 rounded-2xl bg-slate-50/50 border border-border/10 space-y-4 relative group/proj">
-                  <button onClick={() => setLocalResume({...localResume, projects: (localResume.projects || []).filter((_, i) => i !== idx)})} className="absolute top-4 right-4 p-2 text-red-500 opacity-0 group-hover/proj:opacity-100 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={14} /></button>
-                  <input value={proj.heading} onChange={(e) => {
-                    const newProjects = [...(localResume.projects || [])];
-                    newProjects[idx] = { ...newProjects[idx], heading: e.target.value };
-                    setLocalResume({ ...localResume, projects: newProjects });
-                  }} className="w-full bg-transparent font-serif font-bold text-base outline-none border-b border-transparent focus:border-lumina-teal/20" />
-                  <div className="space-y-2">
-                    {proj.bullets?.map((bullet, bullIdx) => (
-                      <div key={bullIdx} className="flex gap-3 items-start group/bull">
-                        <textarea value={bullet} onChange={(e) => updateBullet('projects', idx, bullIdx, e.target.value)} className="flex-1 bg-white/50 rounded-xl px-4 py-2 text-xs font-body outline-none min-h-[40px] border border-transparent focus:border-lumina-teal/20" />
-                        <button onClick={() => removeBullet('projects', idx, bullIdx)} className="p-2 text-red-500 opacity-0 group-hover/bull:opacity-100"><Minus size={12} /></button>
-                      </div>
-                    ))}
-                    <button onClick={() => addBullet('projects', idx)} className="text-[9px] font-bold text-lumina-teal flex items-center gap-1.5 px-1 uppercase tracking-widest"><Plus size={10} /> Add Bullet</button>
+            {/* ── Section: Education ── */}
+            <CollapsibleSection 
+              title="Education" 
+              icon={GraduationCap} 
+              isOpen={openSection === "education"} 
+              onToggle={() => setOpenSection(openSection === "education" ? null : "education")}
+              action={<button onClick={() => setShowVaultPicker({ section: 'education' })} className="text-[8px] font-black uppercase text-lumina-teal flex items-center gap-1"><Plus size={10}/> Vault</button>}
+            >
+              <div className="space-y-2">
+                {localResume.education.map((edu, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <input value={edu} onChange={(e) => {
+                      const newEdu = [...localResume.education];
+                      newEdu[i] = e.target.value;
+                      setLocalResume({ ...localResume, education: newEdu });
+                    }} className="flex-1 bg-slate-50 rounded-xl px-4 py-2 text-[11px] font-medium outline-none" />
+                    <button onClick={() => setLocalResume({...localResume, education: localResume.education.filter((_, idx) => idx !== i)})} className="p-2 text-red-400"><Minus size={12}/></button>
                   </div>
-                </div>
-              ))}
-            </div>
-          </CollapsibleSection>
+                ))}
+              </div>
+            </CollapsibleSection>
 
-          {/* ── Section: Education ── */}
-          <CollapsibleSection 
-            title="Education" 
-            icon={GraduationCap} 
-            isOpen={openSection === "education"} 
-            onToggle={() => setOpenSection(openSection === "education" ? null : "education")}
-            action={<button onClick={() => setShowVaultPicker({ section: 'education' })} className="text-[9px] font-black uppercase text-lumina-teal flex items-center gap-1.5"><Plus size={12}/> Vault</button>}
-          >
-            <div className="space-y-3">
-              {localResume.education.map((edu, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <input value={edu} onChange={(e) => {
-                    const newEdu = [...localResume.education];
-                    newEdu[i] = e.target.value;
-                    setLocalResume({ ...localResume, education: newEdu });
-                  }} className="flex-1 bg-slate-50 rounded-xl px-4 py-2 text-xs font-medium outline-none" />
-                  <button onClick={() => setLocalResume({...localResume, education: localResume.education.filter((_, idx) => idx !== i)})} className="p-2 text-red-400"><Minus size={14}/></button>
-                </div>
-              ))}
-            </div>
-          </CollapsibleSection>
-
-          {/* ── Section: Certifications ── */}
-          <CollapsibleSection 
-            title="Certifications" 
-            icon={Award} 
-            isOpen={openSection === "certifications"} 
-            onToggle={() => setOpenSection(openSection === "certifications" ? null : "certifications")}
-            action={<button onClick={() => setShowVaultPicker({ section: 'certifications' })} className="text-[9px] font-black uppercase text-lumina-teal flex items-center gap-1.5"><Plus size={12}/> Vault</button>}
-          >
-            <div className="space-y-2">
-              {(localResume.certifications || []).map((cert, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <input value={cert} onChange={(e) => {
-                    const newCerts = [...(localResume.certifications || [])];
-                    newCerts[i] = e.target.value;
-                    setLocalResume({ ...localResume, certifications: newCerts });
-                  }} className="flex-1 bg-slate-50 rounded-xl px-4 py-2 text-xs font-medium outline-none" />
-                  <button onClick={() => setLocalResume({...localResume, certifications: (localResume.certifications || []).filter((_, idx) => idx !== i)})} className="p-2 text-red-400"><Minus size={14}/></button>
-                </div>
-              ))}
-            </div>
-          </CollapsibleSection>
+            {/* ── Section: Certifications ── */}
+            <CollapsibleSection 
+              title="Certifications" 
+              icon={Award} 
+              isOpen={openSection === "certifications"} 
+              onToggle={() => setOpenSection(openSection === "certifications" ? null : "certifications")}
+              action={<button onClick={() => setShowVaultPicker({ section: 'certifications' })} className="text-[8px] font-black uppercase text-lumina-teal flex items-center gap-1"><Plus size={10}/> Vault</button>}
+            >
+              <div className="space-y-2">
+                {(localResume.certifications || []).map((cert, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <input value={cert} onChange={(e) => {
+                      const newCerts = [...(localResume.certifications || [])];
+                      newCerts[i] = e.target.value;
+                      setLocalResume({ ...localResume, certifications: newCerts });
+                    }} className="flex-1 bg-slate-50 rounded-xl px-4 py-2 text-[11px] font-medium outline-none" />
+                    <button onClick={() => setLocalResume({...localResume, certifications: (localResume.certifications || []).filter((_, idx) => idx !== i)})} className="p-2 text-red-400"><Minus size={12}/></button>
+                  </div>
+                ))}
+              </div>
+            </CollapsibleSection>
+          </div>
         </div>
 
-        {/* ── RIGHT PANEL: THE DYNAMIC SIGNATURE PREVIEW ── */}
-        <div className="lg:col-span-7 lg:sticky lg:top-8 flex justify-center">
-          <div className="w-full max-w-[800px] perspective-2000">
+        {/* ── RIGHT PANEL: THE FULL-HEIGHT SIGNATURE PREVIEW ── */}
+        <div className="lg:col-span-7 lg:sticky lg:top-8 flex justify-center h-full pb-4">
+          <div className="w-full max-w-[800px] perspective-2000 h-full overflow-y-auto custom-scrollbar rounded-2xl shadow-inner bg-slate-50/50 p-4">
             <motion.div 
               ref={resumeRef}
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
-              className="relative bg-white border border-[#1E2A3A]/5 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)] overflow-hidden"
+              className="relative bg-white border border-[#1E2A3A]/5 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)] mx-auto"
               style={{ 
                 width: '100%', 
                 minHeight: '297mm',
-                borderRadius: '0px',
                 padding: `${marginSize}in`,
                 lineHeight: lineSpacing,
                 fontSize: fontSizes.body
