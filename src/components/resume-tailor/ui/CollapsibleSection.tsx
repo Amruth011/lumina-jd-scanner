@@ -40,6 +40,7 @@ export const CollapsibleSection = ({
       onClick={onToggle}
       role="button"
       aria-expanded={isOpen}
+      aria-label={`${isOpen ? 'Collapse' : 'Expand'} ${title} section`}
       tabIndex={0}
       onKeyDown={(e) => e.key === 'Enter' && onToggle()}
     >
