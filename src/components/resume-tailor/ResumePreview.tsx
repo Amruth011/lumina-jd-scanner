@@ -176,9 +176,28 @@ export const ResumePreview = ({
               <h3 className="text-base font-serif font-bold text-[#1E2A3A]">Candidacy Hub</h3>
             </div>
             <div className="flex items-center gap-2">
-              <button onClick={onRegenerate} disabled={isGenerating} className="p-2 rounded-xl bg-slate-50 text-[#1E2A3A]/40 hover:text-lumina-teal transition-all"><RotateCcw size={16} className={isGenerating ? 'animate-spin' : ''} /></button>
-              <button onClick={handleSave} className="p-2 rounded-xl bg-lumina-teal text-white shadow-lg shadow-lumina-teal/20 transition-all hover:scale-105"><Save size={16} /></button>
-              <button onClick={onDownload} className="p-2 rounded-xl bg-[#1E2A3A] text-white shadow-lg shadow-[#1E2A3A]/20 transition-all hover:scale-105"><Download size={16} /></button>
+              <button 
+                onClick={onRegenerate} 
+                disabled={isGenerating} 
+                className="p-2 rounded-xl bg-slate-50 text-[#1E2A3A]/40 hover:text-lumina-teal transition-all"
+                aria-label="Regenerate Blueprint"
+              >
+                <RotateCcw size={16} className={isGenerating ? 'animate-spin' : ''} />
+              </button>
+              <button 
+                onClick={handleSave} 
+                className="p-2 rounded-xl bg-lumina-teal text-white shadow-lg shadow-lumina-teal/20 transition-all hover:scale-105"
+                aria-label="Save Blueprint"
+              >
+                <Save size={16} />
+              </button>
+              <button 
+                onClick={onDownload} 
+                className="p-2 rounded-xl bg-[#1E2A3A] text-white shadow-lg shadow-[#1E2A3A]/20 transition-all hover:scale-105"
+                aria-label="Download PDF"
+              >
+                <Download size={16} />
+              </button>
             </div>
           </div>
 
