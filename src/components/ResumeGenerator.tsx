@@ -189,7 +189,15 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
     }
   };
 
-  const handleGenerate = async () => {
+  /**
+   * Main Resume Generation Lifecycle
+   * ===============================
+   * 1. Orchestrates multi-engine AI requests.
+   * 2. Implements progressive fallback if primary models fail.
+   * 3. Parses complex JSON output into the local application state.
+   * 4. Updates JD scan history for future analytics.
+   */
+  const handleGenerateResume = async () => {
     if (vaultItems.length === 0) {
       toast.error("Tactical Profile Empty", {
         description: "You must sync your resume or add roles in the Profile tab before we can tailor your candidacy.",
