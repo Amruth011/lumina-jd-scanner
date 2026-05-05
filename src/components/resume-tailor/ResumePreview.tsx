@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   FileText, 
-  Edit3, 
   Download, 
   RotateCcw, 
   Plus, 
@@ -11,13 +10,8 @@ import {
   Briefcase, 
   Award, 
   GraduationCap, 
-  Settings2,
   Save,
-  CheckCircle2,
-  ChevronDown,
-  ChevronUp,
   X,
-  Search,
   Database,
   Mail,
   Phone,
@@ -27,12 +21,12 @@ import {
   Globe,
   Trash2,
   Type,
-  Maximize2,
   Layers,
   Cpu
 } from "lucide-react";
 import { GeneratedResume, VaultItem } from "@/types/jd";
 import { toast } from "sonner";
+import { CollapsibleSection } from "./ui/CollapsibleSection";
 
 interface ResumeHeader {
   fullName: string;
@@ -53,59 +47,6 @@ interface ResumePreviewProps {
   onDownload: () => void;
   isGenerating: boolean;
 }
-
-// ── Shared Accordion Component ──
-const CollapsibleSection = ({ 
-  title, 
-  icon: Icon, 
-  children, 
-  isOpen, 
-  onToggle, 
-  action 
-}: { 
-  title: string; 
-  icon: React.ElementType, 
-  children: React.ReactNode, 
-  isOpen: boolean, 
-  onToggle: () => void;
-  action?: React.ReactNode;
-}) => (
-  <div className={`p-5 rounded-[1.5rem] border transition-all duration-300 ${isOpen ? 'bg-white border-lumina-teal/10 shadow-lg' : 'bg-white/50 border-[#1E2A3A]/5 hover:border-lumina-teal/20'}`}>
-    <div className="flex items-center justify-between cursor-pointer" onClick={onToggle}>
-      <div className="flex items-center gap-3">
-        <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${isOpen ? 'bg-lumina-teal text-white' : 'bg-lumina-teal/10 text-lumina-teal'}`}>
-          <Icon className="w-4 h-4" />
-        </div>
-        <div>
-          <h4 className="text-[11px] font-black uppercase tracking-widest text-[#1E2A3A]">{title}</h4>
-          <p className="text-[8px] font-bold text-[#1E2A3A]/30 uppercase tracking-tighter">{isOpen ? 'Active Calibration' : 'Tap to Expand'}</p>
-        </div>
-      </div>
-      <div className="flex items-center gap-4">
-        {action && <div onClick={(e) => e.stopPropagation()}>{action}</div>}
-        <motion.div animate={{ rotate: isOpen ? 180 : 0 }}>
-          <ChevronDown size={16} className="text-[#1E2A3A]/30" />
-        </motion.div>
-      </div>
-    </div>
-    
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ height: 0, opacity: 0 }}
-          animate={{ height: "auto", opacity: 1 }}
-          exit={{ height: 0, opacity: 0 }}
-          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          className="overflow-hidden"
-        >
-          <div className="pt-6 space-y-5">
-            {children}
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  </div>
-);
 
 export const ResumePreview = ({ 
   resume, 
