@@ -405,6 +405,7 @@ export const ResumePreview = ({
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
               className="relative bg-white border border-[#1E2A3A]/5 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)] mx-auto"
+              title="Real-time A4 Resume Preview"
               style={{ 
                 width: '100%', 
                 minHeight: '297mm',
