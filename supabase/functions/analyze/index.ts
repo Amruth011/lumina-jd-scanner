@@ -5,6 +5,18 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+/**
+ * Lumina AI Analyze Engine
+ * ========================
+ * This edge function handles JD analysis and Resume Tailoring requests.
+ * It implements a robust multi-model fallback architecture using Groq.
+ * 
+ * Flow:
+ * 1. Attempt primary requested model (default Llama 3.3 70B).
+ * 2. Fallback to Gemma 2 27B (High intelligence, high rate limits).
+ * 3. Fallback to Llama 3.1 8B (Instant recovery).
+ * 4. Fallback to Gemma 2 9B (Ultra-fast baseline).
+ */
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
