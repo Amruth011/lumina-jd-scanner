@@ -261,7 +261,7 @@ RETURN JSON FORMAT ONLY:
 
       const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
       let resultText = "";
-      const models = ["llama-3.3-70b-versatile", "gemma2-27b-it", "llama-3.1-8b-instant", "gemma2-9b-it"];
+      const models = ["llama-3.3-70b-versatile", "llama-3.1-70b-versatile", "llama-3.1-8b-instant", "mixtral-8x7b-32768"];
       let lastError = "";
 
       for (let i = 0; i < models.length; i++) {
