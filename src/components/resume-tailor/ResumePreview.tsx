@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   FileText, 
   Edit3, 
@@ -15,9 +15,19 @@ import {
   Save,
   CheckCircle2,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  X,
+  Search,
+  Database,
+  Mail,
+  Phone,
+  MapPin,
+  Linkedin,
+  Github,
+  Globe,
+  Trash2
 } from "lucide-react";
-import { GeneratedResume, ResumeSection } from "@/types/jd";
+import { GeneratedResume, VaultItem } from "@/types/jd";
 import { toast } from "sonner";
 
 interface ResumeHeader {
@@ -33,6 +43,7 @@ interface ResumeHeader {
 interface ResumePreviewProps {
   resume: GeneratedResume;
   header: ResumeHeader;
+  vaultItems: VaultItem[];
   onUpdate: (updatedResume: GeneratedResume, updatedHeader: ResumeHeader) => void;
   onRegenerate: () => void;
   onDownload: () => void;
@@ -42,18 +53,35 @@ interface ResumePreviewProps {
 export const ResumePreview = ({ 
   resume, 
   header, 
+  vaultItems,
   onUpdate, 
   onRegenerate, 
   onDownload,
   isGenerating 
 }: ResumePreviewProps) => {
-  const [isEditMode, setIsEditMode] = useState(false);
   const [localResume, setLocalResume] = useState<GeneratedResume>(resume);
   const [localHeader, setLocalHeader] = useState<ResumeHeader>(header);
+  const [showVaultPicker, setShowVaultPicker] = useState<{ section: 'experience' | 'projects' | 'education' | 'certifications', index?: number } | null>(null);
+  const resumeRef = useRef<HTMLDivElement>(null);
+  const [pageCount, setPageCount] = useState(1);
+
+  // Sync local state when props change (e.g. after regeneration)
+  useEffect(() => {
+    setLocalResume(resume);
+    setLocalHeader(header);
+  }, [resume, header]);
+
+  // Monitor height for A4 page breaks
+  useEffect(() => {
+    if (resumeRef.current) {
+      const height = resumeRef.current.scrollHeight;
+      const a4HeightPx = (resumeRef.current.offsetWidth * 297) / 210;
+      setPageCount(Math.ceil(height / a4HeightPx));
+    }
+  }, [localResume, localHeader]);
 
   const handleSave = () => {
     onUpdate(localResume, localHeader);
-    setIsEditMode(false);
     toast.success("Blueprint locked in!");
   };
 
@@ -81,7 +109,7 @@ export const ResumePreview = ({
 
   const addBullet = (section: 'experience' | 'projects', sectionIndex: number) => {
     const newSections = [...(localResume[section] || [])];
-    const newBullets = [...(newSections[sectionIndex].bullets || []), "• New strategic impact metric..."];
+    const newBullets = [...(newSections[sectionIndex].bullets || []), "New strategic impact metric..."];
     newSections[sectionIndex] = { ...newSections[sectionIndex], bullets: newBullets };
     setLocalResume(prev => ({ ...prev, [section]: newSections }));
   };
@@ -93,268 +121,264 @@ export const ResumePreview = ({
     setLocalResume(prev => ({ ...prev, [section]: newSections }));
   };
 
+  const addFromVault = (item: VaultItem) => {
+    if (showVaultPicker?.section === 'experience') {
+      const newItems = [...localResume.experience, { 
+        heading: item.organization ? `${item.title} @ ${item.organization}` : item.title, 
+        content: item.description, 
+        bullets: item.bullets && item.bullets.length > 0 ? item.bullets : ["• Quantifying tactical impact..."] 
+      }];
+      setLocalResume({ ...localResume, experience: newItems });
+    } else if (showVaultPicker?.section === 'projects') {
+      const projects = localResume.projects || [];
+      const newItems = [...projects, { 
+        heading: item.organization ? `${item.title} @ ${item.organization}` : item.title, 
+        content: item.description, 
+        bullets: item.bullets && item.bullets.length > 0 ? item.bullets : ["• Quantifying project outcomes..."] 
+      }];
+      setLocalResume({ ...localResume, projects: newItems });
+    } else if (showVaultPicker?.section === 'education') {
+      const eduEntry = item.organization ? `${item.title} - ${item.organization}` : item.title;
+      setLocalResume({ ...localResume, education: [...localResume.education, eduEntry] });
+    } else if (showVaultPicker?.section === 'certifications') {
+      const certifications = localResume.certifications || [];
+      const certEntry = item.organization ? `${item.title} (${item.organization})` : item.title;
+      setLocalResume({ ...localResume, certifications: [...certifications, certEntry] });
+    }
+    setShowVaultPicker(null);
+    toast.success(`Imported ${item.title} from vault!`);
+  };
+
   return (
-    <div className="space-y-8 max-w-5xl mx-auto">
-      {/* ── Action Bar ── */}
-      <div className="flex flex-wrap items-center justify-between gap-4 p-6 bg-white border border-[#1E2A3A]/5 rounded-[2rem] shadow-sm">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-[#10B981]/10 flex items-center justify-center text-[#10B981]">
-            <FileText className="w-6 h-6" />
-          </div>
-          <div>
-            <h3 className="text-xl font-serif font-bold text-[#1E2A3A]">Candidacy Blueprint</h3>
-            <p className="text-[10px] font-black uppercase tracking-widest text-[#1E2A3A]/40">
-              ATS-Optimized Preview • {isEditMode ? 'Editing Active' : 'Read Only'}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {!isEditMode ? (
-            <button 
-              onClick={() => setIsEditMode(true)}
-              className="flex items-center gap-2 px-6 py-3 rounded-full bg-slate-50 border border-border/10 text-xs font-black uppercase tracking-widest text-[#1E2A3A] hover:bg-slate-100 transition-all"
-            >
-              <Edit3 className="w-4 h-4" /> Edit Blueprint
-            </button>
-          ) : (
-            <button 
-              onClick={handleSave}
-              className="flex items-center gap-2 px-6 py-3 rounded-full bg-[#1E2A3A] text-white text-xs font-black uppercase tracking-widest shadow-lg shadow-[#1E2A3A]/20 transition-all hover:scale-105"
-            >
-              <Save className="w-4 h-4" /> Save Changes
-            </button>
-          )}
-          
-          <button 
-            onClick={onRegenerate}
-            disabled={isGenerating}
-            className="flex items-center gap-2 px-6 py-3 rounded-full bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20 text-xs font-black uppercase tracking-widest transition-all hover:bg-[#10B981]/20 disabled:opacity-50"
-          >
-            <RotateCcw className={`w-4 h-4 ${isGenerating ? 'animate-spin' : ''}`} /> Regenerate
-          </button>
-
-          <button 
-            onClick={onDownload}
-            className="flex items-center gap-2 px-8 py-3 rounded-full bg-[#10B981] text-[#1E2A3A] text-xs font-black uppercase tracking-widest shadow-lg shadow-[#10B981]/20 transition-all hover:scale-105"
-          >
-            <Download className="w-4 h-4" /> Export PDF
-          </button>
-        </div>
-      </div>
-
-      {/* ── Resume Body ── */}
-      <div className={`relative bg-white border border-[#1E2A3A]/5 rounded-[3rem] p-12 lg:p-20 shadow-2xl transition-all duration-500 ${isEditMode ? 'ring-2 ring-[#10B981]/20 border-[#10B981]/20' : ''}`}>
+    <div className="max-w-[1400px] mx-auto pb-24">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
         
-        {/* Header Section */}
-        <div className="text-center space-y-4 border-b border-[#1E2A3A]/5 pb-10 mb-10">
-          {isEditMode ? (
-            <input 
-              value={localHeader.fullName}
-              onChange={(e) => updateHeader('fullName', e.target.value)}
-              className="text-4xl lg:text-5xl font-serif font-bold text-center w-full bg-slate-50 border-none focus:ring-0 outline-none p-2 rounded-xl"
-              placeholder="Full Name"
-            />
-          ) : (
-            <h1 className="text-4xl lg:text-5xl font-serif font-bold text-[#1E2A3A] tracking-tight">{localHeader.fullName}</h1>
-          )}
-          
-          <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-2 text-[13px] text-[#1E2A3A]/60 font-body font-medium">
-            {isEditMode ? (
-              <>
-                <input value={localHeader.location} onChange={(e) => updateHeader('location', e.target.value)} className="bg-slate-50 rounded-lg px-2 py-1 outline-none w-32 text-center" placeholder="Location" />
-                <input value={localHeader.phone} onChange={(e) => updateHeader('phone', e.target.value)} className="bg-slate-50 rounded-lg px-2 py-1 outline-none w-32 text-center" placeholder="Phone" />
-                <input value={localHeader.email} onChange={(e) => updateHeader('email', e.target.value)} className="bg-slate-50 rounded-lg px-2 py-1 outline-none w-48 text-center" placeholder="Email" />
-              </>
-            ) : (
-              <>
-                <span>{localHeader.location}</span>
-                <span>{localHeader.phone}</span>
-                <span>{localHeader.email}</span>
-              </>
-            )}
+        {/* ── LEFT PANEL: THE CONTROL CENTER ── */}
+        <div className="lg:col-span-5 space-y-8 lg:sticky lg:top-8 max-h-[90vh] overflow-y-auto pr-4 custom-scrollbar pb-10">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-lumina-teal/10 flex items-center justify-center text-lumina-teal">
+                <Settings2 className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-xl font-serif font-bold text-[#1E2A3A]">Candidacy Editor</h3>
+                <p className="text-[10px] font-black uppercase tracking-widest text-[#1E2A3A]/40">Blueprint Calibration Mode</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={onRegenerate}
+                disabled={isGenerating}
+                className="p-3 rounded-xl bg-slate-50 border border-border/10 text-[#1E2A3A]/60 hover:text-lumina-teal transition-all"
+                title="Regenerate"
+              >
+                <RotateCcw className={`w-5 h-5 ${isGenerating ? 'animate-spin' : ''}`} />
+              </button>
+              <button 
+                onClick={handleSave}
+                className="p-3 rounded-xl bg-lumina-teal text-white shadow-lg shadow-lumina-teal/20 transition-all hover:scale-105"
+                title="Save Changes"
+              >
+                <Save className="w-5 h-5" />
+              </button>
+              <button 
+                onClick={onDownload}
+                className="p-3 rounded-xl bg-[#1E2A3A] text-white shadow-lg shadow-[#1E2A3A]/20 transition-all hover:scale-105"
+                title="Export PDF"
+              >
+                <Download className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
-          <div className="flex flex-wrap justify-center items-center gap-6 text-[11px] font-black uppercase tracking-widest text-[#10B981]">
-             {isEditMode ? (
-               <>
-                <input value={localHeader.linkedin} onChange={(e) => updateHeader('linkedin', e.target.value)} className="bg-[#10B981]/5 rounded-lg px-2 py-1 outline-none w-40 text-center" placeholder="LinkedIn URL" />
-                <input value={localHeader.github} onChange={(e) => updateHeader('github', e.target.value)} className="bg-[#10B981]/5 rounded-lg px-2 py-1 outline-none w-40 text-center" placeholder="GitHub URL" />
-                <input value={localHeader.portfolio} onChange={(e) => updateHeader('portfolio', e.target.value)} className="bg-[#10B981]/5 rounded-lg px-2 py-1 outline-none w-40 text-center" placeholder="Portfolio URL" />
-               </>
-             ) : (
-               <>
-                {localHeader.linkedin && <span>LinkedIn</span>}
-                {localHeader.github && <span>GitHub</span>}
-                {localHeader.portfolio && <span>Portfolio</span>}
-               </>
-             )}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 gap-12">
-          {/* Summary */}
-          <section className="space-y-4">
-            <div className="flex items-center gap-3 text-[#1E2A3A]">
-              <h4 className="text-sm font-black uppercase tracking-[0.3em]">Professional Summary</h4>
-              <div className="h-px flex-1 bg-[#1E2A3A]/5" />
+          {/* ── Section: Profile / Header ── */}
+          <div className="p-8 rounded-[2.5rem] bg-white border border-[#1E2A3A]/5 shadow-sm space-y-6">
+            <div className="flex items-center gap-3 text-lumina-teal">
+              <User className="w-5 h-5" />
+              <h4 className="text-xs font-black uppercase tracking-widest">Profile Identity</h4>
             </div>
-            {isEditMode ? (
-              <textarea 
-                value={localResume.professional_summary}
-                onChange={(e) => updateSummary(e.target.value)}
-                className="w-full min-h-[100px] bg-slate-50 border-none rounded-2xl p-6 text-lg font-body leading-relaxed outline-none focus:ring-1 ring-[#10B981]/20"
-              />
-            ) : (
-              <p className="text-lg text-[#1E2A3A]/80 font-body leading-relaxed">{localResume.professional_summary}</p>
-            )}
-          </section>
-
-          {/* Skills */}
-          <section className="space-y-4">
-            <div className="flex items-center gap-3 text-[#1E2A3A]">
-              <h4 className="text-sm font-black uppercase tracking-[0.3em]">Core Competencies</h4>
-              <div className="h-px flex-1 bg-[#1E2A3A]/5" />
-            </div>
-            <div className="flex flex-wrap gap-3">
-              {localResume.skills_section.map((skill, i) => (
-                <div key={i} className="px-5 py-2 rounded-xl bg-slate-50 border border-[#1E2A3A]/5 text-sm font-body font-bold text-[#1E2A3A]/70">
-                  {skill}
+            <div className="grid grid-cols-1 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-black uppercase tracking-widest text-[#1E2A3A]/40 ml-1">Full Name</label>
+                <input 
+                  value={localHeader.fullName}
+                  onChange={(e) => updateHeader('fullName', e.target.value)}
+                  className="w-full bg-slate-50 rounded-xl px-4 py-3 text-sm font-medium outline-none border border-transparent focus:border-lumina-teal/30 focus:ring-4 ring-lumina-teal/5 transition-all"
+                  placeholder="Full Name"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[9px] font-black uppercase tracking-widest text-[#1E2A3A]/40 ml-1">Email</label>
+                  <input value={localHeader.email} onChange={(e) => updateHeader('email', e.target.value)} className="w-full bg-slate-50 rounded-xl px-4 py-3 text-sm font-medium outline-none border border-transparent focus:border-lumina-teal/30 focus:ring-4 ring-lumina-teal/5 transition-all" />
                 </div>
-              ))}
+                <div className="space-y-1.5">
+                  <label className="text-[9px] font-black uppercase tracking-widest text-[#1E2A3A]/40 ml-1">Phone</label>
+                  <input value={localHeader.phone} onChange={(e) => updateHeader('phone', e.target.value)} className="w-full bg-slate-50 rounded-xl px-4 py-3 text-sm font-medium outline-none border border-transparent focus:border-lumina-teal/30 focus:ring-4 ring-lumina-teal/5 transition-all" />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-black uppercase tracking-widest text-[#1E2A3A]/40 ml-1">Location</label>
+                <input value={localHeader.location} onChange={(e) => updateHeader('location', e.target.value)} className="w-full bg-slate-50 rounded-xl px-4 py-3 text-sm font-medium outline-none border border-transparent focus:border-lumina-teal/30 focus:ring-4 ring-lumina-teal/5 transition-all" />
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                 <input value={localHeader.linkedin} onChange={(e) => updateHeader('linkedin', e.target.value)} className="bg-slate-50 rounded-xl px-4 py-3 text-[10px] font-bold outline-none border border-transparent focus:border-lumina-teal/30" placeholder="LinkedIn" />
+                 <input value={localHeader.github} onChange={(e) => updateHeader('github', e.target.value)} className="bg-slate-50 rounded-xl px-4 py-3 text-[10px] font-bold outline-none border border-transparent focus:border-lumina-teal/30" placeholder="GitHub" />
+                 <input value={localHeader.portfolio} onChange={(e) => updateHeader('portfolio', e.target.value)} className="bg-slate-50 rounded-xl px-4 py-3 text-[10px] font-bold outline-none border border-transparent focus:border-lumina-teal/30" placeholder="Portfolio" />
+              </div>
             </div>
-          </section>
+          </div>
 
-          {/* Experience */}
-          <section className="space-y-8">
-            <div className="flex items-center gap-3 text-[#1E2A3A]">
-              <h4 className="text-sm font-black uppercase tracking-[0.3em]">Professional Experience</h4>
-              <div className="h-px flex-1 bg-[#1E2A3A]/5" />
+          {/* ── Section: Professional Summary ── */}
+          <div className="p-8 rounded-[2.5rem] bg-white border border-[#1E2A3A]/5 shadow-sm space-y-4">
+            <div className="flex items-center gap-3 text-lumina-teal">
+              <FileText className="w-5 h-5" />
+              <h4 className="text-xs font-black uppercase tracking-widest">Executive Summary</h4>
             </div>
-            <div className="space-y-10">
-              {localResume.experience.map((exp, expIdx) => (
-                <div key={expIdx} className="space-y-4 group/item">
-                  <div className="flex justify-between items-start">
-                    {isEditMode ? (
-                      <input 
-                        value={exp.heading}
-                        onChange={(e) => updateExperience(expIdx, 'heading', e.target.value)}
-                        className="text-2xl font-serif font-bold text-[#1E2A3A] w-full bg-slate-50 rounded-xl px-4 py-2 outline-none"
-                      />
-                    ) : (
-                      <h5 className="text-2xl font-serif font-bold text-[#1E2A3A]">{exp.heading}</h5>
-                    )}
-                  </div>
-                  <div className="space-y-3 pl-2">
+            <textarea 
+              value={localResume.professional_summary}
+              onChange={(e) => updateSummary(e.target.value)}
+              className="w-full min-h-[120px] bg-slate-50 rounded-[1.5rem] p-6 text-sm font-body leading-relaxed outline-none border border-transparent focus:border-lumina-teal/30 focus:ring-4 ring-lumina-teal/5 transition-all resize-none"
+              placeholder="Inject your high-impact professional narrative here..."
+            />
+          </div>
+
+          {/* ── Section: Experience Manager ── */}
+          <div className="p-8 rounded-[2.5rem] bg-white border border-[#1E2A3A]/5 shadow-sm space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3 text-lumina-teal">
+                <Briefcase className="w-5 h-5" />
+                <h4 className="text-xs font-black uppercase tracking-widest">Experience</h4>
+              </div>
+              <button 
+                onClick={() => setShowVaultPicker({ section: 'experience' })}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-lumina-teal/10 text-lumina-teal text-[10px] font-black uppercase tracking-widest hover:bg-lumina-teal hover:text-white transition-all"
+              >
+                <Plus size={12} /> From Vault
+              </button>
+            </div>
+            <div className="space-y-6">
+              {localResume.experience.map((exp, idx) => (
+                <div key={idx} className="p-6 rounded-2xl bg-slate-50/50 border border-border/10 space-y-4 relative group/exp">
+                  <button 
+                    onClick={() => {
+                      const newExp = localResume.experience.filter((_, i) => i !== idx);
+                      setLocalResume({ ...localResume, experience: newExp });
+                    }}
+                    className="absolute top-4 right-4 p-2 text-red-500 opacity-0 group-hover/exp:opacity-100 hover:bg-red-50 rounded-lg transition-all"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                  <input 
+                    value={exp.heading}
+                    onChange={(e) => updateExperience(idx, 'heading', e.target.value)}
+                    className="w-full bg-transparent font-serif font-bold text-lg outline-none border-b border-transparent focus:border-lumina-teal/20"
+                  />
+                  <div className="space-y-3">
                     {exp.bullets?.map((bullet, bullIdx) => (
-                      <div key={bullIdx} className="flex gap-4 group/bullet">
-                        <span className="text-[#10B981] pt-1.5">•</span>
-                        {isEditMode ? (
-                          <div className="flex-1 flex gap-2">
-                            <textarea 
-                              value={bullet}
-                              onChange={(e) => updateBullet('experience', expIdx, bullIdx, e.target.value)}
-                              className="flex-1 bg-slate-50 border-none rounded-xl px-4 py-2 text-[17px] font-body outline-none focus:ring-1 ring-[#10B981]/20 min-h-[60px]"
-                            />
-                            <button 
-                              onClick={() => removeBullet('experience', expIdx, bullIdx)}
-                              className="p-2 h-10 w-10 flex items-center justify-center rounded-xl bg-red-50 text-red-500 opacity-0 group-hover/bullet:opacity-100 transition-opacity"
-                            >
-                              <Minus size={16} />
-                            </button>
-                          </div>
-                        ) : (
-                          <p className="text-[17px] text-[#1E2A3A]/80 font-body leading-relaxed">{bullet}</p>
-                        )}
+                      <div key={bullIdx} className="flex gap-3 items-start group/bull">
+                        <textarea 
+                          value={bullet}
+                          onChange={(e) => updateBullet('experience', idx, bullIdx, e.target.value)}
+                          className="flex-1 bg-white/50 rounded-xl px-4 py-2 text-xs font-body outline-none border border-transparent focus:border-lumina-teal/30 min-h-[50px]"
+                        />
+                        <button 
+                          onClick={() => removeBullet('experience', idx, bullIdx)}
+                          className="p-2 text-red-500 opacity-0 group-hover/bull:opacity-100"
+                        >
+                          <Minus size={12} />
+                        </button>
                       </div>
                     ))}
-                    {isEditMode && (
-                      <button 
-                        onClick={() => addBullet('experience', expIdx)}
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#10B981]/5 text-[#10B981] text-[13px] font-bold"
-                      >
-                        <Plus size={14} /> Add Bullet
-                      </button>
-                    )}
+                    <button 
+                      onClick={() => addBullet('experience', idx)}
+                      className="text-[10px] font-bold text-lumina-teal/60 hover:text-lumina-teal flex items-center gap-1.5 px-1"
+                    >
+                      <Plus size={12} /> Add Metric Bullet
+                    </button>
                   </div>
                 </div>
               ))}
             </div>
-          </section>
+          </div>
 
-          {/* Projects */}
-          {((localResume.projects && localResume.projects.length > 0) || isEditMode) && (
-            <section className="space-y-8">
-              <div className="flex items-center gap-3 text-[#1E2A3A]">
-                <h4 className="text-sm font-black uppercase tracking-[0.3em]">Technical Projects</h4>
-                <div className="h-px flex-1 bg-[#1E2A3A]/5" />
+          {/* ── Section: Projects Manager ── */}
+          <div className="p-8 rounded-[2.5rem] bg-white border border-[#1E2A3A]/5 shadow-sm space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3 text-lumina-teal">
+                <Database className="w-5 h-5" />
+                <h4 className="text-xs font-black uppercase tracking-widest">Projects</h4>
               </div>
-              <div className="space-y-10">
-                {localResume.projects?.map((proj, projIdx) => (
-                  <div key={projIdx} className="space-y-4 group/item">
-                    <div className="flex justify-between items-start">
-                      {isEditMode ? (
-                        <input 
-                          value={proj.heading}
-                          onChange={(e) => {
-                            const newProjects = [...(localResume.projects || [])];
-                            newProjects[projIdx] = { ...newProjects[projIdx], heading: e.target.value };
-                            setLocalResume({ ...localResume, projects: newProjects });
-                          }}
-                          className="text-2xl font-serif font-bold text-[#1E2A3A] w-full bg-slate-50 rounded-xl px-4 py-2 outline-none"
-                        />
-                      ) : (
-                        <h5 className="text-2xl font-serif font-bold text-[#1E2A3A]">{proj.heading}</h5>
-                      )}
-                    </div>
-                    <div className="space-y-3 pl-2">
-                      {proj.bullets?.map((bullet, bullIdx) => (
-                        <div key={bullIdx} className="flex gap-4 group/bullet">
-                          <span className="text-[#10B981] pt-1.5">•</span>
-                          {isEditMode ? (
-                            <div className="flex-1 flex gap-2">
-                              <textarea 
-                                value={bullet}
-                                onChange={(e) => updateBullet('projects', projIdx, bullIdx, e.target.value)}
-                                className="flex-1 bg-slate-50 border-none rounded-xl px-4 py-2 text-[17px] font-body outline-none focus:ring-1 ring-[#10B981]/20 min-h-[60px]"
-                              />
-                              <button 
-                                onClick={() => removeBullet('projects', projIdx, bullIdx)}
-                                className="p-2 h-10 w-10 flex items-center justify-center rounded-xl bg-red-50 text-red-500 opacity-0 group-hover/bullet:opacity-100 transition-opacity"
-                              >
-                                <Minus size={16} />
-                              </button>
-                            </div>
-                          ) : (
-                            <p className="text-[17px] text-[#1E2A3A]/80 font-body leading-relaxed">{bullet}</p>
-                          )}
-                        </div>
-                      ))}
-                      {isEditMode && (
-                        <button 
-                          onClick={() => addBullet('projects', projIdx)}
-                          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#10B981]/5 text-[#10B981] text-[13px] font-bold"
-                        >
-                          <Plus size={14} /> Add Bullet
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Education */}
-          <section className="space-y-4">
-            <div className="flex items-center gap-3 text-[#1E2A3A]">
-              <h4 className="text-sm font-black uppercase tracking-[0.3em]">Education</h4>
-              <div className="h-px flex-1 bg-[#1E2A3A]/5" />
+              <button 
+                onClick={() => setShowVaultPicker({ section: 'projects' })}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-lumina-teal/10 text-lumina-teal text-[10px] font-black uppercase tracking-widest hover:bg-lumina-teal hover:text-white transition-all"
+              >
+                <Plus size={12} /> From Vault
+              </button>
             </div>
-            <div className="space-y-4">
-              {localResume.education.map((edu, i) => (
-                <div key={i} className="flex justify-between items-center group/edu">
-                  {isEditMode ? (
+            <div className="space-y-6">
+              {(localResume.projects || []).map((proj, idx) => (
+                <div key={idx} className="p-6 rounded-2xl bg-slate-50/50 border border-border/10 space-y-4 relative group/proj">
+                  <button 
+                    onClick={() => {
+                      const newProj = localResume.projects?.filter((_, i) => i !== idx);
+                      setLocalResume({ ...localResume, projects: newProj });
+                    }}
+                    className="absolute top-4 right-4 p-2 text-red-500 opacity-0 group-hover/proj:opacity-100 hover:bg-red-50 rounded-lg transition-all"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                  <input 
+                    value={proj.heading}
+                    onChange={(e) => {
+                      const newProjects = [...(localResume.projects || [])];
+                      newProjects[idx] = { ...newProjects[idx], heading: e.target.value };
+                      setLocalResume({ ...localResume, projects: newProjects });
+                    }}
+                    className="w-full bg-transparent font-serif font-bold text-lg outline-none border-b border-transparent focus:border-lumina-teal/20"
+                  />
+                  <div className="space-y-3">
+                    {proj.bullets?.map((bullet, bullIdx) => (
+                      <div key={bullIdx} className="flex gap-3 items-start group/bull">
+                        <textarea 
+                          value={bullet}
+                          onChange={(e) => updateBullet('projects', idx, bullIdx, e.target.value)}
+                          className="flex-1 bg-white/50 rounded-xl px-4 py-2 text-xs font-body outline-none border border-transparent focus:border-lumina-teal/30 min-h-[50px]"
+                        />
+                        <button 
+                          onClick={() => removeBullet('projects', idx, bullIdx)}
+                          className="p-2 text-red-500 opacity-0 group-hover/bull:opacity-100"
+                        >
+                          <Minus size={12} />
+                        </button>
+                      </div>
+                    ))}
+                    <button 
+                      onClick={() => addBullet('projects', idx)}
+                      className="text-[10px] font-bold text-lumina-teal/60 hover:text-lumina-teal flex items-center gap-1.5 px-1"
+                    >
+                      <Plus size={12} /> Add Metric Bullet
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Section: Education & Certs ── */}
+          <div className="grid grid-cols-1 gap-6">
+            {/* Education */}
+            <div className="p-8 rounded-[2.5rem] bg-white border border-[#1E2A3A]/5 shadow-sm space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 text-lumina-teal">
+                  <GraduationCap className="w-5 h-5" />
+                  <h4 className="text-xs font-black uppercase tracking-widest">Education</h4>
+                </div>
+                <button onClick={() => setShowVaultPicker({ section: 'education' })} className="p-1.5 text-lumina-teal hover:bg-lumina-teal/10 rounded-lg"><Plus size={14}/></button>
+              </div>
+              <div className="space-y-2">
+                {localResume.education.map((edu, i) => (
+                  <div key={i} className="flex items-center gap-3">
                     <input 
                       value={edu}
                       onChange={(e) => {
@@ -362,46 +386,284 @@ export const ResumePreview = ({
                         newEdu[i] = e.target.value;
                         setLocalResume({ ...localResume, education: newEdu });
                       }}
-                      className="text-lg text-[#1E2A3A]/80 font-body w-full bg-slate-50 rounded-lg px-4 py-2 outline-none"
+                      className="flex-1 bg-slate-50 rounded-xl px-4 py-2 text-[13px] font-medium outline-none border border-transparent focus:border-lumina-teal/30"
                     />
-                  ) : (
-                    <p className="text-lg text-[#1E2A3A]/80 font-body">{edu}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Certifications */}
-          {((localResume.certifications && localResume.certifications.length > 0) || isEditMode) && (
-            <section className="space-y-4">
-              <div className="flex items-center gap-3 text-[#1E2A3A]">
-                <h4 className="text-sm font-black uppercase tracking-[0.3em]">Certifications</h4>
-                <div className="h-px flex-1 bg-[#1E2A3A]/5" />
-              </div>
-              <div className="space-y-2">
-                {localResume.certifications?.map((cert, i) => (
-                  <div key={i} className="flex justify-between items-center group/cert">
-                    {isEditMode ? (
-                      <input 
-                        value={cert}
-                        onChange={(e) => {
-                          const newCerts = [...(localResume.certifications || [])];
-                          newCerts[i] = e.target.value;
-                          setLocalResume({ ...localResume, certifications: newCerts });
-                        }}
-                        className="text-lg text-[#1E2A3A]/80 font-body w-full bg-slate-50 rounded-lg px-4 py-2 outline-none"
-                      />
-                    ) : (
-                      <p className="text-lg text-[#1E2A3A]/80 font-body">{cert}</p>
-                    )}
+                    <button onClick={() => setLocalResume({...localResume, education: localResume.education.filter((_, idx) => idx !== i)})} className="p-2 text-red-400 hover:text-red-500"><Minus size={14}/></button>
                   </div>
                 ))}
               </div>
-            </section>
-          )}
+            </div>
+
+            {/* Certs */}
+            <div className="p-8 rounded-[2.5rem] bg-white border border-[#1E2A3A]/5 shadow-sm space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 text-lumina-teal">
+                  <Award className="w-5 h-5" />
+                  <h4 className="text-xs font-black uppercase tracking-widest">Certifications</h4>
+                </div>
+                <button onClick={() => setShowVaultPicker({ section: 'certifications' })} className="p-1.5 text-lumina-teal hover:bg-lumina-teal/10 rounded-lg"><Plus size={14}/></button>
+              </div>
+              <div className="space-y-2">
+                {(localResume.certifications || []).map((cert, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <input 
+                      value={cert}
+                      onChange={(e) => {
+                        const newCerts = [...(localResume.certifications || [])];
+                        newCerts[i] = e.target.value;
+                        setLocalResume({ ...localResume, certifications: newCerts });
+                      }}
+                      className="flex-1 bg-slate-50 rounded-xl px-4 py-2 text-[13px] font-medium outline-none border border-transparent focus:border-lumina-teal/30"
+                    />
+                    <button onClick={() => setLocalResume({...localResume, certifications: (localResume.certifications || []).filter((_, idx) => idx !== i)})} className="p-2 text-red-400 hover:text-red-500"><Minus size={14}/></button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── RIGHT PANEL: THE SIGNATURE PREVIEW ── */}
+        <div className="lg:col-span-7 lg:sticky lg:top-8 flex justify-center">
+          <div className="w-full max-w-[800px] perspective-2000">
+            <motion.div 
+              ref={resumeRef}
+              initial={{ rotateY: 5, rotateX: 2, scale: 0.95, opacity: 0 }}
+              animate={{ rotateY: 0, rotateX: 0, scale: 1, opacity: 1 }}
+              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+              className="relative bg-white border border-[#1E2A3A]/5 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.1)] overflow-hidden"
+              style={{ 
+                width: '100%', 
+                minHeight: '297mm', // A4 Height
+                borderRadius: '0px'
+              }}
+            >
+              {/* Page Indicator Overlay */}
+              <div className="absolute top-0 right-0 p-8 pointer-events-none opacity-20">
+                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-[#1E2A3A]">
+                  <Database className="w-4 h-4 text-lumina-teal" /> A4 High-Density Format
+                </div>
+              </div>
+
+              <div className="p-16 lg:p-24 space-y-12">
+                {/* Header */}
+                <div className="text-center space-y-5 border-b border-[#1E2A3A]/5 pb-12 mb-12">
+                  <h1 className="text-4xl lg:text-5xl font-serif font-bold text-[#1E2A3A] tracking-tighter uppercase leading-none">
+                    {localHeader.fullName || "Your Name"}
+                  </h1>
+                  
+                  <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-2 text-[13px] text-[#1E2A3A]/50 font-body font-medium">
+                    {localHeader.location && (
+                      <div className="flex items-center gap-1.5"><MapPin size={12} className="text-lumina-teal/40" /> {localHeader.location}</div>
+                    )}
+                    {localHeader.phone && (
+                      <div className="flex items-center gap-1.5"><Phone size={12} className="text-lumina-teal/40" /> {localHeader.phone}</div>
+                    )}
+                    {localHeader.email && (
+                      <div className="flex items-center gap-1.5"><Mail size={12} className="text-lumina-teal/40" /> {localHeader.email}</div>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap justify-center items-center gap-8 text-[11px] font-black uppercase tracking-[0.3em] text-lumina-teal/60 pt-2">
+                    {localHeader.linkedin && <div className="flex items-center gap-2"><Linkedin size={10} /> LinkedIn</div>}
+                    {localHeader.github && <div className="flex items-center gap-2"><Github size={10} /> GitHub</div>}
+                    {localHeader.portfolio && <div className="flex items-center gap-2"><Globe size={10} /> Portfolio</div>}
+                  </div>
+                </div>
+
+                {/* Body Content */}
+                <div className="space-y-14">
+                  {/* Summary */}
+                  <section className="space-y-5">
+                    <div className="flex items-center gap-4 text-[#1E2A3A]">
+                      <h4 className="text-[12px] font-black uppercase tracking-[0.4em]">Professional Summary</h4>
+                      <div className="h-px flex-1 bg-[#1E2A3A]/10" />
+                    </div>
+                    <p className="text-[17px] text-[#1E2A3A]/80 font-body leading-[1.7] italic">
+                      {localResume.professional_summary}
+                    </p>
+                  </section>
+
+                  {/* Skills */}
+                  <section className="space-y-5">
+                    <div className="flex items-center gap-4 text-[#1E2A3A]">
+                      <h4 className="text-[12px] font-black uppercase tracking-[0.4em]">Core Competencies</h4>
+                      <div className="h-px flex-1 bg-[#1E2A3A]/10" />
+                    </div>
+                    <div className="flex flex-wrap gap-x-6 gap-y-3">
+                      {localResume.skills_section.map((skill, i) => (
+                        <div key={i} className="text-[14px] font-body font-bold text-[#1E2A3A]/70 uppercase tracking-tighter">
+                          {skill}{i < localResume.skills_section.length - 1 && "  •"}
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* Experience */}
+                  <section className="space-y-10">
+                    <div className="flex items-center gap-4 text-[#1E2A3A]">
+                      <h4 className="text-[12px] font-black uppercase tracking-[0.4em]">Professional Experience</h4>
+                      <div className="h-px flex-1 bg-[#1E2A3A]/10" />
+                    </div>
+                    <div className="space-y-12">
+                      {localResume.experience.map((exp, expIdx) => (
+                        <div key={expIdx} className="space-y-5">
+                          <h5 className="text-[22px] font-serif font-bold text-[#1E2A3A] tracking-tight">{exp.heading}</h5>
+                          <div className="space-y-4 pl-4 border-l-2 border-slate-100">
+                            {exp.bullets?.map((bullet, bullIdx) => (
+                              <div key={bullIdx} className="flex gap-5 items-start">
+                                <span className="text-lumina-teal pt-1.5 font-bold">•</span>
+                                <p className="text-[17px] text-[#1E2A3A]/80 font-body leading-[1.6]">{bullet}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* Projects */}
+                  {(localResume.projects && localResume.projects.length > 0) && (
+                    <section className="space-y-10">
+                      <div className="flex items-center gap-4 text-[#1E2A3A]">
+                        <h4 className="text-[12px] font-black uppercase tracking-[0.4em]">Key Projects</h4>
+                        <div className="h-px flex-1 bg-[#1E2A3A]/10" />
+                      </div>
+                      <div className="space-y-12">
+                        {localResume.projects?.map((proj, projIdx) => (
+                          <div key={projIdx} className="space-y-5">
+                            <h5 className="text-[20px] font-serif font-bold text-[#1E2A3A] tracking-tight">{proj.heading}</h5>
+                            <div className="space-y-4 pl-4 border-l-2 border-slate-100">
+                              {proj.bullets?.map((bullet, bullIdx) => (
+                                <div key={bullIdx} className="flex gap-5 items-start">
+                                  <span className="text-lumina-teal pt-1.5 font-bold">•</span>
+                                  <p className="text-[17px] text-[#1E2A3A]/80 font-body leading-[1.6]">{bullet}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+                  )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    {/* Education */}
+                    <section className="space-y-5">
+                      <div className="flex items-center gap-4 text-[#1E2A3A]">
+                        <h4 className="text-[12px] font-black uppercase tracking-[0.4em]">Education</h4>
+                        <div className="h-px flex-1 bg-[#1E2A3A]/10" />
+                      </div>
+                      <div className="space-y-4">
+                        {localResume.education.map((edu, i) => (
+                          <p key={i} className="text-[15px] text-[#1E2A3A]/80 font-body font-medium">{edu}</p>
+                        ))}
+                      </div>
+                    </section>
+
+                    {/* Certifications */}
+                    {(localResume.certifications && localResume.certifications.length > 0) && (
+                      <section className="space-y-5">
+                        <div className="flex items-center gap-4 text-[#1E2A3A]">
+                          <h4 className="text-[12px] font-black uppercase tracking-[0.4em]">Certifications</h4>
+                          <div className="h-px flex-1 bg-[#1E2A3A]/10" />
+                        </div>
+                        <div className="space-y-4">
+                          {localResume.certifications?.map((cert, i) => (
+                            <p key={i} className="text-[15px] text-[#1E2A3A]/80 font-body font-medium">{cert}</p>
+                          ))}
+                        </div>
+                      </section>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Dynamic Page Breaks (Visual Only) */}
+              {pageCount > 1 && Array.from({ length: pageCount - 1 }).map((_, i) => (
+                <div 
+                  key={i}
+                  className="absolute left-0 right-0 h-px border-t border-dashed border-[#1E2A3A]/20 flex items-center justify-center pointer-events-none"
+                  style={{ top: `${(i + 1) * 100 / pageCount}%` }}
+                >
+                  <span className="bg-white px-6 text-[9px] font-black uppercase tracking-[0.5em] text-[#1E2A3A]/20">A4 Page Cut {i + 1}</span>
+                </div>
+              ))}
+            </motion.div>
+          </div>
         </div>
       </div>
+
+      {/* ── Vault Picker Modal ── */}
+      <AnimatePresence>
+        {showVaultPicker && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-[#1E2A3A]/40 backdrop-blur-sm">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-white rounded-[2.5rem] w-full max-w-2xl max-h-[85vh] overflow-hidden shadow-2xl flex flex-col"
+            >
+              <div className="p-10 border-b border-[#1E2A3A]/5 flex items-center justify-between bg-slate-50/50">
+                <div className="flex items-center gap-5">
+                  <div className="w-12 h-12 rounded-2xl bg-lumina-teal flex items-center justify-center text-white shadow-lg shadow-lumina-teal/20">
+                    <Database className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h4 className="text-2xl font-serif font-bold text-[#1E2A3A]">Tactical Vault</h4>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-[#1E2A3A]/40">Inject {showVaultPicker.section} entry into blueprint</p>
+                  </div>
+                </div>
+                <button onClick={() => setShowVaultPicker(null)} className="p-3 hover:bg-slate-200 rounded-full transition-all">
+                  <X size={24} />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-8 space-y-4 custom-scrollbar">
+                {vaultItems
+                  .filter(item => {
+                    if (showVaultPicker.section === 'experience') return item.type === 'professional';
+                    if (showVaultPicker.section === 'projects') return item.type === 'project';
+                    if (showVaultPicker.section === 'education') return item.type === 'education';
+                    if (showVaultPicker.section === 'certifications') return item.type === 'certification';
+                    return true;
+                  })
+                  .map((item) => (
+                    <div 
+                      key={item.id}
+                      onClick={() => addFromVault(item)}
+                      className="p-8 rounded-[2rem] border border-[#1E2A3A]/5 hover:border-lumina-teal hover:bg-lumina-teal/5 transition-all cursor-pointer group"
+                    >
+                      <div className="flex justify-between items-start mb-3">
+                        <h5 className="text-xl font-serif font-bold text-[#1E2A3A] group-hover:text-lumina-teal transition-colors">{item.title}</h5>
+                        <span className="text-[11px] font-black uppercase tracking-widest text-[#1E2A3A]/30">{item.period}</span>
+                      </div>
+                      <p className="text-sm text-[#1E2A3A]/60 line-clamp-2 mb-4 italic leading-relaxed">{item.description}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {item.skills?.slice(0, 4).map(skill => (
+                          <span key={skill} className="px-3 py-1.5 rounded-xl bg-slate-100 text-[9px] font-black uppercase tracking-widest text-[#1E2A3A]/40">{skill}</span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                
+                {vaultItems.filter(item => {
+                    if (showVaultPicker.section === 'experience') return item.type === 'professional';
+                    if (showVaultPicker.section === 'projects') return item.type === 'project';
+                    if (showVaultPicker.section === 'education') return item.type === 'education';
+                    if (showVaultPicker.section === 'certifications') return item.type === 'certification';
+                    return true;
+                }).length === 0 && (
+                  <div className="py-24 text-center space-y-6">
+                    <Database className="w-16 h-16 text-[#1E2A3A]/5 mx-auto" />
+                    <p className="text-lg text-[#1E2A3A]/30 font-serif italic">No tactical signatures found in this sector of your vault.</p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -961,6 +961,7 @@ RETURN JSON FORMAT ONLY:
             <ResumePreview 
               resume={resume}
               header={editableHeader}
+              vaultItems={vaultItems}
               isGenerating={isGenerating}
               onUpdate={(updatedResume, updatedHeader) => {
                 setResume(updatedResume);

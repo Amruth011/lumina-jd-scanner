@@ -119,6 +119,9 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
     const historyJson = localStorage.getItem("lumina_history");
     let history = historyJson ? JSON.parse(historyJson) : [];
     
+    // Deduplication: Remove existing entry with same JD text
+    history = history.filter((item: { jdText: string }) => item.jdText !== text);
+
     const newItem = {
       id: Math.random().toString(36).substring(2, 9),
       title,
@@ -133,7 +136,7 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 md:px-8 pb-24">
+    <div className={`w-full ${activeTab === 'generator' ? 'max-w-screen-2xl' : 'max-w-7xl'} mx-auto px-4 md:px-8 pb-24`}>
       <AnimatePresence mode="wait">
         {activeTab === "decode" ? (
           <motion.div
@@ -186,7 +189,7 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
                   transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                   className="mt-16 w-full mx-auto space-y-16"
                 >
-                  <StructuredOutput results={results} />
+                  {/* StructuredOutput removed to eliminate redundancy with LuminaUltraDashboard */}
                   
                   {/* ── INTELLIGENCE ENGINE: THE DASHBOARD ── */}
                   <motion.div
@@ -224,16 +227,7 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
                   onResultChange={setGapResult}
                 />
                 {gapResult && (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-                      <ATSScoreWidget score={gapResult.overall_match} />
-                      <div className="md:col-span-2 bg-white/50 backdrop-blur-sm p-8 rounded-[2.5rem] border border-[#1E2A3A]/5 flex flex-col justify-center">
-                        <h4 className="text-2xl font-serif font-bold text-[#1E2A3A] mb-4">Strategic Summary</h4>
-                        <p className="text-[#1E2A3A]/60 font-body leading-relaxed text-lg italic">
-                          "{gapResult.summary}"
-                        </p>
-                      </div>
-                    </div>
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12">
                     <ATSScoreSimulator result={gapResult} />
                     <div className="flex justify-center mt-12">
                       <button 
