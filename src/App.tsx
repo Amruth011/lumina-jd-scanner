@@ -6,12 +6,15 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { SessionProvider } from "@/context/SessionContext";
 import { ToastProvider } from "@/context/ToastContext";
-import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import Dashboard from "./pages/Dashboard";
-import NotFound from "./pages/NotFound";
+import { lazy, Suspense } from "react";
 import { FeedbackBar } from "@/components/ui/FeedbackBar";
 import { CommandPalette } from "@/components/ui/CommandPalette";
+
+// Lazy load pages to prevent circular dependency initialization crashes
+const Index = lazy(() => import("./pages/Index"));
+const Auth = lazy(() => import("./pages/Auth"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 import { useAuth } from "@/hooks/useAuth";
 import { Navigate } from "react-router-dom";
@@ -64,13 +67,29 @@ const App = () => (
           <FeedbackBar />
           <BrowserRouter>
             <CommandPalette />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Suspense fallback={
+              <div className="min-h-screen bg-background flex flex-col items-center justify-center space-y-6">
+                <motion.div 
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  className="relative"
+                >
+                  <div className="w-16 h-16 rounded-full border-2 border-primary/20 border-t-primary" />
+                </motion.div>
+                <div className="space-y-1 text-center">
+                  <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Hydrating Lumina</p>
+                  <p className="text-[8px] font-bold uppercase tracking-widest text-muted-foreground">Initializing Total Intelligence</p>
+                </div>
+              </div>
+            }>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
           </BrowserRouter>
         </TooltipProvider>
         </QueryClientProvider>
