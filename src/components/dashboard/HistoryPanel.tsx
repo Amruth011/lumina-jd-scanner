@@ -18,12 +18,24 @@ export const HistoryPanel = () => {
   useEffect(() => {
     const savedHistory = localStorage.getItem("lumina_history");
     if (savedHistory) {
-      setHistory(JSON.parse(savedHistory));
+      try {
+        setHistory(JSON.parse(savedHistory));
+      } catch (e) {
+        console.error("Corrupted history detected, resetting:", e);
+        localStorage.removeItem("lumina_history");
+        setHistory([]);
+      }
     }
 
     const handleHistoryUpdate = () => {
       const updated = localStorage.getItem("lumina_history");
-      if (updated) setHistory(JSON.parse(updated));
+      if (updated) {
+        try {
+          setHistory(JSON.parse(updated));
+        } catch (e) {
+          setHistory([]);
+        }
+      }
     };
 
     window.addEventListener("lumina_history_updated", handleHistoryUpdate);

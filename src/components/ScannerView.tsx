@@ -124,10 +124,20 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
 
   const saveToHistory = (title: string, text: string) => {
     const historyJson = localStorage.getItem("lumina_history");
-    let history = historyJson ? JSON.parse(historyJson) : [];
+    let history = [];
+    try {
+      history = historyJson ? JSON.parse(historyJson) : [];
+    } catch (e) {
+      console.warn("Lumina Intelligence: History buffer cleared due to corruption.");
+      history = [];
+    }
     
     // Deduplication: Remove existing entry with same JD text
-    history = history.filter((item: { jdText: string }) => item.jdText !== text);
+    if (Array.isArray(history)) {
+      history = history.filter((item: { jdText: string }) => item.jdText !== text);
+    } else {
+      history = [];
+    }
 
     const newItem = {
       id: Math.random().toString(36).substring(2, 9),
