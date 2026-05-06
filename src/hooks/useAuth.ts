@@ -7,6 +7,11 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!supabase?.auth) {
+      setLoading(false);
+      return;
+    }
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       setLoading(false);
@@ -17,13 +22,13 @@ export const useAuth = () => {
         setUser(session?.user ?? null);
       })
       .catch((error) => {
-        console.error("Auth session fetch error:", error);
+        console.error("Lumina Auth: Session sync failure", error);
       })
       .finally(() => {
         setLoading(false);
       });
 
-    return () => subscription.unsubscribe();
+    return () => subscription?.unsubscribe();
   }, []);
 
   const signOut = async () => {
