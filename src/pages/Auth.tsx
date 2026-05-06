@@ -252,7 +252,7 @@ const Auth = () => {
       {/* Infrastructure Diagnostic - Only visible in dev or if connection fails */}
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 opacity-20 hover:opacity-100 transition-opacity">
         <p className="text-[8px] font-mono uppercase tracking-widest text-muted-foreground whitespace-nowrap">
-          Engine Signal: {supabase.auth.getSession ? "HARDCODED ACTIVE" : (import.meta.env.VITE_SUPABASE_URL ? `...${import.meta.env.VITE_SUPABASE_URL.slice(-12)}` : "OFFLINE")}
+          Engine Signal: {supabase?.auth?.getSession ? "HARDCODED ACTIVE" : (import.meta.env.VITE_SUPABASE_URL ? `...${import.meta.env.VITE_SUPABASE_URL.slice(-12)}` : "OFFLINE")}
         </p>
       </div>
     </div>

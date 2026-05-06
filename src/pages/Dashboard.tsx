@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { GlobalNavbar } from "@/components/GlobalNavbar";
-import { ScannerView } from "@/components/ScannerView";
+import { ScannerView, type Tab } from "@/components/ScannerView";
 import { WelcomeScreen } from "@/components/onboarding/WelcomeScreen";
 import { TooltipTour } from "@/components/onboarding/TooltipTour";
 import { HistoryPanel } from "@/components/dashboard/HistoryPanel";
-
-export type Tab = "decode" | "analysis" | "profile" | "generator" | "guide";
 
 const Dashboard = () => {
   const location = useLocation();
