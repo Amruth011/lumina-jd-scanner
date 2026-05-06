@@ -8,13 +8,15 @@ import { useAuth } from "@/hooks/useAuth";
 import { useDecodeJD } from "@/hooks/useDecodeJD";
 import { GlassTextArea } from "@/components/GlassTextArea";
 import { DecodeButton } from "@/components/DecodeButton";
-import { LuminaUltraDashboard } from "./LuminaUltraDashboard";
-import { JdActionCta } from "./JdActionCta";
-import { ResumeGapAnalyzer } from "@/components/ResumeGapAnalyzer";
-import { ATSScoreSimulator } from "@/components/ATSScoreSimulator";
-import { ResumeEnhancer } from "@/components/ResumeEnhancer";
-import { MasterVault } from "@/components/MasterVault";
-import { ResumeGenerator } from "@/components/ResumeGenerator";
+const LuminaUltraDashboard = lazy(() => import("./LuminaUltraDashboard").then(m => ({ default: m.LuminaUltraDashboard })));
+const JdActionCta = lazy(() => import("./JdActionCta").then(m => ({ default: m.JdActionCta })));
+const ResumeGapAnalyzer = lazy(() => import("@/components/ResumeGapAnalyzer").then(m => ({ default: m.ResumeGapAnalyzer })));
+const ATSScoreSimulator = lazy(() => import("@/components/ATSScoreSimulator").then(m => ({ default: m.ATSScoreSimulator })));
+const ResumeEnhancer = lazy(() => import("@/components/ResumeEnhancer").then(m => ({ default: m.ResumeEnhancer })));
+const MasterVault = lazy(() => import("@/components/MasterVault").then(m => ({ default: m.MasterVault })));
+const ResumeGenerator = lazy(() => import("@/components/ResumeGenerator").then(m => ({ default: m.ResumeGenerator })));
+const ApplicationTracker = lazy(() => import("@/components/ApplicationTracker").then(m => ({ default: m.ApplicationTracker })));
+
 import { scavengeSkills } from "@/lib/skillScavenger";
 import { HowItWorksSection } from "@/components/HowItWorksSection";
 import { EmptyState } from "./dashboard/EmptyState";
@@ -23,7 +25,7 @@ import { LoadingSequence } from "./jd-decoder/LoadingSequence";
 import { StructuredOutput } from "./jd-decoder/StructuredOutput";
 import type { DecodeResult, ResumeGapResult } from "@/types/jd";
 
-const ApplicationTracker = lazy(() => import("@/components/ApplicationTracker").then(module => ({ default: module.ApplicationTracker })));
+
 
 import type { Tab } from "@/types/tabs";
 
