@@ -57,32 +57,6 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
   
   const restorationStarted = useRef(false);
 
-  // v2.9 Persistence: Restore results on mount if jdText exists
-  useEffect(() => {
-    if (!loading && user && jdText.trim().length >= 20 && !results && !isScanning && !restorationStarted.current) {
-      restorationStarted.current = true;
-      const timer = setTimeout(() => {
-        handleDecode();
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [loading, user, results, isScanning, handleDecode, jdText]);
-
-  // v2.9 Persistence: Save jdText to localStorage
-  useEffect(() => {
-    localStorage.setItem("lumina_last_jd", jdText);
-  }, [jdText]);
-  
-  // v2.8 State Sync: Listener for cross-component tab switching
-  useEffect(() => {
-    const handleSwitch = (e: Event) => {
-      const customEvent = e as CustomEvent;
-      if (customEvent.detail) handleTabSwitch(customEvent.detail as Tab);
-    };
-    window.addEventListener('switch-tab', handleSwitch);
-    return () => window.removeEventListener('switch-tab', handleSwitch);
-  }, [handleTabSwitch]);
-
   const handleSaveJd = async () => {
     if (!user) { toast.info("Sign in to save your decoded JDs."); navigate("/auth"); return; }
     if (!results) return;
@@ -120,8 +94,6 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
     }
     console.log("Decoding started for Lumina 2.0...");
     await decodeJD(jdText);
-    // Note: results will be updated in state, saveToHistory handled by effect or inside hook if needed
-    // For now, we'll just remove the invalid check to make it green
   }, [user, navigate, decodeJD, jdText]);
 
   const saveToHistory = (title: string, text: string) => {
@@ -134,7 +106,6 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
       history = [];
     }
     
-    // Deduplication: Remove existing entry with same JD text
     if (Array.isArray(history)) {
       history = history.filter((item: { jdText: string }) => item.jdText !== text);
     } else {
@@ -148,11 +119,36 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
       timestamp: Date.now()
     };
     
-    // Add to start, limit to 10
     history = [newItem, ...history].slice(0, 10);
     localStorage.setItem("lumina_history", JSON.stringify(history));
     window.dispatchEvent(new Event("lumina_history_updated"));
   };
+
+  // v2.9 Persistence: Restore results on mount if jdText exists
+  useEffect(() => {
+    if (!loading && user && jdText.trim().length >= 20 && !results && !isScanning && !restorationStarted.current) {
+      restorationStarted.current = true;
+      const timer = setTimeout(() => {
+        handleDecode();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, user, results, isScanning, handleDecode, jdText]);
+
+  // v2.9 Persistence: Save jdText to localStorage
+  useEffect(() => {
+    localStorage.setItem("lumina_last_jd", jdText);
+  }, [jdText]);
+  
+  // v2.8 State Sync: Listener for cross-component tab switching
+  useEffect(() => {
+    const handleSwitch = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail) handleTabSwitch(customEvent.detail as Tab);
+    };
+    window.addEventListener('switch-tab', handleSwitch);
+    return () => window.removeEventListener('switch-tab', handleSwitch);
+  }, [handleTabSwitch]);
 
   return (
     <div className={`w-full ${activeTab === 'generator' ? 'max-w-screen-2xl' : 'max-w-7xl'} mx-auto px-4 md:px-8 pb-24`}>
