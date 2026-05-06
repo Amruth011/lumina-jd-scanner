@@ -194,20 +194,18 @@ export const useDecodeJD = () => {
                ].slice(0, 3);
              })()
            },
-           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-           skills: (safeArr(find(raw, 'skills')) || []).map((s: any) => ({
-             skill: safeStrItem(s?.skill || s),
-             importance: safeNum(s?.importance, 90),
-             category: safeStrItem(s?.category || "Technical")
+           skills: (safeArr(find(raw, 'skills')) || []).map((s: unknown) => ({
+             skill: safeStrItem((s as Record<string, unknown>)?.skill || s),
+             importance: safeNum((s as Record<string, unknown>)?.importance, 90),
+             category: safeStrItem((s as Record<string, unknown>)?.category || "Technical")
            })),
            red_flags: (() => {
              const rawFlags = safeArr(find(raw, 'red_flags') || find(raw, 'flags') || find(raw, 'risks'));
              if (rawFlags.length > 0) {
-               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-               return rawFlags.map((i: any) => ({
-                 phrase: safeStrItem(i?.phrase || i),
-                 intensity: safeNum(i?.intensity, 40),
-                 note: safeStrItem(i?.note || "Forensic risk detection active.")
+               return rawFlags.map((i: unknown) => ({
+                 phrase: safeStrItem((i as Record<string, unknown>)?.phrase || i),
+                 intensity: safeNum((i as Record<string, unknown>)?.intensity, 40),
+                 note: safeStrItem((i as Record<string, unknown>)?.note || "Forensic risk detection active.")
                }));
              }
              return [
@@ -218,10 +216,9 @@ export const useDecodeJD = () => {
            recruiter_lens: (() => {
              const rawLens = safeArr(find(raw, 'recruiter_lens') || find(raw, 'recruiter_logic') || find(raw, 'jargon'));
              if (rawLens.length > 0) {
-               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-               return rawLens.map((i: any) => ({
-                 jargon: safeStrItem(i?.jargon || i),
-                 reality: safeStrItem(i?.reality || "Forensic translation in progress.")
+                return rawLens.map((i: unknown) => ({
+                 jargon: safeStrItem((i as Record<string, unknown>)?.jargon || i),
+                 reality: safeStrItem((i as Record<string, unknown>)?.reality || "Forensic translation in progress.")
                }));
              }
              return [
@@ -235,17 +232,19 @@ export const useDecodeJD = () => {
              soft_skills: safeArr(find(rawReq, 'soft_skills')).length > 0 ? safeArr(find(rawReq, 'soft_skills')).map(s => safeStrItem(s)) : ["Strategic Reasoning", "Crisis Ownership"],
              agreements: safeArr(find(rawReq, 'agreements')).map(a => safeStrItem(a))
            },
-           qualifiers: {
-              seniority_level: safeNum(find(rawQual, 'seniority_level'), 85),
-              experience: {
-                professional: safeNum(find(rawQual?.experience, 'professional'), 8),
-                project_proof: safeNum(find(rawQual?.experience, 'project_proof'), 90)
-              },
-              education: {
-                degree_required: find(rawQual?.education, 'degree_required') ?? true,
-                skills_first_percent: safeNum(find(rawQual?.education, 'skills_first_percent'), 80)
-              }
-           },
+            qualifiers: {
+               must_have_percent: safeNum(find(rawQual, 'must_have_percent'), 70),
+               nice_to_have_percent: safeNum(find(rawQual, 'nice_to_have_percent'), 50),
+               seniority_level: safeNum(find(rawQual, 'seniority_level'), 85),
+               experience: {
+                 professional: safeNum(find(rawQual?.experience, 'professional'), 8),
+                 project_proof: safeNum(find(rawQual?.experience, 'project_proof'), 90)
+               },
+               education: {
+                 degree_required: find(rawQual?.education, 'degree_required') ?? true,
+                 skills_first_percent: safeNum(find(rawQual?.education, 'skills_first_percent'), 80)
+               }
+            },
            logistics: {
               ...rawLog,
               salary_range: {
@@ -260,16 +259,15 @@ export const useDecodeJD = () => {
                 estimate: rawLog.salary_range?.estimate ?? (safeNum(find(rawLog.salary_range, 'min')) === 0 ? true : false),
                 note: safeStrItem(find(rawLog.salary_range, 'note')) || "Forensic valuation based on market signals."
               },
-              work_arrangement: {
-                remote_friendly: safeStrItem(find(rawLog.work_arrangement, 'remote_friendly')) || "Hybrid-First",
-                office_presence: safeStrItem(find(rawLog.work_arrangement, 'office_presence')) || "2-3 days per week",
-                flexible_hours: find(rawLog.work_arrangement, 'flexible_hours') ?? true
-              },
+               work_arrangement: {
+                  remote_friendly: (safeStrItem(find(rawLog.work_arrangement, 'remote_friendly')) || "unspecified") as "yes" | "no" | "partial" | "unspecified",
+                  office_presence: (safeStrItem(find(rawLog.work_arrangement, 'office_presence')) || "unspecified") as "none" | "occasional" | "full" | "unspecified",
+                  flexible_hours: find(rawLog.work_arrangement, 'flexible_hours') ?? true
+               },
               responsibility_mix: safeArr(find(rawLog, 'responsibility_mix')).length > 0
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                ? safeArr(find(rawLog, 'responsibility_mix')).map((rm: any) => ({
-                    label: safeStrItem(rm?.label || rm),
-                    percent: safeNum(rm?.percent, 50)
+                ? safeArr(find(rawLog, 'responsibility_mix')).map((rm: unknown) => ({
+                    label: safeStrItem((rm as Record<string, unknown>)?.label || rm),
+                    percent: safeNum((rm as Record<string, unknown>)?.percent, 50)
                   }))
                 : [
                     { label: "High-Focus Engineering", percent: 45 }, 
@@ -307,7 +305,7 @@ export const useDecodeJD = () => {
               },
               bias_analysis: {
                 inclusivity_score: safeNum(find(rawDeep?.bias_analysis, 'inclusivity_score') || find(raw, 'inclusivity_score'), 92),
-                gender_meter: safeStrItem(find(rawDeep?.bias_analysis, 'gender_meter') || find(raw, 'gender_meter')) || "neutral",
+                 gender_meter: (safeStrItem(find(rawDeep?.bias_analysis, 'gender_meter') || find(raw, 'gender_meter')) || "neutral") as "masculine" | "neutral" | "feminine",
                 age_bias_graph: safeNum(find(rawDeep?.bias_analysis, 'age_bias_graph') || find(raw, 'age_bias_graph'), 45),
                 tonal_map: (() => {
                   const rawTonal = safeArr(find(rawDeep?.bias_analysis, 'tonal_map') || find(raw, 'tonal_map'));
@@ -334,7 +332,18 @@ export const useDecodeJD = () => {
                 stability: safeNum(find(rawDeep?.culture_radar, 'stability') || find(raw, 'stability'), 80)
               }
            },
-           bonus_pulse: {
+            role_reality: {
+              iceberg_above: safeArr(find(raw, 'iceberg_above')).length > 0 ? safeArr(find(raw, 'iceberg_above')) : ["Senior Strategic Architect", "Direct stakeholder pressure"],
+              iceberg_below: safeArr(find(raw, 'iceberg_below')).length > 0 ? safeArr(find(raw, 'iceberg_below')) : ["High ownership expectations", "Complex architectural debt"],
+              dimensions: {
+                technical_depth: safeNum(find(raw?.dimensions, 'technical_depth'), 85),
+                research_autonomy: safeNum(find(raw?.dimensions, 'research_autonomy'), 90),
+                client_interaction: safeNum(find(raw?.dimensions, 'client_interaction'), 75),
+                strategic_impact: safeNum(find(raw?.dimensions, 'strategic_impact'), 95),
+                legacy_maintenance: safeNum(find(raw?.dimensions, 'legacy_maintenance'), 40)
+              }
+            },
+            bonus_pulse: {
              ghost_job_probability: safeNum(find(rawBonus, 'ghost_job_probability')) || 5,
              desperation_meter: safeNum(find(rawBonus, 'desperation_meter')) || 25,
              competition_estimate: safeNum(find(rawBonus, 'competition_estimate')) || 90,
@@ -347,7 +356,7 @@ export const useDecodeJD = () => {
              // eslint-disable-next-line @typescript-eslint/no-explicit-any
              tech_stack_popularity: safeArr(find(rawBonus, 'tech_stack_popularity')).map((ts: any) => ({
                 name: safeStrItem(ts?.name || ts),
-                demand: safeStrItem(ts?.demand || "High-Demand")
+                 demand: (safeStrItem(ts?.demand || "High")) as "Standard" | "High" | "Extreme"
              }))
            },
            interview_kit: {
@@ -355,12 +364,12 @@ export const useDecodeJD = () => {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 ? safeArr(find(rawKit, 'questions')).map((q: any) => ({
                     question: safeStrItem(q?.question || q),
-                    type: safeStrItem(q?.type || "technical"),
+                     type: (safeStrItem(q?.type || "technical")) as "technical" | "behavioral" | "situational",
                     tip: safeStrItem(q?.tip) || "Focus on architectural clarity.",
                     target_answer: safeStrItem(q?.target_answer) || "Reference specific enterprise scale systems."
                   }))
                 : [
-                    { question: "How do you manage technical debt in legacy RAG systems?", type: "technical", tip: "Focus on balancing velocity with quality.", target_answer: "Incremental refactoring and automated eval sets." }
+                     { question: "How do you manage technical debt in legacy RAG systems?", type: "technical" as const, tip: "Focus on balancing velocity with quality.", target_answer: "Incremental refactoring and automated eval sets." }
                   ],
              reverse_questions: safeArr(find(rawKit, 'reverse_questions')).length >= 5 
                 ? safeArr(find(rawKit, 'reverse_questions')).map(i => safeStrItem(i)) 

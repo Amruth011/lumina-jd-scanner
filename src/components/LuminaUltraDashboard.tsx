@@ -446,7 +446,12 @@ export const LuminaUltraDashboard = ({ results, resumeResults, jdText }: LuminaU
         <BonusInsights 
           insights={results?.bonus_pulse} 
           salary={results?.logistics?.salary_range} 
-          skills={results?.skills_impact || []}
+          skills={results?.skills?.map(s => ({
+            skill: s.skill,
+            impact: s.importance,
+            demand: (s.importance > 80 ? "High" : s.importance > 50 ? "Medium" : "Low") as "High" | "Medium" | "Low",
+            trend: "Rising" as "Rising" | "Stable" | "Falling"
+          })) || []}
         />
       </div>
 

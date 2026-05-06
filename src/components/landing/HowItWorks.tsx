@@ -118,8 +118,8 @@ export const HowItWorks = () => {
   useEffect(() => {
     if (!containerRef.current || !visualsRef.current || !textRef.current) return;
 
-    const sections = gsap.utils.toArray('.chapter-text');
-    const visuals = gsap.utils.toArray('.chapter-visual');
+    const sections = gsap.utils.toArray('.chapter-text') as HTMLElement[];
+    const visuals = gsap.utils.toArray('.chapter-visual') as HTMLElement[];
 
     gsap.set(visuals, { opacity: 0, scale: 0.9, y: 50 });
     gsap.set(visuals[0], { opacity: 1, scale: 1, y: 0 });

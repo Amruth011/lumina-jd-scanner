@@ -105,9 +105,9 @@ const JourneyRoadmap: React.FC = () => {
           <Suspense fallback={<div className="w-full h-full bg-[#060D14]" />}>
             <Canvas
               shadows
+              dpr={[1, 1.5]}
               gl={{ 
-                antialias: true, 
-                pixelRatio: Math.min(window.devicePixelRatio, 1.5) 
+                antialias: true
               }}
               camera={{ position: [0, 8, 18], fov: 50 }}
             >

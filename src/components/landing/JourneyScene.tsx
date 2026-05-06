@@ -87,7 +87,7 @@ export const JourneyScene: React.FC<JourneySceneProps> = ({ progressRef }) => {
       });
     } else if (progress < 0.95) {
       window.confettiActive = false;
-      if (camera.fov !== 50) {
+      if ((camera as THREE.PerspectiveCamera).fov !== 50) {
         gsap.to(camera, { fov: 50, duration: 0.8 });
       }
     }
@@ -145,7 +145,6 @@ export const JourneyScene: React.FC<JourneySceneProps> = ({ progressRef }) => {
         sectionThickness={2.5}
         cellColor="#1E2A3A"
         cellThickness={1.5}
-        opacity={0.25}
       />
 
       {/* The Road */}
@@ -201,7 +200,7 @@ export const JourneyScene: React.FC<JourneySceneProps> = ({ progressRef }) => {
       ))}
 
       {/* Post Processing */}
-      <EffectComposer disableNormalPass>
+      <EffectComposer enableNormalPass={false}>
         <Bloom 
           intensity={0.8} 
           luminanceThreshold={0.6} 
@@ -224,7 +223,7 @@ const Particle = ({ position, speed, opacity }: ParticleProps) => {
     if (ref.current) {
       ref.current.position.y += speed;
       if (ref.current.position.y > 4) ref.current.position.y = 0;
-      ref.current.material.opacity = opacity * (1 - ref.current.position.y / 4);
+      (ref.current.material as THREE.MeshBasicMaterial).opacity = opacity * (1 - ref.current.position.y / 4);
     }
   });
   return (

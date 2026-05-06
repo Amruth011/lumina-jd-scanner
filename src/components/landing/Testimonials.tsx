@@ -67,7 +67,7 @@ export const Testimonials = () => {
         ))}
       </div>
 
-      <style jsx>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         .no-scrollbar::-webkit-scrollbar {
           display: none;
         }
@@ -75,7 +75,7 @@ export const Testimonials = () => {
           -ms-overflow-style: none;
           scrollbar-width: none;
         }
-      `}</style>
+      `}} />
     </section>
   );
 };

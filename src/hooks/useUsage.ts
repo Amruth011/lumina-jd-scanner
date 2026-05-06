@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 
@@ -12,7 +12,7 @@ export const useUsage = () => {
     loading: true
   });
 
-  const fetchUsage = async () => {
+  const fetchUsage = useCallback(async () => {
     if (!user) return;
     
     setUsage(prev => ({ ...prev, loading: true }));
@@ -34,11 +34,11 @@ export const useUsage = () => {
       console.error("Error fetching usage:", error);
       setUsage(prev => ({ ...prev, loading: false }));
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     fetchUsage();
-  }, [user]);
+  }, [fetchUsage]);
 
   return { ...usage, refreshUsage: fetchUsage };
 };

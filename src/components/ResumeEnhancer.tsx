@@ -20,7 +20,7 @@ export const ResumeEnhancer = ({ resumeText, skills, deductions, jobTitle, gapRe
   const [resume, setResume] = useState<GeneratedResume | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleGenerate = async () => {
+  const enhanceResumeAction = async () => {
     if (!resumeText || resumeText.trim().length < 20) {
       toast.error("Please upload your resume first in the Gap Analyzer above.");
       return;
@@ -184,7 +184,7 @@ export const ResumeEnhancer = ({ resumeText, skills, deductions, jobTitle, gapRe
         <motion.button
           whileHover={{ scale: 1.02, y: -2 }}
           whileTap={{ scale: 0.98, y: 0 }}
-          onClick={handleGenerate}
+          onClick={enhanceResumeAction}
           disabled={isGenerating}
           className="relative overflow-hidden flex items-center gap-2.5 px-8 py-3.5 rounded-2xl text-sm font-bold bg-accent-emerald text-white hover:bg-accent-emerald/90 transition-all disabled:opacity-50"
         >

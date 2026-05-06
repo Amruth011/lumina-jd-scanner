@@ -33,11 +33,17 @@ interface ArchiveRecord {
 }
 
 export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGeneratorProps) => {
+  console.log("ResumeGenerator: Rendering with props", { jdTitle, jdSkills: jdSkills?.length, companyName });
+  
   const { user } = useAuth();
   const [isGenerating, setIsGenerating] = useState(false);
   const [resume, setResume] = useState<GeneratedResume | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [profile, setProfile] = useState<UserProfileWithVault | null>(null);
+  
+  useEffect(() => {
+    console.log("ResumeGenerator: Mounted");
+  }, []);
   const [summaryLines, setSummaryLines] = useState(3);
   const [projectLines, setProjectLines] = useState(3);
   const [experienceBullets, setExperienceBullets] = useState(3);
@@ -197,7 +203,7 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
    * 3. Parses complex JSON output into the local application state.
    * 4. Updates JD scan history for future analytics.
    */
-  const handleGenerateResume = async () => {
+  const executeTacticalSynthesis = async () => {
     if (vaultItems.length === 0) {
       toast.error("Tactical Profile Empty", {
         description: "Please synchronize your Master Vault or add roles in the Profile tab to enable automated tailoring.",
@@ -502,7 +508,7 @@ RETURN JSON FORMAT ONLY:
         header_data: editableHeader,
         status: 'draft',
         updated_at: new Date().toISOString()
-      } as unknown as Record<string, unknown>, { onConflict: 'user_id,job_title' }).select("id");
+      } as any, { onConflict: 'user_id,job_title' }).select("id"); // eslint-disable-line @typescript-eslint/no-explicit-any
 
       if (error) {
         console.error("Database save error:", error);
@@ -944,7 +950,7 @@ RETURN JSON FORMAT ONLY:
         </div>
 
         <button
-          onClick={handleGenerate}
+          onClick={executeTacticalSynthesis}
           disabled={isGenerating}
           className="relative overflow-hidden group/btn flex items-center gap-5 px-14 py-7 rounded-full text-[13px] font-black uppercase tracking-[0.3em] bg-lumina-teal text-white hover:scale-110 transition-all duration-500 active:scale-95 disabled:opacity-70"
         >
@@ -976,7 +982,7 @@ RETURN JSON FORMAT ONLY:
                 setEditableResume(updatedResume);
                 setEditableHeader(updatedHeader);
               }}
-              onRegenerate={handleGenerate}
+              onRegenerate={executeTacticalSynthesis}
               onDownload={handleDownloadPDF}
             />
 

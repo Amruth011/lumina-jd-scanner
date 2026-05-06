@@ -46,7 +46,6 @@ export const handleError = (error: unknown, options: ErrorOptions = {}) => {
       toast.error(message, {
         description,
         duration: 10000,
-        important: true,
       });
       break;
     case ErrorSeverity.HIGH:
