@@ -13,7 +13,7 @@ import { JourneyNode } from './JourneyNode';
 import { journeyNodes } from '../../data/journeyNodes';
 import { Bloom, EffectComposer } from '@react-three/postprocessing';
 import confetti from 'canvas-confetti';
-import gsap from 'gsap';
+import { gsap } from "@/lib/gsap";
 
 interface JourneySceneProps {
   progressRef: React.MutableRefObject<number>;

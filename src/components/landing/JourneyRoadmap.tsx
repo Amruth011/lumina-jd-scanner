@@ -3,12 +3,11 @@ import { Canvas } from '@react-three/fiber';
 import styles from '../../styles/journey.module.css';
 import { JourneyScene } from './JourneyScene';
 import { NodeContentPanel } from './NodeContentPanel';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { useGSAP } from '@gsap/react';
 import { journeyNodes } from '../../data/journeyNodes';
 
-gsap.registerPlugin(ScrollTrigger);
+
 
 const JourneyRoadmap: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);

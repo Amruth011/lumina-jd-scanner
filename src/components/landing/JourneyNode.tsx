@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import { useSpring, animated } from '@react-spring/three';
 import * as THREE from 'three';
-import gsap from 'gsap';
+import { gsap } from "@/lib/gsap";
 
 interface JourneyNodeProps {
   position: THREE.Vector3;
