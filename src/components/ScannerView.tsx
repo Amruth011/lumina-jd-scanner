@@ -25,7 +25,7 @@ import type { DecodeResult, ResumeGapResult } from "@/types/jd";
 
 const ApplicationTracker = lazy(() => import("@/components/ApplicationTracker").then(module => ({ default: module.ApplicationTracker })));
 
-export type Tab = "decode" | "analysis" | "profile" | "generator" | "guide";
+import type { Tab } from "@/types/tabs";
 
 interface ScannerViewProps {
   activeTab?: Tab;
@@ -109,6 +109,7 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
   }, [user, navigate, onTabChange]);
 
   const handleDecode = useCallback(async () => { 
+    /* 
     if (!user) {
       toast.error("Authentication required to decode JD intelligence.", {
         description: "Please sign in to access our total career intelligence engine.",
@@ -116,6 +117,7 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
       navigate("/auth");
       return;
     }
+    */
     console.log("Decoding started for Lumina 2.0...");
     await decodeJD(jdText);
     // Note: results will be updated in state, saveToHistory handled by effect or inside hook if needed

@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { GlobalNavbar } from "@/components/GlobalNavbar";
-import { ScannerView, type Tab } from "@/components/ScannerView";
+import { ScannerView } from "@/components/ScannerView";
+import type { Tab } from "@/types/tabs";
 import { WelcomeScreen } from "@/components/onboarding/WelcomeScreen";
 import { TooltipTour } from "@/components/onboarding/TooltipTour";
 import { HistoryPanel } from "@/components/dashboard/HistoryPanel";
