@@ -238,7 +238,7 @@ STRATEGY:
 4. KEYWORD ALIGNMENT: Weave as many "Target Skills" tokens as possible naturally into the "experience" and "projects" descriptions to ensure a 100% keyword match score.
 5. STRUCTURE: Use standard resume headers (Professional Summary, Experience, Projects, Education).
 6. PROFESSIONAL SUMMARY: Strictly exactly ${summaryLines} high-impact lines.
-7. PROJECTS: Include exactly 2-3 significant projects. Each project description must be exactly ${projectLines} lines, quantified and strictly aligned with JD skills.
+7. PROJECTS: Include exactly 2-3 significant projects. Each project description MUST contain exactly ${projectLines} distinct sentences, quantified and strictly aligned with JD skills.
 8. EXPERIENCE DETAIL: Strictly exactly ${experienceBullets} high-impact quantified bullets per job entry. If the user provided items from their vault, expand and quantify them to exactly ${experienceBullets} bullets.
 9. LAYOUT: Strictly white background, black text, and minimal vertical spacing to fit 1 page.
 10. NO VAGUE CLAIMS: Replace phrases like 'improved performance' with 'increased throughput by 25%'.
@@ -257,7 +257,7 @@ RETURN JSON FORMAT ONLY:
   "projects": [
     {
       "heading": "Project Name",
-      "content": "Description exactly ${projectLines} lines long with metrics.",
+      "content": "Description MUST be exactly ${projectLines} sentences long with metrics.",
       "bullets": ["Technical achievement bullet 1"]
     }
   ],

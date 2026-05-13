@@ -164,11 +164,11 @@ export const ResumePreview = ({
   };
 
   return (
-    <div className="max-w-[1400px] mx-auto min-h-[calc(100vh-140px)]">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch h-full">
+    <div className="w-full px-4 sm:px-8 2xl:px-12 mx-auto min-h-[calc(100vh-140px)]">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch h-full w-full">
         
         {/* ── LEFT PANEL: OPTIMIZED STRATEGY HUB ── */}
-        <div className="lg:col-span-5 flex flex-col h-full lg:sticky lg:top-8 max-h-[calc(100vh-160px)] pb-4">
+        <div className="lg:col-span-4 xl:col-span-3 2xl:col-span-3 flex flex-col h-full lg:sticky lg:top-8 max-h-[calc(100vh-160px)] pb-4">
           
           <div className="flex items-center justify-between p-5 bg-white rounded-[1.5rem] border border-[#1E2A3A]/5 shadow-sm mb-4 shrink-0">
             <div className="flex items-center gap-3">
@@ -397,17 +397,18 @@ export const ResumePreview = ({
         </div>
 
         {/* ── RIGHT PANEL: THE FULL-HEIGHT SIGNATURE PREVIEW ── */}
-        <div className="lg:col-span-7 lg:sticky lg:top-8 flex justify-center h-full pb-4">
-          <div className="w-full max-w-[800px] perspective-2000 h-full overflow-y-auto custom-scrollbar rounded-2xl shadow-inner bg-slate-50/50 p-4">
+        <div className="lg:col-span-8 xl:col-span-9 2xl:col-span-9 lg:sticky lg:top-8 flex justify-center h-full pb-4">
+          <div className="w-full flex-1 perspective-2000 h-full overflow-y-auto custom-scrollbar rounded-[2rem] shadow-inner bg-slate-100 p-4 sm:p-8">
             <motion.div 
               ref={resumeRef}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
-              className="relative bg-white border border-[#1E2A3A]/5 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)] mx-auto"
+              className="relative bg-white border border-[#1E2A3A]/5 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)] mx-auto overflow-hidden"
               title="Real-time A4 Resume Preview"
               style={{ 
                 width: '100%', 
+                maxWidth: '1000px',
                 minHeight: '297mm',
                 padding: `${marginSize}in`,
                 lineHeight: lineSpacing,
@@ -491,7 +492,7 @@ export const ResumePreview = ({
                             {exp.bullets?.map((bullet, bullIdx) => (
                               <div key={bullIdx} className="flex gap-4 items-start">
                                 <span className="text-lumina-teal pt-1.5 font-bold">•</span>
-                                <p className="text-[#1E2A3A]/80 font-body leading-relaxed" style={{ fontSize: fontSizes.body }}>{bullet}</p>
+                                <p className="text-[#1E2A3A]/80 font-body leading-relaxed" style={{ fontSize: fontSizes.body }}>{bullet.trim()}</p>
                               </div>
                             ))}
                           </div>
@@ -515,7 +516,7 @@ export const ResumePreview = ({
                               {proj.bullets?.map((bullet, bullIdx) => (
                                 <div key={bullIdx} className="flex gap-4 items-start">
                                   <span className="text-lumina-teal pt-1.5 font-bold">•</span>
-                                  <p className="text-[#1E2A3A]/80 font-body leading-relaxed" style={{ fontSize: fontSizes.body }}>{bullet}</p>
+                                  <p className="text-[#1E2A3A]/80 font-body leading-relaxed" style={{ fontSize: fontSizes.body }}>{bullet.trim()}</p>
                                 </div>
                               ))}
                             </div>
