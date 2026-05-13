@@ -233,32 +233,38 @@ ${JSON.stringify(vaultItems.map(v => ({ title: v.title, org: v.organization, des
 
 STRATEGY:
 1. TONE: Use a ${tone} tone. ${tone === 'Aggressive' ? 'Focus on high-growth metrics and leadership impact.' : tone === 'Professional' ? 'Focus on executive authority and structured domain expertise.' : 'Focus on lean efficiency and modern tactical precision.'}
-2. QUANTIFICATION: Every single bullet point MUST contain a quantified metric (%, $, #, or integers). If a specific number is missing from the profile, estimate a realistic impact metric based on professional context.
-3. SKILL INJECTION: You MUST include EVERY SINGLE skill from the "Target Skills" list in the "skills_section" JSON field. No exceptions.
-4. KEYWORD ALIGNMENT: Weave as many "Target Skills" tokens as possible naturally into the "experience" and "projects" descriptions to ensure a 100% keyword match score.
-5. STRUCTURE: Use standard resume headers (Professional Summary, Experience, Projects, Education).
-6. PROFESSIONAL SUMMARY: Strictly exactly ${summaryLines} high-impact lines.
-7. PROJECTS: Include exactly 2-3 significant projects. Each project description MUST contain exactly ${projectLines} distinct sentences, quantified and strictly aligned with JD skills.
-8. EXPERIENCE DETAIL: Strictly exactly ${experienceBullets} high-impact quantified bullets per job entry. If the user provided items from their vault, expand and quantify them to exactly ${experienceBullets} bullets.
-9. LAYOUT: Strictly white background, black text, and minimal vertical spacing to fit 1 page.
-10. NO VAGUE CLAIMS: Replace phrases like 'improved performance' with 'increased throughput by 25%'.
+2. QUANTIFICATION: Every bullet point MUST contain a hard quantified metric (%, $, x, or integer). No vague language.
+3. SKILL INJECTION: You MUST include EVERY SINGLE skill from "Target Skills" in the "skills_section" array.
+4. KEYWORD ALIGNMENT: Weave Target Skills naturally into experience bullets and project content for 100% keyword match.
+5. STRUCTURE: Standard ATS resume headers only: Professional Summary, Experience, Projects, Education, Certifications.
+6. PROFESSIONAL SUMMARY: Write EXACTLY ${summaryLines} complete sentences. Count them — no more, no less.
+7. EXPERIENCE BULLETS: Each job in "experience" MUST have EXACTLY ${experienceBullets} bullet strings in its "bullets" array. Count them — no more, no less.
+8. PROJECT CONTENT (CRITICAL): Each project's "content" field MUST be a single string containing EXACTLY ${projectLines} complete sentences separated by spaces. Count the sentences — write sentence 1. Write sentence 2. Continue until you have written exactly ${projectLines} sentences. Do NOT use bullet points inside "content". Each sentence must include a quantified metric.
+9. PROJECT BULLETS: Each project's "bullets" array should have 1-2 additional technical achievement bullets.
+10. ATS COMPLIANCE: No tables, no graphics, no columns. Plain text only. Standard section names.
+11. NO VAGUE CLAIMS: Replace 'improved performance' with 'increased throughput by 25%'. Always estimate realistic numbers if not provided.
 
-RETURN JSON FORMAT ONLY:
+CRITICAL VALIDATION BEFORE RETURNING:
+- Count the sentences in professional_summary. It MUST equal ${summaryLines}.
+- Count the bullets in each experience entry's "bullets" array. It MUST equal ${experienceBullets}.
+- Count the sentences in each project's "content" field. It MUST equal ${projectLines}.
+
+RETURN JSON FORMAT ONLY (no markdown, no explanation):
 {
-  "professional_summary": "Strictly exactly ${summaryLines} high-impact lines.",
+  "professional_summary": "[Sentence 1 with metric.] [Sentence 2 with metric.] [Sentence 3 with metric — total must be EXACTLY ${summaryLines} sentences]",
   "skills_section": ["Skill 1", "Skill 2", "Skill 3"],
   "experience": [
     {
       "heading": "Job Title @ Company Name",
-      "content": "Short description of scope (optional)",
-      "bullets": ["Metric driven achievement bullet 1", "Bullet 2", "Bullet up to ${experienceBullets}"]
+      "content": "Brief 1-line scope description.",
+      "bullets": ["Bullet 1 with metric", "Bullet 2 with metric", "Bullet 3 with metric", "Bullet 4 with metric", "Bullet 5 with metric — MUST have EXACTLY ${experienceBullets} items"]
     }
   ],
   "projects": [
     {
       "heading": "Project Name",
-      "content": "Description MUST be exactly ${projectLines} sentences long with metrics.",
-      "bullets": ["Technical achievement bullet 1"]
+      "content": "[Sentence 1 with metric.] [Sentence 2 with metric.] [Sentence 3 with metric.] [Sentence 4 with metric.] [Sentence 5 with metric — MUST be EXACTLY ${projectLines} sentences in this single string]",
+      "bullets": ["Additional technical achievement with metric"]
     }
   ],
   "education": ["Degree - University"],
