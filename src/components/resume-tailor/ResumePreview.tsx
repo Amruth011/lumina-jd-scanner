@@ -165,10 +165,10 @@ export const ResumePreview = ({
 
   return (
     <div className="w-full px-4 sm:px-8 2xl:px-12 mx-auto min-h-[calc(100vh-140px)]">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch h-full w-full">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start h-full w-full">
         
         {/* ── LEFT PANEL: OPTIMIZED STRATEGY HUB ── */}
-        <div className="lg:col-span-4 xl:col-span-3 2xl:col-span-3 flex flex-col h-full lg:sticky lg:top-8 max-h-[calc(100vh-160px)] pb-4">
+        <div className="lg:col-span-4 xl:col-span-3 2xl:col-span-3 flex flex-col h-auto lg:sticky lg:top-8 pb-4">
           
           <div className="flex items-center justify-between p-5 bg-white rounded-[1.5rem] border border-[#1E2A3A]/5 shadow-sm mb-4 shrink-0">
             <div className="flex items-center gap-3">
@@ -201,7 +201,7 @@ export const ResumePreview = ({
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar h-full">
+          <div className="flex-1 space-y-3">
             {/* ── Combined Section: Strategy & Typography ── */}
             <CollapsibleSection 
               title="Strategy & Typography" 
