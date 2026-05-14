@@ -212,10 +212,24 @@ export const MasterVault = () => {
     let fullText = "";
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
+      
+      // Extract visible text
       const content = await page.getTextContent();
       /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
       const pageText = (content.items as any[]).map((item: any) => item.str || "").join(" ");
       fullText += pageText + "\n";
+
+      // Extract hidden URLs from hyperlinks (Annotations)
+      try {
+        const annotations = await page.getAnnotations();
+        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+        const urls = annotations.filter((a: any) => a.subtype === 'Link' && a.url).map((a: any) => a.url);
+        if (urls.length > 0) {
+          fullText += "\n[Extracted URLs from document links]:\n" + urls.join("\n") + "\n";
+        }
+      } catch (e) {
+        console.warn("Could not extract annotations", e);
+      }
     }
     return fullText.trim();
   };
