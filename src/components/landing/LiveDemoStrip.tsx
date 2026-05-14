@@ -25,7 +25,7 @@ export const LiveDemoStrip = () => {
       <div className="max-w-7xl mx-auto space-y-12">
         <h2 className="text-4xl md:text-5xl font-serif italic font-bold text-lumina-navy text-center">See It In <span className="text-lumina-teal">10 Seconds.</span></h2>
         
-        <div className="bg-lumina-navy rounded-[3rem] p-8 md:p-12 shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="bg-lumina-navy/90 rounded-[3rem] p-8 md:p-12 shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-2 gap-12 items-center border border-white/5">
           {/* Left: Input */}
           <div className="space-y-6">
             <div className="flex items-center gap-2 mb-4">
