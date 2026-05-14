@@ -2,7 +2,6 @@ import React from 'react';
 import Navbar from '@/components/landing/Navbar';
 import Hero from '@/components/landing/Hero';
 import { ProductPreview } from '@/components/landing/ProductPreview';
-import SocialProofBar from '@/components/landing/SocialProofBar';
 import ProblemSection from '@/components/landing/ProblemSection';
 import HowItWorks from '@/components/landing/HowItWorks';
 import FeaturesGrid from '@/components/landing/FeaturesGrid';
@@ -19,7 +18,6 @@ const Index = () => {
       <Navbar />
       <Hero />
       <ProductPreview />
-      <SocialProofBar />
       <ProblemSection />
       <HowItWorks />
       <FeaturesGrid />

@@ -1,13 +1,8 @@
 "use client";
 
-import React, { useCallback } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import Particles from "@tsparticles/react";
-import { loadSlim } from "@tsparticles/slim";
-import type { Engine } from "@tsparticles/engine";
-import Hero3DCard from './Hero3DCard';
-import { wordFadeIn } from '@/lib/animations';
 
 const MagneticButton = ({ children }: { children: React.ReactNode }) => {
   const ref = React.useRef<HTMLDivElement>(null);
@@ -16,20 +11,14 @@ const MagneticButton = ({ children }: { children: React.ReactNode }) => {
   const handleMouseMove = (e: React.MouseEvent) => {
     const { clientX, clientY } = e;
     const { left, top, width, height } = ref.current?.getBoundingClientRect() || { left: 0, top: 0, width: 0, height: 0 };
-    const x = clientX - (left + width / 2);
-    const y = clientY - (top + height / 2);
-    setPosition({ x: x * 0.15, y: y * 0.15 });
-  };
-
-  const handleMouseLeave = () => {
-    setPosition({ x: 0, y: 0 });
+    setPosition({ x: (clientX - (left + width / 2)) * 0.15, y: (clientY - (top + height / 2)) * 0.15 });
   };
 
   return (
     <motion.div
       ref={ref}
       onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      onMouseLeave={() => setPosition({ x: 0, y: 0 })}
       animate={{ x: position.x, y: position.y }}
       transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
     >
@@ -38,61 +27,36 @@ const MagneticButton = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+/* ── Company names for the background watermark marquee ── */
+const companies = [
+  "Google", "Amazon", "Meta", "McKinsey", "Deloitte", "OpenAI",
+  "Microsoft", "Stripe", "Netflix", "Apple", "Uber", "Airbnb", "Goldman Sachs",
+];
+
 export const Hero = () => {
-  const particlesInit = useCallback(async (engine: Engine) => {
-    await loadSlim(engine);
-  }, []);
-
-  const headline = "The Career Intelligence Engine Built for the Top 0.1%";
-  const words = headline.split(" ");
-
   return (
     <section className="relative min-h-[100dvh] flex flex-col items-center justify-center bg-background overflow-hidden pt-20">
+      {/* Teal radial glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.05),transparent_70%)]" />
-      {/* Background Particles */}
-      {/* Background Particles - temporarily disabled for troubleshooting */}
-      {/* <Particles
-        id="tsparticles"
-        init={particlesInit}
-        options={{
-          background: { opacity: 0 },
-          fpsLimit: 120,
-          interactivity: {
-            events: {
-              onHover: { enable: true, mode: "grab" },
-              resize: { enable: true },
-            },
-            modes: {
-              grab: { distance: 140, links: { opacity: 0.5 } },
-            },
-          },
-          particles: {
-            color: { value: "#10B981" },
-            links: {
-              color: "#10B981",
-              distance: 150,
-              enable: true,
-              opacity: 0.2,
-              width: 1,
-            },
-            move: {
-              direction: "none",
-              enable: true,
-              outModes: { default: "bounce" },
-              random: false,
-              speed: 1,
-              straight: false,
-            },
-            number: { density: { enable: true }, value: 80 },
-            opacity: { value: 0.5 },
-            shape: { type: "circle" },
-            size: { value: { min: 1, max: 3 } },
-          },
-          detectRetina: true,
-        }}
-        className="absolute inset-0 z-0"
-      /> */}
 
+      {/* ── Background company watermark marquee (absolute, bottom of hero) ── */}
+      <div className="absolute bottom-0 left-0 right-0 h-20 pointer-events-none overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]">
+        <div className="flex items-center h-full gap-16 whitespace-nowrap" style={{ animation: "hero-marquee 35s linear infinite" }}>
+          {[...companies, ...companies].map((c, i) => (
+            <span key={i} className="text-[22px] font-serif font-medium text-foreground/[0.055] select-none">
+              {c}
+            </span>
+          ))}
+        </div>
+        <style dangerouslySetInnerHTML={{ __html: `
+          @keyframes hero-marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+        `}} />
+      </div>
+
+      {/* Main content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 text-center space-y-10">
         {/* Signal Badge */}
         <motion.div
@@ -132,13 +96,13 @@ export const Hero = () => {
                 <motion.button
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.98 }}
-                  className="px-9 py-4 bg-[#10B981] text-[#1E2A3A] font-semibold font-body rounded-full text-lg shadow-[0_20px_50px_rgba(16,185,129,0.2)] transition-all flex items-center gap-2 group"
+                  className="px-9 py-4 bg-[#10B981] text-white font-semibold font-body rounded-full text-lg shadow-[0_20px_50px_rgba(16,185,129,0.2)] transition-all flex items-center gap-2 group"
                 >
                   Analyze My Resume Free <span className="group-hover:translate-x-1 transition-transform">→</span>
                 </motion.button>
               </MagneticButton>
             </Link>
-            <button className="px-9 py-4 border-1.5 border-[#10B981] text-[#10B981] font-semibold font-body rounded-full text-lg flex items-center gap-2 hover:bg-[#10B981]/5 transition-all">
+            <button className="px-9 py-4 border border-[#10B981] text-[#10B981] font-semibold font-body rounded-full text-lg flex items-center gap-2 hover:bg-[#10B981]/5 transition-all">
               <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
                 <path d="M8 5v14l11-7z" />
               </svg>
@@ -147,22 +111,18 @@ export const Hero = () => {
           </div>
 
           {/* Social Proof Microtext */}
-          <div className="flex flex-col items-center gap-4">
-            <p className="font-display text-[11px] md:text-[13px] text-[#1E2A3A]/40 flex flex-col md:flex-row items-center gap-2 md:gap-3">
-              <span className="whitespace-nowrap">94,000+ resumes analyzed</span>
-              <span className="hidden md:block w-1.5 h-1.5 rounded-full bg-[#10B981] animate-logo-pulse" />
-              <span className="whitespace-nowrap">3.2× avg interview rate</span>
-              <span className="hidden md:block w-1.5 h-1.5 rounded-full bg-[#10B981] animate-logo-pulse" />
-              <span className="whitespace-nowrap">Used at Google, Meta, Amazon</span>
-            </p>
-          </div>
+          <p className="font-display text-[11px] md:text-[13px] text-[#1E2A3A]/40 flex flex-col md:flex-row items-center gap-2 md:gap-3">
+            <span className="whitespace-nowrap">94,000+ resumes analyzed</span>
+            <span className="hidden md:block w-1.5 h-1.5 rounded-full bg-[#10B981] animate-logo-pulse" />
+            <span className="whitespace-nowrap">3.2× avg interview rate</span>
+            <span className="hidden md:block w-1.5 h-1.5 rounded-full bg-[#10B981] animate-logo-pulse" />
+            <span className="whitespace-nowrap">Used at Google, Meta, Amazon</span>
+          </p>
         </motion.div>
-
-        {/* Dashboard Preview space removed for cleaner look */}
       </div>
 
       {/* Scroll Indicator */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 3, duration: 1 }}
