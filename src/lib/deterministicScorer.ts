@@ -42,6 +42,8 @@ const SYNONYM_MAP: Record<string, string[]> = {
   "strategic thinking": ["strategy", "strategic", "roadmap", "vision", "direction", "planning", "business objectives", "strategic thinking"],
   "machine learning": ["ml", "predictive analytics", "xgboost", "scikit-learn", "random forest", "deep learning"],
   "statistical modeling": ["statistical modelling", "statistics", "statistical analysis", "regression analysis", "hypothesis testing", "bayesian", "frequentist", "statistical methods"],
+  "data management": ["data modeling", "data governance", "data pipelines", "data pipeline", "sql", "mysql", "postgresql", "database management", "data ingestion", "data warehousing"],
+  "data modeling": ["data modelling", "data analysis", "statistical modelling", "statistical modeling", "predictive analytics", "feature engineering", "schema design"],
   "cybersecurity": ["cyber security", "infosec", "information security", "pentest", "penetration testing"],
 };
 
