@@ -328,7 +328,11 @@ RETURN ONLY VALID JSON:
           }
 
           if (invokeError) {
-            lastError = invokeError.message || "Function invocation failed";
+            // lastError is already set if the proxy fails, otherwise use invokeError
+            if (!lastError.includes("Proxy Fault") && !lastError.includes("Empty response")) {
+              lastError = invokeError.message || "Function invocation failed";
+            }
+            
             if (invokeError.status === 429) {
                console.warn(`Lumina Tailoring: Model ${model} rate limited. Waiting 1500ms...`);
                await sleep(1500);

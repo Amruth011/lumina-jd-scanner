@@ -31,12 +31,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
    * 3. Tertiary: Llama 3.1 8B (Speed)
    * 4. Base: Gemma 2 9B (Ultra-fast)
    */
-  const fallbackModels = [
-    req.body.model || 'llama-3.3-70b-versatile',
-    'llama-3.1-70b-versatile',
-    'gemma2-9b-it',
-    'llama-3.1-8b-instant'
-  ].filter((v, i, a) => a.indexOf(v) === i);
+  const fallbackModels = req.body.model 
+    ? [req.body.model] 
+    : [
+        'llama-3.3-70b-versatile',
+        'llama-3.1-70b-versatile',
+        'gemma2-9b-it',
+        'llama-3.1-8b-instant'
+      ];
 
   let lastError = "";
   let resultData = null;
