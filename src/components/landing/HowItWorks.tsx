@@ -29,23 +29,41 @@ const chapters = [
     title: 'See Every Gap Before the Recruiter Does',
     description: 'We map your profile directly against the target role, highlighting exactly where you fall short and where you exceed expectations.',
     visual: (
-      <div className="grid grid-cols-2 gap-4 h-full w-full">
-        <div className="bg-white rounded-xl p-4 flex flex-col gap-4 border border-lumina-teal/10 shadow-sm">
-          <p className="text-[10px] text-lumina-navy/40 uppercase font-bold">Your Profile</p>
-          <div className="space-y-3">
-            <div className="h-2 w-full bg-lumina-teal/40 rounded-full" />
-            <div className="h-2 w-3/4 bg-lumina-teal/40 rounded-full" />
-            <div className="h-2 w-1/2 bg-red-400/40 rounded-full relative">
-               <div className="absolute -right-2 -top-1 w-2 h-2 bg-red-400 rounded-full animate-ping" />
-            </div>
+      <div className="bg-white rounded-2xl p-6 h-full w-full border border-border/20 shadow-sm flex flex-col gap-5 relative overflow-hidden">
+        <div className="flex items-center justify-between border-b border-border/10 pb-4">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse" />
+            <span className="text-[10px] text-lumina-navy/50 font-bold uppercase tracking-widest">Skill Gaps Detected</span>
           </div>
+          <span className="text-xs font-mono text-lumina-teal bg-lumina-teal/10 px-2 py-1 rounded">Match: 64%</span>
         </div>
-        <div className="bg-white rounded-xl p-4 flex flex-col gap-4 border border-lumina-navy/10 shadow-sm">
-          <p className="text-[10px] text-lumina-navy/40 uppercase font-bold">Target Role</p>
-          <div className="space-y-3">
-            <div className="h-2 w-full bg-lumina-navy/10 rounded-full" />
-            <div className="h-2 w-full bg-lumina-navy/10 rounded-full" />
-            <div className="h-2 w-full bg-lumina-navy/10 rounded-full" />
+        
+        <div className="space-y-3">
+          {/* Missing Skill */}
+          <div className="flex items-center justify-between p-3 rounded-lg border border-red-400/20 bg-red-400/5">
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 rounded bg-red-400/10 flex items-center justify-center text-red-400 font-bold text-xs">!</div>
+              <div className="text-sm font-medium text-lumina-navy">System Design</div>
+            </div>
+            <div className="text-[10px] text-red-400 font-medium whitespace-nowrap hidden sm:block">Missing from Profile</div>
+          </div>
+          
+          {/* Matching Skill */}
+          <div className="flex items-center justify-between p-3 rounded-lg border border-lumina-teal/20 bg-lumina-teal/5">
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 rounded bg-lumina-teal/10 flex items-center justify-center text-lumina-teal font-bold text-xs">✓</div>
+              <div className="text-sm font-medium text-lumina-navy">React & Next.js</div>
+            </div>
+            <div className="text-[10px] text-lumina-teal font-medium hidden sm:block">Verified</div>
+          </div>
+
+          {/* Missing Skill */}
+          <div className="flex items-center justify-between p-3 rounded-lg border border-red-400/20 bg-red-400/5">
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 rounded bg-red-400/10 flex items-center justify-center text-red-400 font-bold text-xs">!</div>
+              <div className="text-sm font-medium text-lumina-navy">GraphQL</div>
+            </div>
+            <div className="text-[10px] text-red-400 font-medium whitespace-nowrap hidden sm:block">Missing from Profile</div>
           </div>
         </div>
       </div>
@@ -56,20 +74,39 @@ const chapters = [
     title: 'Architect the Resume That Wins',
     description: 'Lumina rewrites your bullet points with precision-engineered verbs and metric-driven results that trigger ATS systems and impress hiring managers.',
     visual: (
-      <div className="bg-white rounded-2xl p-8 h-full w-full shadow-2xl flex flex-col gap-6">
-        <div className="flex justify-between items-center border-b pb-4">
-          <div className="h-4 w-32 bg-gray-100 rounded" />
-          <div className="text-2xl font-serif font-bold text-lumina-teal">94</div>
-        </div>
-        <div className="space-y-4">
-          <div className="p-4 bg-lumina-teal/5 border border-lumina-teal/20 rounded-xl relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-1 h-full bg-lumina-teal" />
-            <p className="text-xs font-mono text-lumina-navy">
-              "Fine-tuned Llama-3 models resulting in <span className="font-bold">42% improvement</span> in inference speed."
+      <div className="bg-white rounded-2xl p-6 h-full w-full border border-border/20 shadow-sm flex flex-col gap-4 relative overflow-hidden">
+        
+        {/* Before */}
+        <div className="space-y-2 opacity-60">
+          <div className="text-[10px] text-lumina-navy/40 font-bold uppercase tracking-widest">Before</div>
+          <div className="p-3 bg-slate-50 border border-border/10 rounded-lg">
+            <p className="text-xs font-body text-lumina-navy/60 line-through decoration-red-400/50">
+              Worked on a database migration project that made things faster.
             </p>
           </div>
-          <div className="h-2 w-full bg-gray-100 rounded-full" />
-          <div className="h-2 w-5/6 bg-gray-100 rounded-full" />
+        </div>
+
+        {/* Arrow/Divider */}
+        <div className="flex justify-center -my-3 relative z-10">
+          <div className="bg-lumina-teal text-white w-6 h-6 rounded-full flex items-center justify-center shadow-md">
+             ↓
+          </div>
+        </div>
+
+        {/* After */}
+        <div className="space-y-2 relative pt-2">
+          <div className="absolute -inset-2 bg-lumina-teal/5 rounded-xl blur-md -z-10" />
+          <div className="flex justify-between items-center">
+            <div className="text-[10px] text-lumina-teal font-bold uppercase tracking-widest flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-lumina-teal animate-pulse" />
+              Lumina AI Tailored
+            </div>
+          </div>
+          <div className="p-4 bg-white border border-lumina-teal/30 rounded-lg shadow-sm">
+            <p className="text-sm font-body text-lumina-navy leading-relaxed">
+              Spearheaded migration of <span className="text-lumina-teal font-semibold">10TB+ PostgreSQL databases</span> with zero downtime, reducing average query latency by <span className="text-lumina-teal font-semibold">45%</span> and saving <span className="text-lumina-teal font-semibold">$12k/mo</span>.
+            </p>
+          </div>
         </div>
       </div>
     )
