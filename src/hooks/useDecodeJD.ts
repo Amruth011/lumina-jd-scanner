@@ -31,16 +31,8 @@ export const useDecodeJD = () => {
     setWasCached(false);
 
     try {
-      // ── CHECK CACHE ──
-      if (!forceRefresh) {
-        const cached = await getCachedDecode(jdText);
-        if (cached && cached.grade) { 
-          setResults(cached);
-          setWasCached(true);
-          toast.success(`Decoded: ${cached.title}`, { duration: 4000 });
-          return;
-        }
-      }
+      // ── FRESH SCAN ARCHITECTURE: Bypassing local cache for deterministic forensic accuracy ──
+      console.log("── FRESH SCAN INITIATED (CACHE BYPASSED) ──");
 
       // ── CALL TOTAL INTELLIGENCE ENGINE (Supabase Edge Function) ──
       console.log("── LUMINA ENGINE REQUEST INITIATED ──");
@@ -65,11 +57,26 @@ export const useDecodeJD = () => {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              jdText,
+              model: "llama-3.3-70b-versatile",
               messages: [{ 
                 role: "user", 
-                content: `You are the Lumina Forensic Intelligence Architect. Act on this JD: ${jdText.substring(0, 5000)}... 
-                Return exactly the JSON schema for JD decoding including grade, skills, red_flags, logistics, and deep_dive.` 
+                content: `You are the Lumina Forensic Intelligence Architect. 
+                Task: Decode this Job Description and return a structured forensic report.
+                JD Text: ${jdText.substring(0, 8000)}
+                
+                Requirements for JSON:
+                - grade: { score: number, letter: string, summary: string, breakdown: object, plain_english_summary: string[] }
+                - title: string
+                - skills: { skill: string, importance: number, category: string }[]
+                - red_flags: { phrase: string, intensity: number, note: string }[]
+                - recruiter_lens: { jargon: string, reality: string }[]
+                - logistics: { salary_range: object, work_arrangement: object, responsibility_mix: object[], archetype: object }
+                - deep_dive: { day_in_life: object[], health_radar: object, bias_analysis: object, culture_radar: object }
+                - role_reality: object
+                - bonus_pulse: object
+                - interview_kit: object
+                - resume_help: object
+                - winning_strategy: object` 
               }],
               response_format: { type: "json_object" }
             })

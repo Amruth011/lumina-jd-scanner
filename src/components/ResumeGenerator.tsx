@@ -263,20 +263,20 @@ SELF-CHECK BEFORE RETURNING JSON:
 
 RETURN ONLY VALID JSON:
 {
-  "professional_summary": "Highly experienced ${jdTitle} with expertise in ${jdSkills.slice(0,3).map(s => s.skill).join(", ")}. [Sentence 2 with metric]. [Sentence 3].",
+  "professional_summary": "Elite ${jdTitle} with deep expertise in ${jdSkills.slice(0,3).map(s => s.skill).join(", ")}. [Sentence 2 with high-impact metric]. [Sentence 3 focusing on tactical ROI].",
   "skills_section": [${jdSkills.map(s => `"${s.skill}"`).join(", ")}],
   "experience": [
     {
       "heading": "Job Title @ Company Name",
       "content": "Tech stack used.",
-      "bullets": ["Led Data Management for...", "Implemented Data Modeling using...", "...(EXACTLY ${experienceBullets} bullets total)"]
+      "bullets": ["Led Data Management for...", "Implemented Data Modeling using...", "...(EXACTLY ${experienceBullets} bullets total, each starting with an action verb and containing a metric)"]
     }
   ],
   "projects": [
     {
       "heading": "Project Name",
       "content": "Tech stack used.",
-      "bullets": ["(EXACTLY ${projectLines} bullets per project)"]
+      "bullets": ["(EXACTLY ${projectLines} bullets per project, each with a hard metric)"]
     }
   ],
   "education": ["Degree - University"],
@@ -285,7 +285,7 @@ RETURN ONLY VALID JSON:
 
       const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
       let resultText = "";
-      const models = ["llama-3.3-70b-versatile", "llama-3.1-70b-versatile", "llama-3.1-8b-instant", "mixtral-8x7b-32768"];
+      const models = ["llama-3.3-70b-versatile", "llama-3.1-70b-versatile", "gemma2-9b-it", "llama-3.1-8b-instant"];
       let lastError = "";
 
       for (let i = 0; i < models.length; i++) {
@@ -354,12 +354,13 @@ RETURN ONLY VALID JSON:
           if (content) {
             resultText = content;
             console.log(`Lumina Tailoring: Success with ${model}`);
-            if (i > 0) toast.dismiss("gen-toast");
+            toast.success(`Silicon Valley Modern resume generated via ${model}!`, { id: "gen-toast" });
             break;
           }
         } catch (err) {
           lastError = err instanceof Error ? err.message : String(err);
           console.error(`Lumina Tailoring: ${model} crash:`, lastError);
+          // If this is the last model, we'll throw the error outside the loop
         }
       }
 
