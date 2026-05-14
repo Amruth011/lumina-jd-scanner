@@ -69,7 +69,7 @@ export function clearResumeAnalysisCache(): void {
 }
 
 // Internal version to force cache bust if we change logic
-const CACHE_VERSION = "v2_dynamic";
+const CACHE_VERSION = "v3_honest";
 
 async function getCacheKey(resumeText: string, skills: Skill[], jobTitle: string = ""): Promise<string> {
   const normalizedResume = normalizeText(resumeText);

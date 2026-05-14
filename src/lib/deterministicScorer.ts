@@ -111,6 +111,16 @@ const SYNONYM_MAP: Record<string, string[]> = {
   "autogen": ["auto gen", "microsoft autogen"],
   "crewai": ["crew ai"],
   "mastra": [],
+  "statistical modeling": ["statistical modelling", "statistics", "statistical analysis", "regression analysis", "hypothesis testing", "bayesian", "frequentist", "statistical methods"],
+  "analytical skills": ["analytical", "data analysis", "analysis", "eda", "exploratory data analysis", "insights", "analytical thinking"],
+  "problem-solving skills": ["problem solving", "problem-solving", "troubleshooting", "debugging", "solutioning", "critical thinking"],
+  "collaboration": ["collaborative", "teamwork", "cross-functional", "stakeholders", "team player", "worked with", "coordinate"],
+  "mentorship": ["mentor", "mentoring", "coaching", "guiding", "junior", "guidance", "leadership"],
+  "strategic thinking": ["strategy", "strategic", "roadmap", "vision", "direction", "planning", "business objectives"],
+  "mathematics": ["math", "maths", "mathematical", "linear algebra", "calculus", "quantitative", "numerical"],
+  "statistics": ["statistical", "probability", "distribution", "regression", "hypothesis", "cohort analysis", "a/b testing"],
+  "r": ["r programming", "rstudio", "tidyverse", "ggplot", "dplyr"],
+  "data analysis": ["data analytics", "eda", "exploratory data analysis", "data science", "data insights", "cohort analysis"],
   "cybersecurity": ["cyber security", "infosec", "information security", "pentest", "penetration testing"],
 };
 
@@ -435,5 +445,18 @@ export function computeDeterministicScore(
     }
   }
 
-  return { overall_match: overallMatch, skill_matches: skillMatches, deductions };
+  // ── Honesty Cap: blend weighted score with raw match ratio ──
+  // Prevents 3/12 skill matches from producing a 90%+ score.
+  // Formula: final = weighted_score * 0.65 + raw_ratio_score * 0.35
+  // This anchors the score to how many skills actually matched.
+  const totalSkills = skillMatches.length;
+  const matchedSkills = skillMatches.filter(s => s.verdict === "strong").length;
+  const partialSkills = skillMatches.filter(s => s.verdict === "partial").length;
+  const rawRatioScore = totalSkills > 0
+    ? Math.round(((matchedSkills + partialSkills * 0.5) / totalSkills) * 100)
+    : 0;
+
+  const blendedScore = Math.round(overallMatch * 0.65 + rawRatioScore * 0.35);
+
+  return { overall_match: blendedScore, skill_matches: skillMatches, deductions };
 }
