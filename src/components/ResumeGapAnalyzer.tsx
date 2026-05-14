@@ -160,19 +160,6 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
     setIsAnalyzing(true);
     setResult(null);
     try {
-      console.log(`Intelligence Scan: Starting for "${fileName}" (${trimmedResume.length} chars)`);
-      
-      // 1. Check Cache first for absolute consistency
-      const cached = await getCachedResumeAnalysis(trimmedResume, skills, jobTitle);
-      if (cached) {
-        console.log(`Intelligence Scan: Cache Hit for "${jobTitle}" (Restoring consistent result)`);
-        setResult(cached);
-        setLastAnalyzedText(trimmedResume);
-        setIsAnalyzing(false);
-        toast.success("Intelligence Scan Complete (Cached)");
-        return;
-      }
-
       // 2. Run Deterministic Keyword Base
       const deterministicResult = computeDeterministicScore(trimmedResume, skills);
       const baseResult: ResumeGapResult = {
@@ -217,10 +204,14 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
         toast.info("AI Analysis limited. Using high-precision deterministic scoring.");
       }
  
-      // Scoring Logic: AI has final authority over summary and directives, but deterministic logic ALWAYS rules the final score to prevent hallucination
+      // Scoring Logic: Blend AI score with Deterministic score for a "Live" but grounded result
+      // We give AI 70% weight for semantic nuance, and Deterministic 30% for hard keyword matching.
+      const aiScore = (aiResult && typeof aiResult.overall_match === 'number') ? aiResult.overall_match : baseResult.overall_match;
+      const finalOverallMatch = Math.round((baseResult.overall_match * 0.3) + (aiScore * 0.7));
+
       const final: ResumeGapResult = aiResult ? {
         ...baseResult,
-        overall_match: baseResult.overall_match,
+        overall_match: finalOverallMatch,
         summary: aiResult.summary || baseResult.summary,
         deductions: (baseResult.deductions || []).map(d => {
             const safeAiDeductions = Array.isArray(aiResult?.deductions) ? aiResult.deductions : [];
@@ -232,7 +223,6 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
       } : baseResult;
 
       setResult(final);
-      await setCachedResumeAnalysis(trimmedResume, skills, final, jobTitle);
       setLastAnalyzedText(trimmedResume);
       toast.success("Intelligence Scan Complete");
     } catch (err) {

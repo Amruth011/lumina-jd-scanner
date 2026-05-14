@@ -445,18 +445,5 @@ export function computeDeterministicScore(
     }
   }
 
-  // ── Honesty Cap: blend weighted score with raw match ratio ──
-  // Prevents 3/12 skill matches from producing a 90%+ score.
-  // Formula: final = weighted_score * 0.65 + raw_ratio_score * 0.35
-  // This anchors the score to how many skills actually matched.
-  const totalSkills = skillMatches.length;
-  const matchedSkills = skillMatches.filter(s => s.verdict === "strong").length;
-  const partialSkills = skillMatches.filter(s => s.verdict === "partial").length;
-  const rawRatioScore = totalSkills > 0
-    ? Math.round(((matchedSkills + partialSkills * 0.5) / totalSkills) * 100)
-    : 0;
-
-  const blendedScore = Math.round(overallMatch * 0.65 + rawRatioScore * 0.35);
-
-  return { overall_match: blendedScore, skill_matches: skillMatches, deductions };
+  return { overall_match: overallMatch, skill_matches: skillMatches, deductions };
 }
