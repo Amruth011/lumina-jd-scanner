@@ -86,9 +86,20 @@ export const MasterVault = () => {
     if (!authLoading) {
       if (user) {
         fetchData();
+        // Restore drafted profile on load
+        const draftedProfileStr = localStorage.getItem(`draft_profile_${user.id}`);
+        if (draftedProfileStr) {
+          try {
+            const draftedProfile = JSON.parse(draftedProfileStr);
+            setProfile(draftedProfile);
+          } catch (e) {
+            console.error(e);
+          }
+        }
+
         // Restore drafted summary on load
         const draftedSummary = localStorage.getItem(`draft_summary_${user.id}`);
-        if (draftedSummary && !profile?.summary_master) {
+        if (draftedSummary && !profile?.summary_master && !draftedProfileStr) {
           setProfile(prev => prev ? { ...prev, summary_master: draftedSummary } : null);
         }
 
@@ -109,6 +120,13 @@ export const MasterVault = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, authLoading]);
+
+  // Persistence for Profile Draft
+  useEffect(() => {
+    if (user && profile) {
+      localStorage.setItem(`draft_profile_${user.id}`, JSON.stringify(profile));
+    }
+  }, [profile, user]);
 
   // Persistence for Profile Summary
   useEffect(() => {
@@ -162,7 +180,20 @@ export const MasterVault = () => {
         console.error("Vault Fetch Error:", vError);
       }
 
-      setProfile(profileData as UserProfileWithVault);
+      // Check if we already have a draft in progress
+      const draftedProfileStr = localStorage.getItem(`draft_profile_${user?.id}`);
+      if (draftedProfileStr) {
+        try {
+          const draftedProfile = JSON.parse(draftedProfileStr);
+          // Only merge if the draft is newer or we prefer the draft
+          setProfile({ ...profileData, ...draftedProfile } as UserProfileWithVault);
+        } catch (e) {
+          setProfile(profileData as UserProfileWithVault);
+        }
+      } else {
+        setProfile(profileData as UserProfileWithVault);
+      }
+      
       setItems(vaultData as VaultItem[] || []);
     } catch (err) {
       console.error("MasterVault Fetch Fatal Error:", err);
@@ -221,7 +252,7 @@ ${cappedText}
 
 RETURN JSON FORMAT ONLY:
 {
-  "personal_details": { "full_name": "", "email": "", "phone": "", "location": "", "linkedin": "", "github": "", "portfolio": "", "summary": "" },
+  "personal_details": { "full_name": "", "email": "", "phone": "", "location": "", "linkedin": "MUST BE A VALID URL OR HANDLE (e.g. linkedin.com/in/username), NOT just the word 'LinkedIn'", "github": "MUST BE A VALID URL OR HANDLE, NOT just 'GitHub'", "portfolio": "MUST BE A VALID URL", "summary": "" },
   "experience": [{ "company": "", "role": "", "period": "", "bullets": [] }],
   "education": [{ "institution": "", "degree": "", "period": "", "details": [] }],
   "projects": [{ "name": "", "tech_stack": "", "period": "", "details": [] }],
@@ -364,9 +395,16 @@ RETURN JSON FORMAT ONLY:
         if (pd.email && pd.email !== "Email") updateParams.email = pd.email;
         if (pd.phone && pd.phone !== "Phone Number") updateParams.phone = pd.phone;
         if (pd.location && pd.location !== "City, State") updateParams.location = pd.location;
-        if (pd.linkedin && pd.linkedin !== "extracted linkedin url") updateParams.linkedin_url = pd.linkedin;
-        if (pd.github && pd.github !== "extracted github url") updateParams.github_url = pd.github;
-        if (pd.portfolio && pd.portfolio !== "extracted portfolio url") updateParams.website_url = pd.portfolio;
+        
+        // Smart URL verification to avoid overwriting with just the word "LinkedIn"
+        const isValidLink = (str: string) => str && str.trim().length > 3 && !['linkedin', 'github', 'portfolio', 'website'].includes(str.trim().toLowerCase());
+        
+        // Only overwrite existing links if they are empty
+        const currentProfile = profile;
+        if (pd.linkedin && isValidLink(pd.linkedin) && !currentProfile?.linkedin_url) updateParams.linkedin_url = pd.linkedin;
+        if (pd.github && isValidLink(pd.github) && !currentProfile?.github_url) updateParams.github_url = pd.github;
+        if (pd.portfolio && isValidLink(pd.portfolio) && !currentProfile?.website_url) updateParams.website_url = pd.portfolio;
+        
         if (pd.summary && pd.summary !== "Create a strong executive summary matching their profile (max 3 sentences).") {
           updateParams.summary_master = pd.summary;
         }
@@ -403,6 +441,7 @@ RETURN JSON FORMAT ONLY:
         throw error;
       }
 
+      localStorage.removeItem(`draft_profile_${user.id}`);
       localStorage.removeItem(`draft_summary_${user.id}`);
       toast.success("Profile updated in Master Vault.");
     } catch (err) {
@@ -752,6 +791,7 @@ RETURN JSON FORMAT ONLY:
               <button
                 onClick={() => {
                   if (confirm("EMERGENCY RESET: This will clear all local drafts and unsaved changes. Your saved vault items remain safe in the cloud. Proceed?")) {
+                    localStorage.removeItem(`draft_profile_${user.id}`);
                     localStorage.removeItem(`draft_summary_${user.id}`);
                     localStorage.removeItem(`draft_vault_item_${user.id}`);
                     fetchData();
