@@ -183,15 +183,21 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
     setProfile(profileData as UserProfileWithVault);
     setVaultItems(vaultData as VaultItem[] || []);
     if (profileData) {
+      // Email: prefer profiles table, fall back to auth user email (it lives in supabase.auth.users not profiles)
+      const authEmail = user?.email || "";
+      const resolvedEmail = (profileData.email || "").trim() || authEmail;
       setEditableHeader({
         fullName: profileData.full_name || "",
-        email: profileData.email?.toLowerCase() || "",
+        email: resolvedEmail.toLowerCase(),
         phone: profileData.phone || "",
         location: profileData.location || "",
         linkedin: profileData.linkedin_url || "",
         portfolio: profileData.website_url || "",
         github: profileData.github_url || ""
       });
+    } else if (user?.email) {
+      // Profile row doesn't exist yet — at minimum pre-fill the email
+      setEditableHeader(prev => ({ ...prev, email: user.email!.toLowerCase() }));
     }
   };
 

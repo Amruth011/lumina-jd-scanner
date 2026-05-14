@@ -221,7 +221,7 @@ ${cappedText}
 
 RETURN JSON FORMAT ONLY:
 {
-  "personal_details": { "full_name": "", "phone": "", "location": "", "linkedin": "", "summary": "" },
+  "personal_details": { "full_name": "", "email": "", "phone": "", "location": "", "linkedin": "", "github": "", "portfolio": "", "summary": "" },
   "experience": [{ "company": "", "role": "", "period": "", "bullets": [] }],
   "education": [{ "institution": "", "degree": "", "period": "", "details": [] }],
   "projects": [{ "name": "", "tech_stack": "", "period": "", "details": [] }],
@@ -359,11 +359,14 @@ RETURN JSON FORMAT ONLY:
 
       if (structData?.personal_details) {
         const pd = structData.personal_details;
-        const updateParams: { full_name?: string; phone?: string; location?: string; linkedin_url?: string; summary_master?: string } = {};
+        const updateParams: { full_name?: string; email?: string; phone?: string; location?: string; linkedin_url?: string; github_url?: string; website_url?: string; summary_master?: string } = {};
         if (pd.full_name && pd.full_name !== "Full Name") updateParams.full_name = pd.full_name;
+        if (pd.email && pd.email !== "Email") updateParams.email = pd.email;
         if (pd.phone && pd.phone !== "Phone Number") updateParams.phone = pd.phone;
         if (pd.location && pd.location !== "City, State") updateParams.location = pd.location;
         if (pd.linkedin && pd.linkedin !== "extracted linkedin url") updateParams.linkedin_url = pd.linkedin;
+        if (pd.github && pd.github !== "extracted github url") updateParams.github_url = pd.github;
+        if (pd.portfolio && pd.portfolio !== "extracted portfolio url") updateParams.website_url = pd.portfolio;
         if (pd.summary && pd.summary !== "Create a strong executive summary matching their profile (max 3 sentences).") {
           updateParams.summary_master = pd.summary;
         }
