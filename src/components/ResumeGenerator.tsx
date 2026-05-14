@@ -74,6 +74,11 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
   const [subHeadlineFontSize, setSubHeadlineFontSize] = useState(11);
   const [bodyFontSize, setBodyFontSize] = useState(10);
 
+  // Layout & Blueprint Typography Settings
+  const [lineSpacing, setLineSpacing] = useState<1.0 | 1.15 | 1.4>(1.15);
+  const [marginSize, setMarginSize] = useState<0.5 | 1.0>(1.0);
+  const [baseFontSize, setBaseFontSize] = useState(11);
+
   const formatUrl = (url: string) => {
     if (!url) return "";
     let formatted = url.trim();
@@ -955,6 +960,52 @@ RETURN ONLY VALID JSON (no markdown fences, no explanation text):
                       </select>
                     </div>
                   </div>
+                  
+                  <div className="grid grid-cols-1 gap-6 pt-2 border-t border-white/5">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Blueprint Font Scale</label>
+                        <span className="text-[10px] font-black text-lumina-teal">{baseFontSize}px</span>
+                      </div>
+                      <input 
+                        type="range" min="10" max="12" step="0.5" 
+                        value={baseFontSize} 
+                        onChange={(e) => setBaseFontSize(parseFloat(e.target.value))}
+                        className="w-full h-1.5 bg-slate-100/10 rounded-lg appearance-none cursor-pointer accent-lumina-teal"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Line Density</label>
+                        <div className="flex gap-1.5">
+                          {[1.0, 1.15, 1.4].map((s) => (
+                            <button 
+                              key={s} 
+                              onClick={() => setLineSpacing(s as 1.0 | 1.15 | 1.4)}
+                              className={`flex-1 py-1.5 rounded-lg text-[10px] font-black border transition-all ${lineSpacing === s ? 'bg-lumina-teal border-lumina-teal text-white' : 'bg-slate-50 border-transparent text-[#1E2A3A]/40 hover:bg-slate-100'}`}
+                            >
+                              {s.toFixed(2)}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Blueprint Margins</label>
+                        <div className="flex gap-1.5">
+                          {[0.5, 1.0].map((m) => (
+                            <button 
+                              key={m} 
+                              onClick={() => setMarginSize(m as 0.5 | 1.0)}
+                              className={`flex-1 py-1.5 rounded-lg text-[10px] font-black border transition-all ${marginSize === m ? 'bg-slate-900 border-slate-900 text-white' : 'bg-slate-50 border-transparent text-[#1E2A3A]/40 hover:bg-slate-100'}`}
+                            >
+                              {m.toFixed(1)}"
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -989,6 +1040,10 @@ RETURN ONLY VALID JSON (no markdown fences, no explanation text):
               header={editableHeader}
               vaultItems={vaultItems}
               isGenerating={isGenerating}
+              baseFontSize={baseFontSize}
+              lineSpacing={lineSpacing}
+              marginSize={marginSize}
+              fontFamily={fontFamily}
               onUpdate={(updatedResume, updatedHeader) => {
                 setResume(updatedResume);
                 setEditableResume(updatedResume);

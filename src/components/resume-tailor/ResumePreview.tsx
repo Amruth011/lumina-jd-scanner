@@ -45,7 +45,12 @@ interface ResumePreviewProps {
   onUpdate: (updatedResume: GeneratedResume, updatedHeader: ResumeHeader) => void;
   onRegenerate: () => void;
   onDownload: () => void;
+  onDownload: () => void;
   isGenerating: boolean;
+  baseFontSize: number;
+  lineSpacing: number;
+  marginSize: number;
+  fontFamily: string;
 }
 
 export const ResumePreview = ({ 
@@ -55,7 +60,11 @@ export const ResumePreview = ({
   onUpdate, 
   onRegenerate, 
   onDownload,
-  isGenerating 
+  isGenerating,
+  baseFontSize,
+  lineSpacing,
+  marginSize,
+  fontFamily
 }: ResumePreviewProps) => {
   // ── Core Data State ──
   const [localResume, setLocalResume] = useState<GeneratedResume>(resume);
@@ -65,10 +74,7 @@ export const ResumePreview = ({
   const [openSection, setOpenSection] = useState<string | null>("strategy");
   const [showVaultPicker, setShowVaultPicker] = useState<{ section: 'experience' | 'projects' | 'education' | 'certifications', index?: number } | null>(null);
   
-  // ── Typography & Layout State ──
-  const [lineSpacing, setLineSpacing] = useState<1.0 | 1.15 | 1.4>(1.15);
-  const [marginSize, setMarginSize] = useState<0.5 | 1>(1);
-  const [baseFontSize, setBaseFontSize] = useState(11);
+  const [showVaultPicker, setShowVaultPicker] = useState<{ section: 'experience' | 'projects' | 'education' | 'certifications', index?: number } | null>(null);
   
   const resumeRef = useRef<HTMLDivElement>(null);
   const [pageCount, setPageCount] = useState(1);
@@ -163,6 +169,16 @@ export const ResumePreview = ({
     meta: `10px`,
   };
 
+  const getHtmlFont = (font: string) => {
+    switch(font) {
+      case "Inter": return "Inter, sans-serif";
+      case "Roboto": return "Roboto, sans-serif";
+      case "Merriweather": return "Merriweather, serif";
+      case "Arial": return "Arial, sans-serif";
+      default: return "Inter, sans-serif";
+    }
+  };
+
   return (
     <div className="w-full px-4 sm:px-8 2xl:px-12 mx-auto min-h-[calc(100vh-140px)]">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start h-full w-full">
@@ -220,53 +236,6 @@ export const ResumePreview = ({
                     placeholder="Inject your high-impact professional narrative here..."
                   />
                 </div>
-
-                {/* Typography Controls */}
-                <div className="grid grid-cols-1 gap-6 pt-2 border-t border-[#1E2A3A]/5">
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <label className="text-[9px] font-black uppercase tracking-widest text-[#1E2A3A]/40">Blueprint Font Scale</label>
-                      <span className="text-[10px] font-black text-lumina-teal">{baseFontSize}px</span>
-                    </div>
-                    <input 
-                      type="range" min="10" max="12" step="0.5" 
-                      value={baseFontSize} 
-                      onChange={(e) => setBaseFontSize(parseFloat(e.target.value))}
-                      className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-lumina-teal"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-3">
-                      <label className="text-[9px] font-black uppercase tracking-widest text-[#1E2A3A]/40">Line Density</label>
-                      <div className="flex gap-1.5">
-                        {[1.0, 1.15, 1.4].map((s) => (
-                          <button 
-                            key={s} 
-                            onClick={() => setLineSpacing(s as 1.0 | 1.15 | 1.4)}
-                            className={`flex-1 py-1.5 rounded-lg text-[9px] font-black border transition-all ${lineSpacing === s ? 'bg-lumina-teal border-lumina-teal text-white' : 'bg-slate-50 border-transparent text-[#1E2A3A]/40 hover:bg-slate-100'}`}
-                          >
-                            {s.toFixed(2)}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      <label className="text-[9px] font-black uppercase tracking-widest text-[#1E2A3A]/40">Blueprint Margins</label>
-                      <div className="flex gap-1.5">
-                        {[0.5, 1.0].map((m) => (
-                          <button 
-                            key={m} 
-                            onClick={() => setMarginSize(m as 0.5 | 1.0)}
-                            className={`flex-1 py-1.5 rounded-lg text-[9px] font-black border transition-all ${marginSize === m ? 'bg-[#1E2A3A] border-[#1E2A3A] text-white' : 'bg-slate-50 border-transparent text-[#1E2A3A]/40 hover:bg-slate-100'}`}
-                          >
-                            {m.toFixed(1)}"
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
             </CollapsibleSection>
 
@@ -304,7 +273,7 @@ export const ResumePreview = ({
                 {localResume.experience.map((exp, idx) => (
                   <div key={idx} className="p-4 rounded-xl bg-slate-50/50 border border-border/10 space-y-3 relative group/exp">
                     <button onClick={() => setLocalResume({...localResume, experience: localResume.experience.filter((_, i) => i !== idx)})} className="absolute top-3 right-3 p-1.5 text-red-500 opacity-0 group-hover/exp:opacity-100 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={12} /></button>
-                    <input value={exp.heading} onChange={(e) => updateExperience(idx, 'heading', e.target.value)} className="w-full bg-transparent font-serif font-bold text-sm outline-none border-b border-transparent focus:border-lumina-teal/20" />
+                    <input value={exp.heading} onChange={(e) => updateExperience(idx, 'heading', e.target.value)} className="w-full bg-transparent font-bold text-sm outline-none border-b border-transparent focus:border-lumina-teal/20" />
                     <div className="space-y-2">
                       {exp.bullets?.map((bullet, bullIdx) => (
                         <div key={bullIdx} className="flex gap-2 items-start group/bull">
@@ -335,7 +304,7 @@ export const ResumePreview = ({
                       const newProjects = [...(localResume.projects || [])];
                       newProjects[idx] = { ...newProjects[idx], heading: e.target.value };
                       setLocalResume({ ...localResume, projects: newProjects });
-                    }} className="w-full bg-transparent font-serif font-bold text-sm outline-none border-b border-transparent focus:border-lumina-teal/20" />
+                    }} className="w-full bg-transparent font-bold text-sm outline-none border-b border-transparent focus:border-lumina-teal/20" />
                     <div className="space-y-2">
                       {proj.bullets?.map((bullet, bullIdx) => (
                         <div key={bullIdx} className="flex gap-2 items-start group/bull">
@@ -412,21 +381,22 @@ export const ResumePreview = ({
                 minHeight: '297mm',
                 padding: `${marginSize}in`,
                 lineHeight: lineSpacing,
-                fontSize: fontSizes.body
+                fontSize: fontSizes.body,
+                fontFamily: getHtmlFont(fontFamily)
               }}
             >
               <div className="space-y-8">
                 {/* Header */}
                 <div className="text-center space-y-3 border-b border-[#1E2A3A]/5 pb-8 mb-8">
                   <h1 
-                    className="font-serif font-bold text-[#1E2A3A] tracking-tighter uppercase leading-tight"
+                    className="font-bold text-[#1E2A3A] tracking-tighter uppercase leading-tight"
                     style={{ fontSize: fontSizes.name }}
                   >
                     {localHeader.fullName || "Your Name"}
                   </h1>
                   
                   <div 
-                    className="flex flex-wrap justify-center items-center gap-x-4 gap-y-1 text-[#1E2A3A]/50 font-body font-medium"
+                    className="flex flex-wrap justify-center items-center gap-x-4 gap-y-1 text-[#1E2A3A]/50 font-medium"
                     style={{ fontSize: fontSizes.meta }}
                   >
                     {localHeader.location && (
@@ -458,7 +428,7 @@ export const ResumePreview = ({
                       <h4 className="font-black uppercase tracking-[0.3em]" style={{ fontSize: fontSizes.meta }}>Professional Summary</h4>
                       <div className="h-px flex-1 bg-[#1E2A3A]/5" />
                     </div>
-                    <p className="text-[#1E2A3A]/80 font-body leading-relaxed italic" style={{ fontSize: fontSizes.body }}>
+                    <p className="text-[#1E2A3A]/80 leading-relaxed italic" style={{ fontSize: fontSizes.body }}>
                       {localResume.professional_summary}
                     </p>
                   </section>
@@ -471,7 +441,7 @@ export const ResumePreview = ({
                     </div>
                     <div className="flex flex-wrap gap-x-4 gap-y-1.5">
                       {localResume.skills_section.map((skill, i) => (
-                        <div key={i} className="font-body font-bold text-[#1E2A3A]/70 uppercase tracking-tighter" style={{ fontSize: `calc(${fontSizes.body} - 1px)` }}>
+                        <div key={i} className="font-bold text-[#1E2A3A]/70 uppercase tracking-tighter" style={{ fontSize: `calc(${fontSizes.body} - 1px)` }}>
                           {skill}{i < localResume.skills_section.length - 1 && "  •"}
                         </div>
                       ))}
@@ -487,12 +457,12 @@ export const ResumePreview = ({
                     <div className="space-y-8">
                       {localResume.experience.map((exp, expIdx) => (
                         <div key={expIdx} className="space-y-3">
-                          <h5 className="font-serif font-bold text-[#1E2A3A] tracking-tight" style={{ fontSize: fontSizes.header }}>{exp.heading}</h5>
+                          <h5 className="font-bold text-[#1E2A3A] tracking-tight" style={{ fontSize: fontSizes.header }}>{exp.heading}</h5>
                           <div className="space-y-2 pl-3 border-l border-slate-100">
                             {exp.bullets?.map((bullet, bullIdx) => (
                               <div key={bullIdx} className="flex gap-4 items-start">
                                 <span className="text-lumina-teal pt-1.5 font-bold">•</span>
-                                <p className="text-[#1E2A3A]/80 font-body leading-relaxed" style={{ fontSize: fontSizes.body }}>{bullet.trim()}</p>
+                                <p className="text-[#1E2A3A]/80 leading-relaxed" style={{ fontSize: fontSizes.body }}>{bullet.trim()}</p>
                               </div>
                             ))}
                           </div>
@@ -511,12 +481,12 @@ export const ResumePreview = ({
                       <div className="space-y-8">
                         {localResume.projects?.map((proj, projIdx) => (
                           <div key={projIdx} className="space-y-3">
-                            <h5 className="font-serif font-bold text-[#1E2A3A] tracking-tight" style={{ fontSize: fontSizes.header }}>{proj.heading}</h5>
+                            <h5 className="font-bold text-[#1E2A3A] tracking-tight" style={{ fontSize: fontSizes.header }}>{proj.heading}</h5>
                             <div className="space-y-2 pl-3 border-l border-slate-100">
                               {proj.bullets?.map((bullet, bullIdx) => (
                                 <div key={bullIdx} className="flex gap-4 items-start">
                                   <span className="text-lumina-teal pt-1.5 font-bold">•</span>
-                                  <p className="text-[#1E2A3A]/80 font-body leading-relaxed" style={{ fontSize: fontSizes.body }}>{bullet.trim()}</p>
+                                  <p className="text-[#1E2A3A]/80 leading-relaxed" style={{ fontSize: fontSizes.body }}>{bullet.trim()}</p>
                                 </div>
                               ))}
                             </div>
@@ -535,7 +505,7 @@ export const ResumePreview = ({
                       </div>
                       <div className="space-y-2">
                         {localResume.education.map((edu, i) => (
-                          <p key={i} className="font-body font-medium text-[#1E2A3A]/80" style={{ fontSize: `calc(${fontSizes.body} - 1px)` }}>{edu}</p>
+                          <p key={i} className="font-medium text-[#1E2A3A]/80" style={{ fontSize: `calc(${fontSizes.body} - 1px)` }}>{edu}</p>
                         ))}
                       </div>
                     </section>
@@ -549,7 +519,7 @@ export const ResumePreview = ({
                         </div>
                         <div className="space-y-2">
                           {localResume.certifications?.map((cert, i) => (
-                            <p key={i} className="font-body font-medium text-[#1E2A3A]/80" style={{ fontSize: `calc(${fontSizes.body} - 1px)` }}>{cert}</p>
+                            <p key={i} className="font-medium text-[#1E2A3A]/80" style={{ fontSize: `calc(${fontSizes.body} - 1px)` }}>{cert}</p>
                           ))}
                         </div>
                       </section>
