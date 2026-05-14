@@ -234,48 +234,49 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
 
     try {
       const prompt = `You are an elite Silicon Valley Executive Resume Writer.
-Your goal is to create a resume that is 100% ATS-friendly and passes machine parsers with a 99th percentile score.
+Your goal is to create a resume that is 100% ATS-friendly and passes machine parsers with a 100/100 compatibility score. 
 
 Job Target: ${jdTitle} at ${companyName || "this company"}
-Target Skills: ${jdSkills.map(s => s.skill).join(", ")}
+Target Skills (CRITICAL): ${jdSkills.map(s => s.skill).join(", ")}
 
 Candidate Profile:
-${JSON.stringify(vaultItems.map(v => ({ title: v.title, org: v.organization, desc: v.description })), null, 2)}
+${JSON.stringify(vaultItems.map(v => ({ title: v.title, org: v.organization, desc: v.description, bullets: v.bullets })), null, 2)}
 
-STRATEGY:
-1. TONE: Use a ${tone} tone. ${tone === 'Aggressive' ? 'Focus on high-growth metrics and leadership impact.' : tone === 'Professional' ? 'Focus on executive authority and structured domain expertise.' : 'Focus on lean efficiency and modern tactical precision.'}
+STRATEGY FOR 100% SCORE:
+1. TONE: Use a ${tone} tone. ${tone === 'Aggressive' ? 'Focus on high-growth metrics and leadership impact. Prioritize keyword density.' : tone === 'Professional' ? 'Focus on executive authority and structured domain expertise.' : 'Focus on lean efficiency and modern tactical precision.'}
 2. QUANTIFICATION: Every single bullet point MUST contain a hard quantified metric (%, $, x, or integer). Estimate realistic numbers if not available.
-3. SKILL INJECTION: You MUST include EVERY SINGLE skill from "Target Skills" in the "skills_section" array. No exceptions.
-4. KEYWORD ALIGNMENT: Weave Target Skills naturally into experience and project bullets for 100% ATS keyword match.
-5. STRUCTURE: Standard ATS-only headers: Professional Summary, Experience, Projects, Education, Certifications. No decorative elements.
-6. PROFESSIONAL SUMMARY: Write EXACTLY ${summaryLines} complete sentences — no more, no less.
-7. EXPERIENCE BULLETS: Each job entry MUST have EXACTLY ${experienceBullets} items in its "bullets" array — no more, no less. Count them before returning.
-8. PROJECT BULLETS (CRITICAL — READ CAREFULLY): Each project entry MUST have EXACTLY ${projectLines} items in its "bullets" array — no more, no less. This is the most important rule. If you set projectLines=5, each project needs exactly 5 bullets. Count them before returning. DO NOT put 1 bullet. DO NOT put 2 bullets. Exactly ${projectLines} bullets per project.
-9. PROJECT CONTENT: The "content" field for each project should be a brief 1-line technology stack / scope description only.
-10. ATS COMPLIANCE: No tables, no graphics, no columns. Plain text. Standard section names.
-11. NO VAGUE CLAIMS: 'improved performance' → 'increased throughput by 25%'. Always use specific numbers.
+3. ABSOLUTE SKILL INJECTION: You MUST include EVERY SINGLE skill from "Target Skills" in the "skills_section" array. Use the EXACT wording from the JD.
+4. "DATA MANAGEMENT" & "MODELING": If the JD mentions "Data Management" or "Data Modeling," you MUST include these exact phrases in your experience bullets and skills section.
+5. KEYWORD ALIGNMENT: Weave every one of the Target Skills into the experience and project bullets. Use the exact phrase "Data Management" and "Data Modeling" to describe relevant work.
+6. STRUCTURE: Standard ATS-only headers: Professional Summary, Core Competencies, Experience, Projects, Education, Certifications.
+7. PROFESSIONAL SUMMARY: Write EXACTLY ${summaryLines} complete sentences. Start with a powerful headline that includes the job title "${jdTitle}".
+8. EXPERIENCE BULLETS: Each job entry MUST have EXACTLY ${experienceBullets} items. 
+9. PROJECT BULLETS: Each project entry MUST have EXACTLY ${projectLines} items.
+10. ATS COMPLIANCE: No tables, no graphics, no columns. Plain text.
+11. NO VAGUE CLAIMS: Replace generic verbs with specific achievements + metrics.
 
 SELF-CHECK BEFORE RETURNING JSON:
-✓ professional_summary sentence count == ${summaryLines}
-✓ every experience[i].bullets.length == ${experienceBullets}
-✓ every projects[i].bullets.length == ${projectLines}  ← THIS IS CRITICAL
+✓ Does the resume mention every single Target Skill at least twice?
+✓ Is "Data Management" included if present in JD?
+✓ Is "Data Modeling" included if present in JD?
+✓ Is the sentence count for summary EXACTLY ${summaryLines}?
 
-RETURN ONLY VALID JSON (no markdown fences, no explanation text):
+RETURN ONLY VALID JSON:
 {
-  "professional_summary": "Sentence 1 with metric. Sentence 2 with metric. Sentence 3 — EXACTLY ${summaryLines} sentences total.",
-  "skills_section": ["Skill 1", "Skill 2", "Skill 3"],
+  "professional_summary": "Highly experienced ${jdTitle} with expertise in ${jdSkills.slice(0,3).map(s => s.skill).join(", ")}. [Sentence 2 with metric]. [Sentence 3].",
+  "skills_section": [${jdSkills.map(s => `"${s.skill}"`).join(", ")}],
   "experience": [
     {
       "heading": "Job Title @ Company Name",
-      "content": "Brief scope / tech stack line.",
-      "bullets": ["Quantified bullet 1", "Quantified bullet 2", "...(EXACTLY ${experienceBullets} bullets total)"]
+      "content": "Tech stack used.",
+      "bullets": ["Led Data Management for...", "Implemented Data Modeling using...", "...(EXACTLY ${experienceBullets} bullets total)"]
     }
   ],
   "projects": [
     {
       "heading": "Project Name",
-      "content": "Brief tech stack / scope line.",
-      "bullets": ["Quantified bullet 1", "Quantified bullet 2", "Quantified bullet 3", "Quantified bullet 4", "Quantified bullet 5 — EXACTLY ${projectLines} bullets in this array"]
+      "content": "Tech stack used.",
+      "bullets": ["(EXACTLY ${projectLines} bullets per project)"]
     }
   ],
   "education": ["Degree - University"],
