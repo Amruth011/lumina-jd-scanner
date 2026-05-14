@@ -85,40 +85,42 @@ export const MasterVault = () => {
   const userId = user?.id;
 
   useEffect(() => {
-    if (!authLoading) {
-      if (userId) {
-        fetchData();
-        // Restore drafted profile on load
-        const draftedProfileStr = localStorage.getItem(`draft_profile_${user.id}`);
-        if (draftedProfileStr) {
-          try {
-            const draftedProfile = JSON.parse(draftedProfileStr);
-            setProfile(draftedProfile);
-          } catch (e) {
-            console.error(e);
-          }
+    if (!authLoading && userId) {
+      // Initial bootstrap: Try to get draft first for instant UI responsiveness
+      const draftedProfileStr = localStorage.getItem(`draft_profile_${userId}`);
+      if (draftedProfileStr) {
+        try {
+          const draftedProfile = JSON.parse(draftedProfileStr);
+          setProfile(draftedProfile);
+          // If we have a draft, we can set loading to false early to show the UI
+          setIsLoading(false);
+        } catch (e) {
+          console.error("Draft recovery failed", e);
         }
-
-        // Restore drafted summary on load
-        const draftedSummary = localStorage.getItem(`draft_summary_${user.id}`);
-        if (draftedSummary && !profile?.summary_master && !draftedProfileStr) {
-          setProfile(prev => prev ? { ...prev, summary_master: draftedSummary } : null);
-        }
-
-        // Nudge to complete profile
-        const hasNudged = sessionStorage.getItem(`nudge_${userId}`);
-        if (!hasNudged) {
-          setTimeout(() => {
-            toast("Intelligence Nudge: Complete your profile to 100% for elite AI tailoring.", {
-              description: "High-density profiles land 10x more clinical interviews.",
-              icon: <Sparkles className="text-primary w-4 h-4" />,
-            });
-            sessionStorage.setItem(`nudge_${userId}`, "true");
-          }, 2000);
-        }
-      } else {
-        setIsLoading(false);
       }
+
+      // Sync with DB in background
+      fetchData();
+
+      // Restore drafted summary on load
+      const draftedSummary = localStorage.getItem(`draft_summary_${userId}`);
+      if (draftedSummary && !profile?.summary_master && !draftedProfileStr) {
+        setProfile(prev => prev ? { ...prev, summary_master: draftedSummary } : null);
+      }
+
+      // Nudge logic...
+      const hasNudged = sessionStorage.getItem(`nudge_${userId}`);
+      if (!hasNudged) {
+        setTimeout(() => {
+          toast("Intelligence Nudge: Complete your profile to 100% for elite AI tailoring.", {
+            description: "High-density profiles land 10x more clinical interviews.",
+            icon: <Sparkles className="text-primary w-4 h-4" />,
+          });
+          sessionStorage.setItem(`nudge_${userId}`, "true");
+        }, 2000);
+      }
+    } else if (!authLoading && !userId) {
+      setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, authLoading]);
@@ -169,11 +171,15 @@ export const MasterVault = () => {
   }, [user]);
 
   const fetchData = async () => {
-    setIsLoading(true);
+    // Only show full-page loader if we don't have any data yet (fresh session)
+    if (!profile && items.length === 0) {
+      setIsLoading(true);
+    }
+    
     try {
       console.log("── VAULT DATA FETCH INITIATED ──");
-      const { data: profileData, error: pError } = await supabase.from("profiles").select("*").eq("id", user?.id).single();
-      const { data: vaultData, error: vError } = await supabase.from("master_vault").select("*").eq("user_id", user?.id).order('created_at', { ascending: false });
+      const { data: profileData, error: pError } = await supabase.from("profiles").select("*").eq("id", userId).single();
+      const { data: vaultData, error: vError } = await supabase.from("master_vault").select("*").eq("user_id", userId).order('created_at', { ascending: false });
 
       if (pError && pError.code !== 'PGRST116') {
         console.error("Profile Fetch Error:", pError);
