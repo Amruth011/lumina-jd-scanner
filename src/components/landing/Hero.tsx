@@ -47,7 +47,7 @@ export const Hero = () => {
   const words = headline.split(" ");
 
   return (
-    <section className="relative min-h-[100dvh] flex flex-col items-center justify-center bg-[#F9FAFB] overflow-hidden pt-20">
+    <section className="relative min-h-[100dvh] flex flex-col items-center justify-center bg-background overflow-hidden pt-20">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.05),transparent_70%)]" />
       {/* Background Particles */}
       {/* Background Particles - temporarily disabled for troubleshooting */}

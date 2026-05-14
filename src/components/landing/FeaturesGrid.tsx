@@ -56,7 +56,7 @@ const FeatureCard = ({ feature, index }: { feature: Feature, index: number }) =>
       viewport={{ once: true }}
       transition={{ delay: index * 0.1, duration: 0.8 }}
       ref={tiltRef}
-      className="group relative bg-white/40 backdrop-blur-xl border-t-4 border-lumina-teal rounded-[2.5rem] p-10 shadow-sm hover:shadow-[0_20px_50px_rgba(16,185,129,0.1)] transition-all flex flex-col gap-6 h-full"
+      className="group relative bg-white border border-border/10 border-t-4 border-t-lumina-teal rounded-[2.5rem] p-10 shadow-sm hover:shadow-[0_20px_50px_rgba(16,185,129,0.1)] hover:-translate-y-1 transition-all duration-300 flex flex-col gap-6 h-full"
     >
       <div className="w-16 h-16 rounded-2xl bg-lumina-teal/10 flex items-center justify-center">
         {feature.icon}

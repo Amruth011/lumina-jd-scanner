@@ -7,9 +7,9 @@ export const SocialProofBar = () => {
   ];
 
   return (
-    <section className="bg-[#1E2A3A] py-12 overflow-hidden">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <p className="text-center font-body text-[12px] font-bold text-[#10B981] uppercase tracking-[0.2em]">
+    <section className="bg-white border-y border-border/8 py-10 overflow-hidden">
+      <div className="max-w-7xl mx-auto space-y-5">
+        <p className="text-center font-body text-[11px] font-bold text-muted-foreground/50 uppercase tracking-[0.25em]">
           Trusted by professionals at
         </p>
 
@@ -18,7 +18,7 @@ export const SocialProofBar = () => {
             {companies.map((company, i) => (
               <span
                 key={i}
-                className="text-[18px] md:text-[22px] font-serif font-medium text-white/40 hover:text-white/80 transition-colors cursor-default"
+                className="text-[18px] md:text-[22px] font-serif font-medium text-foreground/25 hover:text-primary transition-colors cursor-default"
               >
                 {company}
               </span>
@@ -29,7 +29,7 @@ export const SocialProofBar = () => {
             {companies.map((company, i) => (
               <span
                 key={`clone-${i}`}
-                className="text-[18px] md:text-[22px] font-serif font-medium text-white/40 hover:text-white/80 transition-colors cursor-default"
+                className="text-[18px] md:text-[22px] font-serif font-medium text-foreground/25 hover:text-primary transition-colors cursor-default"
               >
                 {company}
               </span>

@@ -15,7 +15,7 @@ import Footer from '@/components/landing/Footer';
 
 const Index = () => {
   return (
-    <main className="min-h-screen bg-[#F4F5F7] selection:bg-[#10B981]/30 selection:text-[#1E2A3A]">
+    <main className="min-h-screen bg-background selection:bg-[#10B981]/30 selection:text-[#1E2A3A]">
       <Navbar />
       <Hero />
       <ProductPreview />
