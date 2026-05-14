@@ -102,12 +102,6 @@ export const Hero = () => {
                 </motion.button>
               </MagneticButton>
             </Link>
-            <button className="px-9 py-4 border border-[#10B981] text-[#10B981] font-semibold font-body rounded-full text-lg flex items-center gap-2 hover:bg-[#10B981]/5 transition-all">
-              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-              Watch 90s Demo
-            </button>
           </div>
 
           {/* Social Proof Microtext */}

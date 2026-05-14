@@ -8,7 +8,7 @@ export const PricingSection = () => {
   const plans = [
     {
       name: "FREE",
-      price: "$0",
+      price: "₹0",
       description: "For exploratory job seekers",
       features: [
         { name: "3 JD analyses/mo", included: true },
@@ -23,7 +23,7 @@ export const PricingSection = () => {
     },
     {
       name: "PRO",
-      price: isAnnual ? "$15" : "$19",
+      price: isAnnual ? "₹1,499" : "₹1,999",
       description: "Everything you need to land top 0.1% roles",
       features: [
         { name: "Unlimited JD analyses", included: true },
@@ -38,7 +38,7 @@ export const PricingSection = () => {
     },
     {
       name: "TEAM",
-      price: isAnnual ? "$39" : "$49",
+      price: isAnnual ? "₹3,499" : "₹4,999",
       description: "For agencies and groups",
       features: [
         { name: "Everything in Pro", included: true },
@@ -122,15 +122,17 @@ export const PricingSection = () => {
                 ))}
               </div>
 
-              <button
-                className={`w-full py-4 px-6 rounded-full font-display font-bold transition-all ${
-                  plan.popular
-                    ? "bg-white text-lumina-teal hover:scale-[1.02] shadow-sm"
-                    : "border border-lumina-teal text-lumina-teal hover:bg-lumina-teal/5"
-                }`}
-              >
-                {plan.cta}
-              </button>
+              <a href="/auth" className="block w-full">
+                <button
+                  className={`w-full py-4 px-6 rounded-full font-display font-bold transition-all ${
+                    plan.popular
+                      ? "bg-white text-lumina-teal hover:scale-[1.02] shadow-sm"
+                      : "border border-lumina-teal text-lumina-teal hover:bg-lumina-teal/5"
+                  }`}
+                >
+                  {plan.cta}
+                </button>
+              </a>
             </div>
           ))}
         </div>
