@@ -217,12 +217,10 @@ export const ResumeGapAnalyzer = ({ skills, jobTitle, jdText, onResumeTextChange
         toast.info("AI Analysis limited. Using high-precision deterministic scoring.");
       }
  
-      // Scoring Logic: AI has final authority (can increase or decrease based on semantic understanding)
+      // Scoring Logic: AI has final authority over summary and directives, but deterministic logic ALWAYS rules the final score to prevent hallucination
       const final: ResumeGapResult = aiResult ? {
         ...baseResult,
-        overall_match: (typeof aiResult.overall_match === 'number') 
-          ? aiResult.overall_match 
-          : baseResult.overall_match,
+        overall_match: baseResult.overall_match,
         summary: aiResult.summary || baseResult.summary,
         deductions: (baseResult.deductions || []).map(d => {
             const safeAiDeductions = Array.isArray(aiResult?.deductions) ? aiResult.deductions : [];

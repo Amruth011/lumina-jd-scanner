@@ -582,9 +582,9 @@ RETURN ONLY VALID JSON (no markdown fences, no explanation text):
       addText(contactLines, bodyFontSize * 0.85, false, [80, 80, 80], "center");
       
       const linkItems = [
-        { label: "LINKEDIN", url: editableHeader.linkedin },
-        { label: "GITHUB", url: editableHeader.github },
-        { label: "PORTFOLIO", url: editableHeader.portfolio }
+        { label: editableHeader.linkedin ? editableHeader.linkedin.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '').toUpperCase() : "LINKEDIN", url: formatUrl(editableHeader.linkedin) },
+        { label: editableHeader.github ? editableHeader.github.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '').toUpperCase() : "GITHUB", url: formatUrl(editableHeader.github) },
+        { label: editableHeader.portfolio ? editableHeader.portfolio.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '').toUpperCase() : "PORTFOLIO", url: formatUrl(editableHeader.portfolio) }
       ].filter(item => item.url);
 
       if (linkItems.length > 0) {

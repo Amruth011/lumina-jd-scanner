@@ -444,9 +444,9 @@ export const ResumePreview = ({
                     className="flex flex-wrap justify-center items-center gap-6 font-black uppercase tracking-[0.2em] text-lumina-teal/60 pt-1"
                     style={{ fontSize: fontSizes.meta }}
                   >
-                    {localHeader.linkedin && <div className="flex items-center gap-1.5"><Linkedin size={9} /> LinkedIn</div>}
-                    {localHeader.github && <div className="flex items-center gap-1.5"><Github size={9} /> GitHub</div>}
-                    {localHeader.portfolio && <div className="flex items-center gap-1.5"><Globe size={9} /> Portfolio</div>}
+                    {localHeader.linkedin && <div className="flex items-center gap-1.5"><Linkedin size={9} /> {localHeader.linkedin.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '')}</div>}
+                    {localHeader.github && <div className="flex items-center gap-1.5"><Github size={9} /> {localHeader.github.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '')}</div>}
+                    {localHeader.portfolio && <div className="flex items-center gap-1.5"><Globe size={9} /> {localHeader.portfolio.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '')}</div>}
                   </div>
                 </div>
 
