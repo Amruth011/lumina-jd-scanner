@@ -305,8 +305,8 @@ RETURN ONLY VALID JSON:
           });
 
           // ── EMERGENCY FALLBACK: Try Local API Proxy if Edge Function Fails ──
-          if (invokeError && (invokeError.message?.includes("Failed to send a request") || invokeError.status === 404)) {
-            console.warn(`Lumina Tailoring: Edge Function unreachable. Switching to Local API Proxy for ${model}...`);
+          if (invokeError) {
+            console.warn(`Lumina Intelligence: Primary Edge Function error for ${model}. Triggering Local API Proxy Fallback...`);
             try {
               const apiResponse = await fetch("/api/analyze", {
                 method: "POST",
