@@ -30,97 +30,18 @@ export interface DeterministicScoreResult {
 const SYNONYM_MAP: Record<string, string[]> = {
   "javascript": ["js", "ecmascript", "es6"],
   "typescript": ["ts"],
-  "python": ["python3"],
-  "java": ["jdk", "jre", "j2ee", "openjdk"],
-  "c#": ["csharp", "c sharp", ".net", "dotnet", "asp.net"],
-  "c++": ["cpp", "cplusplus"],
-  "golang": ["go lang"],
-  "sql": ["tsql", "t-sql", "plsql", "pl/sql"],
-  "react": ["reactjs", "react.js"],
-  "angular": ["angularjs", "angular.js"],
-  "vue": ["vuejs", "vue.js"],
-  "next.js": ["nextjs"],
-  "node.js": ["nodejs"],
-  "express": ["expressjs", "express.js"],
-  "django": ["django rest framework", "drf"],
-  "spring boot": ["springboot"],
-  "spring": ["spring boot", "springboot", "spring framework"],
-  "fastapi": ["fast api"],
-  "ruby on rails": ["rails", "ror"],
-  "postgresql": ["postgres", "psql"],
-  "mysql": ["mariadb"],
-  "mongodb": ["mongo", "mongoose"],
-  "elasticsearch": ["elastic search", "elk"],
-  "dynamodb": ["dynamo db"],
-  "sql server": ["mssql", "ms sql"],
-  "firebase": ["firestore"],
-  "aws": ["amazon web services"],
-  "azure": ["microsoft azure", "azure devops"],
-  "gcp": ["google cloud", "google cloud platform"],
-  "docker": ["dockerfile", "docker compose", "docker-compose", "containerization"],
-  "kubernetes": ["k8s", "kubectl", "helm"],
-  "terraform": ["terragrunt"],
-  "ci/cd": ["cicd", "continuous integration", "continuous deployment", "continuous delivery", "github actions", "gitlab ci"],
-  "linux": ["ubuntu", "centos", "rhel", "debian", "fedora"],
-  "git": ["github", "gitlab", "bitbucket"],
-  "bash": ["shell scripting", "shell script"],
-  "machine learning": ["ml"],
-  "deep learning": ["dl"],
-  "artificial intelligence": ["ai"],
-  "tensorflow": ["keras"],
-  "pytorch": ["torch"],
-  "scikit-learn": ["sklearn", "scikit learn"],
-  "nlp": ["natural language processing", "spacy", "nltk", "hugging face", "huggingface"],
-  "computer vision": ["opencv", "open cv", "yolo", "image recognition"],
-  "data science": ["data analysis", "data analytics"],
-  "power bi": ["powerbi"],
-  "apache spark": ["spark", "pyspark"],
-  "hadoop": ["hdfs", "mapreduce", "hive"],
-  "etl": ["data pipeline", "data pipelines", "airflow"],
-  "llm": ["llms", "large language model", "large language models"],
-  "rag": ["retrieval augmented generation"],
-  "agile": ["scrum", "kanban"],
-  "rest api": ["restful", "restful api", "rest apis"],
-  "graphql": ["apollo graphql"],
-  "microservices": ["micro services"],
-  "unit testing": ["jest", "pytest", "junit", "mocha"],
-  "e2e testing": ["cypress", "selenium", "playwright"],
-  "figma": ["sketch", "adobe xd"],
-  "oauth": ["oauth2", "openid connect"],
-  "jwt": ["json web token"],
-  "websocket": ["websockets", "socket.io"],
-  "kafka": ["apache kafka"],
-  "grpc": ["protocol buffers", "protobuf"],
-  "prompt engineering": ["prompt design", "prompt optimization", "prompt engineering"],
-  "agentic ai": ["ai agents", "ai agent", "agentic workflows", "agentic systems", "agentic", "ai architecture", "multi-agent", "ai-led", "automation workflows"],
-  "multi-step": ["multi step", "multi-step tasks", "complex workflows"],
-  "semantic search": ["vector search", "similarity search", "neural search"],
-  "langchain": ["lang chain", "lc"],
-  "langgraph": ["lang graph", "lg"],
-  "openai": ["openai api", "gpt", "chatgpt", "gpt-4", "gpt-3.5"],
-  "anthropic": ["claude", "claude-3", "claude-2"],
-  "pinecone": ["vector db"],
-  "weaviate": ["vector database"],
-  "faiss": ["vector index"],
-  "pgvector": ["postgres vector"],
-  "chromadb": ["chroma db", "chroma"],
-  "embeddings": ["embedding", "word vectors"],
-  "vector database": ["vector databases", "vector db", "vector dbs"],
-  "ai researcher": ["ai research", "ml researcher", "ai scientist"],
-  "ai agent builder": ["ai agent developer", "agent builder", "ai automation", "agentic dev"],
-  "autogen": ["auto gen", "microsoft autogen"],
-  "crewai": ["crew ai"],
-  "mastra": [],
+  "python": ["python3", "python programming", "python programming language"],
+  "python programming language": ["python", "python3", "python programming"],
+  "data modeling": ["data modelling", "data analysis", "statistical modelling", "statistical modeling", "predictive analytics", "feature engineering"],
+  "data analysis": ["data analytics", "eda", "exploratory data analysis", "data science", "data insights", "cohort analysis", "statistical modelling"],
+  "analytical skills": ["analytical", "data analysis", "analysis", "eda", "exploratory data analysis", "insights", "analytical thinking", "problem solving", "problem-solving"],
+  "problem-solving skills": ["problem solving", "problem-solving", "troubleshooting", "debugging", "solutioning", "critical thinking", "analytical"],
+  "collaboration": ["collaborative", "teamwork", "cross-functional", "stakeholders", "team player", "worked with", "coordinate", "collaboration and teamwork"],
+  "collaboration and teamwork": ["collaboration", "teamwork", "team player", "collaborative"],
+  "communication and presentation": ["communication", "presentation", "stakeholders", "dashboard", "dashboards", "communicating"],
+  "strategic thinking": ["strategy", "strategic", "roadmap", "vision", "direction", "planning", "business objectives", "strategic thinking"],
+  "machine learning": ["ml", "predictive analytics", "xgboost", "scikit-learn", "random forest", "deep learning"],
   "statistical modeling": ["statistical modelling", "statistics", "statistical analysis", "regression analysis", "hypothesis testing", "bayesian", "frequentist", "statistical methods"],
-  "analytical skills": ["analytical", "data analysis", "analysis", "eda", "exploratory data analysis", "insights", "analytical thinking"],
-  "problem-solving skills": ["problem solving", "problem-solving", "troubleshooting", "debugging", "solutioning", "critical thinking"],
-  "collaboration": ["collaborative", "teamwork", "cross-functional", "stakeholders", "team player", "worked with", "coordinate"],
-  "mentorship": ["mentor", "mentoring", "coaching", "guiding", "junior", "guidance", "leadership"],
-  "strategic thinking": ["strategy", "strategic", "roadmap", "vision", "direction", "planning", "business objectives"],
-  "mathematics": ["math", "maths", "mathematical", "linear algebra", "calculus", "quantitative", "numerical"],
-  "statistics": ["statistical", "probability", "distribution", "regression", "hypothesis", "cohort analysis", "a/b testing"],
-  "r": ["r programming", "rstudio", "tidyverse", "ggplot", "dplyr"],
-  "data analysis": ["data analytics", "eda", "exploratory data analysis", "data science", "data insights", "cohort analysis"],
   "cybersecurity": ["cyber security", "infosec", "information security", "pentest", "penetration testing"],
 };
 
@@ -328,15 +249,27 @@ function matchTerm(
     }
   }
 
-  // 3. Partial match: for multi-word terms, check if significant words appear
+  // 3. Partial/Multi-word matching
   const termWords = termNormalized.split(/\s+/).filter(w => w.length > 2);
   if (termWords.length > 1) {
     const matched: string[] = [];
+    let containsCoreTech = false;
+    
+    // Core technical identifiers that should grant a "Strong" match even if the whole JD phrase isn't present
+    const CORE_TECHS = ["python", "sql", "java", "aws", "react", "docker", "pyspark", "xgboost", "machine learning"];
+
     for (const word of termWords) {
       if (termExistsInResume(word, resumeNormalized)) {
         matched.push(word);
+        if (CORE_TECHS.includes(word)) containsCoreTech = true;
       }
     }
+
+    // If we matched the core technology (e.g., "Python" in "Python Programming Language"), it's a STRONG match
+    if (containsCoreTech) {
+      return { matched: true, partial: false, matchedTerms: matched };
+    }
+
     if (matched.length > 0 && matched.length >= Math.ceil(termWords.length * 0.5)) {
       return { matched: false, partial: true, matchedTerms: matched };
     }
