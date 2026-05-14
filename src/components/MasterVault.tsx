@@ -82,9 +82,11 @@ export const MasterVault = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [editingItem, setEditingItem] = useState<Partial<VaultItem> | null>(null);
+  const userId = user?.id;
+
   useEffect(() => {
     if (!authLoading) {
-      if (user) {
+      if (userId) {
         fetchData();
         // Restore drafted profile on load
         const draftedProfileStr = localStorage.getItem(`draft_profile_${user.id}`);
@@ -104,14 +106,14 @@ export const MasterVault = () => {
         }
 
         // Nudge to complete profile
-        const hasNudged = sessionStorage.getItem(`nudge_${user.id}`);
+        const hasNudged = sessionStorage.getItem(`nudge_${userId}`);
         if (!hasNudged) {
           setTimeout(() => {
             toast("Intelligence Nudge: Complete your profile to 100% for elite AI tailoring.", {
               description: "High-density profiles land 10x more clinical interviews.",
               icon: <Sparkles className="text-primary w-4 h-4" />,
             });
-            sessionStorage.setItem(`nudge_${user.id}`, "true");
+            sessionStorage.setItem(`nudge_${userId}`, "true");
           }, 2000);
         }
       } else {
@@ -119,7 +121,7 @@ export const MasterVault = () => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, authLoading]);
+  }, [userId, authLoading]);
 
   // Persistence for Profile Draft
   useEffect(() => {
