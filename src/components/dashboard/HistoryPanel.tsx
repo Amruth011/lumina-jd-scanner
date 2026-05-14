@@ -13,34 +13,52 @@ export interface HistoryItem {
 export const HistoryPanel = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [history, setHistory] = useState<HistoryItem[]>([]);
+  const { supabase, user } = useSession();
   const { updateSession } = useSession();
 
   useEffect(() => {
-    const savedHistory = localStorage.getItem("lumina_history");
-    if (savedHistory) {
-      try {
-        setHistory(JSON.parse(savedHistory));
-      } catch (e) {
-        console.error("Corrupted history detected, resetting:", e);
-        localStorage.removeItem("lumina_history");
-        setHistory([]);
+    const fetchHistory = async () => {
+      if (!user) {
+        // Fallback to localStorage if not logged in
+        const savedHistory = localStorage.getItem("lumina_history");
+        if (savedHistory) {
+          try {
+            setHistory(JSON.parse(savedHistory));
+          } catch (e) {
+            setHistory([]);
+          }
+        }
+        return;
       }
-    }
+
+      // Fetch from Supabase for all devices sync
+      const { data, error } = await supabase
+        .from("jd_vault")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(10);
+
+      if (!error && data) {
+        const mappedHistory: HistoryItem[] = data.map(item => ({
+          id: item.id,
+          title: item.title,
+          timestamp: new Date(item.created_at).getTime(),
+          jdText: item.raw_text
+        }));
+        setHistory(mappedHistory);
+      }
+    };
+
+    fetchHistory();
 
     const handleHistoryUpdate = () => {
-      const updated = localStorage.getItem("lumina_history");
-      if (updated) {
-        try {
-          setHistory(JSON.parse(updated));
-        } catch (e) {
-          setHistory([]);
-        }
-      }
+      fetchHistory();
     };
 
     window.addEventListener("lumina_history_updated", handleHistoryUpdate);
     return () => window.removeEventListener("lumina_history_updated", handleHistoryUpdate);
-  }, []);
+  }, [user, supabase]);
 
   const loadHistoryItem = (item: HistoryItem) => {
     updateSession({ currentJD: item.jdText, currentJDDecoded: null });
@@ -116,12 +134,35 @@ export const HistoryPanel = () => {
                 )}
               </div>
 
-              <div className="p-6 bg-[#F4F5F7] border-t border-[#1E2A3A]/5">
+              <div className="p-6 bg-[#F4F5F7] border-t border-[#1E2A3A]/5 space-y-3">
+                <button 
+                  onClick={async () => {
+                    const feedback = window.prompt("Send feedback to Lumina Admins:");
+                    if (feedback && user) {
+                      const { error } = await supabase.from("master_vault").insert({
+                        user_id: user.id,
+                        category: "feedback",
+                        title: "User Feedback",
+                        content: feedback,
+                        source: "Direct Feedback"
+                      });
+                      if (!error) {
+                        alert("Feedback sent to admin! Thank you.");
+                      } else {
+                        alert("Failed to send feedback. Please try again.");
+                      }
+                    }
+                  }}
+                  className="w-full py-3 bg-[#10B981]/10 text-[#10B981] rounded-xl text-xs font-display font-bold uppercase tracking-widest hover:bg-[#10B981]/20 transition-all flex items-center justify-center gap-2"
+                >
+                  <Clock className="w-4 h-4" />
+                  Send Feedback
+                </button>
                 <button 
                   onClick={() => { localStorage.removeItem("lumina_history"); setHistory([]); }}
-                  className="w-full py-3 text-xs font-display font-bold uppercase tracking-widest text-red-500/60 hover:text-red-500 transition-colors"
+                  className="w-full py-2 text-xs font-display font-bold uppercase tracking-widest text-red-500/40 hover:text-red-500 transition-colors"
                 >
-                  Clear All History
+                  Clear Local History
                 </button>
               </div>
             </motion.div>
