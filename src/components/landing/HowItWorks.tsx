@@ -150,31 +150,43 @@ export const HowItWorks = () => {
   const textRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!containerRef.current || !visualsRef.current || !textRef.current) return;
+    if (!containerRef.current || !visualsRef.current) return;
 
     const sections = gsap.utils.toArray('.chapter-text') as HTMLElement[];
     const visuals = gsap.utils.toArray('.chapter-visual') as HTMLElement[];
 
+    // Initial state
     gsap.set(visuals, { opacity: 0, scale: 0.9, y: 50 });
     gsap.set(visuals[0], { opacity: 1, scale: 1, y: 0 });
-
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: 'top top',
-        end: '+=400%',
-        pin: true,
-        scrub: 1,
-        // markers: true,
-      }
-    });
+    gsap.set(sections, { opacity: 0.2 });
+    gsap.set(sections[0], { opacity: 1 });
 
     sections.forEach((section, i) => {
-      if (i > 0) {
-        tl.to(visuals[i-1], { opacity: 0, scale: 0.8, y: -50, duration: 1 }, i)
-          .to(visuals[i], { opacity: 1, scale: 1, y: 0, duration: 1 }, i)
-          .to(section as Element, { opacity: 1, duration: 1 }, i);
-      }
+      ScrollTrigger.create({
+        trigger: section,
+        start: 'top center',
+        end: 'bottom center',
+        onEnter: () => {
+          visuals.forEach((v, idx) => {
+            if (idx === i) gsap.to(v, { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: "power2.out", overwrite: true });
+            else gsap.to(v, { opacity: 0, scale: 0.9, y: -20, duration: 0.4, overwrite: true });
+          });
+          gsap.to(section, { opacity: 1, duration: 0.4 });
+        },
+        onEnterBack: () => {
+          visuals.forEach((v, idx) => {
+            if (idx === i) gsap.to(v, { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: "power2.out", overwrite: true });
+            else gsap.to(v, { opacity: 0, scale: 0.9, y: 20, duration: 0.4, overwrite: true });
+          });
+          gsap.to(section, { opacity: 1, duration: 0.4 });
+        },
+        onLeave: () => {
+          gsap.to(section, { opacity: 0.2, duration: 0.4 });
+        },
+        onLeaveBack: () => {
+          gsap.to(section, { opacity: 0.2, duration: 0.4 });
+        }
+      });
     });
 
     return () => {
@@ -183,37 +195,48 @@ export const HowItWorks = () => {
   }, []);
 
   return (
-    <section id="how-it-works" ref={containerRef} className="bg-background text-lumina-navy min-h-screen overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 h-screen flex items-center gap-16">
-        {/* Left: Dynamic Visuals */}
-        <div className="flex-1 h-[500px] relative hidden lg:block">
+    <section id="how-it-works" ref={containerRef} className="bg-background text-lumina-navy relative">
+      <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-start gap-16">
+        
+        {/* Left: Dynamic Visuals (Sticky on Desktop) */}
+        <div ref={visualsRef} className="w-full lg:w-1/2 lg:sticky lg:top-0 lg:h-screen flex items-center justify-center hidden lg:flex">
+          <div className="w-full max-w-md aspect-square relative">
+            {chapters.map((chapter, i) => (
+              <div 
+                key={`visual-${chapter.id}`} 
+                className="chapter-visual absolute inset-0 flex items-center justify-center"
+              >
+                <div className="w-full h-full">
+                  {chapter.visual}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right: Chapter Content (Scrolling) */}
+        <div className="w-full lg:w-1/2 py-20 lg:py-[15vh]">
           {chapters.map((chapter, i) => (
             <div 
-              key={chapter.id} 
-              className="chapter-visual absolute inset-0 flex items-center justify-center"
+              key={`text-${chapter.id}`} 
+              className="chapter-text min-h-[50vh] lg:min-h-[85vh] flex flex-col justify-center gap-6 transition-opacity duration-500"
             >
-              <div className="w-full h-full max-w-md max-h-md">
+              <div className="space-y-6">
+                <span className="inline-block text-lumina-teal font-display font-bold text-xs uppercase tracking-widest bg-lumina-teal/10 px-3 py-1 rounded-full w-fit">Chapter {i + 1}</span>
+                <h3 className="text-4xl md:text-5xl font-serif font-bold leading-tight text-lumina-navy">{chapter.title}</h3>
+                <p className="text-lg text-lumina-navy/50 font-body leading-relaxed max-w-md">
+                  {chapter.description}
+                </p>
+              </div>
+
+              {/* Mobile Visual Inline */}
+              <div className="block lg:hidden mt-8 w-full">
                 {chapter.visual}
               </div>
             </div>
           ))}
         </div>
 
-        {/* Right: Chapter Content */}
-        <div className="flex-1 space-y-28">
-          {chapters.map((chapter, i) => (
-            <div 
-              key={chapter.id} 
-              className={`chapter-text flex flex-col gap-6 ${i === 0 ? 'opacity-100' : 'opacity-20'}`}
-            >
-              <span className="inline-block text-lumina-teal font-display font-bold text-xs uppercase tracking-widest bg-lumina-teal/10 px-3 py-1 rounded-full w-fit">Chapter {i + 1}</span>
-              <h3 className="text-4xl md:text-5xl font-serif font-bold leading-tight text-lumina-navy">{chapter.title}</h3>
-              <p className="text-lg text-lumina-navy/50 font-body leading-relaxed max-w-md">
-                {chapter.description}
-              </p>
-            </div>
-          ))}
-        </div>
       </div>
     </section>
   );
