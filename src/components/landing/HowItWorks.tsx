@@ -110,37 +110,6 @@ const chapters = [
         </div>
       </div>
     )
-  },
-  {
-    id: 'market-insights',
-    title: 'Know the Market Better Than Your Interviewer',
-    description: 'Get real-time data on salary ranges, competitor trends, and seniority calibration for the specific role you are targeting.',
-    visual: (
-      <div className="bg-white rounded-2xl p-8 h-full w-full border border-border/20 shadow-sm flex flex-col gap-6">
-        <div className="flex justify-between items-end">
-          <div className="space-y-2">
-            <p className="text-[10px] text-lumina-navy/40 uppercase font-bold">Market Average</p>
-            <p className="text-2xl font-serif text-lumina-navy">$165,000</p>
-          </div>
-          <div className="h-20 w-32 relative">
-            <svg viewBox="0 0 100 50" className="w-full h-full">
-              <path 
-                d="M0,50 Q25,10 50,30 T100,0" 
-                fill="none" 
-                stroke="#10B981" 
-                strokeWidth="2" 
-                className="animate-draw"
-              />
-            </svg>
-          </div>
-        </div>
-        <div className="grid grid-cols-3 gap-2">
-          {[1, 2, 3].map(i => <div key={i} className="h-1 bg-lumina-navy/10 rounded-full overflow-hidden">
-            <div className="h-full bg-lumina-teal w-1/2" />
-          </div>)}
-        </div>
-      </div>
-    )
   }
 ];
 
@@ -158,8 +127,6 @@ export const HowItWorks = () => {
     // Initial state
     gsap.set(visuals, { opacity: 0, scale: 0.9, y: 50 });
     gsap.set(visuals[0], { opacity: 1, scale: 1, y: 0 });
-    gsap.set(sections, { opacity: 0.2 });
-    gsap.set(sections[0], { opacity: 1 });
 
     sections.forEach((section, i) => {
       ScrollTrigger.create({
@@ -171,20 +138,12 @@ export const HowItWorks = () => {
             if (idx === i) gsap.to(v, { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: "power2.out", overwrite: true });
             else gsap.to(v, { opacity: 0, scale: 0.9, y: -20, duration: 0.4, overwrite: true });
           });
-          gsap.to(section, { opacity: 1, duration: 0.4 });
         },
         onEnterBack: () => {
           visuals.forEach((v, idx) => {
             if (idx === i) gsap.to(v, { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: "power2.out", overwrite: true });
             else gsap.to(v, { opacity: 0, scale: 0.9, y: 20, duration: 0.4, overwrite: true });
           });
-          gsap.to(section, { opacity: 1, duration: 0.4 });
-        },
-        onLeave: () => {
-          gsap.to(section, { opacity: 0.2, duration: 0.4 });
-        },
-        onLeaveBack: () => {
-          gsap.to(section, { opacity: 0.2, duration: 0.4 });
         }
       });
     });
@@ -219,7 +178,7 @@ export const HowItWorks = () => {
           {chapters.map((chapter, i) => (
             <div 
               key={`text-${chapter.id}`} 
-              className="chapter-text min-h-[50vh] lg:min-h-[85vh] flex flex-col justify-center gap-6 transition-opacity duration-500"
+              className="chapter-text min-h-[50vh] lg:min-h-[85vh] flex flex-col justify-center gap-6"
             >
               <div className="space-y-6">
                 <span className="inline-block text-lumina-teal font-display font-bold text-xs uppercase tracking-widest bg-lumina-teal/10 px-3 py-1 rounded-full w-fit">Chapter {i + 1}</span>
