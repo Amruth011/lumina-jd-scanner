@@ -63,21 +63,34 @@ serve(async (req: Request) => {
           break;
         }
 
-        const errorData = await groqResponse.json();
-        lastError = errorData.error?.message || groqResponse.statusText;
-        console.warn(`Lumina Analyze: Model ${model} failed: ${lastError}`);
+        let lastErrorDetails = "";
+        try {
+          const errorData = await groqResponse.json();
+          lastErrorDetails = errorData.error?.message || JSON.stringify(errorData);
+        } catch (e) {
+          lastErrorDetails = await groqResponse.text().catch(() => groqResponse.statusText);
+        }
+        
+        lastError = lastErrorDetails || groqResponse.statusText;
+        console.warn(`Lumina Analyze: Model ${model} failed with status ${groqResponse.status}: ${lastError}`);
 
         if (groqResponse.status === 429) {
-          console.log("Lumina Analyze: Rate limit hit. Waiting 1000ms...");
-          await sleep(1000);
+          console.log("Lumina Analyze: Rate limit hit. Waiting 1500ms...");
+          await sleep(1500);
         }
       } catch (err) {
         lastError = err instanceof Error ? err.message : String(err);
+        console.error(`Lumina Analyze: ${model} exception:`, lastError);
       }
     }
 
     if (!resultData) {
-      return new Response(JSON.stringify({ error: `All AI engines exhausted: ${lastError}` }), {
+      console.error(`Lumina Analyze: ALL ENGINES EXHAUSTED. Last error: ${lastError}`);
+      return new Response(JSON.stringify({ 
+        error: "All AI engines exhausted", 
+        details: lastError,
+        diagnostics: "Check GROQ_API_KEY and usage limits at console.groq.com"
+      }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });

@@ -69,13 +69,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           break;
         }
 
-        const errorData = await groqResponse.json();
-        lastError = errorData.error?.message || groqResponse.statusText;
-        console.warn(`API_PROXY: ${model} failed:`, lastError);
+        let lastErrorDetails = "";
+        try {
+          const errorData = await groqResponse.json();
+          lastErrorDetails = errorData.error?.message || JSON.stringify(errorData);
+        } catch (e) {
+          lastErrorDetails = await groqResponse.text().catch(() => groqResponse.statusText);
+        }
+        
+        lastError = lastErrorDetails || groqResponse.statusText;
+        console.warn(`API_PROXY: ${model} failed with status ${groqResponse.status}: ${lastError}`);
 
         if (groqResponse.status === 429) {
-          console.log("API_PROXY: Rate limit hit. Waiting 1000ms...");
-          await sleep(1000);
+          console.log("API_PROXY: Rate limit hit. Waiting 1500ms...");
+          await sleep(1500);
         }
       } catch (err) {
         lastError = err instanceof Error ? err.message : String(err);
@@ -84,7 +91,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (!resultData) {
-      return res.status(500).json({ error: `All AI engines exhausted: ${lastError}` });
+      console.error(`API_PROXY: ALL ENGINES EXHAUSTED. Last error: ${lastError}`);
+      return res.status(500).json({ 
+        error: "All AI engines exhausted", 
+        details: lastError,
+        diagnostics: "Check GROQ_API_KEY and usage limits at console.groq.com"
+      });
     }
 
     return res.status(200).json(resultData);

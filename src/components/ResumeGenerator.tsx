@@ -306,7 +306,7 @@ RETURN ONLY VALID JSON:
 
           // ── EMERGENCY FALLBACK: Try Local API Proxy if Edge Function Fails ──
           if (invokeError) {
-            console.warn(`Lumina Intelligence: Primary Edge Function error for ${model}: ${invokeError.message}. Triggering Local API Proxy Fallback...`);
+            console.warn(`Lumina Intelligence: Primary Edge Function error for ${model}. Triggering Local API Proxy Fallback...`);
             try {
               const apiResponse = await fetch("/api/analyze", {
                 method: "POST",
@@ -325,7 +325,7 @@ RETURN ONLY VALID JSON:
                 console.log(`Lumina Intelligence: Success via Local API Proxy with ${model}`);
               } else {
                 const proxyError = await apiResponse.json().catch(() => ({ error: apiResponse.statusText }));
-                lastError = `Proxy Fault (${apiResponse.status}): ${proxyError.error || "Unknown error"}`;
+                lastError = `Proxy Fault (${apiResponse.status}): ${proxyError.details || proxyError.error || "Unknown error"}`;
                 console.error(`Lumina Intelligence: Local API Proxy failed for ${model}:`, lastError);
               }
             } catch (apiErr) {
@@ -335,9 +335,22 @@ RETURN ONLY VALID JSON:
           }
 
           if (invokeError) {
-            // If proxy also failed or wasn't attempted, and we still have invokeError
+            // Check if invokeError has a response body we can parse
+            let detailedMessage = invokeError.message;
+            
+            // Handle Supabase function error details if available
+            if (invokeError.name === 'FunctionsHttpError') {
+              try {
+                const body = await invokeError.context.json();
+                detailedMessage = body.details || body.error || detailedMessage;
+              } catch (e) {
+                // Not JSON or no context
+              }
+            }
+
+            // Only update lastError if proxy didn't already set a more specific one
             if (!lastError.includes("Proxy")) {
-              lastError = invokeError.message || "Function invocation failed";
+              lastError = detailedMessage || "Function invocation failed";
             }
             
             if (invokeError.status === 429) {
