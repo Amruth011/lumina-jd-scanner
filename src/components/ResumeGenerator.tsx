@@ -285,7 +285,7 @@ RETURN ONLY VALID JSON:
 
       const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
       let resultText = "";
-      const models = ["llama-3.3-70b-versatile", "llama-3.1-70b-versatile", "gemma2-9b-it", "llama-3.1-8b-instant"];
+      const models = ["llama-3.3-70b-versatile", "llama-3.1-70b-versatile", "mixtral-8x7b-32768", "gemma2-9b-it", "llama-3.1-8b-instant"];
       let lastError = "";
 
       for (let i = 0; i < models.length; i++) {
@@ -306,7 +306,7 @@ RETURN ONLY VALID JSON:
 
           // ── EMERGENCY FALLBACK: Try Local API Proxy if Edge Function Fails ──
           if (invokeError) {
-            console.warn(`Lumina Intelligence: Primary Edge Function error for ${model}. Triggering Local API Proxy Fallback...`);
+            console.warn(`Lumina Intelligence: Primary Edge Function error for ${model}: ${invokeError.message}. Triggering Local API Proxy Fallback...`);
             try {
               const apiResponse = await fetch("/api/analyze", {
                 method: "POST",
@@ -318,18 +318,25 @@ RETURN ONLY VALID JSON:
                   response_format: { type: "json_object" }
                 })
               });
+              
               if (apiResponse.ok) {
                 rawData = await apiResponse.json();
                 invokeError = null;
+                console.log(`Lumina Intelligence: Success via Local API Proxy with ${model}`);
+              } else {
+                const proxyError = await apiResponse.json().catch(() => ({ error: apiResponse.statusText }));
+                lastError = `Proxy Fault (${apiResponse.status}): ${proxyError.error || "Unknown error"}`;
+                console.error(`Lumina Intelligence: Local API Proxy failed for ${model}:`, lastError);
               }
             } catch (apiErr) {
-              console.error("Local API Proxy also failed:", apiErr);
+              lastError = `Proxy Connection Fault: ${apiErr instanceof Error ? apiErr.message : String(apiErr)}`;
+              console.error("Local API Proxy connection failed:", apiErr);
             }
           }
 
           if (invokeError) {
-            // lastError is already set if the proxy fails, otherwise use invokeError
-            if (!lastError.includes("Proxy Fault") && !lastError.includes("Empty response")) {
+            // If proxy also failed or wasn't attempted, and we still have invokeError
+            if (!lastError.includes("Proxy")) {
               lastError = invokeError.message || "Function invocation failed";
             }
             
@@ -396,8 +403,12 @@ RETURN ONLY VALID JSON:
     } catch (err: unknown) {
       console.error("Generation process failed:", err);
       const errorMessage = err instanceof Error ? err.message : String(err);
+      const isMissingKey = errorMessage.includes("your_groq_api_key_here") || errorMessage.includes("Missing GROQ_API_KEY");
+      
       toast.error("Tailoring Engine Fault", {
-        description: errorMessage || "System overloaded. Retrying in 30s...",
+        description: isMissingKey 
+          ? "Groq API Key not configured. Please add your key to the .env file or Supabase secrets."
+          : errorMessage || "System overloaded. Retrying in 30s...",
         duration: 8000
       });
     } finally {
