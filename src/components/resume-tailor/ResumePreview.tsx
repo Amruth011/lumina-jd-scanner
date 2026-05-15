@@ -75,8 +75,6 @@ export const ResumePreview = ({
   const [openSection, setOpenSection] = useState<string | null>("strategy");
   const [showVaultPicker, setShowVaultPicker] = useState<{ section: 'experience' | 'projects' | 'education' | 'certifications', index?: number } | null>(null);
   
-  const [showVaultPicker, setShowVaultPicker] = useState<{ section: 'experience' | 'projects' | 'education' | 'certifications', index?: number } | null>(null);
-  
   const resumeRef = useRef<HTMLDivElement>(null);
   const [pageCount, setPageCount] = useState(1);
 
