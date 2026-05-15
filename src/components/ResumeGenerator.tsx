@@ -279,13 +279,18 @@ RETURN ONLY VALID JSON:
       "bullets": ["(EXACTLY ${projectLines} bullets per project, each with a hard metric)"]
     }
   ],
-  "education": ["Degree - University"],
-  "certifications": ["Cert Name"]
+      "education": ["Degree - University"],
+      "certifications": ["Cert Name"]
 }`;
 
       const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
       let resultText = "";
-      const models = ["llama-3.3-70b-versatile", "llama-3.1-70b-versatile", "mixtral-8x7b-32768", "gemma2-9b-it", "llama-3.1-8b-instant"];
+      const models = [
+        "llama-3.1-8b-instant",       // High reliability, fast
+        "llama-3.3-70b-versatile",    // High intelligence
+        "llama-3.1-70b-versatile",    // Fallback intelligence
+        "mixtral-8x7b-32768"          // Secondary fallback
+      ];
       let lastError = "";
 
       for (let i = 0; i < models.length; i++) {
@@ -389,7 +394,16 @@ RETURN ONLY VALID JSON:
       }
 
       if (!resultText) {
-        throw new Error(`All AI engines exhausted. Last error: ${lastError}`);
+        toast.error("Deep Tailoring Fault", {
+          id: "gen-toast",
+          description: `All AI engines were unable to process this request. Specific Error: ${lastError.slice(0, 100)}... 
+          Troubleshooting: 
+          1. Ensure your Master Vault (Profile tab) is not empty.
+          2. Check if your Groq API Key has reached its rate limit.
+          3. Try with a shorter Job Description.`,
+          duration: 6000
+        });
+        return;
       }
 
       let structData;
