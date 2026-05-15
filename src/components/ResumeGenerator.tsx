@@ -720,13 +720,31 @@ RETURN ONLY VALID JSON:
           addText("CERTIFICATIONS", headlineFontSize, true, [0, 0, 0]);
           pdf.line(margin, y, pageWidth - margin, y);
           y += 1.8;
-          editableResume.certifications.forEach(cert => cert && addText(cert, bodyFontSize * 0.9, false, [40, 40, 40]));
+          editableResume.certifications?.forEach(cert => cert && addText(cert, bodyFontSize * 0.9, false, [40, 40, 40]));
         }
       }
 
       const safeName = (editableHeader.fullName || profile?.full_name || "Resume").replace(/[^a-z0-9]/gi, '_');
-      pdf.save(`Lumina-AI-Resume-${safeName}.pdf`);
-      toast.success("Silicon Valley Modern PDF Exported!");
+      
+      try {
+        pdf.save(`Lumina-AI-Resume-${safeName}.pdf`);
+        toast.success("Silicon Valley Modern PDF Exported!");
+      } catch (saveErr) {
+        // Fallback for manual trigger if pdf.save() fails
+        const blob = pdf.output('blob');
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.style.display = 'none';
+        link.href = url;
+        link.setAttribute('download', `Lumina-AI-Resume-${safeName}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(() => {
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        }, 200);
+        toast.success("PDF exported via fallback!");
+      }
     } catch (err) {
       console.error(err);
       toast.error("Failed to render Premium PDF.");
@@ -767,12 +785,12 @@ RETURN ONLY VALID JSON:
           <p>${editableResume.skills_section.join(" • ")}</p>
           
           <h2>Experience</h2>
-          ${editableResume.experience.map(exp => `
+          ${editableResume.experience?.map(exp => `
             <div>
               <h3>${exp.heading}</h3>
               ${exp.content ? `<p><i>${exp.content}</i></p>` : ""}
               <ul>
-                ${exp.bullets.map(bullet => `<li>${bullet}</li>`).join("")}
+                ${exp.bullets?.map(bullet => `<li>${bullet}</li>`).join("")}
               </ul>
             </div>
           `).join("")}
@@ -784,14 +802,14 @@ RETURN ONLY VALID JSON:
                 <h3>${proj.heading}</h3>
                 ${proj.content ? `<p><i>${proj.content}</i></p>` : ""}
                 <ul>
-                  ${proj.bullets.map(bullet => `<li>${bullet}</li>`).join("")}
+                  ${proj.bullets?.map(bullet => `<li>${bullet}</li>`).join("")}
                 </ul>
               </div>
             `).join("")}
           ` : ""}
           
           <h2>Education</h2>
-          ${editableResume.education.map(edu => `<p>${edu}</p>`).join("")}
+          ${editableResume.education?.map(edu => `<p>${edu}</p>`).join("")}
           
           ${editableResume.certifications && editableResume.certifications.length > 0 ? `
             <h2>Certifications</h2>
@@ -802,20 +820,21 @@ RETURN ONLY VALID JSON:
       `;
 
       const safeName = (editableHeader.fullName || profile?.full_name || "Resume").replace(/[^a-z0-9]/gi, '_');
-      const blob = new Blob(['\ufeff', content], { type: 'application/msword;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
+      
+      // Use Data URI for maximum browser compatibility with filenames
+      const encodedContent = encodeURIComponent(content);
+      const dataUri = `data:application/vnd.ms-word;charset=utf-8,\ufeff${encodedContent}`;
+      
       const link = document.createElement('a');
       link.style.display = 'none';
-      link.href = url;
+      link.href = dataUri;
       link.setAttribute('download', `Lumina-Resume-${safeName}.doc`);
       document.body.appendChild(link);
       link.click();
       
-      // Cleanup after a small delay to ensure download starts
       setTimeout(() => {
         document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-      }, 100);
+      }, 200);
       
       toast.success("Silicon Valley Modern Word Document Exported!");
     } catch (err) {
