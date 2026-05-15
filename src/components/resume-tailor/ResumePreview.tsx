@@ -44,8 +44,8 @@ interface ResumePreviewProps {
   vaultItems: VaultItem[];
   onUpdate: (updatedResume: GeneratedResume, updatedHeader: ResumeHeader) => void;
   onRegenerate: () => void;
-  onDownload: () => void;
-  onDownload: () => void;
+  onDownloadPDF: () => void;
+  onDownloadDOC: () => void;
   isGenerating: boolean;
   baseFontSize: number;
   lineSpacing: number;
@@ -59,7 +59,8 @@ export const ResumePreview = ({
   vaultItems,
   onUpdate, 
   onRegenerate, 
-  onDownload,
+  onDownloadPDF,
+  onDownloadDOC,
   isGenerating,
   baseFontSize,
   lineSpacing,
@@ -208,11 +209,20 @@ export const ResumePreview = ({
                 <Save size={16} />
               </button>
               <button 
-                onClick={onDownload} 
-                className="p-2 rounded-xl bg-[#1E2A3A] text-white shadow-lg shadow-[#1E2A3A]/20 transition-all hover:scale-105"
+                onClick={onDownloadPDF} 
+                className="p-2 rounded-xl bg-[#1E2A3A] text-white shadow-lg shadow-[#1E2A3A]/20 transition-all hover:scale-105 group relative"
                 aria-label="Download PDF"
               >
                 <Download size={16} />
+                <span className="absolute -bottom-10 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-lg bg-[#1E2A3A] text-white text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap pointer-events-none">PDF Export</span>
+              </button>
+              <button 
+                onClick={onDownloadDOC} 
+                className="p-2 rounded-xl bg-white border border-[#1E2A3A]/10 text-[#1E2A3A] shadow-lg shadow-slate-200 transition-all hover:scale-105 group relative"
+                aria-label="Download DOC"
+              >
+                <FileText size={16} />
+                <span className="absolute -bottom-10 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-lg bg-white border border-border text-[#1E2A3A] text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap pointer-events-none">Word Export</span>
               </button>
             </div>
           </div>

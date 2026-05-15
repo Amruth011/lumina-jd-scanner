@@ -718,6 +718,91 @@ RETURN ONLY VALID JSON:
     }
   };
 
+  const handleDownloadDOC = () => {
+    if (!resume || !editableResume) return;
+    try {
+      const content = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+        <head>
+          <meta charset='utf-8'>
+          <title>Resume - ${editableHeader.fullName}</title>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.4; color: #333; margin: 0.5in; }
+            h1 { font-size: 24pt; text-align: center; margin-bottom: 0; text-transform: uppercase; }
+            .header-meta { text-align: center; font-size: 10pt; color: #666; margin-bottom: 20px; }
+            h2 { font-size: 14pt; border-bottom: 1px solid #ccc; margin-top: 20px; text-transform: uppercase; }
+            h3 { font-size: 12pt; margin-bottom: 5px; }
+            p { font-size: 11pt; margin-bottom: 10px; }
+            ul { margin-bottom: 15px; }
+            li { font-size: 11pt; margin-bottom: 5px; }
+          </style>
+        </head>
+        <body>
+          <h1>${editableHeader.fullName}</h1>
+          <div class="header-meta">
+            ${editableHeader.location ? `${editableHeader.location} | ` : ""}${editableHeader.phone ? `${editableHeader.phone} | ` : ""}${editableHeader.email}
+            <br/>
+            ${editableHeader.linkedin ? `LinkedIn: ${editableHeader.linkedin} ` : ""}${editableHeader.github ? `| GitHub: ${editableHeader.github} ` : ""}${editableHeader.portfolio ? `| Portfolio: ${editableHeader.portfolio}` : ""}
+          </div>
+          
+          <h2>Professional Summary</h2>
+          <p>${editableResume.professional_summary}</p>
+          
+          <h2>Core Competencies</h2>
+          <p>${editableResume.skills_section.join(" • ")}</p>
+          
+          <h2>Experience</h2>
+          ${editableResume.experience.map(exp => `
+            <div>
+              <h3>${exp.heading}</h3>
+              ${exp.content ? `<p><i>${exp.content}</i></p>` : ""}
+              <ul>
+                ${exp.bullets.map(bullet => `<li>${bullet}</li>`).join("")}
+              </ul>
+            </div>
+          `).join("")}
+          
+          ${editableResume.projects && editableResume.projects.length > 0 ? `
+            <h2>Key Projects</h2>
+            ${editableResume.projects.map(proj => `
+              <div>
+                <h3>${proj.heading}</h3>
+                ${proj.content ? `<p><i>${proj.content}</i></p>` : ""}
+                <ul>
+                  ${proj.bullets.map(bullet => `<li>${bullet}</li>`).join("")}
+                </ul>
+              </div>
+            `).join("")}
+          ` : ""}
+          
+          <h2>Education</h2>
+          ${editableResume.education.map(edu => `<p>${edu}</p>`).join("")}
+          
+          ${editableResume.certifications && editableResume.certifications.length > 0 ? `
+            <h2>Certifications</h2>
+            ${editableResume.certifications.map(cert => `<p>${cert}</p>`).join("")}
+          ` : ""}
+        </body>
+        </html>
+      `;
+
+      const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Lumina-Resume-${editableHeader.fullName.replace(/ /g, "_")}.doc`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      toast.success("Silicon Valley Modern Word Document Exported!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to render Word Document.");
+    }
+  };
+
   return (
     <div className="glass-panel rounded-[3rem] p-6 lg:p-10 relative overflow-hidden group border-white/20">
       <div className="absolute top-0 right-0 p-16 opacity-5 scale-150 group-hover:opacity-10 transition-opacity duration-1000 pointer-events-none">
@@ -1080,7 +1165,8 @@ RETURN ONLY VALID JSON:
                 setEditableHeader(updatedHeader);
               }}
               onRegenerate={executeTacticalSynthesis}
-              onDownload={handleDownloadPDF}
+              onDownloadPDF={handleDownloadPDF}
+              onDownloadDOC={handleDownloadDOC}
             />
 
             <div className="flex justify-center pb-20">
