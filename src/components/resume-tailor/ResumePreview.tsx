@@ -336,7 +336,7 @@ export const ResumePreview = ({
               action={<button onClick={() => setShowVaultPicker({ section: 'education' })} className="text-[8px] font-black uppercase text-lumina-teal flex items-center gap-1"><Plus size={10}/> Vault</button>}
             >
               <div className="space-y-2">
-                {localResume.education.map((edu, i) => (
+                {(localResume.education || []).map((edu, i) => (
                   <div key={i} className="flex items-center gap-3">
                     <input value={edu} onChange={(e) => {
                       const newEdu = [...localResume.education];
@@ -448,9 +448,9 @@ export const ResumePreview = ({
                       <div className="h-px flex-1 bg-[#1E2A3A]/5" />
                     </div>
                     <div className="flex flex-wrap gap-x-4 gap-y-1.5">
-                      {localResume.skills_section.map((skill, i) => (
+                      {(localResume.skills_section || []).map((skill, i) => (
                         <div key={i} className="font-bold text-[#1E2A3A]/70 uppercase tracking-tighter" style={{ fontSize: `calc(${fontSizes.body} - 1px)` }}>
-                          {skill}{i < localResume.skills_section.length - 1 && "  •"}
+                          {skill}{i < (localResume.skills_section || []).length - 1 && "  •"}
                         </div>
                       ))}
                     </div>
@@ -463,7 +463,7 @@ export const ResumePreview = ({
                       <div className="h-px flex-1 bg-[#1E2A3A]/5" />
                     </div>
                     <div className="space-y-8">
-                      {localResume.experience.map((exp, expIdx) => (
+                      {(localResume.experience || []).map((exp, expIdx) => (
                         <div key={expIdx} className="space-y-3">
                           <h5 className="font-bold text-[#1E2A3A] tracking-tight" style={{ fontSize: fontSizes.header }}>{exp.heading}</h5>
                           <div className="space-y-2 pl-3 border-l border-slate-100">
@@ -512,7 +512,7 @@ export const ResumePreview = ({
                         <div className="h-px flex-1 bg-[#1E2A3A]/5" />
                       </div>
                       <div className="space-y-2">
-                        {localResume.education.map((edu, i) => (
+                        {(localResume.education || []).map((edu, i) => (
                           <p key={i} className="font-medium text-[#1E2A3A]/80" style={{ fontSize: `calc(${fontSizes.body} - 1px)` }}>{edu}</p>
                         ))}
                       </div>
