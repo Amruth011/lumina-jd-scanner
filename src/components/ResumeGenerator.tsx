@@ -239,8 +239,8 @@ Your goal is to create a resume that is 100% ATS-friendly and passes machine par
 Job Target: ${jdTitle} at ${companyName || "this company"}
 Target Skills (CRITICAL): ${jdSkills.map(s => s.skill).join(", ")}
 
-Candidate Profile:
-${JSON.stringify(vaultItems.map(v => ({ title: v.title, org: v.organization, desc: v.description, bullets: v.bullets })), null, 2)}
+Candidate Profile (Targeted Selection):
+${JSON.stringify(vaultItems.slice(0, 15).map(v => ({ title: v.title, org: v.organization, desc: v.description, bullets: v.bullets?.slice(0, 10) })), null, 2)}
 
 STRATEGY FOR 100% SCORE:
 1. TONE: Use a ${tone} tone. ${tone === 'Aggressive' ? 'Focus on high-growth metrics and leadership impact. Prioritize keyword density.' : tone === 'Professional' ? 'Focus on executive authority and structured domain expertise.' : 'Focus on lean efficiency and modern tactical precision.'}
@@ -710,7 +710,8 @@ RETURN ONLY VALID JSON:
         }
       }
 
-      pdf.save(`Lumina-AI-Resume-${profile?.full_name?.replace(/ /g, "_")}.pdf`);
+      const safeName = (editableHeader.fullName || profile?.full_name || "Resume").replace(/[^a-z0-9]/gi, '_');
+      pdf.save(`Lumina-AI-Resume-${safeName}.pdf`);
       toast.success("Silicon Valley Modern PDF Exported!");
     } catch (err) {
       console.error(err);
@@ -786,15 +787,21 @@ RETURN ONLY VALID JSON:
         </html>
       `;
 
-      const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
+      const safeName = (editableHeader.fullName || profile?.full_name || "Resume").replace(/[^a-z0-9]/gi, '_');
+      const blob = new Blob(['\ufeff', content], { type: 'application/msword;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
+      link.style.display = 'none';
       link.href = url;
-      link.download = `Lumina-Resume-${editableHeader.fullName.replace(/ /g, "_")}.doc`;
+      link.setAttribute('download', `Lumina-Resume-${safeName}.doc`);
       document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      
+      // Cleanup after a small delay to ensure download starts
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
       
       toast.success("Silicon Valley Modern Word Document Exported!");
     } catch (err) {
