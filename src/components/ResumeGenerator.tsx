@@ -38,6 +38,8 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
   const { user } = useAuth();
   const [isGenerating, setIsGenerating] = useState(false);
   const [resume, setResume] = useState<GeneratedResume | null>(null);
+  const [coverLetter, setCoverLetter] = useState<string | null>(null);
+  const [isGeneratingCL, setIsGeneratingCL] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [profile, setProfile] = useState<UserProfileWithVault | null>(null);
   
@@ -843,6 +845,94 @@ RETURN ONLY VALID JSON:
     }
   };
 
+  const generateCoverLetter = async () => {
+    if (!resume || !editableResume) {
+      toast.error("Generate a resume first!");
+      return;
+    }
+    setIsGeneratingCL(true);
+    toast.loading("Synthesizing Cover Letter...", { id: "cl-gen" });
+
+    try {
+      const { data, error } = await supabase.functions.invoke("cover-letter", {
+        body: {
+          jd: jdTitle + (jdSkills?.length ? ` with skills: ${jdSkills.map(s => s.skill).join(", ")}` : ""),
+          resume: editableResume,
+          tone: tone
+        }
+      });
+
+      if (error) throw error;
+      
+      const content = data.choices?.[0]?.message?.content;
+      if (!content) throw new Error("AI returned empty content");
+
+      setCoverLetter(content);
+      toast.success("Elite Cover Letter Synthesized!", { id: "cl-gen" });
+    } catch (err) {
+      console.error("Cover Letter Error:", err);
+      toast.error("Failed to generate cover letter.", { id: "cl-gen" });
+    } finally {
+      setIsGeneratingCL(false);
+    }
+  };
+
+  const handleDownloadCL = (format: 'pdf' | 'doc') => {
+    if (!coverLetter) return;
+    const safeName = (editableHeader.fullName || profile?.full_name || "Resume").replace(/[^a-z0-9]/gi, '_');
+
+    if (format === 'doc') {
+      const content = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+        <head><meta charset='utf-8'><title>Cover Letter</title></head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.5; margin: 1in;">
+          <div style="text-align: center; margin-bottom: 30px;">
+            <h2 style="margin-bottom: 5px;">${editableHeader.fullName}</h2>
+            <p>${editableHeader.location} | ${editableHeader.phone} | ${editableHeader.email}</p>
+          </div>
+          <p>${new Date().toLocaleDateString()}</p>
+          <div style="white-space: pre-wrap;">${coverLetter}</div>
+        </body>
+        </html>
+      `;
+      const encodedContent = encodeURIComponent(content);
+      const dataUri = `data:application/vnd.ms-word;charset=utf-8,\ufeff${encodedContent}`;
+      const link = document.createElement('a');
+      link.href = dataUri;
+      link.setAttribute('download', `Lumina-Cover-Letter-${safeName}.doc`);
+      document.body.appendChild(link);
+      link.click();
+      setTimeout(() => document.body.removeChild(link), 200);
+    } else {
+      const pdf = new jsPDF();
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(11);
+      
+      let y = 20;
+      const margin = 20;
+      const pageWidth = pdf.internal.pageSize.width;
+      
+      // Header
+      pdf.setFontSize(16);
+      pdf.setFont("helvetica", "bold");
+      pdf.text(editableHeader.fullName, pageWidth/2, y, { align: "center" });
+      y += 8;
+      pdf.setFontSize(10);
+      pdf.setFont("helvetica", "normal");
+      pdf.text(`${editableHeader.location} | ${editableHeader.phone} | ${editableHeader.email}`, pageWidth/2, y, { align: "center" });
+      y += 15;
+      
+      pdf.text(new Date().toLocaleDateString(), margin, y);
+      y += 10;
+      
+      // Body
+      const lines = pdf.splitTextToSize(coverLetter, pageWidth - (margin * 2));
+      pdf.text(lines, margin, y);
+      
+      pdf.save(`Lumina-Cover-Letter-${safeName}.pdf`);
+    }
+  };
+
   return (
     <div className="glass-panel rounded-[3rem] p-6 lg:p-10 relative overflow-hidden group border-white/20">
       <div className="absolute top-0 right-0 p-16 opacity-5 scale-150 group-hover:opacity-10 transition-opacity duration-1000 pointer-events-none">
@@ -1207,6 +1297,10 @@ RETURN ONLY VALID JSON:
               onRegenerate={executeTacticalSynthesis}
               onDownloadPDF={handleDownloadPDF}
               onDownloadDOC={handleDownloadDOC}
+              coverLetter={coverLetter}
+              isGeneratingCL={isGeneratingCL}
+              onGenerateCL={generateCoverLetter}
+              onDownloadCL={handleDownloadCL}
             />
 
             <div className="flex justify-center pb-20">
