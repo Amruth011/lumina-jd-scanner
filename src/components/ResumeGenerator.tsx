@@ -31,6 +31,14 @@ interface ArchiveRecord {
   updated_at: string;
   content: GeneratedResume;
   header_data: ResumeHeader;
+  settings?: {
+    fontFamily: string;
+    nameFontSize: number;
+    headlineFontSize: number;
+    subHeadlineFontSize: number;
+    bodyFontSize: number;
+    tone: string;
+  };
 }
 
 export const ResumeGenerator = ({ jdTitle, jdSkills, companyName, forceTab }: ResumeGeneratorProps) => {
@@ -184,6 +192,16 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName, forceTab }: Re
     setResume(hydratedContent);
     setEditableResume(hydratedContent);
     setEditableHeader(record.header_data);
+    
+    if (record.settings) {
+      setFontFamily(record.settings.fontFamily as "Inter" | "Roboto" | "Merriweather" | "Arial");
+      setNameFontSize(record.settings.nameFontSize);
+      setHeadlineFontSize(record.settings.headlineFontSize);
+      setSubHeadlineFontSize(record.settings.subHeadlineFontSize);
+      setBodyFontSize(record.settings.bodyFontSize);
+      setTone(record.settings.tone as "Professional" | "Modern" | "Aggressive");
+    }
+    
     setIsOpen(true);
     setShowArchive(false);
     toast.success(`Loaded blueprint for ${record.job_title}`);
@@ -277,11 +295,13 @@ Candidate Profile: ${JSON.stringify(vaultItems.slice(0, 15).map(v => ({ title: v
     - PROJECTS: Technical builds, open-source contributions, or academic projects. (e.g., 'Kannada Book AI Agent').
     - PRODUCTS: Startups, SaaS products, or ventures founded by the user. (e.g., 'Lumina').
     - NO HALLUCINATIONS: Do NOT create fake professional experience from certifications or projects. If the user has only 1 job in their profile, show ONLY that 1 job in EXPERIENCE. 
-    - STRICT QUANTITY: If the profile provides N items for a category, you MUST generate exactly N items for that category in the output. Do NOT invent additional entries.
+    - STRICT QUANTITY: You MUST generate exactly the number of items provided in the "Candidate Profile" for each category. For example, if there is 1 experience entry provided, generate EXACTLY 1 in the JSON. If there are 3 projects, generate EXACTLY 3. 
+    - DO NOT invent additional entries to "fill space". 
     - DO NOT mix these categories. If an item is a project, it MUST stay in PROJECTS. If it is a startup, it MUST stay in PRODUCTS.
     - DO NOT include certifications/awards in any other section. Keep them in AWARDS or CERTIFICATIONS. (CRITICAL: 'AI Engineer for Data Scientists Associate' or anything from 'DataCamp' is a CERTIFICATION, NOT experience).
 - CUSTOM STRUCTURE MANDATE:
-    - You MUST follow this exact section sequence and ONLY include sections that are TRUE in this list: ${sectionOrder.filter(s => visibleSections[s]).join(', ')}.
+    - You MUST follow this exact section sequence: SUMMARY → EDUCATION → EXPERIENCE → PRODUCTS → PROJECTS → LEADERSHIP → SKILLS → AWARDS → CERTIFICATIONS.
+    - ONLY include sections that are TRUE in this list: ${sectionOrder.filter(s => visibleSections[s]).join(', ')}.
     - If a section like 'LEADERSHIP' or 'AWARDS' is NOT in this list, you MUST OMIT IT from the JSON response entirely.
 
 ### SCHEMA REQUIREMENTS:
@@ -609,7 +629,15 @@ Return ONLY a JSON object with this exact structure:
         content: editableResume,
         header_data: editableHeader,
         status: 'draft',
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
+        settings: {
+          fontFamily,
+          nameFontSize,
+          headlineFontSize,
+          subHeadlineFontSize,
+          bodyFontSize,
+          tone
+        }
       } as any, { onConflict: 'user_id,job_title' }).select("id"); // eslint-disable-line @typescript-eslint/no-explicit-any
 
       if (error) {
@@ -648,7 +676,7 @@ Return ONLY a JSON object with this exact structure:
           "Merriweather": "times",
           "Arial": "helvetica"
         };
-        pdf.setFont(fontMap[fontFamily] || "helvetica", isBold ? "bold" : "normal");
+        const currentFont = fontMap[fontFamily as keyof typeof fontMap] || "helvetica";
         pdf.setFontSize(size);
         pdf.setTextColor(color[0], color[1], color[2]);
         const lines = pdf.splitTextToSize(text, contentWidth);
@@ -696,29 +724,20 @@ Return ONLY a JSON object with this exact structure:
 
         // --- HEADER ---
         const navyBlue: [number, number, number] = [0, 71, 171];
-        pdf.setTextColor(...navyBlue);
-        pdf.setFont("helvetica", "bold");
-        pdf.setFontSize(22);
-        pdf.text(editableHeader.fullName.toUpperCase(), pageWidth / 2, y, { align: "center" });
-        y += 8;
-
-        pdf.setTextColor(30, 42, 58);
-        pdf.setFontSize(9);
-        pdf.setFont("helvetica", "normal");
-        const links = [
-          editableHeader.email,
-          editableHeader.linkedin?.replace(/^(https?:\/\/)?(www\.)?/, ''),
-          editableHeader.phone,
-          editableHeader.github?.replace(/^(https?:\/\/)?(www\.)?/, '')
-        ].filter(Boolean).join(" | ");
-        pdf.text(links, pageWidth / 2, y, { align: "center" });
-        y += 12;
+        const navyBlue: [number, number, number] = [0, 71, 171];
+        const fontMap = {
+          "Inter": "helvetica",
+          "Roboto": "helvetica",
+          "Merriweather": "times",
+          "Arial": "helvetica"
+        };
+        const currentFont = fontMap[fontFamily as keyof typeof fontMap] || "helvetica";
 
         const drawSectionHeader = (title: string) => {
           y += 2;
           pdf.setTextColor(...navyBlue);
-          pdf.setFont("helvetica", "bold");
-          pdf.setFontSize(10);
+          pdf.setFont(currentFont, "bold");
+          pdf.setFontSize(headlineFontSize);
           pdf.text(title.toUpperCase(), margin, y);
           y += 1.5;
           pdf.setDrawColor(...navyBlue);
@@ -732,8 +751,8 @@ Return ONLY a JSON object with this exact structure:
           if (editableResume.professional_summary) {
             drawSectionHeader("SUMMARY");
             pdf.setTextColor(0, 0, 0);
-            pdf.setFont("helvetica", "normal");
-            pdf.setFontSize(10);
+            pdf.setFont(currentFont, "normal");
+            pdf.setFontSize(bodyFontSize);
             const lines = pdf.splitTextToSize(editableResume.professional_summary, pageWidth - (margin * 2));
             pdf.text(lines, margin, y);
             y += (lines.length * 4.5) + 4;
@@ -750,16 +769,19 @@ Return ONLY a JSON object with this exact structure:
               const metadata = parts.slice(1).join(' | ');
 
               pdf.setTextColor(0, 0, 0);
-              pdf.setFont("helvetica", "bold");
-              pdf.setFontSize(11);
+              pdf.setFont(currentFont, "bold");
+              pdf.setFontSize(subHeadlineFontSize);
               pdf.text(school, margin, y);
+              pdf.setFont(currentFont, "normal");
+              pdf.setFontSize(bodyFontSize - 1);
               pdf.text("May 2027", pageWidth - margin, y, { align: "right" });
               y += 4.5;
-              pdf.setFont("helvetica", "italic");
-              pdf.setFontSize(10);
+              pdf.setFont(currentFont, "italic");
+              pdf.setFontSize(bodyFontSize);
               pdf.text(`${degree} ${metadata && `| ${metadata}`}`, margin, y);
-              pdf.setFont("helvetica", "normal");
-              pdf.text(localHeader.location || "Gainesville, FL", pageWidth - margin, y, { align: "right" });
+              pdf.setFont(currentFont, "normal");
+              pdf.setFontSize(bodyFontSize - 1);
+              pdf.text(editableHeader.location || "Gainesville, FL", pageWidth - margin, y, { align: "right" });
               y += 8;
             });
           }
@@ -772,24 +794,27 @@ Return ONLY a JSON object with this exact structure:
               const role = parts[0]?.trim() || "Role";
               const orgParts = parts[1]?.split('-') || [];
               const org = orgParts[0]?.trim() || "Organization";
-              const loc = orgParts[1]?.trim() || localHeader.location;
+              const loc = orgParts[1]?.trim() || editableHeader.location;
 
               pdf.setTextColor(0, 0, 0);
-              pdf.setFont("helvetica", "bold");
-              pdf.setFontSize(11);
+              pdf.setFont(currentFont, "bold");
+              pdf.setFontSize(subHeadlineFontSize);
               pdf.text(role, margin, y);
-              pdf.setFont("helvetica", "normal");
+              pdf.setFont(currentFont, "normal");
+              pdf.setFontSize(bodyFontSize - 1);
               pdf.text(exp.content || "Date – Present", pageWidth - margin, y, { align: "right" });
               y += 4.5;
-              pdf.setFont("helvetica", "italic");
-              pdf.setFontSize(10);
+              pdf.setFont(currentFont, "italic");
+              pdf.setFontSize(bodyFontSize);
               pdf.text(org, margin, y);
-              pdf.setFont("helvetica", "normal");
+              pdf.setFont(currentFont, "normal");
+              pdf.setFontSize(bodyFontSize - 1);
               pdf.text(loc || "", pageWidth - margin, y, { align: "right" });
               y += 5;
 
               exp.bullets?.forEach(bullet => {
-                pdf.setFont("helvetica", "normal");
+                pdf.setFont(currentFont, "normal");
+                pdf.setFontSize(bodyFontSize);
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
                 const lines = pdf.splitTextToSize(`• ${cleanBullet}`, pageWidth - (margin * 2) - 4);
                 pdf.text(lines, margin + 4, y);
@@ -805,18 +830,22 @@ Return ONLY a JSON object with this exact structure:
             editableResume.products.forEach(prod => {
               const [title, status] = prod.heading.split('-');
               pdf.setTextColor(0, 0, 0);
-              pdf.setFont("helvetica", "bold");
-              pdf.setFontSize(11);
+              pdf.setFont(currentFont, "bold");
+              pdf.setFontSize(subHeadlineFontSize);
               pdf.text(title?.trim() || "Product", margin, y);
               if (status) {
-                pdf.setFont("helvetica", "normal");
+                pdf.setFont(currentFont, "normal");
+                pdf.setFontSize(bodyFontSize);
                 pdf.text(` | ${status.trim()}`, margin + pdf.getTextWidth(title?.trim() || "Product"), y);
               }
+              pdf.setFont(currentFont, "normal");
+              pdf.setFontSize(bodyFontSize - 1);
               pdf.text(prod.content || "Operational", pageWidth - margin, y, { align: "right" });
               y += 5;
 
               prod.bullets?.forEach(bullet => {
-                pdf.setFont("helvetica", "normal");
+                pdf.setFont(currentFont, "normal");
+                pdf.setFontSize(bodyFontSize);
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
                 const lines = pdf.splitTextToSize(`• ${cleanBullet}`, pageWidth - (margin * 2) - 4);
                 pdf.text(lines, margin + 4, y);
@@ -832,18 +861,22 @@ Return ONLY a JSON object with this exact structure:
             editableResume.projects.forEach(proj => {
               const [title, stack] = proj.heading.split('-');
               pdf.setTextColor(0, 0, 0);
-              pdf.setFont("helvetica", "bold");
-              pdf.setFontSize(11);
+              pdf.setFont(currentFont, "bold");
+              pdf.setFontSize(subHeadlineFontSize);
               pdf.text(title?.trim() || "Project", margin, y);
               if (stack) {
-                pdf.setFont("helvetica", "normal");
+                pdf.setFont(currentFont, "normal");
+                pdf.setFontSize(bodyFontSize);
                 pdf.text(` | ${stack.trim()}`, margin + pdf.getTextWidth(title?.trim() || "Project"), y);
               }
+              pdf.setFont(currentFont, "normal");
+              pdf.setFontSize(bodyFontSize - 1);
               pdf.text(proj.content || "", pageWidth - margin, y, { align: "right" });
               y += 5;
 
               proj.bullets?.forEach(bullet => {
-                pdf.setFont("helvetica", "normal");
+                pdf.setFont(currentFont, "normal");
+                pdf.setFontSize(bodyFontSize);
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
                 const lines = pdf.splitTextToSize(`• ${cleanBullet}`, pageWidth - (margin * 2) - 4);
                 pdf.text(lines, margin + 4, y);
@@ -1200,6 +1233,28 @@ Return ONLY a JSON object with this exact structure:
                         <option value="Merriweather">Merriweather (Serif)</option>
                         <option value="Arial">Arial (Standard)</option>
                       </select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 bg-slate-50/50 p-6 rounded-[2rem] border border-slate-100">
+                    <h4 className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Granular Font Scaling (pt)</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-500">Name Size</label>
+                        <input type="number" value={nameFontSize} onChange={e => setNameFontSize(Number(e.target.value))} className="w-full bg-white border border-slate-100 rounded-xl px-4 py-2 text-xs font-bold" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-500">Headlines</label>
+                        <input type="number" value={headlineFontSize} onChange={e => setHeadlineFontSize(Number(e.target.value))} className="w-full bg-white border border-slate-100 rounded-xl px-4 py-2 text-xs font-bold" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-500">Sub-Headings</label>
+                        <input type="number" value={subHeadlineFontSize} onChange={e => setSubHeadlineFontSize(Number(e.target.value))} className="w-full bg-white border border-slate-100 rounded-xl px-4 py-2 text-xs font-bold" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-500">Body Text</label>
+                        <input type="number" value={bodyFontSize} onChange={e => setBodyFontSize(Number(e.target.value))} className="w-full bg-white border border-slate-100 rounded-xl px-4 py-2 text-xs font-bold" />
+                      </div>
                     </div>
                   </div>
 
@@ -1588,9 +1643,6 @@ Return ONLY a JSON object with this exact structure:
               header={editableHeader}
               vaultItems={vaultItems}
               isGenerating={isGenerating}
-              baseFontSize={baseFontSize}
-              lineSpacing={lineSpacing}
-              marginSize={marginSize}
               fontFamily={fontFamily}
               onUpdate={(updatedResume, updatedHeader) => {
                 setResume(updatedResume);
@@ -1605,6 +1657,10 @@ Return ONLY a JSON object with this exact structure:
               onGenerateCL={generateCoverLetter}
               onDownloadCL={handleDownloadCL}
               initialTab={forceTab}
+              nameFontSize={nameFontSize}
+              headlineFontSize={headlineFontSize}
+              subHeadlineFontSize={subHeadlineFontSize}
+              bodyFontSize={bodyFontSize}
             />
 
             <div className="flex justify-center pb-20">

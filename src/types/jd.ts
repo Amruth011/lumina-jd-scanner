@@ -208,12 +208,10 @@ export interface GeneratedResume {
   professional_summary: string;
   skills_section: string[];
   experience: GeneratedResumeSection[];
-  projects?: GeneratedResumeSection[];
-  products?: GeneratedResumeSection[];
-  leadership?: GeneratedResumeSection[];
   education: string[];
   certifications?: string[];
   awards?: string[];
+  products?: GeneratedResumeSection[];
 }
 
 // ── NEW: ATS Score Simulator types ──
@@ -240,6 +238,8 @@ export interface VaultItem {
   bullets: string[];
   skills: string[];
   is_quantified?: boolean; // Track if this entry has metrics/numbers
+  github_link?: string;
+  live_link?: string;
   created_at: string;
   updated_at: string;
 }

@@ -26,10 +26,10 @@ const getFieldLabels = (type?: VaultItemType) => {
       descStr: "Technical Details & Architecture", descEx: "Describe the systems built, technologies used, and functional impact..."
     };
     case 'product': return {
-      titleStr: "Product/Startup Name", titleEx: "e.g. Lumina JD Scanner",
-      orgStr: "Venture Status", orgEx: "e.g. Stealth Startup, Alpha Phase",
-      periodStr: "Operational Timeline", periodEx: "e.g. Feb 2023 - Present",
-      descStr: "Market Impact & Vision", descEx: "Describe the problem solved, user base, growth metrics, and future roadmap..."
+      titleStr: "Venture / Product Name", titleEx: "e.g. Lumina Resume Engine",
+      orgStr: "Product Role / Ownership", orgEx: "e.g. Founder & CTO",
+      periodStr: "Operational Lifecycle", periodEx: "e.g. Feb 2023 - Present",
+      descStr: "Technical Moat & Market Impact", descEx: "Detail the problem solved, user metrics (DAU/MAU), tech stack used, and market differentiation..."
     };
     case 'certification': return {
       titleStr: "Certificate Name", titleEx: "e.g. AWS Solutions Architect Professional",
@@ -567,7 +567,10 @@ RETURN JSON FORMAT ONLY:
         }
       }
 
-      toast.success("Profile entry saved.");
+      toast.success(`${editingItem.title || "Entry"} archived successfully.`, {
+        description: "Your master profile has been synchronized.",
+        icon: <Save className="w-4 h-4 text-emerald-500" />
+      });
       localStorage.removeItem(`draft_vault_item_${user.id}`);
       setEditingItem(null);
       fetchData();
@@ -582,9 +585,13 @@ RETURN JSON FORMAT ONLY:
   const handleDeleteItem = async (id: string) => {
     if (!confirm("Are you sure you want to remove this item from your profile?")) return;
     try {
+      const deletedItem = items.find(i => i.id === id);
       const { error } = await supabase.from("master_vault").delete().eq("id", id);
       if (error) throw error;
       fetchData();
+      toast.success(`${deletedItem?.title || "Entry"} removed from vault.`, {
+        icon: <Trash2 className="w-4 h-4 text-red-500" />
+      });
     } catch (err) {
       console.error(err);
       toast.error("Failed to delete item.");
@@ -1347,6 +1354,29 @@ RETURN JSON FORMAT ONLY:
                     placeholder="Vector DBs, LLM Fine-tuning, PyTorch..."
                   />
                 </div>
+
+                {editingItem.type === 'project' && (
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">GitHub Link (Optional)</label>
+                      <input
+                        className="w-full bg-muted/20 border border-border/40 rounded-2xl px-5 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
+                        value={editingItem.github_link || ""}
+                        onChange={(e) => setEditingItem({ ...editingItem, github_link: e.target.value })}
+                        placeholder="github.com/your-username/repo"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] uppercase tracking-widest font-black text-muted-foreground ml-1">Live Demo Link (Optional)</label>
+                      <input
+                        className="w-full bg-muted/20 border border-border/40 rounded-2xl px-5 py-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
+                        value={editingItem.live_link || ""}
+                        onChange={(e) => setEditingItem({ ...editingItem, live_link: e.target.value })}
+                        placeholder="your-project.vercel.app"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-end gap-4 pt-10 mt-6 border-t border-white/5">

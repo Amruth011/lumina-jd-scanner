@@ -49,15 +49,11 @@ interface ResumePreviewProps {
   onDownloadPDF: () => void;
   onDownloadDOC: () => void;
   isGenerating: boolean;
-  baseFontSize: number;
-  lineSpacing: number;
-  marginSize: number;
-  fontFamily: string;
-  coverLetter?: string | null;
-  isGeneratingCL?: boolean;
-  onGenerateCL?: () => void;
-  onDownloadCL?: (format: 'pdf' | 'doc') => void;
   initialTab?: 'resume' | 'cover-letter';
+  nameFontSize: number;
+  headlineFontSize: number;
+  subHeadlineFontSize: number;
+  bodyFontSize: number;
 }
 
 export const ResumePreview = ({ 
@@ -69,15 +65,16 @@ export const ResumePreview = ({
   onDownloadPDF,
   onDownloadDOC,
   isGenerating,
-  baseFontSize,
-  lineSpacing,
-  marginSize,
   fontFamily,
   coverLetter,
   isGeneratingCL,
   onGenerateCL,
   onDownloadCL,
-  initialTab
+  initialTab,
+  nameFontSize,
+  headlineFontSize,
+  subHeadlineFontSize,
+  bodyFontSize
 }: ResumePreviewProps) => {
   // ── Core Data State ──
   const [localResume, setLocalResume] = useState<GeneratedResume>(resume);
@@ -102,7 +99,7 @@ export const ResumePreview = ({
       const a4HeightPx = (resumeRef.current.offsetWidth * 297) / 210;
       setPageCount(Math.ceil(height / a4HeightPx));
     }
-  }, [localResume, localHeader, lineSpacing, marginSize, baseFontSize]);
+  }, [localResume, localHeader, bodyFontSize, nameFontSize]);
 
   const handleSave = () => {
     onUpdate(localResume, localHeader);
@@ -176,10 +173,11 @@ export const ResumePreview = ({
 
   // ── Dynamic Style Mappings ──
   const fontSizes = {
-    name: `${baseFontSize + 14}px`,
-    header: `${baseFontSize + 2}px`,
-    body: `${baseFontSize}px`,
-    meta: `11px`,
+    name: `${nameFontSize}px`,
+    header: `${headlineFontSize}px`,
+    subHeader: `${subHeadlineFontSize}px`,
+    body: `${bodyFontSize}px`,
+    meta: `${bodyFontSize}px`,
   };
 
   const getHtmlFont = (font: string) => {
@@ -506,7 +504,7 @@ export const ResumePreview = ({
                       {localResume.professional_summary && (
                         <section className="space-y-2">
                           <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
-                            <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.meta }}>Professional Summary</h4>
+                            <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.header }}>Professional Summary</h4>
                           </div>
                           <p className="text-[#1E2A3A]/90 leading-relaxed" style={{ fontSize: fontSizes.body }}>
                             {localResume.professional_summary}
@@ -517,7 +515,7 @@ export const ResumePreview = ({
                       {/* Education First */}
                       <section className="space-y-2">
                         <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
-                          <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.meta }}>Education</h4>
+                          <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.header }}>Education</h4>
                         </div>
                         <div className="space-y-4">
                           {(localResume.education || []).map((edu, i) => {
@@ -549,7 +547,7 @@ export const ResumePreview = ({
                       {/* Experience */}
                       <section className="space-y-2">
                         <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
-                          <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.meta }}>Experience</h4>
+                          <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.header }}>Experience</h4>
                         </div>
                         <div className="space-y-5">
                           {(localResume.experience || []).map((exp, expIdx) => {
@@ -560,7 +558,7 @@ export const ResumePreview = ({
                             
                             return (
                               <div key={expIdx} className="space-y-1">
-                                <div className="flex justify-between items-baseline font-bold" style={{ fontSize: fontSizes.body }}>
+                                <div className="flex justify-between items-baseline font-bold" style={{ fontSize: fontSizes.subHeader }}>
                                   <span>{role}</span>
                                   <span className="text-[11px]">{exp.content || "Date – Present"}</span>
                                 </div>
@@ -581,47 +579,18 @@ export const ResumePreview = ({
                         </div>
                       </section>
 
-                      {/* Projects */}
-                      {(localResume.projects && localResume.projects.length > 0) && (
-                        <section className="space-y-2">
-                          <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
-                            <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.meta }}>Projects</h4>
-                          </div>
-                          <div className="space-y-4">
-                            {localResume.projects?.map((proj, projIdx) => {
-                              const [title, stack] = proj.heading.split('-');
-                              return (
-                                <div key={projIdx} className="space-y-1">
-                                  <div className="flex justify-between items-baseline font-bold" style={{ fontSize: fontSizes.body }}>
-                                    <span>{title?.trim()} <span className="font-normal opacity-60">| {stack?.trim()}</span></span>
-                                    <span className="text-[11px] font-normal">{proj.content || "Ongoing"}</span>
-                                  </div>
-                                  <ul className="list-disc ml-5 space-y-1">
-                                    {proj.bullets?.map((bullet, bullIdx) => (
-                                      <li key={bullIdx} className="text-[#1E2A3A]/90 leading-tight" style={{ fontSize: fontSizes.body }}>
-                                        {bullet.replace(/^[•\s*-]+/, '').trim()}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </section>
-                      )}
-
                       {/* Products / Startups */}
                       {(localResume.products && localResume.products.length > 0) && (
                         <section className="space-y-2">
                           <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
-                            <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.meta }}>Products & Ventures</h4>
+                            <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.header }}>Products & Ventures</h4>
                           </div>
                           <div className="space-y-4">
                             {localResume.products?.map((prod, prodIdx) => {
                               const [title, status] = prod.heading.split('-');
                               return (
                                 <div key={prodIdx} className="space-y-1">
-                                  <div className="flex justify-between items-baseline font-bold" style={{ fontSize: fontSizes.body }}>
+                                  <div className="flex justify-between items-baseline font-bold" style={{ fontSize: fontSizes.subHeader }}>
                                     <span>{title?.trim()} <span className="font-normal opacity-60">| {status?.trim()}</span></span>
                                     <span className="text-[11px] font-normal">{prod.content || "Operational"}</span>
                                   </div>
@@ -639,16 +608,45 @@ export const ResumePreview = ({
                         </section>
                       )}
 
+                      {/* Projects */}
+                      {(localResume.projects && localResume.projects.length > 0) && (
+                        <section className="space-y-2">
+                          <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
+                            <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.header }}>Projects</h4>
+                          </div>
+                          <div className="space-y-4">
+                            {localResume.projects?.map((proj, projIdx) => {
+                              const [title, stack] = proj.heading.split('-');
+                              return (
+                                <div key={projIdx} className="space-y-1">
+                                  <div className="flex justify-between items-baseline font-bold" style={{ fontSize: fontSizes.subHeader }}>
+                                    <span>{title?.trim()} <span className="font-normal opacity-60">| {stack?.trim()}</span></span>
+                                    <span className="text-[11px] font-normal">{proj.content || "Ongoing"}</span>
+                                  </div>
+                                  <ul className="list-disc ml-5 space-y-1">
+                                    {proj.bullets?.map((bullet, bullIdx) => (
+                                      <li key={bullIdx} className="text-[#1E2A3A]/90 leading-tight" style={{ fontSize: fontSizes.body }}>
+                                        {bullet.replace(/^[•\s*-]+/, '').trim()}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </section>
+                      )}
+
                       {/* Leadership */}
                       {(localResume.leadership && localResume.leadership.length > 0) && (
                         <section className="space-y-2">
                           <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
-                            <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.meta }}>Leadership</h4>
+                            <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.header }}>Leadership</h4>
                           </div>
                           <div className="space-y-4">
                             {localResume.leadership?.map((lead, idx) => (
                               <div key={idx} className="space-y-1">
-                                <div className="flex justify-between items-baseline font-bold" style={{ fontSize: fontSizes.body }}>
+                                <div className="flex justify-between items-baseline font-bold" style={{ fontSize: fontSizes.subHeader }}>
                                   <span>{lead.heading}</span>
                                   <span className="text-[11px] font-normal">{lead.content || "Date – Present"}</span>
                                 </div>
@@ -668,7 +666,7 @@ export const ResumePreview = ({
                       {/* Skills */}
                       <section className="space-y-2">
                         <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
-                          <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.meta }}>Skills</h4>
+                          <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.header }}>Skills</h4>
                         </div>
                         <div className="space-y-1">
                           {(localResume.skills_section || []).map((skillLine, i) => {
@@ -686,7 +684,7 @@ export const ResumePreview = ({
                       {(localResume.certifications && localResume.certifications.length > 0) && (
                         <section className="space-y-2">
                           <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
-                            <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.meta }}>Certifications</h4>
+                            <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.header }}>Certifications</h4>
                           </div>
                           <div className="space-y-1">
                             {localResume.certifications?.map((cert, i) => (
@@ -702,7 +700,7 @@ export const ResumePreview = ({
                       {(localResume.awards && localResume.awards.length > 0) && (
                         <section className="space-y-2">
                           <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
-                            <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.meta }}>Awards</h4>
+                            <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.header }}>Awards</h4>
                           </div>
                           <div className="space-y-1">
                             {localResume.awards?.map((award, i) => (
