@@ -583,19 +583,26 @@ RETURN JSON FORMAT ONLY:
   };
 
   const handleDeleteItem = async (id: string) => {
-    if (!confirm("Are you sure you want to remove this item from your profile?")) return;
-    try {
-      const deletedItem = items.find(i => i.id === id);
-      const { error } = await supabase.from("master_vault").delete().eq("id", id);
-      if (error) throw error;
-      fetchData();
-      toast.success(`${deletedItem?.title || "Entry"} removed from vault.`, {
-        icon: <Trash2 className="w-4 h-4 text-red-500" />
-      });
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to delete item.");
-    }
+    toast.error("Are you sure you want to remove this item?", {
+      action: {
+        label: "Delete",
+        onClick: async () => {
+          try {
+            const deletedItem = items.find(i => i.id === id);
+            const { error } = await supabase.from("master_vault").delete().eq("id", id);
+            if (error) throw error;
+            fetchData();
+            toast.success(`${deletedItem?.title || "Entry"} removed from vault.`, {
+              icon: <Trash2 className="w-4 h-4 text-red-500" />
+            });
+          } catch (err) {
+            console.error(err);
+            toast.error("Failed to delete item.");
+          }
+        }
+      },
+      duration: 5000,
+    });
   };
 
   if (isLoading) {
@@ -1005,15 +1012,21 @@ RETURN JSON FORMAT ONLY:
             </div>
             <div className="flex items-center gap-3">
               <button
-                onClick={async () => {
-                  if (confirm("CLEAR EDUCATION: This will permanently delete ALL academic entries. Proceed?")) {
-                    const { error } = await supabase.from("master_vault").delete().eq("user_id", user?.id).eq("type", "education");
-                    if (error) toast.error("Failed to clear education.");
-                    else {
-                      fetchData();
-                      toast.success("Academic pedigree cleared.");
-                    }
-                  }
+                onClick={() => {
+                  toast.error("CLEAR EDUCATION: This will permanently delete ALL academic entries.", {
+                    action: {
+                      label: "Proceed",
+                      onClick: async () => {
+                        const { error } = await supabase.from("master_vault").delete().eq("user_id", user?.id).eq("type", "education");
+                        if (error) toast.error("Failed to clear education.");
+                        else {
+                          fetchData();
+                          toast.success("Academic pedigree cleared.");
+                        }
+                      }
+                    },
+                    duration: 5000,
+                  });
                 }}
                 className="text-[9px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 transition-colors"
               >
@@ -1059,15 +1072,21 @@ RETURN JSON FORMAT ONLY:
             </div>
             <div className="flex items-center gap-2">
               <button
-                onClick={async () => {
-                  if (confirm("CLEAR PROJECTS: This will permanently delete ALL technical projects. Proceed?")) {
-                    const { error } = await supabase.from("master_vault").delete().eq("user_id", user?.id).eq("type", "project");
-                    if (error) toast.error("Failed to clear projects.");
-                    else {
-                      fetchData();
-                      toast.success("Technical projects cleared.");
-                    }
-                  }
+                onClick={() => {
+                  toast.error("CLEAR PROJECTS: This will permanently delete ALL technical projects.", {
+                    action: {
+                      label: "Proceed",
+                      onClick: async () => {
+                        const { error } = await supabase.from("master_vault").delete().eq("user_id", user?.id).eq("type", "project");
+                        if (error) toast.error("Failed to clear projects.");
+                        else {
+                          fetchData();
+                          toast.success("Technical projects cleared.");
+                        }
+                      }
+                    },
+                    duration: 5000,
+                  });
                 }}
                 className="text-[9px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 transition-colors"
               >
@@ -1101,15 +1120,21 @@ RETURN JSON FORMAT ONLY:
             </div>
             <div className="flex items-center gap-2">
               <button
-                onClick={async () => {
-                  if (confirm("CLEAR PRODUCTS: This will permanently delete ALL product/startup entries. Proceed?")) {
-                    const { error } = await supabase.from("master_vault").delete().eq("user_id", user?.id).eq("type", "product");
-                    if (error) toast.error("Failed to clear products.");
-                    else {
-                      fetchData();
-                      toast.success("Product entries cleared.");
-                    }
-                  }
+                onClick={() => {
+                  toast.error("CLEAR PRODUCTS: This will permanently delete ALL product/startup entries.", {
+                    action: {
+                      label: "Proceed",
+                      onClick: async () => {
+                        const { error } = await supabase.from("master_vault").delete().eq("user_id", user?.id).eq("type", "product");
+                        if (error) toast.error("Failed to clear products.");
+                        else {
+                          fetchData();
+                          toast.success("Product entries cleared.");
+                        }
+                      }
+                    },
+                    duration: 5000,
+                  });
                 }}
                 className="text-[9px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 transition-colors"
               >
@@ -1143,15 +1168,21 @@ RETURN JSON FORMAT ONLY:
             </div>
             <div className="flex items-center gap-2">
               <button
-                onClick={async () => {
-                  if (confirm("CLEAR CREDENTIALS: This will permanently delete ALL certifications and awards. Proceed?")) {
-                    const { error } = await supabase.from("master_vault").delete().eq("user_id", user?.id).eq("type", "certification");
-                    if (error) toast.error("Failed to clear credentials.");
-                    else {
-                      fetchData();
-                      toast.success("Credentials cleared.");
-                    }
-                  }
+                onClick={() => {
+                  toast.error("CLEAR CREDENTIALS: This will permanently delete ALL certifications and awards.", {
+                    action: {
+                      label: "Proceed",
+                      onClick: async () => {
+                        const { error } = await supabase.from("master_vault").delete().eq("user_id", user?.id).eq("type", "certification");
+                        if (error) toast.error("Failed to clear credentials.");
+                        else {
+                          fetchData();
+                          toast.success("Credentials cleared.");
+                        }
+                      }
+                    },
+                    duration: 5000,
+                  });
                 }}
                 className="text-[9px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 transition-colors"
               >
@@ -1185,15 +1216,21 @@ RETURN JSON FORMAT ONLY:
             </div>
             <div className="flex items-center gap-2">
               <button
-                onClick={async () => {
-                  if (confirm("CLEAR LEADERSHIP: This will permanently delete ALL leadership entries. Proceed?")) {
-                    const { error } = await supabase.from("master_vault").delete().eq("user_id", user?.id).eq("type", "leadership");
-                    if (error) toast.error("Failed to clear leadership.");
-                    else {
-                      fetchData();
-                      toast.success("Leadership entries cleared.");
-                    }
-                  }
+                onClick={() => {
+                  toast.error("CLEAR LEADERSHIP: This will permanently delete ALL leadership entries.", {
+                    action: {
+                      label: "Proceed",
+                      onClick: async () => {
+                        const { error } = await supabase.from("master_vault").delete().eq("user_id", user?.id).eq("type", "leadership");
+                        if (error) toast.error("Failed to clear leadership.");
+                        else {
+                          fetchData();
+                          toast.success("Leadership entries cleared.");
+                        }
+                      }
+                    },
+                    duration: 5000,
+                  });
                 }}
                 className="text-[9px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 transition-colors"
               >
@@ -1227,15 +1264,21 @@ RETURN JSON FORMAT ONLY:
             </div>
             <div className="flex items-center gap-2">
               <button
-                onClick={async () => {
-                  if (confirm("CLEAR AWARDS: This will permanently delete ALL award entries. Proceed?")) {
-                    const { error } = await supabase.from("master_vault").delete().eq("user_id", user?.id).eq("type", "award");
-                    if (error) toast.error("Failed to clear awards.");
-                    else {
-                      fetchData();
-                      toast.success("Award entries cleared.");
-                    }
-                  }
+                onClick={() => {
+                  toast.error("CLEAR AWARDS: This will permanently delete ALL award entries.", {
+                    action: {
+                      label: "Proceed",
+                      onClick: async () => {
+                        const { error } = await supabase.from("master_vault").delete().eq("user_id", user?.id).eq("type", "award");
+                        if (error) toast.error("Failed to clear awards.");
+                        else {
+                          fetchData();
+                          toast.success("Award entries cleared.");
+                        }
+                      }
+                    },
+                    duration: 5000,
+                  });
                 }}
                 className="text-[9px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 transition-colors"
               >
@@ -1285,9 +1328,8 @@ RETURN JSON FORMAT ONLY:
                 </div>
                 <button
                   onClick={() => {
-                    if (confirm("Close without saving? Unsaved changes will be held in draft.")) {
-                      setEditingItem(null);
-                    }
+                    setEditingItem(null);
+                    toast.info("Unsaved changes held in draft.", { duration: 3000 });
                   }}
                   className="p-3 rounded-2xl hover:bg-muted transition-all"
                 >
@@ -1382,10 +1424,16 @@ RETURN JSON FORMAT ONLY:
               <div className="flex justify-end gap-4 pt-10 mt-6 border-t border-white/5">
                 <button
                   onClick={() => {
-                    if (confirm("Discard draft permanently? All typed content in this form will be erased.")) {
-                      localStorage.removeItem(`draft_vault_item_${user?.id}`);
-                      setEditingItem(null);
-                    }
+                    toast.error("Discard draft permanently? All typed content will be erased.", {
+                      action: {
+                        label: "Discard",
+                        onClick: () => {
+                          localStorage.removeItem(`draft_vault_item_${user?.id}`);
+                          setEditingItem(null);
+                        }
+                      },
+                      duration: 5000,
+                    });
                   }}
                   className="px-8 py-4 rounded-2xl text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground hover:bg-muted/30 transition-all"
                 >
