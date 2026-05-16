@@ -12,6 +12,7 @@ interface ResumeGeneratorProps {
   jdTitle: string;
   jdSkills: Skill[];
   companyName?: string;
+  forceTab?: 'resume' | 'cover-letter';
 }
 
 interface ResumeHeader {
@@ -32,7 +33,7 @@ interface ArchiveRecord {
   header_data: ResumeHeader;
 }
 
-export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGeneratorProps) => {
+export const ResumeGenerator = ({ jdTitle, jdSkills, companyName, forceTab }: ResumeGeneratorProps) => {
   console.log("ResumeGenerator: Rendering with props", { jdTitle, jdSkills: jdSkills?.length, companyName });
   
   const { user } = useAuth();
@@ -40,7 +41,7 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName }: ResumeGenera
   const [resume, setResume] = useState<GeneratedResume | null>(null);
   const [coverLetter, setCoverLetter] = useState<string | null>(null);
   const [isGeneratingCL, setIsGeneratingCL] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(!!forceTab);
   const [profile, setProfile] = useState<UserProfileWithVault | null>(null);
   
   useEffect(() => {
@@ -1301,6 +1302,7 @@ RETURN ONLY VALID JSON:
               isGeneratingCL={isGeneratingCL}
               onGenerateCL={generateCoverLetter}
               onDownloadCL={handleDownloadCL}
+              initialTab={forceTab}
             />
 
             <div className="flex justify-center pb-20">

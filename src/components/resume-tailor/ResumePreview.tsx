@@ -56,6 +56,7 @@ interface ResumePreviewProps {
   isGeneratingCL?: boolean;
   onGenerateCL?: () => void;
   onDownloadCL?: (format: 'pdf' | 'doc') => void;
+  initialTab?: 'resume' | 'cover-letter';
 }
 
 export const ResumePreview = ({ 
@@ -74,7 +75,8 @@ export const ResumePreview = ({
   coverLetter,
   isGeneratingCL,
   onGenerateCL,
-  onDownloadCL
+  onDownloadCL,
+  initialTab
 }: ResumePreviewProps) => {
   // ── Core Data State ──
   const [localResume, setLocalResume] = useState<GeneratedResume>(resume);
@@ -83,7 +85,7 @@ export const ResumePreview = ({
   // ── UI Logic State ──
   const [openSection, setOpenSection] = useState<string | null>("profile");
   const [showVaultPicker, setShowVaultPicker] = useState<{ section: 'experience' | 'projects' | 'education' | 'certifications', index?: number } | null>(null);
-  const [activeTab, setActiveTab] = useState<'resume' | 'cover-letter'>('resume');
+  const [activeTab, setActiveTab] = useState<'resume' | 'cover-letter'>(initialTab || 'resume');
   
   const resumeRef = useRef<HTMLDivElement>(null);
   const [pageCount, setPageCount] = useState(1);

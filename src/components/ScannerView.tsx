@@ -218,6 +218,7 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
                     <JdActionCta 
                       onCheckResume={() => handleTabSwitch("analysis")} 
                       onGenerateResume={() => handleTabSwitch("generator")}
+                      onGenerateCoverLetter={() => handleTabSwitch("cover-letter")}
                     />
 
                   </motion.div>
@@ -294,6 +295,32 @@ export const ScannerView = ({ activeTab = "decode", onTabChange }: ScannerViewPr
                 icon="generator"
                 title="Signal Lost"
                 description="The Resume Generator requires a Job Description signal to structure its outputs."
+                actionLabel="Return to Decoder"
+                onAction={() => handleTabSwitch("decode")}
+              />
+            )}
+          </motion.div>
+        ) : activeTab === "cover-letter" ? (
+          <motion.div
+            key="cover-letter"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            className="space-y-16"
+          >
+            {results ? (
+              <div className="space-y-12">
+                <ResumeGenerator
+                  jdTitle={results.title}
+                  jdSkills={results.skills}
+                  forceTab="cover-letter"
+                />
+              </div>
+            ) : (
+              <EmptyState 
+                icon="generator"
+                title="Signal Lost"
+                description="The Cover Letter Generator requires a Job Description signal to structure its outputs."
                 actionLabel="Return to Decoder"
                 onAction={() => handleTabSwitch("decode")}
               />

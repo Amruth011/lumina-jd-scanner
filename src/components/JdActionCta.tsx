@@ -1,13 +1,14 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles, Mail } from "lucide-react";
 
 interface JdActionCtaProps {
   onCheckResume: () => void;
   onGenerateResume: () => void;
+  onGenerateCoverLetter: () => void;
 }
 
-export const JdActionCta = ({ onCheckResume, onGenerateResume }: JdActionCtaProps) => {
+export const JdActionCta = ({ onCheckResume, onGenerateResume, onGenerateCoverLetter }: JdActionCtaProps) => {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 30 }}
@@ -62,6 +63,16 @@ export const JdActionCta = ({ onCheckResume, onGenerateResume }: JdActionCtaProp
           >
             Tailor My Resume
             <Sparkles size={16} className="group-hover:rotate-12 transition-transform" />
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={onGenerateCoverLetter}
+            className="group flex items-center gap-4 px-10 py-4 rounded-full bg-slate-950 border-2 border-white/10 text-white text-[12px] font-black uppercase tracking-widest hover:bg-white hover:text-slate-950 transition-all shadow-2xl"
+          >
+            Synthesize Cover Letter
+            <Mail size={16} className="group-hover:scale-110 transition-transform" />
           </motion.button>
         </div>
       </div>
