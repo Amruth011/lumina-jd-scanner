@@ -175,10 +175,10 @@ export const ResumePreview = ({
 
   // ── Dynamic Style Mappings ──
   const fontSizes = {
-    name: `${baseFontSize + 10}px`,
-    header: `${baseFontSize + 4}px`,
+    name: `${baseFontSize + 14}px`,
+    header: `${baseFontSize + 2}px`,
     body: `${baseFontSize}px`,
-    meta: `10px`,
+    meta: `11px`,
   };
 
   const getHtmlFont = (font: string) => {
@@ -364,6 +364,51 @@ export const ResumePreview = ({
               </CollapsibleSection>
 
               <CollapsibleSection 
+                title="Leadership" 
+                icon={User} 
+                isOpen={openSection === "leadership"} 
+                onToggle={() => setOpenSection(openSection === "leadership" ? null : "leadership")}
+              >
+                <div className="space-y-4">
+                  {(localResume.leadership || []).map((lead, idx) => (
+                    <div key={idx} className="p-4 rounded-xl bg-slate-50/50 border border-border/10 space-y-3 relative group/lead">
+                      <button onClick={() => setLocalResume({...localResume, leadership: (localResume.leadership || []).filter((_, i) => i !== idx)})} className="absolute top-3 right-3 p-1.5 text-red-500 opacity-0 group-hover/lead:opacity-100 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={12} /></button>
+                      <input value={lead.heading} onChange={(e) => {
+                        const newLead = [...(localResume.leadership || [])];
+                        newLead[idx] = { ...newLead[idx], heading: e.target.value };
+                        setLocalResume({ ...localResume, leadership: newLead });
+                      }} className="w-full bg-transparent font-bold text-sm outline-none border-b border-transparent focus:border-lumina-teal/20" />
+                      <div className="space-y-2">
+                        {lead.bullets?.map((bullet, bullIdx) => (
+                          <div key={bullIdx} className="flex gap-2 items-start group/bull">
+                            <textarea value={bullet} onChange={(e) => {
+                              const newLead = [...(localResume.leadership || [])];
+                              const newBullets = [...(newLead[idx].bullets || [])];
+                              newBullets[bullIdx] = e.target.value;
+                              newLead[idx] = { ...newLead[idx], bullets: newBullets };
+                              setLocalResume({ ...localResume, leadership: newLead });
+                            }} className="flex-1 bg-white/50 rounded-xl px-3 py-1.5 text-[11px] font-body outline-none min-h-[36px] border border-transparent focus:border-lumina-teal/20" />
+                            <button onClick={() => {
+                              const newLead = [...(localResume.leadership || [])];
+                              const newBullets = (newLead[idx].bullets || []).filter((_, i) => i !== bullIdx);
+                              newLead[idx] = { ...newLead[idx], bullets: newBullets };
+                              setLocalResume({ ...localResume, leadership: newLead });
+                            }} className="p-1.5 text-red-500 opacity-0 group-hover/bull:opacity-100"><Minus size={10} /></button>
+                          </div>
+                        ))}
+                        <button onClick={() => {
+                          const newLead = [...(localResume.leadership || [])];
+                          const newBullets = [...(newLead[idx].bullets || []), "New leadership achievement..."];
+                          newLead[idx] = { ...newLead[idx], bullets: newBullets };
+                          setLocalResume({ ...localResume, leadership: newLead });
+                        }} className="text-[8px] font-bold text-lumina-teal flex items-center gap-1 uppercase tracking-widest"><Plus size={10} /> Add Bullet</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CollapsibleSection>
+
+              <CollapsibleSection 
                 title="Education" 
                 icon={GraduationCap} 
                 isOpen={openSection === "education"} 
@@ -381,6 +426,27 @@ export const ResumePreview = ({
                       <button onClick={() => setLocalResume({...localResume, education: (localResume.education || []).filter((_, idx) => idx !== i)})} className="p-2 text-red-400"><Minus size={12}/></button>
                     </div>
                   ))}
+                </div>
+              </CollapsibleSection>
+
+              <CollapsibleSection 
+                title="Awards" 
+                icon={Award} 
+                isOpen={openSection === "awards"} 
+                onToggle={() => setOpenSection(openSection === "awards" ? null : "awards")}
+              >
+                <div className="space-y-2">
+                  {(localResume.awards || []).map((award, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <input value={award} onChange={(e) => {
+                        const newAwards = [...(localResume.awards || [])];
+                        newAwards[i] = e.target.value;
+                        setLocalResume({ ...localResume, awards: newAwards });
+                      }} className="flex-1 bg-slate-50 rounded-xl px-4 py-2 text-[11px] font-medium outline-none" />
+                      <button onClick={() => setLocalResume({...localResume, awards: (localResume.awards || []).filter((_, idx) => idx !== i)})} className="p-2 text-red-400"><Minus size={12}/></button>
+                    </div>
+                  ))}
+                  <button onClick={() => setLocalResume({...localResume, awards: [...(localResume.awards || []), "New Award Name"]})} className="text-[8px] font-bold text-lumina-teal flex items-center gap-1 uppercase tracking-widest pt-2"><Plus size={10} /> Add Award</button>
                 </div>
               </CollapsibleSection>
             </div>
@@ -406,119 +472,189 @@ export const ResumePreview = ({
                 >
                   <div className="space-y-8">
                     {/* Header */}
-                    <div className="text-center space-y-3 border-b border-[#1E2A3A]/5 pb-8 mb-8">
-                      <h1 className="font-bold text-[#1E2A3A] tracking-tighter uppercase leading-tight" style={{ fontSize: fontSizes.name }}>
+                    <div className="text-center space-y-2 mb-8">
+                      <h1 className="font-bold tracking-tight uppercase" style={{ fontSize: fontSizes.name, color: '#0047AB' }}>
                         {localHeader.fullName || "Your Name"}
                       </h1>
-                      <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-1 text-[#1E2A3A]/50 font-medium" style={{ fontSize: fontSizes.meta }}>
-                        {localHeader.location && <div className="flex items-center gap-1.5"><MapPin size={10} className="text-lumina-teal/40" /> {localHeader.location}</div>}
-                        {localHeader.phone && <div className="flex items-center gap-1.5"><Phone size={10} className="text-lumina-teal/40" /> {localHeader.phone}</div>}
-                        {localHeader.email && <div className="flex items-center gap-1.5"><Mail size={10} className="text-lumina-teal/40" /> {localHeader.email}</div>}
-                      </div>
-                      <div className="flex flex-wrap justify-center items-center gap-6 font-black uppercase tracking-[0.2em] text-lumina-teal/60 pt-1" style={{ fontSize: fontSizes.meta }}>
-                        {localHeader.linkedin && <div className="flex items-center gap-1.5"><Linkedin size={9} /> {localHeader.linkedin.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '')}</div>}
-                        {localHeader.github && <div className="flex items-center gap-1.5"><Github size={9} /> {localHeader.github.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '')}</div>}
-                        {localHeader.portfolio && <div className="flex items-center gap-1.5"><Globe size={9} /> {localHeader.portfolio.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '')}</div>}
+                      <div className="flex flex-wrap justify-center items-center gap-x-2 text-[#1E2A3A] font-medium" style={{ fontSize: fontSizes.meta }}>
+                        {localHeader.email && <span>{localHeader.email.toLowerCase()}</span>}
+                        {localHeader.linkedin && (
+                          <>
+                            <span className="opacity-20">|</span>
+                            <span>{localHeader.linkedin.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '')}</span>
+                          </>
+                        )}
+                        {localHeader.phone && (
+                          <>
+                            <span className="opacity-20">|</span>
+                            <span>{localHeader.phone}</span>
+                          </>
+                        )}
+                        {localHeader.github && (
+                          <>
+                            <span className="opacity-20">|</span>
+                            <span>{localHeader.github.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '')}</span>
+                          </>
+                        )}
                       </div>
                     </div>
 
                     {/* Body */}
-                    <div className="space-y-10">
-                      <section className="space-y-3">
-                        <div className="flex items-center gap-3 text-[#1E2A3A]">
-                          <h4 className="font-black uppercase tracking-[0.3em]" style={{ fontSize: fontSizes.meta }}>Professional Summary</h4>
-                          <div className="h-px flex-1 bg-[#1E2A3A]/5" />
+                    <div className="space-y-6">
+                      {/* Education First */}
+                      <section className="space-y-2">
+                        <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
+                          <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.meta }}>Education</h4>
                         </div>
-                        <p className="text-[#1E2A3A]/80 leading-relaxed italic" style={{ fontSize: fontSizes.body }}>{localResume.professional_summary}</p>
-                      </section>
-
-                      <section className="space-y-3">
-                        <div className="flex items-center gap-3 text-[#1E2A3A]">
-                          <h4 className="font-black uppercase tracking-[0.3em]" style={{ fontSize: fontSizes.meta }}>Core Competencies</h4>
-                          <div className="h-px flex-1 bg-[#1E2A3A]/5" />
-                        </div>
-                        <div className="flex flex-wrap gap-x-4 gap-y-1.5">
-                          {(localResume.skills_section || []).map((skill, i) => (
-                            <div key={i} className="font-bold text-[#1E2A3A]/70 uppercase tracking-tighter" style={{ fontSize: `calc(${fontSizes.body} - 1px)` }}>
-                              {skill}{i < (localResume.skills_section || []).length - 1 && "  •"}
-                            </div>
-                          ))}
-                        </div>
-                      </section>
-
-                      <section className="space-y-6">
-                        <div className="flex items-center gap-3 text-[#1E2A3A]">
-                          <h4 className="font-black uppercase tracking-[0.3em]" style={{ fontSize: fontSizes.meta }}>Experience</h4>
-                          <div className="h-px flex-1 bg-[#1E2A3A]/5" />
-                        </div>
-                        <div className="space-y-8">
-                          {(localResume.experience || []).map((exp, expIdx) => (
-                            <div key={expIdx} className="space-y-3">
-                              <h5 className="font-bold text-[#1E2A3A] tracking-tight" style={{ fontSize: fontSizes.header }}>{exp.heading}</h5>
-                              <div className="space-y-2 pl-3 border-l border-slate-100">
-                                {exp.bullets?.map((bullet, bullIdx) => (
-                                  <div key={bullIdx} className="flex gap-4 items-start">
-                                    <span className="text-lumina-teal pt-1.5 font-bold">•</span>
-                                    <p className="text-[#1E2A3A]/80 leading-relaxed" style={{ fontSize: fontSizes.body }}>{bullet.trim()}</p>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </section>
-
-                      {(localResume.projects && localResume.projects.length > 0) && (
-                        <section className="space-y-6">
-                          <div className="flex items-center gap-3 text-[#1E2A3A]">
-                            <h4 className="font-black uppercase tracking-[0.3em]" style={{ fontSize: fontSizes.meta }}>Projects</h4>
-                            <div className="h-px flex-1 bg-[#1E2A3A]/5" />
-                          </div>
-                          <div className="space-y-8">
-                            {localResume.projects?.map((proj, projIdx) => (
-                              <div key={projIdx} className="space-y-3">
-                                <h5 className="font-bold text-[#1E2A3A] tracking-tight" style={{ fontSize: fontSizes.header }}>{proj.heading}</h5>
-                                <div className="space-y-2 pl-3 border-l border-slate-100">
-                                  {proj.bullets?.map((bullet, bullIdx) => (
-                                    <div key={bullIdx} className="flex gap-4 items-start">
-                                      <span className="text-lumina-teal pt-1.5 font-bold">•</span>
-                                      <p className="text-[#1E2A3A]/80 leading-relaxed" style={{ fontSize: fontSizes.body }}>{bullet.trim()}</p>
-                                    </div>
-                                  ))}
+                        <div className="space-y-4">
+                          {(localResume.education || []).map((edu, i) => {
+                            const parts = edu.split('|');
+                            const mainInfo = parts[0].split('@');
+                            const school = mainInfo[1]?.trim() || "University";
+                            const degree = mainInfo[0]?.trim() || "Degree";
+                            const metadata = parts.slice(1).join(' | ');
+                            
+                            // Try to extract date and location from metadata or edu string
+                            // Template: University Name [Right: Date]
+                            // B.S. Degree | GPA [Right: Location]
+                            return (
+                              <div key={i} className="space-y-1">
+                                <div className="flex justify-between items-baseline font-bold" style={{ fontSize: fontSizes.body }}>
+                                  <span>{school}</span>
+                                  <span className="text-[11px]">May 2027</span> {/* Fallback date for demo */}
                                 </div>
+                                <div className="flex justify-between items-baseline italic" style={{ fontSize: `calc(${fontSizes.body} - 1px)` }}>
+                                  <span>{degree} {metadata && `| ${metadata}`}</span>
+                                  <span className="text-[11px] not-italic">{localHeader.location || "Gainesville, FL"}</span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </section>
+
+                      {/* Experience */}
+                      <section className="space-y-2">
+                        <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
+                          <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.meta }}>Experience</h4>
+                        </div>
+                        <div className="space-y-5">
+                          {(localResume.experience || []).map((exp, expIdx) => {
+                            const parts = exp.heading.split('@');
+                            const role = parts[0]?.trim() || "Role";
+                            const org = parts[1]?.split('-')[0]?.trim() || "Organization";
+                            const location = parts[1]?.split('-')[1]?.trim() || localHeader.location;
+                            
+                            return (
+                              <div key={expIdx} className="space-y-1">
+                                <div className="flex justify-between items-baseline font-bold" style={{ fontSize: fontSizes.body }}>
+                                  <span>{role}</span>
+                                  <span className="text-[11px]">{exp.content || "Date – Present"}</span>
+                                </div>
+                                <div className="flex justify-between items-baseline italic text-[#1E2A3A]/80" style={{ fontSize: `calc(${fontSizes.body} - 1px)` }}>
+                                  <span>{org}</span>
+                                  <span className="text-[11px] not-italic">{location}</span>
+                                </div>
+                                <ul className="list-disc ml-5 space-y-1 pt-1">
+                                  {exp.bullets?.map((bullet, bullIdx) => (
+                                    <li key={bullIdx} className="text-[#1E2A3A]/90 leading-tight" style={{ fontSize: fontSizes.body }}>
+                                      {bullet.replace(/^[•\s*-]+/, '').trim()}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </section>
+
+                      {/* Projects */}
+                      {(localResume.projects && localResume.projects.length > 0) && (
+                        <section className="space-y-2">
+                          <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
+                            <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.meta }}>Projects</h4>
+                          </div>
+                          <div className="space-y-4">
+                            {localResume.projects?.map((proj, projIdx) => {
+                              const [title, stack] = proj.heading.split('-');
+                              return (
+                                <div key={projIdx} className="space-y-1">
+                                  <div className="flex justify-between items-baseline font-bold" style={{ fontSize: fontSizes.body }}>
+                                    <span>{title?.trim()} <span className="font-normal opacity-60">| {stack?.trim()}</span></span>
+                                    <span className="text-[11px] font-normal">{proj.content || "Ongoing"}</span>
+                                  </div>
+                                  <ul className="list-disc ml-5 space-y-1">
+                                    {proj.bullets?.map((bullet, bullIdx) => (
+                                      <li key={bullIdx} className="text-[#1E2A3A]/90 leading-tight" style={{ fontSize: fontSizes.body }}>
+                                        {bullet.replace(/^[•\s*-]+/, '').trim()}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </section>
+                      )}
+
+                      {/* Leadership */}
+                      {(localResume.leadership && localResume.leadership.length > 0) && (
+                        <section className="space-y-2">
+                          <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
+                            <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.meta }}>Leadership</h4>
+                          </div>
+                          <div className="space-y-4">
+                            {localResume.leadership?.map((lead, idx) => (
+                              <div key={idx} className="space-y-1">
+                                <div className="flex justify-between items-baseline font-bold" style={{ fontSize: fontSizes.body }}>
+                                  <span>{lead.heading}</span>
+                                  <span className="text-[11px] font-normal">{lead.content || "Date – Present"}</span>
+                                </div>
+                                <ul className="list-disc ml-5 space-y-1">
+                                  {lead.bullets?.map((bullet, bullIdx) => (
+                                    <li key={bullIdx} className="text-[#1E2A3A]/90 leading-tight" style={{ fontSize: fontSizes.body }}>
+                                      {bullet.replace(/^[•\s*-]+/, '').trim()}
+                                    </li>
+                                  ))}
+                                </ul>
                               </div>
                             ))}
                           </div>
                         </section>
                       )}
 
-                      <div className="grid grid-cols-2 gap-8">
-                        <section className="space-y-3">
-                          <div className="flex items-center gap-3 text-[#1E2A3A]">
-                            <h4 className="font-black uppercase tracking-[0.3em]" style={{ fontSize: fontSizes.meta }}>Education</h4>
-                            <div className="h-px flex-1 bg-[#1E2A3A]/5" />
+                      {/* Skills */}
+                      <section className="space-y-2">
+                        <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
+                          <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.meta }}>Skills</h4>
+                        </div>
+                        <div className="space-y-1">
+                          {(localResume.skills_section || []).map((skillLine, i) => {
+                            const [category, skills] = skillLine.split(':');
+                            return (
+                              <p key={i} className="text-[#1E2A3A]/90 leading-tight" style={{ fontSize: fontSizes.body }}>
+                                <span className="font-bold">{category?.trim()}:</span> {skills?.trim()}
+                              </p>
+                            );
+                          })}
+                        </div>
+                      </section>
+
+                      {/* Awards */}
+                      {(localResume.awards && localResume.awards.length > 0) && (
+                        <section className="space-y-2">
+                          <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
+                            <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.meta }}>Awards</h4>
                           </div>
-                          <div className="space-y-2">
-                            {(localResume.education || []).map((edu, i) => (
-                              <p key={i} className="font-medium text-[#1E2A3A]/80" style={{ fontSize: `calc(${fontSizes.body} - 1px)` }}>{edu}</p>
+                          <div className="space-y-1">
+                            {localResume.awards?.map((award, i) => (
+                              <p key={i} className="text-[#1E2A3A]/90 leading-tight" style={{ fontSize: fontSizes.body }}>
+                                • {award}
+                              </p>
                             ))}
                           </div>
                         </section>
-
-                        {(localResume.certifications && localResume.certifications.length > 0) && (
-                          <section className="space-y-3">
-                            <div className="flex items-center gap-3 text-[#1E2A3A]">
-                              <h4 className="font-black uppercase tracking-[0.3em]" style={{ fontSize: fontSizes.meta }}>Certs</h4>
-                              <div className="h-px flex-1 bg-[#1E2A3A]/5" />
-                            </div>
-                            <div className="space-y-2">
-                              {localResume.certifications?.map((cert, i) => (
-                                <p key={i} className="font-medium text-[#1E2A3A]/80" style={{ fontSize: `calc(${fontSizes.body} - 1px)` }}>{cert}</p>
-                              ))}
-                            </div>
-                          </section>
-                        )}
-                      </div>
+                      )}
                     </div>
                   </div>
 

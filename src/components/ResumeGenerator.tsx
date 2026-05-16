@@ -242,68 +242,54 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName, forceTab }: Re
     setIsGenerating(true);
 
     try {
-      const prompt = `You are an elite Silicon Valley Executive Resume Writer.
-Your goal is to create a resume that is 100% ATS-friendly and passes machine parsers with a 100/100 compatibility score. 
+      const prompt = `You are an elite Silicon Valley executive resume architect.
+Your goal is to synthesize a high-impact, ATS-optimized resume in the precise "Andrew Vu" executive style.
 
+### CONTEXT:
 Job Target: ${jdTitle} at ${companyName || "this company"}
-Target Skills (CRITICAL): ${jdSkills.map(s => s.skill).join(", ")}
+Target Skills: ${jdSkills.map(s => s.skill).join(", ")}
+Candidate Profile: ${JSON.stringify(vaultItems.slice(0, 15).map(v => ({ title: v.title, org: v.organization, desc: v.description, bullets: v.bullets })), null, 2)}
 
-Candidate Profile (Targeted Selection):
-${JSON.stringify(vaultItems.slice(0, 15).map(v => ({ title: v.title, org: v.organization, desc: v.description, bullets: v.bullets?.slice(0, 10) })), null, 2)}
+### CORE MANDATE:
+- Quantify EVERYTHING. Use metrics (%, $, time, scale) in every bullet.
+- Use strong action verbs (Spearheaded, Orchestrated, Engineered).
+- NO fluff. NO generic summaries.
+- The structure MUST follow the order: EDUCATION, EXPERIENCE, PROJECTS, LEADERSHIP, SKILLS, AWARDS.
 
-STRATEGY FOR 100% SCORE:
-1. TONE: Use a ${tone} tone. ${tone === 'Aggressive' ? 'Focus on high-growth metrics and leadership impact. Prioritize keyword density.' : tone === 'Professional' ? 'Focus on executive authority and structured domain expertise.' : 'Focus on lean efficiency and modern tactical precision.'}
-2. QUANTIFICATION: Every single bullet point MUST contain a hard quantified metric (%, $, x, or integer). Estimate realistic numbers if not available.
-3. ABSOLUTE SKILL INJECTION: You MUST include EVERY SINGLE skill from "Target Skills" in the "skills_section" array. Use the EXACT wording from the JD.
-4. "DATA MANAGEMENT" & "MODELING": If the JD mentions "Data Management" or "Data Modeling," you MUST include these exact phrases in your experience bullets and skills section.
-5. KEYWORD ALIGNMENT: Weave every one of the Target Skills into the experience and project bullets. Use the exact phrase "Data Management" and "Data Modeling" to describe relevant work.
-6. STRUCTURE: Standard ATS-only headers: Professional Summary, Core Competencies, Experience, Projects, Education, Certifications.
-7. PROFESSIONAL SUMMARY: Write EXACTLY ${summaryLines} complete sentences. Start with a powerful headline that includes the job title "${jdTitle}".
-8. EXPERIENCE BULLETS: Each job entry MUST have EXACTLY ${experienceBullets} items. 
-9. PROJECT BULLETS: Each project entry MUST have EXACTLY ${projectLines} items.
-10. ATS COMPLIANCE: No tables, no graphics, no columns. Plain text.
-11. NO VAGUE CLAIMS: Replace generic verbs with specific achievements + metrics.
-12. TEMPLATE STRUCTURE:
-    - PROFESSIONAL SUMMARY
-    - EXPERIENCE (Include City, State/Country and dates: "Job Title @ Company - City, State/Country")
-    - PROJECTS
-    - LEADERSHIP
-    - EDUCATION (Include City, State/Country and "Expected Month, Year | GPA: X.X")
-    - SKILLS (Categorized: Languages, Frameworks/Libraries, Tools/Technologies)
-    - AWARDS / CERTIFICATIONS
+### SCHEMA REQUIREMENTS:
+1. EDUCATION: Must include School, Degree, GPA, Date, and Location.
+2. EXPERIENCE: Professional roles with quantified impact.
+3. PROJECTS: Technical achievements with stack details.
+4. LEADERSHIP: Non-work impact or community roles.
+5. SKILLS: Categorized (e.g., "Languages: Python, Go").
+6. AWARDS: Competitive wins or recognition.
 
-SELF-CHECK BEFORE RETURNING JSON:
-✓ Does the resume mention every single Target Skill at least twice?
-✓ Is "Data Management" included if present in JD?
-✓ Is "Data Modeling" included if present in JD?
-✓ Is the sentence count for summary EXACTLY ${summaryLines}?
-
-RETURN ONLY VALID JSON:
+Return ONLY a JSON object with this exact structure:
 {
-  "professional_summary": "Elite ${jdTitle} with deep expertise in ${jdSkills.slice(0,3).map(s => s.skill).join(", ")}. [Sentence 2 with high-impact metric]. [Sentence 3 focusing on tactical ROI].",
-  "skills_section": ["Languages: Python, SQL...", "Frameworks: React, Node...", "Tools: Docker, AWS..."],
+  "professional_summary": "High-density strategic overview",
+  "skills_section": ["Languages: ...", "Frameworks: ..."],
   "experience": [
     {
-      "heading": "Job Title @ Company Name - City, State/Country",
-      "content": "Start Month, Year – End Month, Year",
-      "bullets": ["Developed... [metric]%", "Refactored... [metric]%", "...(EXACTLY ${experienceBullets} bullets total)"]
+      "heading": "Job Title @ Company - City, State",
+      "content": "Month Year – Present",
+      "bullets": ["Action verb + Task + Result [Metric]"]
     }
   ],
   "projects": [
     {
-      "heading": "Project Name - Tech Stack Used",
-      "content": "One line summary of impact.",
-      "bullets": ["Built... [metric]%", "Implemented... [metric]%", "...(EXACTLY ${projectLines} bullets)"]
+      "heading": "Project Name - Tech Stack",
+      "content": "Date Range",
+      "bullets": ["Achievement with [Metric]"]
     }
   ],
   "leadership": [
     {
-      "heading": "Role @ Organization - City, State/Country",
-      "content": "Start Month, Year – Present",
-      "bullets": ["Formed... [metric]%", "Managed... [metric]%"]
+      "heading": "Role @ Organization",
+      "content": "Date Range",
+      "bullets": ["Leadership achievement"]
     }
   ],
-  "education": ["Degree Name @ University - City, State/Country | Expected Month, Year | GPA: X.X/4.0 | Coursework: ... | Clubs: ..."],
+  "education": ["Degree @ University - City, State | Expected Month, Year | GPA: X.X"],
   "certifications": ["Cert Name (Issuer) - Year"],
   "awards": ["Award Name (Organization) - Year"]
 }`;
@@ -680,116 +666,167 @@ RETURN ONLY VALID JSON:
       }
       y += 3.5;
 
-      // Summary
-      addText("PROFESSIONAL SUMMARY", headlineFontSize, true, [0, 0, 0]);
-      pdf.setDrawColor(230, 230, 230);
-      pdf.setLineWidth(0.2);
-      pdf.line(margin, y, pageWidth - margin, y);
-      y += 2.0;
-      if (editableResume) {
-        addText(editableResume.professional_summary, bodyFontSize, false, [40, 40, 40]);
-        y += 2.0;
+        // --- HEADER ---
+        const navyBlue: [number, number, number] = [0, 71, 171];
+        pdf.setTextColor(...navyBlue);
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(22);
+        pdf.text(editableHeader.fullName.toUpperCase(), pageWidth / 2, y, { align: "center" });
+        y += 8;
 
-        // Skills
-        addText("CORE COMPETENCIES", headlineFontSize, true, [0, 0, 0]);
-        pdf.line(margin, y, pageWidth - margin, y);
-        y += 2.0;
-        addText(editableResume.skills_section.join("  •  "), bodyFontSize * 0.9, false, [40, 40, 40]);
-        y += 3.0;
+        pdf.setTextColor(30, 42, 58);
+        pdf.setFontSize(9);
+        pdf.setFont("helvetica", "normal");
+        const links = [
+          editableHeader.email,
+          editableHeader.linkedin?.replace(/^(https?:\/\/)?(www\.)?/, ''),
+          editableHeader.phone,
+          editableHeader.github?.replace(/^(https?:\/\/)?(www\.)?/, '')
+        ].filter(Boolean).join(" | ");
+        pdf.text(links, pageWidth / 2, y, { align: "center" });
+        y += 12;
 
-        // Experience
-        addText("EXPERIENCE", headlineFontSize, true, [0, 0, 0]);
-        pdf.line(margin, y, pageWidth - margin, y);
-        y += 1.8;
-        editableResume.experience.forEach(exp => {
-          const [roleInfo, location] = exp.heading.split('-');
-          addText(roleInfo?.trim() || "", subHeadlineFontSize, true, [0, 0, 0]);
-          if (location) addText(location.trim(), subHeadlineFontSize * 0.85, false, [100, 100, 100]);
-          if (exp.content) {
-            addText(exp.content, bodyFontSize * 0.9, true, [40, 40, 40]);
+        const drawSectionHeader = (title: string) => {
+          y += 2;
+          pdf.setTextColor(...navyBlue);
+          pdf.setFont("helvetica", "bold");
+          pdf.setFontSize(10);
+          pdf.text(title.toUpperCase(), margin, y);
+          y += 1.5;
+          pdf.setDrawColor(...navyBlue);
+          pdf.setLineWidth(0.4);
+          pdf.line(margin, y, pageWidth - margin, y);
+          y += 5;
+        };
+
+        if (editableResume) {
+          // --- EDUCATION ---
+          if (editableResume.education?.length) {
+            drawSectionHeader("EDUCATION");
+            editableResume.education.forEach(edu => {
+              const parts = edu.split('|');
+              const mainInfo = parts[0].split('@');
+              const school = mainInfo[1]?.trim() || "University";
+              const degree = mainInfo[0]?.trim() || "Degree";
+              const metadata = parts.slice(1).join(' | ');
+
+              pdf.setTextColor(0, 0, 0);
+              pdf.setFont("helvetica", "bold");
+              pdf.setFontSize(11);
+              pdf.text(school, margin, y);
+              pdf.text("May 2027", pageWidth - margin, y, { align: "right" });
+              y += 4.5;
+              pdf.setFont("helvetica", "italic");
+              pdf.setFontSize(10);
+              pdf.text(`${degree} ${metadata && `| ${metadata}`}`, margin, y);
+              pdf.setFont("helvetica", "normal");
+              pdf.text(localHeader.location || "Gainesville, FL", pageWidth - margin, y, { align: "right" });
+              y += 8;
+            });
           }
-          y += 0.6;
-          exp.bullets?.forEach(bullet => {
-            addText(bullet.startsWith("•") ? bullet : `•  ${bullet}`, bodyFontSize, false, [0, 0, 0]);
-          });
-          y += 1.5;
-        });
 
-        // Projects
-        if (editableResume.projects && editableResume.projects.length > 0) {
-          addText("PROJECTS", headlineFontSize, true, [0, 0, 0]);
-          pdf.line(margin, y, pageWidth - margin, y);
-          y += 1.8;
-          editableResume.projects.forEach(proj => {
-            if (!proj) return;
-            addText(proj.heading || "Project", subHeadlineFontSize, true, [0, 0, 0]);
-            if (proj.content) {
-              addText(proj.content, bodyFontSize * 0.9, true, [40, 40, 40]);
-            }
-            proj.bullets?.forEach(bullet => {
-              addText(bullet.startsWith("•") ? bullet : `•  ${bullet}`, bodyFontSize, false, [40, 40, 40]);
-            });
-            y += 1.5;
-          });
-        }
+          // --- EXPERIENCE ---
+          if (editableResume.experience?.length) {
+            drawSectionHeader("EXPERIENCE");
+            editableResume.experience.forEach(exp => {
+              const parts = exp.heading.split('@');
+              const role = parts[0]?.trim() || "Role";
+              const orgParts = parts[1]?.split('-') || [];
+              const org = orgParts[0]?.trim() || "Organization";
+              const loc = orgParts[1]?.trim() || localHeader.location;
 
-        // Leadership
-        if (editableResume.leadership && editableResume.leadership.length > 0) {
-          addText("LEADERSHIP", headlineFontSize, true, [0, 0, 0]);
-          pdf.line(margin, y, pageWidth - margin, y);
-          y += 1.8;
-          editableResume.leadership.forEach(lead => {
-            if (!lead) return;
-            addText(lead.heading || "Role", subHeadlineFontSize, true, [0, 0, 0]);
-            if (lead.content) {
-              addText(lead.content, bodyFontSize * 0.9, true, [40, 40, 40]);
-            }
-            lead.bullets?.forEach(bullet => {
-              addText(bullet.startsWith("•") ? bullet : `•  ${bullet}`, bodyFontSize, false, [40, 40, 40]);
-            });
-            y += 1.5;
-          });
-        }
+              pdf.setTextColor(0, 0, 0);
+              pdf.setFont("helvetica", "bold");
+              pdf.setFontSize(11);
+              pdf.text(role, margin, y);
+              pdf.setFont("helvetica", "normal");
+              pdf.text(exp.content || "Date – Present", pageWidth - margin, y, { align: "right" });
+              y += 4.5;
+              pdf.setFont("helvetica", "italic");
+              pdf.setFontSize(10);
+              pdf.text(org, margin, y);
+              pdf.setFont("helvetica", "normal");
+              pdf.text(loc || "", pageWidth - margin, y, { align: "right" });
+              y += 5;
 
-        // Education
-        if (editableResume.education && editableResume.education.length > 0) {
-          addText("EDUCATION", headlineFontSize, true, [0, 0, 0]);
-          pdf.line(margin, y, pageWidth - margin, y);
-          y += 1.8;
-          editableResume.education.forEach(edu => {
-            if (!edu) return;
-            const parts = edu.split('|');
-            addText(parts[0].trim(), subHeadlineFontSize, true, [0, 0, 0]);
-            if (parts.length > 1) {
-              parts.slice(1).forEach(part => {
-                addText(part.trim(), bodyFontSize * 0.9, false, [40, 40, 40]);
+              exp.bullets?.forEach(bullet => {
+                pdf.setFont("helvetica", "normal");
+                const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
+                const lines = pdf.splitTextToSize(`• ${cleanBullet}`, pageWidth - (margin * 2) - 4);
+                pdf.text(lines, margin + 4, y);
+                y += (lines.length * 4.5);
               });
-            }
-          });
-          y += 1.5;
-        }
+              y += 2;
+            });
+          }
 
-        // Skills
-        addText("SKILLS", headlineFontSize, true, [0, 0, 0]);
-        pdf.line(margin, y, pageWidth - margin, y);
-        y += 2.0;
-        editableResume.skills_section.forEach(skillLine => {
-          addText(skillLine, bodyFontSize, false, [40, 40, 40]);
-        });
-        y += 3.0;
+          // --- PROJECTS ---
+          if (editableResume.projects?.length) {
+            drawSectionHeader("PROJECTS");
+            editableResume.projects.forEach(proj => {
+              const [title, stack] = proj.heading.split('-');
+              pdf.setTextColor(0, 0, 0);
+              pdf.setFont("helvetica", "bold");
+              pdf.setFontSize(11);
+              pdf.text(title?.trim() || "Project", margin, y);
+              if (stack) {
+                pdf.setFont("helvetica", "normal");
+                pdf.text(` | ${stack.trim()}`, margin + pdf.getTextWidth(title?.trim() || "Project"), y);
+              }
+              pdf.text(proj.content || "", pageWidth - margin, y, { align: "right" });
+              y += 5;
 
-        // Awards & Certifications
-        const hasAwards = editableResume.awards && editableResume.awards.length > 0;
-        const hasCerts = editableResume.certifications && editableResume.certifications.length > 0;
-        
-        if (hasAwards || hasCerts) {
-          addText("AWARDS / CERTIFICATIONS", headlineFontSize, true, [0, 0, 0]);
-          pdf.line(margin, y, pageWidth - margin, y);
-          y += 1.8;
-          editableResume.awards?.forEach(award => award && addText(award, bodyFontSize, false, [40, 40, 40]));
-          editableResume.certifications?.forEach(cert => cert && addText(cert, bodyFontSize, false, [40, 40, 40]));
+              proj.bullets?.forEach(bullet => {
+                pdf.setFont("helvetica", "normal");
+                const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
+                const lines = pdf.splitTextToSize(`• ${cleanBullet}`, pageWidth - (margin * 2) - 4);
+                pdf.text(lines, margin + 4, y);
+                y += (lines.length * 4.5);
+              });
+              y += 2;
+            });
+          }
+
+          // --- LEADERSHIP ---
+          if (editableResume.leadership?.length) {
+            drawSectionHeader("LEADERSHIP");
+            editableResume.leadership.forEach(lead => {
+              pdf.setTextColor(0, 0, 0);
+              pdf.setFont("helvetica", "bold");
+              pdf.setFontSize(11);
+              pdf.text(lead.heading, margin, y);
+              pdf.setFont("helvetica", "normal");
+              pdf.text(lead.content || "", pageWidth - margin, y, { align: "right" });
+              y += 5;
+
+              lead.bullets?.forEach(bullet => {
+                pdf.setFont("helvetica", "normal");
+                const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
+                const lines = pdf.splitTextToSize(`• ${cleanBullet}`, pageWidth - (margin * 2) - 4);
+                pdf.text(lines, margin + 4, y);
+                y += (lines.length * 4.5);
+              });
+              y += 2;
+            });
+          }
+
+          // --- SKILLS ---
+          if (editableResume.skills_section?.length) {
+            drawSectionHeader("SKILLS");
+            editableResume.skills_section.forEach(skillLine => {
+              const [category, skills] = skillLine.split(':');
+              pdf.setTextColor(0, 0, 0);
+              pdf.setFont("helvetica", "bold");
+              pdf.setFontSize(10);
+              pdf.text(`${category?.trim() || "Category"}:`, margin, y);
+              pdf.setFont("helvetica", "normal");
+              const skillsText = skills?.trim() || "";
+              const lines = pdf.splitTextToSize(skillsText, pageWidth - margin - (margin + pdf.getTextWidth(`${category?.trim()}: `)));
+              pdf.text(lines, margin + pdf.getTextWidth(`${category?.trim()}: `), y);
+              y += (lines.length * 4.5) + 1;
+            });
+          }
         }
-      }
 
       const safeName = (editableHeader.fullName || profile?.full_name || "Resume").replace(/[^a-z0-9]/gi, '_');
       
