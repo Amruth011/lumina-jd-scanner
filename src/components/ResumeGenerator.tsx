@@ -51,6 +51,7 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName, forceTab }: Re
   }, []);
   const [summaryLines, setSummaryLines] = useState(3);
   const [projectLines, setProjectLines] = useState(3);
+  const [productLines, setProductLines] = useState(3);
   const [experienceBullets, setExperienceBullets] = useState(3);
   const [showSettings, setShowSettings] = useState(false);
   const [vaultItems, setVaultItems] = useState<VaultItem[]>([]);
@@ -254,6 +255,11 @@ Candidate Profile: ${JSON.stringify(vaultItems.slice(0, 15).map(v => ({ title: v
 - Quantify EVERYTHING. Use metrics (%, $, time, scale) in every bullet.
 - Use strong action verbs (Spearheaded, Orchestrated, Engineered).
 - DATE FORMAT: Use 3-letter month abbreviations ONLY (e.g., "Jan 2024", "May 2027", "Aug 2023 – Present").
+- SECTION DENSITY MANDATE:
+    - PROFESSIONAL SUMMARY: Exactly ${summaryLines} high-impact sentences.
+    - EXPERIENCE BULLETS: Exactly ${experienceBullets} bullets per role.
+    - PROJECT BULLETS: Exactly ${projectLines} bullets per project.
+    - PRODUCT/STARTUP BULLETS: Exactly ${productLines} bullets per product.
 - SECTION INTEGRITY: 
     - DO NOT include personal/side projects in the EXPERIENCE section. Keep them in PROJECTS.
     - DO NOT include certifications/awards in the LEADERSHIP section. Keep them in AWARDS or CERTIFICATIONS.
@@ -1135,11 +1141,22 @@ Return ONLY a JSON object with this exact structure:
                         onChange={(e) => setSummaryLines(Number(e.target.value))}
                         className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs font-bold outline-none focus:ring-2 ring-lumina-teal/20 transition-all"
                       >
-                        <option value={2}>2 Lines</option>
-                        <option value={3}>3 Lines</option>
-                        <option value={4}>4 Lines</option>
+                        {[2, 3, 4, 5].map(n => <option key={n} value={n}>{n} Lines</option>)}
                       </select>
                     </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Experience Bullets</label>
+                      <select 
+                        value={experienceBullets} 
+                        onChange={(e) => setExperienceBullets(Number(e.target.value))}
+                        className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs font-bold outline-none focus:ring-2 ring-lumina-teal/20 transition-all"
+                      >
+                        {[2, 3, 4, 5].map(n => <option key={n} value={n}>{n} Bullets</option>)}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Project Bullets</label>
                       <select 
@@ -1147,9 +1164,17 @@ Return ONLY a JSON object with this exact structure:
                         onChange={(e) => setProjectLines(Number(e.target.value))}
                         className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs font-bold outline-none focus:ring-2 ring-lumina-teal/20 transition-all"
                       >
-                        <option value={2}>2 Bullets</option>
-                        <option value={3}>3 Bullets</option>
-                        <option value={5}>5 Bullets</option>
+                        {[2, 3, 4, 5].map(n => <option key={n} value={n}>{n} Bullets</option>)}
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Product/Startup Bullets</label>
+                      <select 
+                        value={productLines} 
+                        onChange={(e) => setProductLines(Number(e.target.value))}
+                        className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs font-bold outline-none focus:ring-2 ring-lumina-teal/20 transition-all"
+                      >
+                        {[2, 3, 4, 5].map(n => <option key={n} value={n}>{n} Bullets</option>)}
                       </select>
                     </div>
                   </div>
