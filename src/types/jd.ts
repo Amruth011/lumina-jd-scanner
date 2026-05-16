@@ -208,9 +208,11 @@ export interface GeneratedResume {
   professional_summary: string;
   skills_section: string[];
   experience: GeneratedResumeSection[];
-  projects?: GeneratedResumeSection[]; // Optional projects section
+  projects?: GeneratedResumeSection[];
+  leadership?: GeneratedResumeSection[];
   education: string[];
   certifications?: string[];
+  awards?: string[];
 }
 
 // ── NEW: ATS Score Simulator types ──

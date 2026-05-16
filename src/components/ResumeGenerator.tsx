@@ -163,7 +163,9 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName, forceTab }: Re
     const hydratedContent = {
       ...record.content,
       projects: record.content.projects || [],
-      certifications: record.content.certifications || []
+      leadership: record.content.leadership || [],
+      certifications: record.content.certifications || [],
+      awards: record.content.awards || []
     };
     
     setResume(hydratedContent);
@@ -261,6 +263,14 @@ STRATEGY FOR 100% SCORE:
 9. PROJECT BULLETS: Each project entry MUST have EXACTLY ${projectLines} items.
 10. ATS COMPLIANCE: No tables, no graphics, no columns. Plain text.
 11. NO VAGUE CLAIMS: Replace generic verbs with specific achievements + metrics.
+12. TEMPLATE STRUCTURE:
+    - PROFESSIONAL SUMMARY
+    - EXPERIENCE (Include City, State/Country and dates: "Job Title @ Company - City, State/Country")
+    - PROJECTS
+    - LEADERSHIP
+    - EDUCATION (Include City, State/Country and "Expected Month, Year | GPA: X.X")
+    - SKILLS (Categorized: Languages, Frameworks/Libraries, Tools/Technologies)
+    - AWARDS / CERTIFICATIONS
 
 SELF-CHECK BEFORE RETURNING JSON:
 ✓ Does the resume mention every single Target Skill at least twice?
@@ -271,23 +281,31 @@ SELF-CHECK BEFORE RETURNING JSON:
 RETURN ONLY VALID JSON:
 {
   "professional_summary": "Elite ${jdTitle} with deep expertise in ${jdSkills.slice(0,3).map(s => s.skill).join(", ")}. [Sentence 2 with high-impact metric]. [Sentence 3 focusing on tactical ROI].",
-  "skills_section": [${jdSkills.map(s => `"${s.skill}"`).join(", ")}],
+  "skills_section": ["Languages: Python, SQL...", "Frameworks: React, Node...", "Tools: Docker, AWS..."],
   "experience": [
     {
-      "heading": "Job Title @ Company Name",
-      "content": "Tech stack used.",
-      "bullets": ["Led Data Management for...", "Implemented Data Modeling using...", "...(EXACTLY ${experienceBullets} bullets total, each starting with an action verb and containing a metric)"]
+      "heading": "Job Title @ Company Name - City, State/Country",
+      "content": "Start Month, Year – End Month, Year",
+      "bullets": ["Developed... [metric]%", "Refactored... [metric]%", "...(EXACTLY ${experienceBullets} bullets total)"]
     }
   ],
   "projects": [
     {
-      "heading": "Project Name",
-      "content": "Tech stack used.",
-      "bullets": ["(EXACTLY ${projectLines} bullets per project, each with a hard metric)"]
+      "heading": "Project Name - Tech Stack Used",
+      "content": "One line summary of impact.",
+      "bullets": ["Built... [metric]%", "Implemented... [metric]%", "...(EXACTLY ${projectLines} bullets)"]
     }
   ],
-      "education": ["Degree - University"],
-      "certifications": ["Cert Name"]
+  "leadership": [
+    {
+      "heading": "Role @ Organization - City, State/Country",
+      "content": "Start Month, Year – Present",
+      "bullets": ["Formed... [metric]%", "Managed... [metric]%"]
+    }
+  ],
+  "education": ["Degree Name @ University - City, State/Country | Expected Month, Year | GPA: X.X/4.0 | Coursework: ... | Clubs: ..."],
+  "certifications": ["Cert Name (Issuer) - Year"],
+  "awards": ["Award Name (Organization) - Year"]
 }`;
 
       const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -427,7 +445,9 @@ RETURN ONLY VALID JSON:
       const hydratedData = {
         ...structData,
         projects: structData.projects || [],
-        certifications: structData.certifications || []
+        leadership: structData.leadership || [],
+        certifications: structData.certifications || [],
+        awards: structData.awards || []
       } as GeneratedResume;
 
       setResume(hydratedData);
@@ -682,32 +702,50 @@ RETURN ONLY VALID JSON:
         pdf.line(margin, y, pageWidth - margin, y);
         y += 1.8;
         editableResume.experience.forEach(exp => {
-          const [title, company] = exp.heading.split('@');
-          addText(title?.trim() || "", subHeadlineFontSize, true, [0, 0, 0]);
-          addText(company?.trim() || "Organization", subHeadlineFontSize * 0.95, true, [80, 80, 80]);
+          const [roleInfo, location] = exp.heading.split('-');
+          addText(roleInfo?.trim() || "", subHeadlineFontSize, true, [0, 0, 0]);
+          if (location) addText(location.trim(), subHeadlineFontSize * 0.85, false, [100, 100, 100]);
           if (exp.content) {
-            addText(exp.content, bodyFontSize * 0.8, false, [100, 100, 100]);
+            addText(exp.content, bodyFontSize * 0.9, true, [40, 40, 40]);
           }
-          y += 0.6; // Small gap before bullets
+          y += 0.6;
           exp.bullets?.forEach(bullet => {
-            addText(`•  ${bullet}`, bodyFontSize, false, [0, 0, 0]);
+            addText(bullet.startsWith("•") ? bullet : `•  ${bullet}`, bodyFontSize, false, [0, 0, 0]);
           });
-          y += 1.5; // Gap between experience entries
+          y += 1.5;
         });
 
         // Projects
         if (editableResume.projects && editableResume.projects.length > 0) {
-          addText("KEY PROJECTS", headlineFontSize, true, [0, 0, 0]);
+          addText("PROJECTS", headlineFontSize, true, [0, 0, 0]);
           pdf.line(margin, y, pageWidth - margin, y);
           y += 1.8;
           editableResume.projects.forEach(proj => {
             if (!proj) return;
             addText(proj.heading || "Project", subHeadlineFontSize, true, [0, 0, 0]);
             if (proj.content) {
-              addText(proj.content, bodyFontSize * 0.85, false, [40, 40, 40]);
+              addText(proj.content, bodyFontSize * 0.9, true, [40, 40, 40]);
             }
             proj.bullets?.forEach(bullet => {
-              addText(`•  ${bullet}`, bodyFontSize * 0.85, false, [40, 40, 40]);
+              addText(bullet.startsWith("•") ? bullet : `•  ${bullet}`, bodyFontSize, false, [40, 40, 40]);
+            });
+            y += 1.5;
+          });
+        }
+
+        // Leadership
+        if (editableResume.leadership && editableResume.leadership.length > 0) {
+          addText("LEADERSHIP", headlineFontSize, true, [0, 0, 0]);
+          pdf.line(margin, y, pageWidth - margin, y);
+          y += 1.8;
+          editableResume.leadership.forEach(lead => {
+            if (!lead) return;
+            addText(lead.heading || "Role", subHeadlineFontSize, true, [0, 0, 0]);
+            if (lead.content) {
+              addText(lead.content, bodyFontSize * 0.9, true, [40, 40, 40]);
+            }
+            lead.bullets?.forEach(bullet => {
+              addText(bullet.startsWith("•") ? bullet : `•  ${bullet}`, bodyFontSize, false, [40, 40, 40]);
             });
             y += 1.5;
           });
@@ -718,16 +756,38 @@ RETURN ONLY VALID JSON:
           addText("EDUCATION", headlineFontSize, true, [0, 0, 0]);
           pdf.line(margin, y, pageWidth - margin, y);
           y += 1.8;
-          editableResume.education.forEach(edu => edu && addText(edu, bodyFontSize * 0.9, false, [40, 40, 40]));
+          editableResume.education.forEach(edu => {
+            if (!edu) return;
+            const parts = edu.split('|');
+            addText(parts[0].trim(), subHeadlineFontSize, true, [0, 0, 0]);
+            if (parts.length > 1) {
+              parts.slice(1).forEach(part => {
+                addText(part.trim(), bodyFontSize * 0.9, false, [40, 40, 40]);
+              });
+            }
+          });
           y += 1.5;
         }
 
-        // Certifications
-        if (editableResume.certifications && editableResume.certifications.length > 0) {
-          addText("CERTIFICATIONS", headlineFontSize, true, [0, 0, 0]);
+        // Skills
+        addText("SKILLS", headlineFontSize, true, [0, 0, 0]);
+        pdf.line(margin, y, pageWidth - margin, y);
+        y += 2.0;
+        editableResume.skills_section.forEach(skillLine => {
+          addText(skillLine, bodyFontSize, false, [40, 40, 40]);
+        });
+        y += 3.0;
+
+        // Awards & Certifications
+        const hasAwards = editableResume.awards && editableResume.awards.length > 0;
+        const hasCerts = editableResume.certifications && editableResume.certifications.length > 0;
+        
+        if (hasAwards || hasCerts) {
+          addText("AWARDS / CERTIFICATIONS", headlineFontSize, true, [0, 0, 0]);
           pdf.line(margin, y, pageWidth - margin, y);
           y += 1.8;
-          editableResume.certifications?.forEach(cert => cert && addText(cert, bodyFontSize * 0.9, false, [40, 40, 40]));
+          editableResume.awards?.forEach(award => award && addText(award, bodyFontSize, false, [40, 40, 40]));
+          editableResume.certifications?.forEach(cert => cert && addText(cert, bodyFontSize, false, [40, 40, 40]));
         }
       }
 
