@@ -253,7 +253,10 @@ Candidate Profile: ${JSON.stringify(vaultItems.slice(0, 15).map(v => ({ title: v
 ### CORE MANDATE:
 - Quantify EVERYTHING. Use metrics (%, $, time, scale) in every bullet.
 - Use strong action verbs (Spearheaded, Orchestrated, Engineered).
-- NO fluff. NO generic summaries.
+- DATE FORMAT: Use 3-letter month abbreviations ONLY (e.g., "Jan 2024", "May 2027", "Aug 2023 – Present").
+- SECTION INTEGRITY: 
+    - DO NOT include personal/side projects in the EXPERIENCE section. Keep them in PROJECTS.
+    - DO NOT include certifications/awards in the LEADERSHIP section. Keep them in AWARDS or CERTIFICATIONS.
 - The structure MUST follow the order: EDUCATION, EXPERIENCE, PROJECTS, LEADERSHIP, SKILLS, AWARDS.
 
 ### SCHEMA REQUIREMENTS:
@@ -271,27 +274,27 @@ Return ONLY a JSON object with this exact structure:
   "experience": [
     {
       "heading": "Job Title @ Company - City, State",
-      "content": "Month Year – Present",
+      "content": "Jan 2024 – Present",
       "bullets": ["Action verb + Task + Result [Metric]"]
     }
   ],
   "projects": [
     {
       "heading": "Project Name - Tech Stack",
-      "content": "Date Range",
+      "content": "Feb 2023 – May 2023",
       "bullets": ["Achievement with [Metric]"]
     }
   ],
   "leadership": [
     {
       "heading": "Role @ Organization",
-      "content": "Date Range",
+      "content": "Sep 2022 – Dec 2023",
       "bullets": ["Leadership achievement"]
     }
   ],
-  "education": ["Degree @ University - City, State | Expected Month, Year | GPA: X.X"],
-  "certifications": ["Cert Name (Issuer) - Year"],
-  "awards": ["Award Name (Organization) - Year"]
+  "education": ["Degree @ University - City, State | Expected May 2027 | GPA: X.X"],
+  "certifications": ["Cert Name (Issuer) - 2024"],
+  "awards": ["Award Name (Organization) - 2024"]
 }`;
 
       const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
