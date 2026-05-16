@@ -299,6 +299,8 @@ Candidate Profile: ${JSON.stringify(vaultItems.slice(0, 15).map(v => ({ type: v.
     - DO NOT invent additional entries to "fill space". 
     - DO NOT mix these categories. If an item is a project, it MUST stay in PROJECTS. If it is a startup, it MUST stay in PRODUCTS.
     - DO NOT include certifications/awards in any other section. Keep them in AWARDS or CERTIFICATIONS. (CRITICAL: 'AI Engineer for Data Scientists Associate' or anything from 'DataCamp' is a CERTIFICATION, NOT experience).
+    - SUMMARY: Must be EXACTLY ${summaryLines} lines long. Each line must be a high-impact, data-driven sentence.
+    - SKILLS: Must be ONLY keywords and technical terms. NO sentences or descriptive text. Format as "Category: Skill1, Skill2, Skill3".
 - CUSTOM STRUCTURE MANDATE:
     - You MUST follow this exact section sequence: SUMMARY → EDUCATION → EXPERIENCE → PRODUCTS → PROJECTS → LEADERSHIP → SKILLS → AWARDS → CERTIFICATIONS.
     - ONLY include sections that are TRUE in this list: ${sectionOrder.filter(s => visibleSections[s]).join(', ')}.
@@ -678,15 +680,16 @@ Return ONLY a JSON object with this exact structure:
       let y = margin;
       const pageWidth = pdf.internal.pageSize.getWidth();
       const contentWidth = pageWidth - margin * 2;
+      const fontMap = {
+        "Inter": "helvetica",
+        "Roboto": "helvetica",
+        "Merriweather": "times",
+        "Arial": "helvetica"
+      };
+      const currentFont = fontMap[fontFamily as keyof typeof fontMap] || "helvetica";
 
       const addText = (text: string, size: number, isBold = false, color: number[] = [0, 0, 0], align: "left" | "center" = "left") => {
-        const fontMap = {
-          "Inter": "helvetica",
-          "Roboto": "helvetica",
-          "Merriweather": "times",
-          "Arial": "helvetica"
-        };
-        const currentFont = fontMap[fontFamily as keyof typeof fontMap] || "helvetica";
+        pdf.setFont(currentFont, isBold ? "bold" : "normal");
         pdf.setFontSize(size);
         pdf.setTextColor(color[0], color[1], color[2]);
         const lines = pdf.splitTextToSize(text, contentWidth);
@@ -705,7 +708,8 @@ Return ONLY a JSON object with this exact structure:
       const contactLines = [
         editableHeader.location,
         editableHeader.phone,
-        editableHeader.email.toLowerCase()
+        editableHeader.email.toLowerCase(),
+        editableHeader.portfolio
       ].filter(Boolean).join("  •  ");
       addText(contactLines, bodyFontSize * 0.85, false, [80, 80, 80], "center");
       
@@ -734,14 +738,6 @@ Return ONLY a JSON object with this exact structure:
 
         // --- HEADER ---
         const navyBlue: [number, number, number] = [0, 71, 171];
-        const navyBlue: [number, number, number] = [0, 71, 171];
-        const fontMap = {
-          "Inter": "helvetica",
-          "Roboto": "helvetica",
-          "Merriweather": "times",
-          "Arial": "helvetica"
-        };
-        const currentFont = fontMap[fontFamily as keyof typeof fontMap] || "helvetica";
 
         const drawSectionHeader = (title: string) => {
           y += 2;
