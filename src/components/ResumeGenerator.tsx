@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, Download, Sparkles, Copy, X, Wand2, FileText, CheckCircle2, AlertCircle, ArrowRight, Github, Linkedin, Mail, MapPin, Plus, Minus, Archive } from "lucide-react";
+import { Loader2, Download, Sparkles, Copy, X, Wand2, FileText, CheckCircle2, AlertCircle, ArrowRight, Github, Linkedin, Mail, MapPin, Plus, Minus, Archive, ArrowUp, ArrowDown } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -1215,9 +1215,10 @@ Return ONLY a JSON object with this exact structure:
                                 [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
                                 setSectionOrder(newOrder);
                               }}
-                              className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 disabled:opacity-20"
+                              title="Move Up"
+                              className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 disabled:opacity-20 transition-all hover:text-lumina-teal"
                             >
-                              <Plus size={12} className="rotate-180" style={{ transform: 'rotate(180deg) scaleY(-1)' }} />
+                              <ArrowUp size={12} />
                             </button>
                             <button 
                               disabled={index === sectionOrder.length - 1}
@@ -1226,9 +1227,19 @@ Return ONLY a JSON object with this exact structure:
                                 [newOrder[index + 1], newOrder[index]] = [newOrder[index], newOrder[index + 1]];
                                 setSectionOrder(newOrder);
                               }}
-                              className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 disabled:opacity-20"
+                              title="Move Down"
+                              className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 disabled:opacity-20 transition-all hover:text-lumina-teal"
                             >
-                              <Plus size={12} />
+                              <ArrowDown size={12} />
+                            </button>
+                            <button 
+                              onClick={() => {
+                                setVisibleSections(prev => ({ ...prev, [section]: !prev[section] }));
+                              }}
+                              title={visibleSections[section] ? "Remove Section" : "Restore Section"}
+                              className={`p-1.5 rounded-lg transition-all ${visibleSections[section] ? 'hover:bg-red-50 text-slate-400 hover:text-red-500' : 'bg-emerald-50 text-emerald-500 hover:bg-emerald-100'}`}
+                            >
+                              {visibleSections[section] ? <Minus size={12} /> : <Plus size={12} />}
                             </button>
                           </div>
                         </div>
