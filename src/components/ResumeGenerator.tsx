@@ -947,103 +947,21 @@ RETURN ONLY VALID JSON:
       <div className="absolute top-0 right-0 p-16 opacity-5 scale-150 group-hover:opacity-10 transition-opacity duration-1000 pointer-events-none">
         <img src="/favicon.png" alt="Lumina Icon" className="w-80 h-80 rotate-12 grayscale" />
       </div>
-
-      <div className="relative z-10 flex flex-col xl:flex-row items-center justify-between gap-12">
-        <div className="space-y-6 text-center xl:text-left">
-          <div className="flex items-center justify-center xl:justify-start gap-5">
-            <div className="w-14 h-14 rounded-[1.5rem] bg-primary/10 flex items-center justify-center border border-primary/20">
-              <Wand2 className="w-8 h-8 text-primary" />
-            </div>
-            <h3 className="text-3xl font-serif italic text-foreground tracking-tight">Candidacy Synthesizer</h3>
-          </div>
-          <p className="text-[17px] text-muted-foreground max-w-xl font-medium leading-relaxed font-serif italic opacity-80">
+      <div className="relative z-10 flex flex-col items-center text-center space-y-6">
+        <div className="w-16 h-16 rounded-[2rem] bg-primary/10 flex items-center justify-center border border-primary/20">
+          <Wand2 className="w-10 h-10 text-primary" />
+        </div>
+        <div className="space-y-2">
+          <h3 className="text-4xl font-serif italic text-foreground tracking-tight">Candidacy Synthesizer</h3>
+          <p className="text-[18px] text-muted-foreground max-w-2xl font-medium leading-relaxed font-serif italic opacity-80">
             Our <span className="text-foreground font-semibold not-italic">Silicon Valley Modern</span> engine crafts a high-impact, ATS-optimized signature using only your most relevant tactical experiences.
           </p>
-          <div className="flex flex-wrap justify-center xl:justify-start gap-4 pt-3">
-            {[
-              "Metric-First bullets",
-              "ATS-Gold Template",
-              "Semantic Gap Injection"
-            ].map((feature, i) => (
-              <div key={feature} className="flex items-center gap-2.5 px-5 py-2 rounded-full bg-slate-50 border border-border/10 text-xs font-black text-primary tracking-widest uppercase opacity-70">
-                <CheckCircle2 className="w-4 h-4 text-accent-emerald" />
-                {feature}
-              </div>
-            ))}
-            <button 
-              onClick={() => setShowArchive(!showArchive)}
-              className={`flex items-center gap-2.5 px-6 py-2 rounded-full border text-xs font-black tracking-widest uppercase transition-all ${
-                showArchive 
-                  ? "bg-primary text-primary-foreground border-primary" 
-                  : "bg-slate-50 border-border/10 text-primary hover:bg-slate-100 shadow-xl"
-              }`}
-            >
-              <Archive className="w-4 h-4" />
-              {showArchive ? "Hide Archive" : `Saved Blueprints (${savedResumes.length})`}
-            </button>
-          </div>
-
-          <AnimatePresence>
-            {showArchive && (
-              <motion.div 
-                initial={{ opacity: 0, height: 0, y: 20 }}
-                animate={{ opacity: 1, height: "auto", y: 0 }}
-                exit={{ opacity: 0, height: 0, y: 20 }}
-                className="mt-6 p-8 rounded-[2.5rem] bg-white/95 border border-zinc-200 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] backdrop-blur-3xl space-y-6"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-primary">Blueprint Archive</h4>
-                    <p className="text-[9px] text-zinc-500 font-medium font-serif italic">Curated historical candidacy architectural drafts</p>
-                  </div>
-                  {isLoadingArchive && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
-                </div>
-                
-                {savedResumes.length === 0 ? (
-                  <div className="py-10 text-center space-y-3">
-                    <AlertCircle className="w-8 h-8 text-white/10 mx-auto" />
-                    <p className="text-xs text-muted-foreground font-serif italic">No architectural blueprints found in history.</p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
-                    {savedResumes.map((record) => (
-                      <div 
-                        key={record.id}
-                        onClick={() => handleLoadArchive(record)}
-                        className="group p-4 rounded-[1.5rem] bg-slate-50/50 border border-border/10 hover:border-primary/40 hover:bg-slate-50 transition-all cursor-pointer relative"
-                      >
-                        <div className="flex justify-between items-start mb-2">
-                          <div className="space-y-1">
-                            <h5 className="text-[11px] font-black text-slate-900 truncate max-w-[180px]">{record.job_title}</h5>
-                            <p className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest">
-                              {new Date(record.updated_at).toLocaleDateString()}
-                            </p>
-                          </div>
-                          <button 
-                            onClick={(e) => handleDeleteArchive(record.id, e)}
-                            className="p-1.5 rounded-lg text-zinc-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100"
-                          >
-                            <Minus size={12} />
-                          </button>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className={`w-1.5 h-1.5 rounded-full ${record.id === draftId ? 'bg-accent-emerald animate-pulse' : 'bg-zinc-200'}`} />
-                          <span className="text-[8px] font-black uppercase tracking-tighter opacity-60 text-slate-900">
-                            {record.id === draftId ? 'Active Signal' : 'Archived Blueprint'}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-
         </div>
+      </div>
 
-        {/* ── ACTION SUITE: DUAL ENGINES ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 w-full mt-12">
+      {/* ── ACTION SUITE: DUAL ENGINES ── */}
+      <div className="relative z-10 w-full mt-16 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* 1. Resume Blueprint Engine */}
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
@@ -1300,6 +1218,90 @@ RETURN ONLY VALID JSON:
               </div>
             )}
           </motion.div>
+        </div>
+
+        <div className="mt-16 flex flex-col items-center space-y-8">
+          <div className="flex flex-wrap justify-center gap-4">
+            {[
+              "Metric-First bullets",
+              "ATS-Gold Template",
+              "Semantic Gap Injection"
+            ].map((feature) => (
+              <div key={feature} className="flex items-center gap-2.5 px-5 py-2 rounded-full bg-slate-50 border border-border/10 text-xs font-black text-primary tracking-widest uppercase opacity-70">
+                <CheckCircle2 className="w-4 h-4 text-accent-emerald" />
+                {feature}
+              </div>
+            ))}
+          </div>
+
+          <button 
+            onClick={() => setShowArchive(!showArchive)}
+            className={`flex items-center gap-2.5 px-10 py-4 rounded-full border text-xs font-black tracking-[0.2em] uppercase transition-all ${
+              showArchive 
+                ? "bg-slate-950 text-white border-slate-950" 
+                : "bg-slate-50 border-border/10 text-slate-600 hover:bg-slate-100 shadow-xl shadow-slate-200/40"
+            }`}
+          >
+            <Archive className="w-4 h-4" />
+            {showArchive ? "Hide Archive" : `View Saved Blueprints (${savedResumes.length})`}
+          </button>
+
+          <AnimatePresence>
+            {showArchive && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0, y: 20 }}
+                animate={{ opacity: 1, height: "auto", y: 0 }}
+                exit={{ opacity: 0, height: 0, y: 20 }}
+                className="w-full max-w-4xl p-8 rounded-[3rem] bg-white/95 border border-zinc-200 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] backdrop-blur-3xl space-y-6"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-primary">Blueprint Archive</h4>
+                    <p className="text-[9px] text-zinc-500 font-medium font-serif italic">Curated historical candidacy architectural drafts</p>
+                  </div>
+                  {isLoadingArchive && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
+                </div>
+                
+                {savedResumes.length === 0 ? (
+                  <div className="py-10 text-center space-y-3">
+                    <AlertCircle className="w-8 h-8 text-white/10 mx-auto" />
+                    <p className="text-xs text-muted-foreground font-serif italic">No architectural blueprints found in history.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
+                    {savedResumes.map((record) => (
+                      <div 
+                        key={record.id}
+                        onClick={() => handleLoadArchive(record)}
+                        className="group p-4 rounded-[1.5rem] bg-slate-50/50 border border-border/10 hover:border-primary/40 hover:bg-slate-50 transition-all cursor-pointer relative"
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="space-y-1">
+                            <h5 className="text-[11px] font-black text-slate-900 truncate max-w-[180px]">{record.job_title}</h5>
+                            <p className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest">
+                              {new Date(record.updated_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <button 
+                            onClick={(e) => handleDeleteArchive(record.id, e)}
+                            className="p-1.5 rounded-lg text-zinc-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100"
+                          >
+                            <Minus size={12} />
+                          </button>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`w-1.5 h-1.5 rounded-full ${record.id === draftId ? 'bg-accent-emerald animate-pulse' : 'bg-zinc-200'}`} />
+                          <span className="text-[8px] font-black uppercase tracking-tighter opacity-60 text-slate-900">
+                            {record.id === draftId ? 'Active Signal' : 'Archived Blueprint'}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
