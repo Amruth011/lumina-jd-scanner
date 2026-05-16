@@ -66,6 +66,8 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName, forceTab }: Re
     github: ""
   });
   const [tone, setTone] = useState<"Professional" | "Modern" | "Aggressive">("Modern");
+  const [clFocus, setClFocus] = useState<"Technical" | "Leadership" | "Cultural">("Technical");
+  const [clLength, setClLength] = useState<"Concise" | "Detailed">("Concise");
   const [addingSection, setAddingSection] = useState<'experience' | 'projects' | 'education' | 'certifications' | null>(null);
   const [savedResumes, setSavedResumes] = useState<ArchiveRecord[]>([]);
   const [showArchive, setShowArchive] = useState(false);
@@ -847,10 +849,12 @@ RETURN ONLY VALID JSON:
   };
 
   const generateCoverLetter = async () => {
-    if (!resume || !editableResume) {
-      toast.error("Generate a resume first!");
-      return;
-    }
+    // If no resume is generated, we use the raw vault items as context
+    const contextData = editableResume || {
+      note: "Candidate has not generated a tailored resume yet. Use their Master Vault items as context.",
+      experience: vaultItems.map(v => ({ heading: v.title + (v.organization ? ` @ ${v.organization}` : ""), content: v.description, bullets: v.bullets || [] }))
+    };
+
     setIsGeneratingCL(true);
     toast.loading("Synthesizing Cover Letter...", { id: "cl-gen" });
 
@@ -858,8 +862,10 @@ RETURN ONLY VALID JSON:
       const { data, error } = await supabase.functions.invoke("cover-letter", {
         body: {
           jd: jdTitle + (jdSkills?.length ? ` with skills: ${jdSkills.map(s => s.skill).join(", ")}` : ""),
-          resume: editableResume,
-          tone: tone
+          resume: contextData,
+          tone: tone,
+          focus: clFocus,
+          length: clLength
         }
       });
 
@@ -1032,258 +1038,85 @@ RETURN ONLY VALID JSON:
             )}
           </AnimatePresence>
 
-          <div className="mt-8 p-6 rounded-[2rem] bg-slate-50/50 border border-border/10 space-y-4 relative group">
-            <div className="absolute -top-3 left-6 px-3 py-1 rounded-full bg-primary text-background text-[8px] font-black uppercase tracking-widest shadow-xl opacity-0 group-hover:opacity-100 transition-opacity">
-              Strategic Calibration Hub
-            </div>
-            
-            <button 
-              onClick={() => setShowSettings(!showSettings)}
-              className={`flex items-center gap-3 px-8 py-3.5 rounded-full text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-500 shadow-xl ${
-                showSettings 
-                  ? "bg-slate-900 text-white border border-white/20 scale-105" 
-                  : "bg-slate-950 text-white/70 border border-white/10 hover:bg-slate-900 hover:text-white hover:scale-105"
-              }`}
-            >
-              <Wand2 size={14} className={showSettings ? "animate-pulse text-primary" : ""} /> 
-              {showSettings ? "Close Parameters" : "Edit Synthesis Parameters (Lines, Fonts, Tone)"}
-            </button>
-
-            <AnimatePresence>
-              {showSettings && (
-                <motion.div 
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  className="overflow-hidden space-y-6 pt-4 px-2"
-                >
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Summary Lines</label>
-                        <div className="h-px flex-1 bg-white/5" />
-                      </div>
-                      <select 
-                        value={summaryLines} 
-                        onChange={(e) => setSummaryLines(Number(e.target.value))}
-                        className="w-full bg-background/60 border border-white/10 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 ring-primary/40 transition-all font-bold"
-                      >
-                        <option value={2}>2 Lines (Condensed)</option>
-                        <option value={3}>3 Lines (Standard)</option>
-                        <option value={4}>4 Lines (Detailed)</option>
-                      </select>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Project Bullets</label>
-                        <div className="h-px flex-1 bg-white/5" />
-                      </div>
-                      <select 
-                        value={projectLines} 
-                        onChange={(e) => setProjectLines(Number(e.target.value))}
-                        className="w-full bg-background/60 border border-white/10 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 ring-primary/40 transition-all font-bold"
-                      >
-                        <option value={2}>2 Bullets (High Velocity)</option>
-                        <option value={3}>3 Bullets (Standard Impact)</option>
-                        <option value={5}>5 Bullets (Senior Executive)</option>
-                      </select>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-6 pt-2">
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Experience Detail</label>
-                        <div className="h-px flex-1 bg-white/5" />
-                      </div>
-                      <select 
-                        value={experienceBullets} 
-                        onChange={(e) => setExperienceBullets(Number(e.target.value))}
-                        className="w-full bg-background/60 border border-white/10 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 ring-primary/40 transition-all font-bold"
-                      >
-                        <option value={3}>3 Bullets (Core)</option>
-                        <option value={4}>4 Bullets (Advanced)</option>
-                        <option value={5}>5 Bullets (Strategic Depth)</option>
-                      </select>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Strategic Tone</label>
-                        <div className="h-px flex-1 bg-white/5" />
-                      </div>
-                      <select 
-                        value={tone} 
-                        onChange={(e) => setTone(e.target.value as "Professional" | "Modern" | "Aggressive")}
-                        className="w-full bg-background/60 border border-white/10 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 ring-primary/40 transition-all font-bold"
-                      >
-                        <option value="Modern">Silicon Valley Modern</option>
-                        <option value="Professional">Executive Classic</option>
-                        <option value="Aggressive">Growth Ninja (Impact)</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-6 pt-2">
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Typography (PDF)</label>
-                        <div className="h-px flex-1 bg-white/5" />
-                      </div>
-                      <select 
-                        value={fontFamily} 
-                        onChange={(e) => setFontFamily(e.target.value as "Inter" | "Roboto" | "Merriweather" | "Arial")}
-                        className="w-full bg-background/60 border border-white/10 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 ring-primary/40 transition-all font-bold"
-                      >
-                        <option value="Inter">Modern Sans (Inter)</option>
-                        <option value="Roboto">Classic Sans (Roboto)</option>
-                        <option value="Merriweather">Premium Serif (Merriweather)</option>
-                        <option value="Arial">Standard (Arial)</option>
-                      </select>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Name Font Size</label>
-                        <div className="h-px flex-1 bg-white/5" />
-                      </div>
-                      <select 
-                        value={nameFontSize} 
-                        onChange={(e) => setNameFontSize(Number(e.target.value))}
-                        className="w-full bg-background/60 border border-white/10 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 ring-primary/40 transition-all font-bold"
-                      >
-                        <option value={14}>14pt</option>
-                        <option value={15}>15pt</option>
-                        <option value={16}>16pt</option>
-                        <option value={17}>17pt</option>
-                        <option value={18}>18pt</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-4 pt-2">
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Headlines</label>
-                        <div className="h-px flex-1 bg-white/5" />
-                      </div>
-                      <select 
-                        value={headlineFontSize} 
-                        onChange={(e) => setHeadlineFontSize(Number(e.target.value))}
-                        className="w-full bg-background/60 border border-white/10 rounded-xl px-3 py-2.5 text-[10px] outline-none focus:ring-1 ring-primary/40 transition-all font-bold"
-                      >
-                        <option value={12}>12pt</option>
-                        <option value={13}>13pt</option>
-                        <option value={14}>14pt</option>
-                      </select>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Sub-Headlines</label>
-                        <div className="h-px flex-1 bg-white/5" />
-                      </div>
-                      <select 
-                        value={subHeadlineFontSize} 
-                        onChange={(e) => setSubHeadlineFontSize(Number(e.target.value))}
-                        className="w-full bg-background/60 border border-white/10 rounded-xl px-3 py-2.5 text-[10px] outline-none focus:ring-1 ring-primary/40 transition-all font-bold"
-                      >
-                        <option value={10}>10pt</option>
-                        <option value={11}>11pt</option>
-                        <option value={12}>12pt</option>
-                      </select>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Body Content</label>
-                        <div className="h-px flex-1 bg-white/5" />
-                      </div>
-                      <select 
-                        value={bodyFontSize} 
-                        onChange={(e) => setBodyFontSize(Number(e.target.value))}
-                        className="w-full bg-white border border-border/40 rounded-xl px-3 py-2.5 text-[10px] outline-none focus:ring-1 ring-primary/40 transition-all font-bold"
-                      >
-                        <option value={9}>9pt</option>
-                        <option value={10}>10pt</option>
-                        <option value={11}>11pt</option>
-                      </select>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 gap-6 pt-2 border-t border-white/5">
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Blueprint Font Scale</label>
-                        <span className="text-[10px] font-black text-lumina-teal">{baseFontSize}px</span>
-                      </div>
-                      <input 
-                        type="range" min="10" max="12" step="0.5" 
-                        value={baseFontSize} 
-                        onChange={(e) => setBaseFontSize(parseFloat(e.target.value))}
-                        className="w-full h-1.5 bg-slate-100/10 rounded-lg appearance-none cursor-pointer accent-lumina-teal"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-3">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Line Density</label>
-                        <div className="flex gap-1.5">
-                          {[1.0, 1.15, 1.4].map((s) => (
-                            <button 
-                              key={s} 
-                              onClick={() => setLineSpacing(s as 1.0 | 1.15 | 1.4)}
-                              className={`flex-1 py-1.5 rounded-lg text-[10px] font-black border transition-all ${lineSpacing === s ? 'bg-lumina-teal border-lumina-teal text-white' : 'bg-slate-50 border-transparent text-[#1E2A3A]/40 hover:bg-slate-100'}`}
-                            >
-                              {s.toFixed(2)}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="space-y-3">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-primary/70">Blueprint Margins</label>
-                        <div className="flex gap-1.5">
-                          {[0.5, 1.0].map((m) => (
-                            <button 
-                              key={m} 
-                              onClick={() => setMarginSize(m as 0.5 | 1.0)}
-                              className={`flex-1 py-1.5 rounded-lg text-[10px] font-black border transition-all ${marginSize === m ? 'bg-slate-900 border-slate-900 text-white' : 'bg-slate-50 border-transparent text-[#1E2A3A]/40 hover:bg-slate-100'}`}
-                            >
-                              {m.toFixed(1)}"
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
         </div>
 
         {/* ── ACTION SUITE: DUAL ENGINES ── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full mt-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 w-full mt-12">
           {/* 1. Resume Blueprint Engine */}
           <motion.div 
-            whileHover={{ y: -5 }}
-            className="glass-panel p-10 rounded-[3.5rem] border-foreground/5 bg-white shadow-2xl shadow-slate-200/50 flex flex-col justify-between space-y-8 relative overflow-hidden group"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="glass-panel p-10 rounded-[4rem] border-foreground/5 bg-white shadow-2xl shadow-slate-200/50 flex flex-col space-y-8 relative overflow-hidden group"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-lumina-teal/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-lumina-teal/10 transition-colors" />
             
             <div className="space-y-6 relative z-10">
-              <div className="w-14 h-14 rounded-2xl bg-lumina-teal/10 flex items-center justify-center text-lumina-teal">
-                <FileText size={28} />
+              <div className="flex items-center justify-between">
+                <div className="w-14 h-14 rounded-2xl bg-lumina-teal/10 flex items-center justify-center text-lumina-teal">
+                  <FileText size={28} />
+                </div>
+                {resume && (
+                  <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
+                    <CheckCircle2 size={12} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Blueprint Ready</span>
+                  </div>
+                )}
               </div>
+
               <div className="space-y-2">
                 <h3 className="text-2xl font-serif italic text-slate-900">Resume Blueprint</h3>
                 <p className="text-[13px] text-slate-500 font-medium leading-relaxed">
-                  Synthesize a high-fidelity, ATS-hardened resume blueprint tailored to the {jdTitle || 'selected'} role.
+                  Synthesize a high-fidelity, ATS-hardened resume blueprint tailored to the role.
                 </p>
               </div>
-              
-              {resume && (
-                <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 w-fit px-3 py-1 rounded-full border border-emerald-100">
-                  <CheckCircle2 size={12} />
-                  <span className="text-[10px] font-black uppercase tracking-widest">Blueprint Ready</span>
+
+              {/* Editing Parameters for Resume */}
+              <div className="space-y-6 pt-4 border-t border-slate-100">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Strategy Tone</label>
+                    <select 
+                      value={tone} 
+                      onChange={(e) => setTone(e.target.value as "Professional" | "Modern" | "Aggressive")}
+                      className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs font-bold outline-none focus:ring-2 ring-lumina-teal/20 transition-all"
+                    >
+                      <option value="Modern">Modern</option>
+                      <option value="Professional">Professional</option>
+                      <option value="Aggressive">Aggressive</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Typography</label>
+                    <select 
+                      value={fontFamily} 
+                      onChange={(e) => setFontFamily(e.target.value as "Inter" | "Roboto" | "Merriweather" | "Arial")}
+                      className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs font-bold outline-none focus:ring-2 ring-lumina-teal/20 transition-all"
+                    >
+                      <option value="Inter">Inter (Clean)</option>
+                      <option value="Roboto">Roboto (Technical)</option>
+                      <option value="Merriweather">Merriweather (Serif)</option>
+                      <option value="Arial">Arial (Standard)</option>
+                    </select>
+                  </div>
                 </div>
-              )}
+
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Density & Layout</label>
+                    <div className="flex gap-2">
+                      {[1.0, 1.15].map(s => (
+                        <button 
+                          key={s} 
+                          onClick={() => setLineSpacing(s as 1.0 | 1.15 | 1.4)}
+                          className={`px-3 py-1 rounded-lg text-[10px] font-black transition-all ${lineSpacing === s ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-400'}`}
+                        >
+                          {s === 1.0 ? 'Compact' : 'Standard'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <button
@@ -1303,46 +1136,84 @@ RETURN ONLY VALID JSON:
 
           {/* 2. Cover Letter Synthesis */}
           <motion.div 
-            whileHover={{ y: -5 }}
-            className={`glass-panel p-10 rounded-[3.5rem] border-foreground/5 bg-white shadow-2xl shadow-slate-200/50 flex flex-col justify-between space-y-8 relative overflow-hidden group ${!resume ? 'opacity-50' : ''}`}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="glass-panel p-10 rounded-[4rem] border-foreground/5 bg-white shadow-2xl shadow-slate-200/50 flex flex-col space-y-8 relative overflow-hidden group"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-slate-900/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-slate-900/10 transition-colors" />
 
             <div className="space-y-6 relative z-10">
-              <div className="w-14 h-14 rounded-2xl bg-slate-900/5 flex items-center justify-center text-slate-900">
-                <Mail size={28} />
+              <div className="flex items-center justify-between">
+                <div className="w-14 h-14 rounded-2xl bg-slate-900/5 flex items-center justify-center text-slate-900 border border-slate-100">
+                  <Mail size={28} />
+                </div>
+                {coverLetter && (
+                  <div className="flex items-center gap-2 text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+                    <CheckCircle2 size={12} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Letter Synthesized</span>
+                  </div>
+                )}
               </div>
+
               <div className="space-y-2">
                 <h3 className="text-2xl font-serif italic text-slate-900">Cover Letter</h3>
                 <p className="text-[13px] text-slate-500 font-medium leading-relaxed">
-                  Generate a humanized, narrative-driven cover letter that bridges your blueprint with the JD.
+                  Generate a humanized, narrative-driven cover letter using the JD and your profile.
                 </p>
               </div>
 
-              {coverLetter && (
-                <div className="flex items-center gap-2 text-blue-600 bg-blue-50 w-fit px-3 py-1 rounded-full border border-blue-100">
-                  <CheckCircle2 size={12} />
-                  <span className="text-[10px] font-black uppercase tracking-widest">Letter Synthesized</span>
+              {/* Editing Parameters for Cover Letter */}
+              <div className="space-y-6 pt-4 border-t border-slate-100">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Narrative Focus</label>
+                    <select 
+                      value={clFocus} 
+                      onChange={(e) => setClFocus(e.target.value as "Technical" | "Leadership" | "Cultural")}
+                      className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs font-bold outline-none focus:ring-2 ring-slate-900/20 transition-all"
+                    >
+                      <option value="Technical">Technical Excellence</option>
+                      <option value="Leadership">Leadership Impact</option>
+                      <option value="Cultural">Cultural Alignment</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Length Mode</label>
+                    <select 
+                      value={clLength} 
+                      onChange={(e) => setClLength(e.target.value as "Concise" | "Detailed")}
+                      className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs font-bold outline-none focus:ring-2 ring-slate-900/20 transition-all"
+                    >
+                      <option value="Concise">Concise (Fast Read)</option>
+                      <option value="Detailed">Detailed (High Context)</option>
+                    </select>
+                  </div>
                 </div>
-              )}
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Voice Tone</label>
+                  <div className="flex gap-2">
+                    {["Modern", "Professional", "Aggressive"].map(t => (
+                      <button 
+                        key={t} 
+                        onClick={() => setTone(t as "Professional" | "Modern" | "Aggressive")}
+                        className={`flex-1 py-2 rounded-xl text-[10px] font-black tracking-widest uppercase transition-all ${tone === t ? 'bg-slate-950 text-white shadow-lg shadow-slate-950/20' : 'bg-slate-50 text-slate-400 border border-slate-100'}`}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="space-y-3">
-              {!resume && (
-                <p className="text-[10px] text-center font-bold text-amber-600 uppercase tracking-widest mb-2 italic">
-                  Generate a resume blueprint first
-                </p>
-              )}
               <button
                 onClick={() => {
-                  if (!resume) {
-                    toast.info("Please generate a resume blueprint first to provide context for the cover letter.");
-                    return;
-                  }
                   generateCoverLetter();
                   setIsOpen(true);
                 }}
-                disabled={isGeneratingCL || !resume}
+                disabled={isGeneratingCL}
                 className="relative overflow-hidden group/btn flex items-center justify-center gap-4 w-full py-6 rounded-full text-[12px] font-black uppercase tracking-[0.2em] bg-slate-950 text-white hover:scale-[1.02] transition-all duration-300 active:scale-95 disabled:opacity-70 shadow-xl shadow-slate-950/20"
               >
                 {isGeneratingCL ? (
@@ -1358,13 +1229,13 @@ RETURN ONLY VALID JSON:
                 <div className="flex items-center gap-2 pt-2">
                   <button 
                     onClick={() => handleDownloadCL('pdf')}
-                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-50 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-100 transition-all"
+                    className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-slate-50 border border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-100 transition-all"
                   >
                     <Download size={12} /> PDF
                   </button>
                   <button 
                     onClick={() => handleDownloadCL('doc')}
-                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-50 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-100 transition-all"
+                    className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-slate-50 border border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-100 transition-all"
                   >
                     <Download size={12} /> DOC
                   </button>
