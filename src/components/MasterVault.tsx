@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 // Important: Use static import with ?url so Vite bundler properly packages the worker file for Vercel
 import pdfWorkerUrl from "pdfjs-dist/legacy/build/pdf.worker.mjs?url";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Briefcase, Code, GraduationCap, Award, Trash2, Edit3, Save, X, Loader2, Sparkles, User, Globe, Linkedin, Mail, Phone, MapPin, Github, Import, Zap, Clock, RefreshCw } from "lucide-react";
+import { Plus, Briefcase, Code, GraduationCap, Award, Trash2, Edit3, Save, X, Loader2, Sparkles, User, Globe, Linkedin, Mail, Phone, MapPin, Github, Import, Zap, Clock, RefreshCw, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -39,6 +39,12 @@ const getFieldLabels = (type?: VaultItemType) => {
     };
   }
 };
+
+interface ParsedExperience { company: string; role: string; period?: string; bullets: string[]; }
+interface ParsedEducation { institution: string; degree: string; period?: string; details: string[]; }
+interface ParsedProject { name: string; tech_stack: string; period?: string; details: string[]; }
+interface ParsedCert { name: string; issuer: string; period?: string; details: string[]; }
+interface ParsedAward { name: string; organization: string; date?: string; details: string[]; }
 
 const calculateCompletion = (profile: UserProfileWithVault | null, items: VaultItem[]) => {
   if (!profile) return 0;
@@ -267,18 +273,20 @@ export const MasterVault = () => {
 
       toast.loading("[Lumina AI v2.7] Analysing & Structuring...", { id: toastId });
 
-      const syncPrompt = `You are an expert resume parser. Extract ALL professional experience AND the candidate's personal details from this resume text.
+      const syncPrompt = `You are an expert resume parser. Extract ALL professional experience, education, projects, certifications, and high-impact achievements/awards from this resume text.
+Also extract the candidate's personal details.
 
 Resume Text:
 ${cappedText}
 
 RETURN JSON FORMAT ONLY:
 {
-  "personal_details": { "full_name": "", "email": "", "phone": "", "location": "", "linkedin": "MUST BE A VALID URL OR HANDLE (e.g. linkedin.com/in/username), NOT just the word 'LinkedIn'", "github": "MUST BE A VALID URL OR HANDLE, NOT just 'GitHub'", "portfolio": "MUST BE A VALID URL", "summary": "" },
+  "personal_details": { "full_name": "", "email": "", "phone": "", "location": "", "linkedin": "", "github": "", "portfolio": "", "summary": "" },
   "experience": [{ "company": "", "role": "", "period": "", "bullets": [] }],
   "education": [{ "institution": "", "degree": "", "period": "", "details": [] }],
   "projects": [{ "name": "", "tech_stack": "", "period": "", "details": [] }],
-  "certifications": [{ "name": "", "issuer": "", "period": "", "details": [] }]
+  "certifications": [{ "name": "", "issuer": "", "period": "", "details": [] }],
+  "awards": [{ "name": "", "organization": "", "date": "", "details": [] }]
 }`;
 
       const techModels = [
@@ -372,43 +380,71 @@ RETURN JSON FORMAT ONLY:
 
       const structData = JSON.parse(resultText.substring(firstBrace, lastBrace + 1));
 
-      let combinedItems: Omit<VaultItem, 'id' | 'created_at'>[] = [];
+      let incomingItems: Omit<VaultItem, 'id' | 'created_at'>[] = [];
 
       if (structData?.experience) {
-        combinedItems = combinedItems.concat(structData.experience.map((exp: { company: string; role: string; period?: string; bullets: string[] }) => ({
-          user_id: user.id, type: 'professional' as VaultItemType,
+        incomingItems = incomingItems.concat(structData.experience.map((exp: ParsedExperience) => ({
+          user_id: user.id, type: 'professional',
           title: exp.role || exp.company || "Imported Role", organization: exp.company || "Imported Org",
           period: exp.period || "Not Specified", description: (exp.bullets || []).join("\n"), bullets: exp.bullets || [], skills: [], is_quantified: (exp.bullets || []).some((b: string) => /[\d%]/.test(b))
         })));
       }
 
       if (structData?.education) {
-        combinedItems = combinedItems.concat(structData.education.map((edu: { institution: string; degree: string; period?: string; details: string[] }) => ({
-          user_id: user.id, type: 'education' as VaultItemType,
+        incomingItems = incomingItems.concat(structData.education.map((edu: ParsedEducation) => ({
+          user_id: user.id, type: 'education',
           title: edu.degree || "Degree", organization: edu.institution || "Institution",
           period: edu.period || "Not Specified", description: (edu.details || []).join("\n"), bullets: edu.details || [], skills: [], is_quantified: false
         })));
       }
 
       if (structData?.projects) {
-        combinedItems = combinedItems.concat(structData.projects.map((proj: { name: string; tech_stack: string; period?: string; details: string[] }) => ({
-          user_id: user.id, type: 'project' as VaultItemType,
+        incomingItems = incomingItems.concat(structData.projects.map((proj: ParsedProject) => ({
+          user_id: user.id, type: 'project',
           title: proj.name || "Project", organization: proj.tech_stack || "Tech Context",
           period: proj.period || "Not Specified", description: (proj.details || []).join("\n"), bullets: proj.details || [], skills: [], is_quantified: false
         })));
       }
 
       if (structData?.certifications) {
-        combinedItems = combinedItems.concat(structData.certifications.map((cert: { name: string; issuer: string; period?: string; details: string[] }) => ({
-          user_id: user.id, type: 'certification' as VaultItemType,
+        incomingItems = incomingItems.concat(structData.certifications.map((cert: ParsedCert) => ({
+          user_id: user.id, type: 'certification',
           title: cert.name || "Certificate", organization: cert.issuer || "Issuer",
           period: cert.period || "Not Specified", description: (cert.details || []).join("\n"), bullets: cert.details || [], skills: [], is_quantified: false
         })));
       }
 
-      if (combinedItems.length > 0) {
-        const { error: insertError } = await supabase.from("master_vault").insert(combinedItems);
+      if (structData?.awards) {
+        incomingItems = incomingItems.concat(structData.awards.map((award: ParsedAward) => ({
+          user_id: user.id, type: 'certification', // Using certification type for awards for now as per schema
+          title: award.name || "Award", organization: award.organization || "Recognition",
+          period: award.date || "Not Specified", description: (award.details || []).join("\n"), bullets: award.details || [], skills: [], is_quantified: false
+        })));
+      }
+
+      // ── DUPLICATE DETECTION LOGIC ──
+      const existingTitles = new Set(items.map(i => i.title.toLowerCase().trim()));
+      const duplicates: Omit<VaultItem, 'id' | 'created_at'>[] = [];
+      const uniques: Omit<VaultItem, 'id' | 'created_at'>[] = [];
+
+      incomingItems.forEach(item => {
+        if (existingTitles.has(item.title.toLowerCase().trim())) {
+          duplicates.push(item);
+        } else {
+          uniques.push(item);
+        }
+      });
+
+      if (uniques.length > 0) {
+        const { error: insertError } = await supabase.from("master_vault").insert(uniques);
         if (insertError) throw insertError;
+      }
+
+      // Store duplicates in temporary session state to show them to user
+      if (duplicates.length > 0) {
+        const existingDups = JSON.parse(sessionStorage.getItem(`dupes_${user.id}`) || "[]");
+        sessionStorage.setItem(`dupes_${user.id}`, JSON.stringify([...existingDups, ...duplicates]));
+        toast.info(`${duplicates.length} potential duplicates identified and moved to review section.`);
       }
 
       if (structData?.personal_details) {
@@ -502,13 +538,11 @@ RETURN JSON FORMAT ONLY:
           throw error;
         }
       } else {
-        /* eslint-disable @typescript-eslint/no-explicit-any */
         const { error } = await supabase.from("master_vault").insert({
           ...itemToSave,
           user_id: user.id,
           type: editingItem.type || 'professional'
-        } as any);
-        /* eslint-enable @typescript-eslint/no-explicit-any */
+        });
         if (error) {
           console.error("MasterVault Insert Error:", error);
           throw error;
@@ -811,20 +845,42 @@ RETURN JSON FORMAT ONLY:
             </div>
 
             <div className="flex justify-between items-center pt-4 border-t border-white/5">
-              <button
-                onClick={() => {
-                  if (confirm("EMERGENCY RESET: This will clear all local drafts and unsaved changes. Your saved vault items remain safe in the cloud. Proceed?")) {
-                    localStorage.removeItem(`draft_profile_${user.id}`);
-                    localStorage.removeItem(`draft_summary_${user.id}`);
-                    localStorage.removeItem(`draft_vault_item_${user.id}`);
-                    fetchData();
-                    toast.success("Local state re-synchronized.");
-                  }
-                }}
-                className="text-[9px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 transition-colors"
-              >
-                Emergency Reset
-              </button>
+              <div className="flex gap-4">
+                <button
+                  onClick={() => {
+                    if (confirm("CLEAR IDENTITY: This will wipe your name, location, and links. Professional experience remains safe. Proceed?")) {
+                      setProfile(prev => prev ? {
+                        ...prev,
+                        full_name: "",
+                        location: "",
+                        phone: "",
+                        linkedin_url: "",
+                        github_url: "",
+                        website_url: "",
+                        summary_master: ""
+                      } : null);
+                      toast.success("Identity fields cleared locally.");
+                    }
+                  }}
+                  className="text-[9px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 transition-colors"
+                >
+                  Clear Identity
+                </button>
+                <button
+                  onClick={() => {
+                    if (confirm("EMERGENCY RESET: This will clear all local drafts and unsaved changes. Your saved vault items remain safe in the cloud. Proceed?")) {
+                      localStorage.removeItem(`draft_profile_${user.id}`);
+                      localStorage.removeItem(`draft_summary_${user.id}`);
+                      localStorage.removeItem(`draft_vault_item_${user.id}`);
+                      fetchData();
+                      toast.success("Local state re-synchronized.");
+                    }
+                  }}
+                  className="text-[9px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-300 transition-colors"
+                >
+                  Emergency Reset
+                </button>
+              </div>
               <button
                 onClick={handleSaveProfile}
                 disabled={isSaving}
@@ -845,12 +901,29 @@ RETURN JSON FORMAT ONLY:
               <h3 className="text-xs font-black uppercase tracking-[0.3em] text-foreground/70">Strategic Experience</h3>
               <div className="h-px w-32 bg-gradient-to-r from-white/10 to-transparent" />
             </div>
-            <button
-              onClick={() => setEditingItem({ type: 'professional', bullets: [], skills: [], title: '', organization: '', period: '', description: '' })}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
-            >
-              <Plus size={14} /> Add Role
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={async () => {
+                  if (confirm("CLEAR EXPERIENCE: This will permanently delete ALL professional roles from your vault. Proceed?")) {
+                    const { error } = await supabase.from("master_vault").delete().eq("user_id", user.id).eq("type", "professional");
+                    if (error) toast.error("Failed to clear experience.");
+                    else {
+                      fetchData();
+                      toast.success("Strategic experience cleared.");
+                    }
+                  }
+                }}
+                className="text-[9px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 transition-colors"
+              >
+                Clear Experience
+              </button>
+              <button
+                onClick={() => setEditingItem({ type: 'professional', bullets: [], skills: [], title: '', organization: '', period: '', description: '' })}
+                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
+              >
+                <Plus size={14} /> Add Role
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1107,6 +1180,83 @@ RETURN JSON FORMAT ONLY:
           </div>
         )}
       </AnimatePresence>
+
+      {/* ── SECTION: POTENTIAL DUPLICATES ── */}
+      {(() => {
+        if (typeof window === 'undefined') return null;
+        const dupes = JSON.parse(sessionStorage.getItem(`dupes_${user?.id}`) || "[]");
+        if (dupes.length === 0) return null;
+        
+        return (
+          <div className="max-w-7xl mx-auto px-6 pb-24 border-t border-white/5 pt-12 mt-12">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-4">
+                <RefreshCw size={20} className="text-amber-500 animate-spin-slow" />
+                <div>
+                  <h3 className="text-sm font-black uppercase tracking-[0.3em] text-amber-500">Duplicate Intelligence</h3>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-1">Reviewing conflicts from multi-resume sync</p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  sessionStorage.removeItem(`dupes_${user?.id}`);
+                  fetchData();
+                }}
+                className="px-4 py-2 rounded-lg bg-amber-500/10 text-amber-500 text-[10px] font-black uppercase tracking-widest hover:bg-amber-500/20 transition-all"
+              >
+                Clear Review Queue
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {dupes.map((item: Omit<VaultItem, 'id' | 'created_at'>, idx: number) => (
+                <div key={idx} className="premium-card p-6 border-amber-500/20 bg-amber-500/5 hover:border-amber-500/40 transition-all group">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="space-y-1">
+                      <h4 className="font-display font-bold text-base line-clamp-1">{item.title}</h4>
+                      <p className="text-[10px] font-bold text-amber-500 uppercase tracking-wider">{item.organization}</p>
+                    </div>
+                    <div className="p-1.5 rounded bg-amber-500/10 text-amber-500">
+                      <AlertCircle size={14} />
+                    </div>
+                  </div>
+                  
+                  <p className="text-[11px] text-muted-foreground line-clamp-3 mb-6 italic leading-relaxed">
+                    "{item.description}"
+                  </p>
+                  
+                  <div className="flex gap-3 pt-4 border-t border-white/5">
+                    <button 
+                      onClick={async () => {
+                        const { error } = await supabase.from("master_vault").insert(item);
+                        if (!error) {
+                          const newDupes = dupes.filter((_: Omit<VaultItem, 'id' | 'created_at'>, i: number) => i !== idx);
+                          sessionStorage.setItem(`dupes_${user?.id}`, JSON.stringify(newDupes));
+                          fetchData();
+                          toast.success("Entry merged into vault.");
+                        }
+                      }}
+                      className="flex-1 py-3 rounded-xl bg-amber-500 text-black text-[9px] font-black uppercase tracking-widest hover:scale-[1.02] transition-all active:scale-95 shadow-lg shadow-amber-500/20"
+                    >
+                      Keep
+                    </button>
+                    <button 
+                      onClick={() => {
+                        const newDupes = dupes.filter((_: Omit<VaultItem, 'id' | 'created_at'>, i: number) => i !== idx);
+                        sessionStorage.setItem(`dupes_${user?.id}`, JSON.stringify(newDupes));
+                        fetchData();
+                      }}
+                      className="flex-1 py-3 rounded-xl bg-white/5 text-zinc-400 text-[9px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
+                    >
+                      Ignore
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };
