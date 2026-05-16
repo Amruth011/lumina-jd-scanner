@@ -307,10 +307,11 @@ Candidate Profile: ${JSON.stringify(vaultItems.slice(0, 15).map(v => ({ title: v
 ### SCHEMA REQUIREMENTS:
 1. EDUCATION: Must include School, Degree, GPA, Date, and Location.
 2. EXPERIENCE: Professional roles with quantified impact.
-3. PROJECTS: Technical achievements with stack details.
-4. LEADERSHIP: Non-work impact or community roles.
-5. SKILLS: Categorized (e.g., "Languages: Python, Go").
-6. AWARDS: Competitive wins or recognition.
+3. PRODUCTS: Startups or SaaS products founded by the user.
+4. PROJECTS: Technical achievements with stack details.
+5. LEADERSHIP: Non-work impact or community roles.
+6. SKILLS: Categorized (e.g., "Languages: Python, Go").
+7. AWARDS: Competitive wins or recognition.
 
 Return ONLY a JSON object with this exact structure:
 {
@@ -321,6 +322,13 @@ Return ONLY a JSON object with this exact structure:
       "heading": "Job Title @ Company - City, State",
       "content": "Jan 2024 – Present",
       "bullets": ["Action verb + Task + Result [Metric]"]
+    }
+  ],
+  "products": [
+    {
+      "heading": "Product/Startup Name @ Venture Status - City, State",
+      "content": "Jan 2023 – Present",
+      "bullets": ["Traction metric + Value proposition"]
     }
   ],
   "projects": [
@@ -891,15 +899,17 @@ Return ONLY a JSON object with this exact structure:
             drawSectionHeader("LEADERSHIP");
             editableResume.leadership.forEach(lead => {
               pdf.setTextColor(0, 0, 0);
-              pdf.setFont("helvetica", "bold");
-              pdf.setFontSize(11);
+              pdf.setFont(currentFont, "bold");
+              pdf.setFontSize(subHeadlineFontSize);
               pdf.text(lead.heading, margin, y);
-              pdf.setFont("helvetica", "normal");
+              pdf.setFont(currentFont, "normal");
+              pdf.setFontSize(bodyFontSize - 1);
               pdf.text(lead.content || "", pageWidth - margin, y, { align: "right" });
               y += 5;
 
               lead.bullets?.forEach(bullet => {
-                pdf.setFont("helvetica", "normal");
+                pdf.setFont(currentFont, "normal");
+                pdf.setFontSize(bodyFontSize);
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
                 const lines = pdf.splitTextToSize(`• ${cleanBullet}`, pageWidth - (margin * 2) - 4);
                 pdf.text(lines, margin + 4, y);
@@ -915,10 +925,10 @@ Return ONLY a JSON object with this exact structure:
             editableResume.skills_section.forEach(skillLine => {
               const [category, skills] = skillLine.split(':');
               pdf.setTextColor(0, 0, 0);
-              pdf.setFont("helvetica", "bold");
-              pdf.setFontSize(10);
+              pdf.setFont(currentFont, "bold");
+              pdf.setFontSize(bodyFontSize);
               pdf.text(`${category?.trim() || "Category"}:`, margin, y);
-              pdf.setFont("helvetica", "normal");
+              pdf.setFont(currentFont, "normal");
               const skillsText = skills?.trim() || "";
               const lines = pdf.splitTextToSize(skillsText, pageWidth - margin - (margin + pdf.getTextWidth(`${category?.trim()}: `)));
               pdf.text(lines, margin + pdf.getTextWidth(`${category?.trim()}: `), y);
@@ -931,8 +941,8 @@ Return ONLY a JSON object with this exact structure:
             drawSectionHeader("CERTIFICATIONS");
             editableResume.certifications.forEach(cert => {
               pdf.setTextColor(0, 0, 0);
-              pdf.setFont("helvetica", "normal");
-              pdf.setFontSize(10);
+              pdf.setFont(currentFont, "normal");
+              pdf.setFontSize(bodyFontSize);
               const lines = pdf.splitTextToSize(`• ${cert}`, pageWidth - (margin * 2));
               pdf.text(lines, margin, y);
               y += (lines.length * 4.5) + 1;

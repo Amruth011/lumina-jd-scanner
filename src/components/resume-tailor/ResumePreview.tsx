@@ -333,6 +333,36 @@ export const ResumePreview = ({
               </CollapsibleSection>
 
               <CollapsibleSection 
+                title="Products / Startups" 
+                icon={Rocket} 
+                isOpen={openSection === "products"} 
+                onToggle={() => setOpenSection(openSection === "products" ? null : "products")}
+                action={<button onClick={() => setShowVaultPicker({ section: 'products' })} className="text-[8px] font-black uppercase text-lumina-teal flex items-center gap-1"><Plus size={10}/> Vault</button>}
+              >
+                <div className="space-y-4">
+                  {(localResume.products || []).map((prod, idx) => (
+                    <div key={idx} className="p-4 rounded-xl bg-slate-50/50 border border-border/10 space-y-3 relative group/prod">
+                      <button onClick={() => setLocalResume({...localResume, products: (localResume.products || []).filter((_, i) => i !== idx)})} className="absolute top-3 right-3 p-1.5 text-red-500 opacity-0 group-hover/prod:opacity-100 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={12} /></button>
+                      <input value={prod.heading} onChange={(e) => {
+                        const newProducts = [...(localResume.products || [])];
+                        newProducts[idx] = { ...newProducts[idx], heading: e.target.value };
+                        setLocalResume({ ...localResume, products: newProducts });
+                      }} className="w-full bg-transparent font-bold text-sm outline-none border-b border-transparent focus:border-lumina-teal/20" />
+                      <div className="space-y-2">
+                        {prod.bullets?.map((bullet, bullIdx) => (
+                          <div key={bullIdx} className="flex gap-2 items-start group/bull">
+                            <textarea value={bullet} onChange={(e) => updateBullet('products', idx, bullIdx, e.target.value)} className="flex-1 bg-white/50 rounded-xl px-3 py-1.5 text-[11px] font-body outline-none min-h-[36px] border border-transparent focus:border-lumina-teal/20" />
+                            <button onClick={() => removeBullet('products', idx, bullIdx)} className="p-1.5 text-red-500 opacity-0 group-hover/bull:opacity-100"><Minus size={10} /></button>
+                          </div>
+                        ))}
+                        <button onClick={() => addBullet('products', idx)} className="text-[8px] font-bold text-lumina-teal flex items-center gap-1 uppercase tracking-widest"><Plus size={10} /> Add Bullet</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CollapsibleSection>
+
+              <CollapsibleSection 
                 title="Technical Projects" 
                 icon={Database} 
                 isOpen={openSection === "projects"} 
@@ -476,7 +506,13 @@ export const ResumePreview = ({
                         {localHeader.fullName || "Your Name"}
                       </h1>
                       <div className="flex flex-wrap justify-center items-center gap-x-2 text-[#1E2A3A] font-medium" style={{ fontSize: fontSizes.meta }}>
-                        {localHeader.email && <span>{localHeader.email.toLowerCase()}</span>}
+                        {localHeader.location && <span>{localHeader.location}</span>}
+                        {localHeader.email && (
+                          <>
+                            {localHeader.location && <span className="opacity-20">|</span>}
+                            <span>{localHeader.email.toLowerCase()}</span>
+                          </>
+                        )}
                         {localHeader.linkedin && (
                           <>
                             <span className="opacity-20">|</span>
@@ -493,6 +529,12 @@ export const ResumePreview = ({
                           <>
                             <span className="opacity-20">|</span>
                             <span>{localHeader.github.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '')}</span>
+                          </>
+                        )}
+                        {localHeader.portfolio && (
+                          <>
+                            <span className="opacity-20">|</span>
+                            <span>{localHeader.portfolio.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '')}</span>
                           </>
                         )}
                       </div>

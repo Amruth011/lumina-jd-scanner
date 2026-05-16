@@ -212,6 +212,8 @@ export interface GeneratedResume {
   certifications?: string[];
   awards?: string[];
   products?: GeneratedResumeSection[];
+  projects?: GeneratedResumeSection[];
+  leadership?: GeneratedResumeSection[];
 }
 
 // ── NEW: ATS Score Simulator types ──
