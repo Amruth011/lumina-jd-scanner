@@ -1248,27 +1248,24 @@ Return ONLY a JSON object with this exact structure:
                     </div>
                   </div>
 
-                  <div className="space-y-4 bg-slate-900/[0.03] p-6 rounded-[2.5rem] border border-slate-100 shadow-inner">
-                    <div className="flex items-center justify-between mb-4">
-                      <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Typography Scale (pt)</h4>
-                      <div className="h-px flex-1 bg-slate-100 ml-4" />
-                    </div>
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                  <div className="space-y-4 border-t border-b border-slate-100 py-6">
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 block mb-2">Granular Font Scaling (pt)</label>
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                       <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-slate-400">Name</label>
-                        <input type="number" min="14" max="48" value={nameFontSize} onChange={e => setNameFontSize(Number(e.target.value))} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-black shadow-sm" />
+                        <label className="text-[8px] font-black uppercase text-slate-400 ml-1">Name</label>
+                        <input type="number" min="14" max="48" value={nameFontSize} onChange={e => setNameFontSize(Number(e.target.value))} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-black shadow-sm focus:ring-2 ring-lumina-teal/20 transition-all outline-none" />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-slate-400">Headlines</label>
-                        <input type="number" min="8" max="24" value={headlineFontSize} onChange={e => setHeadlineFontSize(Number(e.target.value))} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-black shadow-sm" />
+                        <label className="text-[8px] font-black uppercase text-slate-400 ml-1">Headlines</label>
+                        <input type="number" min="8" max="24" value={headlineFontSize} onChange={e => setHeadlineFontSize(Number(e.target.value))} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-black shadow-sm focus:ring-2 ring-lumina-teal/20 transition-all outline-none" />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-slate-400">Sub-Headers</label>
-                        <input type="number" min="8" max="20" value={subHeadlineFontSize} onChange={e => setSubHeadlineFontSize(Number(e.target.value))} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-black shadow-sm" />
+                        <label className="text-[8px] font-black uppercase text-slate-400 ml-1">Sub-Headers</label>
+                        <input type="number" min="8" max="20" value={subHeadlineFontSize} onChange={e => setSubHeadlineFontSize(Number(e.target.value))} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-black shadow-sm focus:ring-2 ring-lumina-teal/20 transition-all outline-none" />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-slate-400">Body</label>
-                        <input type="number" min="7" max="14" value={bodyFontSize} onChange={e => setBodyFontSize(Number(e.target.value))} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-black shadow-sm" />
+                        <label className="text-[8px] font-black uppercase text-slate-400 ml-1">Body</label>
+                        <input type="number" min="7" max="14" value={bodyFontSize} onChange={e => setBodyFontSize(Number(e.target.value))} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-black shadow-sm focus:ring-2 ring-lumina-teal/20 transition-all outline-none" />
                       </div>
                     </div>
                   </div>
