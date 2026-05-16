@@ -23,7 +23,8 @@ import {
   Type,
   Layers,
   Cpu,
-  Sparkles
+  Sparkles,
+  Rocket
 } from "lucide-react";
 import { GeneratedResume, VaultItem } from "@/types/jd";
 import { toast } from "sonner";
@@ -585,6 +586,35 @@ export const ResumePreview = ({
                                   </div>
                                   <ul className="list-disc ml-5 space-y-1">
                                     {proj.bullets?.map((bullet, bullIdx) => (
+                                      <li key={bullIdx} className="text-[#1E2A3A]/90 leading-tight" style={{ fontSize: fontSizes.body }}>
+                                        {bullet.replace(/^[•\s*-]+/, '').trim()}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </section>
+                      )}
+
+                      {/* Products / Startups */}
+                      {(localResume.products && localResume.products.length > 0) && (
+                        <section className="space-y-2">
+                          <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
+                            <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.meta }}>Products & Ventures</h4>
+                          </div>
+                          <div className="space-y-4">
+                            {localResume.products?.map((prod, prodIdx) => {
+                              const [title, status] = prod.heading.split('-');
+                              return (
+                                <div key={prodIdx} className="space-y-1">
+                                  <div className="flex justify-between items-baseline font-bold" style={{ fontSize: fontSizes.body }}>
+                                    <span>{title?.trim()} <span className="font-normal opacity-60">| {status?.trim()}</span></span>
+                                    <span className="text-[11px] font-normal">{prod.content || "Operational"}</span>
+                                  </div>
+                                  <ul className="list-disc ml-5 space-y-1">
+                                    {prod.bullets?.map((bullet, bullIdx) => (
                                       <li key={bullIdx} className="text-[#1E2A3A]/90 leading-tight" style={{ fontSize: fontSizes.body }}>
                                         {bullet.replace(/^[•\s*-]+/, '').trim()}
                                       </li>

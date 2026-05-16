@@ -209,6 +209,7 @@ export interface GeneratedResume {
   skills_section: string[];
   experience: GeneratedResumeSection[];
   projects?: GeneratedResumeSection[];
+  products?: GeneratedResumeSection[];
   leadership?: GeneratedResumeSection[];
   education: string[];
   certifications?: string[];
@@ -226,7 +227,7 @@ export interface ATSVerdict {
   tips: string[];
 }
 // ── NEW: Master Vault types ──
-export type VaultItemType = 'professional' | 'project' | 'education' | 'certification';
+export type VaultItemType = 'professional' | 'project' | 'product' | 'education' | 'certification';
 
 export interface VaultItem {
   id: string;

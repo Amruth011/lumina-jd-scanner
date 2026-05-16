@@ -86,11 +86,12 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName, forceTab }: Re
   const [lineSpacing, setLineSpacing] = useState<1.0 | 1.15 | 1.4>(1.15);
   const [marginSize, setMarginSize] = useState<0.5 | 1.0>(1.0);
   const [baseFontSize, setBaseFontSize] = useState(11);
-  const [sectionOrder, setSectionOrder] = useState<string[]>(['EDUCATION', 'EXPERIENCE', 'PROJECTS', 'LEADERSHIP', 'SKILLS', 'AWARDS', 'CERTIFICATIONS']);
+  const [sectionOrder, setSectionOrder] = useState<string[]>(['EDUCATION', 'EXPERIENCE', 'PROJECTS', 'PRODUCTS', 'LEADERSHIP', 'SKILLS', 'AWARDS', 'CERTIFICATIONS']);
   const [visibleSections, setVisibleSections] = useState<Record<string, boolean>>({
     'EDUCATION': true,
     'EXPERIENCE': true,
     'PROJECTS': true,
+    'PRODUCTS': true,
     'LEADERSHIP': true,
     'SKILLS': true,
     'AWARDS': true,
@@ -270,9 +271,12 @@ Candidate Profile: ${JSON.stringify(vaultItems.slice(0, 15).map(v => ({ title: v
     - EXPERIENCE BULLETS: Exactly ${experienceBullets} bullets per role.
     - PROJECT BULLETS: Exactly ${projectLines} bullets per project.
     - PRODUCT/STARTUP BULLETS: Exactly ${productLines} bullets per product.
-- SECTION INTEGRITY: 
-    - DO NOT include personal/side projects in the EXPERIENCE section. Keep them in PROJECTS.
-    - DO NOT include certifications/awards in the LEADERSHIP section. Keep them in AWARDS or CERTIFICATIONS.
+- SECTION INTEGRITY & CLASSIFICATION (CRITICAL): 
+    - EXPERIENCE: Only for formal employment, internships, and fellowships. (e.g., 'Data Science Intern').
+    - PROJECTS: Technical builds, open-source contributions, or academic projects. (e.g., 'Kannada Book AI Agent').
+    - PRODUCTS: Startups, SaaS products, or ventures founded by the user. (e.g., 'Lumina').
+    - DO NOT mix these categories. If an item is a project, it MUST stay in PROJECTS. If it is a startup, it MUST stay in PRODUCTS.
+    - DO NOT include certifications/awards in any other section. Keep them in AWARDS or CERTIFICATIONS.
 - CUSTOM STRUCTURE MANDATE:
     - You MUST follow this exact section sequence and only include these sections: ${sectionOrder.filter(s => visibleSections[s]).join(', ')}.
     - If a section is not in this list, omit it completely.
@@ -808,6 +812,33 @@ Return ONLY a JSON object with this exact structure:
             });
           }
 
+          // --- PRODUCTS ---
+          if (editableResume.products?.length) {
+            drawSectionHeader("PRODUCTS & VENTURES");
+            editableResume.products.forEach(prod => {
+              const [title, status] = prod.heading.split('-');
+              pdf.setTextColor(0, 0, 0);
+              pdf.setFont("helvetica", "bold");
+              pdf.setFontSize(11);
+              pdf.text(title?.trim() || "Product", margin, y);
+              if (status) {
+                pdf.setFont("helvetica", "normal");
+                pdf.text(` | ${status.trim()}`, margin + pdf.getTextWidth(title?.trim() || "Product"), y);
+              }
+              pdf.text(prod.content || "Operational", pageWidth - margin, y, { align: "right" });
+              y += 5;
+
+              prod.bullets?.forEach(bullet => {
+                pdf.setFont("helvetica", "normal");
+                const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
+                const lines = pdf.splitTextToSize(`• ${cleanBullet}`, pageWidth - (margin * 2) - 4);
+                pdf.text(lines, margin + 4, y);
+                y += (lines.length * 4.5);
+              });
+              y += 2;
+            });
+          }
+
           // --- LEADERSHIP ---
           if (editableResume.leadership?.length) {
             drawSectionHeader("LEADERSHIP");
@@ -1249,15 +1280,32 @@ Return ONLY a JSON object with this exact structure:
 
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Layout Density</label>
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Line Spacing</label>
                       <div className="flex gap-2">
-                        {[1.0, 1.15].map(s => (
+                        {[1.0, 1.15, 1.4].map(s => (
                           <button 
                             key={s} 
                             onClick={() => setLineSpacing(s as 1.0 | 1.15 | 1.4)}
                             className={`px-3 py-1 rounded-lg text-[10px] font-black transition-all ${lineSpacing === s ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-400'}`}
                           >
-                            {s === 1.0 ? 'Compact' : 'Standard'}
+                            {s === 1.0 ? 'Compact' : s === 1.15 ? 'Standard' : 'Relaxed'}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Page Margins</label>
+                      <div className="flex gap-2">
+                        {[0.5, 1.0].map(m => (
+                          <button 
+                            key={m} 
+                            onClick={() => setMarginSize(m as 0.5 | 1.0)}
+                            className={`px-3 py-1 rounded-lg text-[10px] font-black transition-all ${marginSize === m ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-400'}`}
+                          >
+                            {m === 0.5 ? 'Narrow' : 'Standard'}
                           </button>
                         ))}
                       </div>

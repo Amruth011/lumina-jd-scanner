@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 // Important: Use static import with ?url so Vite bundler properly packages the worker file for Vercel
 import pdfWorkerUrl from "pdfjs-dist/legacy/build/pdf.worker.mjs?url";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Briefcase, Code, GraduationCap, Award, Trash2, Edit3, Save, X, Loader2, Sparkles, User, Globe, Linkedin, Mail, Phone, MapPin, Github, Import, Zap, Clock, RefreshCw, AlertCircle } from "lucide-react";
+import { Plus, Briefcase, Code, GraduationCap, Award, Trash2, Edit3, Save, X, Loader2, Sparkles, User, Globe, Linkedin, Mail, Phone, MapPin, Github, Import, Zap, Clock, RefreshCw, AlertCircle, Rocket } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -24,6 +24,12 @@ const getFieldLabels = (type?: VaultItemType) => {
       orgStr: "Tech Stack / Context", orgEx: "e.g. React, Node.js, Web3",
       periodStr: "Development Timeline", periodEx: "e.g. Jan 2023 - Mar 2023",
       descStr: "Technical Details & Architecture", descEx: "Describe the systems built, technologies used, and functional impact..."
+    };
+    case 'product': return {
+      titleStr: "Product/Startup Name", titleEx: "e.g. Lumina JD Scanner",
+      orgStr: "Venture Status", orgEx: "e.g. Stealth Startup, Alpha Phase",
+      periodStr: "Operational Timeline", periodEx: "e.g. Feb 2023 - Present",
+      descStr: "Market Impact & Vision", descEx: "Describe the problem solved, user base, growth metrics, and future roadmap..."
     };
     case 'certification': return {
       titleStr: "Certificate Name", titleEx: "e.g. AWS Solutions Architect Professional",
@@ -1025,88 +1031,129 @@ RETURN JSON FORMAT ONLY:
           </div>
         </div>
 
-        {/* ── SECTION: PROJECTS & CERTS ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          <div className="space-y-6">
-            <div className="flex items-center justify-between pl-4">
-              <div className="flex items-center gap-4">
-                <Code size={18} className="text-primary" />
-                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-foreground/70">Projects</h3>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={async () => {
-                    if (confirm("CLEAR PROJECTS: This will permanently delete ALL technical projects. Proceed?")) {
-                      const { error } = await supabase.from("master_vault").delete().eq("user_id", user?.id).eq("type", "project");
-                      if (error) toast.error("Failed to clear projects.");
-                      else {
-                        fetchData();
-                        toast.success("Technical projects cleared.");
-                      }
-                    }
-                  }}
-                  className="text-[9px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 transition-colors"
-                >
-                  Clear
-                </button>
-                <button onClick={() => setEditingItem({ type: 'project', bullets: [], skills: [], title: '', organization: '', period: '', description: '' })} className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all"><Plus size={20} /></button>
-              </div>
+        {/* ── SECTION: PROJECTS ── */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between pl-4">
+            <div className="flex items-center gap-4">
+              <Code size={18} className="text-primary" />
+              <h3 className="text-xs font-black uppercase tracking-[0.3em] text-foreground/70">Projects</h3>
             </div>
-            <div className="space-y-4">
-              {items.filter(item => item.type === 'project').map(item => (
-                <div key={item.id} className="premium-card p-6 flex justify-between items-center group">
-                  <div>
-                    <h5 className="font-display font-bold text-base">{item.title}</h5>
-                    <p className="text-[10px] text-muted-foreground uppercase">{item.organization}</p>
-                  </div>
-                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                    <button onClick={() => setEditingItem(item)} className="text-muted-foreground hover:text-primary"><Edit3 size={14} /></button>
-                    <button onClick={() => handleDeleteItem(item.id)} className="text-muted-foreground hover:text-red-500"><Trash2 size={14} /></button>
-                  </div>
-                </div>
-              ))}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={async () => {
+                  if (confirm("CLEAR PROJECTS: This will permanently delete ALL technical projects. Proceed?")) {
+                    const { error } = await supabase.from("master_vault").delete().eq("user_id", user?.id).eq("type", "project");
+                    if (error) toast.error("Failed to clear projects.");
+                    else {
+                      fetchData();
+                      toast.success("Technical projects cleared.");
+                    }
+                  }
+                }}
+                className="text-[9px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 transition-colors"
+              >
+                Clear
+              </button>
+              <button onClick={() => setEditingItem({ type: 'project', bullets: [], skills: [], title: '', organization: '', period: '', description: '' })} className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all"><Plus size={20} /></button>
             </div>
           </div>
-
-          <div className="space-y-6">
-            <div className="flex items-center justify-between pl-4">
-              <div className="flex items-center gap-4">
-                <Award size={18} className="text-primary" />
-                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-foreground/70">Credentials</h3>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={async () => {
-                    if (confirm("CLEAR CREDENTIALS: This will permanently delete ALL certifications and awards. Proceed?")) {
-                      const { error } = await supabase.from("master_vault").delete().eq("user_id", user?.id).eq("type", "certification");
-                      if (error) toast.error("Failed to clear credentials.");
-                      else {
-                        fetchData();
-                        toast.success("Credentials cleared.");
-                      }
-                    }
-                  }}
-                  className="text-[9px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 transition-colors"
-                >
-                  Clear
-                </button>
-                <button onClick={() => setEditingItem({ type: 'certification', bullets: [], skills: [], title: '', organization: '', period: '', description: '' })} className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all"><Plus size={20} /></button>
-              </div>
-            </div>
-            <div className="space-y-4">
-              {items.filter(item => item.type === 'certification').map(item => (
-                <div key={item.id} className="premium-card p-6 flex justify-between items-center group">
-                  <div>
-                    <h5 className="font-display font-bold text-base">{item.title}</h5>
-                    <p className="text-[10px] text-muted-foreground uppercase">{item.organization}</p>
-                  </div>
-                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                    <button onClick={() => setEditingItem(item)} className="text-muted-foreground hover:text-primary"><Edit3 size={14} /></button>
-                    <button onClick={() => handleDeleteItem(item.id)} className="text-muted-foreground hover:text-red-500"><Trash2 size={14} /></button>
-                  </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {items.filter(item => item.type === 'project').map(item => (
+              <div key={item.id} className="premium-card p-6 flex justify-between items-center group">
+                <div>
+                  <h5 className="font-display font-bold text-base">{item.title}</h5>
+                  <p className="text-[10px] text-muted-foreground uppercase">{item.organization}</p>
                 </div>
-              ))}
+                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                  <button onClick={() => setEditingItem(item)} className="text-muted-foreground hover:text-primary"><Edit3 size={14} /></button>
+                  <button onClick={() => handleDeleteItem(item.id)} className="text-muted-foreground hover:text-red-500"><Trash2 size={14} /></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── SECTION: PRODUCTS / STARTUPS ── */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between pl-4">
+            <div className="flex items-center gap-4">
+              <Rocket size={18} className="text-primary" />
+              <h3 className="text-xs font-black uppercase tracking-[0.3em] text-foreground/70">Products / Startups</h3>
             </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={async () => {
+                  if (confirm("CLEAR PRODUCTS: This will permanently delete ALL product/startup entries. Proceed?")) {
+                    const { error } = await supabase.from("master_vault").delete().eq("user_id", user?.id).eq("type", "product");
+                    if (error) toast.error("Failed to clear products.");
+                    else {
+                      fetchData();
+                      toast.success("Product entries cleared.");
+                    }
+                  }
+                }}
+                className="text-[9px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 transition-colors"
+              >
+                Clear
+              </button>
+              <button onClick={() => setEditingItem({ type: 'product', bullets: [], skills: [], title: '', organization: '', period: '', description: '' })} className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all"><Plus size={20} /></button>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {items.filter(item => item.type === 'product').map(item => (
+              <div key={item.id} className="premium-card p-6 flex justify-between items-center group">
+                <div>
+                  <h5 className="font-display font-bold text-base">{item.title}</h5>
+                  <p className="text-[10px] text-muted-foreground uppercase">{item.organization}</p>
+                </div>
+                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                  <button onClick={() => setEditingItem(item)} className="text-muted-foreground hover:text-primary"><Edit3 size={14} /></button>
+                  <button onClick={() => handleDeleteItem(item.id)} className="text-muted-foreground hover:text-red-500"><Trash2 size={14} /></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── SECTION: CREDENTIALS ── */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between pl-4">
+            <div className="flex items-center gap-4">
+              <Award size={18} className="text-primary" />
+              <h3 className="text-xs font-black uppercase tracking-[0.3em] text-foreground/70">Credentials</h3>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={async () => {
+                  if (confirm("CLEAR CREDENTIALS: This will permanently delete ALL certifications and awards. Proceed?")) {
+                    const { error } = await supabase.from("master_vault").delete().eq("user_id", user?.id).eq("type", "certification");
+                    if (error) toast.error("Failed to clear credentials.");
+                    else {
+                      fetchData();
+                      toast.success("Credentials cleared.");
+                    }
+                  }
+                }}
+                className="text-[9px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 transition-colors"
+              >
+                Clear
+              </button>
+              <button onClick={() => setEditingItem({ type: 'certification', bullets: [], skills: [], title: '', organization: '', period: '', description: '' })} className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all"><Plus size={20} /></button>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {items.filter(item => item.type === 'certification').map(item => (
+              <div key={item.id} className="premium-card p-6 flex justify-between items-center group">
+                <div>
+                  <h5 className="font-display font-bold text-base">{item.title}</h5>
+                  <p className="text-[10px] text-muted-foreground uppercase">{item.organization}</p>
+                </div>
+                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                  <button onClick={() => setEditingItem(item)} className="text-muted-foreground hover:text-primary"><Edit3 size={14} /></button>
+                  <button onClick={() => handleDeleteItem(item.id)} className="text-muted-foreground hover:text-red-500"><Trash2 size={14} /></button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
