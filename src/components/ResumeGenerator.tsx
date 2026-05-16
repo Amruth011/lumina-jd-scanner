@@ -43,6 +43,8 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName, forceTab }: Re
   const [isGeneratingCL, setIsGeneratingCL] = useState(false);
   const [isOpen, setIsOpen] = useState(!!forceTab);
   const [profile, setProfile] = useState<UserProfileWithVault | null>(null);
+  const [resumeSettingsActive, setResumeSettingsActive] = useState(false);
+  const [clSettingsActive, setClSettingsActive] = useState(false);
   
   useEffect(() => {
     console.log("ResumeGenerator: Mounted");
@@ -1066,72 +1068,114 @@ RETURN ONLY VALID JSON:
               <div className="space-y-2">
                 <h3 className="text-2xl font-serif italic text-slate-900">Resume Blueprint</h3>
                 <p className="text-[13px] text-slate-500 font-medium leading-relaxed">
-                  Synthesize a high-fidelity, ATS-hardened resume blueprint tailored to the role.
+                  Calibrate your strategic parameters before synthesizing a high-fidelity, ATS-hardened resume blueprint.
                 </p>
               </div>
 
-              {/* Editing Parameters for Resume */}
-              <div className="space-y-6 pt-4 border-t border-slate-100">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Strategy Tone</label>
-                    <select 
-                      value={tone} 
-                      onChange={(e) => setTone(e.target.value as "Professional" | "Modern" | "Aggressive")}
-                      className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs font-bold outline-none focus:ring-2 ring-lumina-teal/20 transition-all"
-                    >
-                      <option value="Modern">Modern</option>
-                      <option value="Professional">Professional</option>
-                      <option value="Aggressive">Aggressive</option>
-                    </select>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Typography</label>
-                    <select 
-                      value={fontFamily} 
-                      onChange={(e) => setFontFamily(e.target.value as "Inter" | "Roboto" | "Merriweather" | "Arial")}
-                      className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs font-bold outline-none focus:ring-2 ring-lumina-teal/20 transition-all"
-                    >
-                      <option value="Inter">Inter (Clean)</option>
-                      <option value="Roboto">Roboto (Technical)</option>
-                      <option value="Merriweather">Merriweather (Serif)</option>
-                      <option value="Arial">Arial (Standard)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Density & Layout</label>
-                    <div className="flex gap-2">
-                      {[1.0, 1.15].map(s => (
-                        <button 
-                          key={s} 
-                          onClick={() => setLineSpacing(s as 1.0 | 1.15 | 1.4)}
-                          className={`px-3 py-1 rounded-lg text-[10px] font-black transition-all ${lineSpacing === s ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-400'}`}
-                        >
-                          {s === 1.0 ? 'Compact' : 'Standard'}
-                        </button>
-                      ))}
+              {!resumeSettingsActive ? (
+                <button
+                  onClick={() => setResumeSettingsActive(true)}
+                  className="w-full py-4 rounded-2xl bg-slate-50 border border-slate-100 text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 hover:bg-slate-100 transition-all flex items-center justify-center gap-3"
+                >
+                  <Wand2 size={14} /> Open Detailed Synthesis Options
+                </button>
+              ) : (
+                <div className="space-y-6 pt-4 border-t border-slate-100 animate-in fade-in slide-in-from-top-4 duration-500">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Strategy Tone</label>
+                      <select 
+                        value={tone} 
+                        onChange={(e) => setTone(e.target.value as "Professional" | "Modern" | "Aggressive")}
+                        className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs font-bold outline-none focus:ring-2 ring-lumina-teal/20 transition-all"
+                      >
+                        <option value="Modern">Modern</option>
+                        <option value="Professional">Professional</option>
+                        <option value="Aggressive">Aggressive</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Typography</label>
+                      <select 
+                        value={fontFamily} 
+                        onChange={(e) => setFontFamily(e.target.value as "Inter" | "Roboto" | "Merriweather" | "Arial")}
+                        className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs font-bold outline-none focus:ring-2 ring-lumina-teal/20 transition-all"
+                      >
+                        <option value="Inter">Inter (Clean)</option>
+                        <option value="Roboto">Roboto (Technical)</option>
+                        <option value="Merriweather">Merriweather (Serif)</option>
+                        <option value="Arial">Arial (Standard)</option>
+                      </select>
                     </div>
                   </div>
-                </div>
-              </div>
-            </div>
 
-            <button
-              onClick={executeTacticalSynthesis}
-              disabled={isGenerating}
-              className="relative overflow-hidden group/btn flex items-center justify-center gap-4 w-full py-6 rounded-full text-[12px] font-black uppercase tracking-[0.2em] bg-lumina-teal text-white hover:scale-[1.02] transition-all duration-300 active:scale-95 disabled:opacity-70 shadow-xl shadow-teal-500/20"
-            >
-              {isGenerating ? (
-                <><Loader2 className="w-5 h-5 animate-spin" /> Processing...</>
-              ) : resume ? (
-                <><Wand2 className="w-5 h-5" /> Regenerate Blueprint</>
-              ) : (
-                <><Sparkles className="w-5 h-5" /> Generate Blueprint</>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Summary Density</label>
+                      <select 
+                        value={summaryLines} 
+                        onChange={(e) => setSummaryLines(Number(e.target.value))}
+                        className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs font-bold outline-none focus:ring-2 ring-lumina-teal/20 transition-all"
+                      >
+                        <option value={2}>2 Lines</option>
+                        <option value={3}>3 Lines</option>
+                        <option value={4}>4 Lines</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Project Bullets</label>
+                      <select 
+                        value={projectLines} 
+                        onChange={(e) => setProjectLines(Number(e.target.value))}
+                        className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs font-bold outline-none focus:ring-2 ring-lumina-teal/20 transition-all"
+                      >
+                        <option value={2}>2 Bullets</option>
+                        <option value={3}>3 Bullets</option>
+                        <option value={5}>5 Bullets</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Layout Density</label>
+                      <div className="flex gap-2">
+                        {[1.0, 1.15].map(s => (
+                          <button 
+                            key={s} 
+                            onClick={() => setLineSpacing(s as 1.0 | 1.15 | 1.4)}
+                            className={`px-3 py-1 rounded-lg text-[10px] font-black transition-all ${lineSpacing === s ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-400'}`}
+                          >
+                            {s === 1.0 ? 'Compact' : 'Standard'}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={executeTacticalSynthesis}
+                    disabled={isGenerating}
+                    className="relative overflow-hidden group/btn flex items-center justify-center gap-4 w-full py-6 rounded-full text-[12px] font-black uppercase tracking-[0.2em] bg-lumina-teal text-white hover:scale-[1.02] transition-all duration-300 active:scale-95 disabled:opacity-70 shadow-xl shadow-teal-500/20"
+                  >
+                    {isGenerating ? (
+                      <><Loader2 className="w-5 h-5 animate-spin" /> Processing...</>
+                    ) : resume ? (
+                      <><Wand2 className="w-5 h-5" /> Regenerate Blueprint</>
+                    ) : (
+                      <><Sparkles className="w-5 h-5" /> Generate Blueprint</>
+                    )}
+                  </button>
+                  
+                  <button 
+                    onClick={() => setResumeSettingsActive(false)}
+                    className="w-full text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-colors"
+                  >
+                    Close Settings
+                  </button>
+                </div>
               )}
-            </button>
+            </div>
           </motion.div>
 
           {/* 2. Cover Letter Synthesis */}
@@ -1158,90 +1202,103 @@ RETURN ONLY VALID JSON:
               <div className="space-y-2">
                 <h3 className="text-2xl font-serif italic text-slate-900">Cover Letter</h3>
                 <p className="text-[13px] text-slate-500 font-medium leading-relaxed">
-                  Generate a humanized, narrative-driven cover letter using the JD and your profile.
+                  Calibrate your narrative focus and length before synthesizing an elite cover letter.
                 </p>
               </div>
 
-              {/* Editing Parameters for Cover Letter */}
-              <div className="space-y-6 pt-4 border-t border-slate-100">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Narrative Focus</label>
-                    <select 
-                      value={clFocus} 
-                      onChange={(e) => setClFocus(e.target.value as "Technical" | "Leadership" | "Cultural")}
-                      className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs font-bold outline-none focus:ring-2 ring-slate-900/20 transition-all"
-                    >
-                      <option value="Technical">Technical Excellence</option>
-                      <option value="Leadership">Leadership Impact</option>
-                      <option value="Cultural">Cultural Alignment</option>
-                    </select>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Length Mode</label>
-                    <select 
-                      value={clLength} 
-                      onChange={(e) => setClLength(e.target.value as "Concise" | "Detailed")}
-                      className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs font-bold outline-none focus:ring-2 ring-slate-900/20 transition-all"
-                    >
-                      <option value="Concise">Concise (Fast Read)</option>
-                      <option value="Detailed">Detailed (High Context)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Voice Tone</label>
-                  <div className="flex gap-2">
-                    {["Modern", "Professional", "Aggressive"].map(t => (
-                      <button 
-                        key={t} 
-                        onClick={() => setTone(t as "Professional" | "Modern" | "Aggressive")}
-                        className={`flex-1 py-2 rounded-xl text-[10px] font-black tracking-widest uppercase transition-all ${tone === t ? 'bg-slate-950 text-white shadow-lg shadow-slate-950/20' : 'bg-slate-50 text-slate-400 border border-slate-100'}`}
+              {!clSettingsActive ? (
+                <button
+                  onClick={() => setClSettingsActive(true)}
+                  className="w-full py-4 rounded-2xl bg-slate-50 border border-slate-100 text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 hover:bg-slate-100 transition-all flex items-center justify-center gap-3"
+                >
+                  <Mail size={14} /> Open Detailed Synthesis Options
+                </button>
+              ) : (
+                <div className="space-y-6 pt-4 border-t border-slate-100 animate-in fade-in slide-in-from-top-4 duration-500">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Narrative Focus</label>
+                      <select 
+                        value={clFocus} 
+                        onChange={(e) => setClFocus(e.target.value as "Technical" | "Leadership" | "Cultural")}
+                        className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs font-bold outline-none focus:ring-2 ring-slate-900/20 transition-all"
                       >
-                        {t}
-                      </button>
-                    ))}
+                        <option value="Technical">Technical Excellence</option>
+                        <option value="Leadership">Leadership Impact</option>
+                        <option value="Cultural">Cultural Alignment</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Length Mode</label>
+                      <select 
+                        value={clLength} 
+                        onChange={(e) => setClLength(e.target.value as "Concise" | "Detailed")}
+                        className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs font-bold outline-none focus:ring-2 ring-slate-900/20 transition-all"
+                      >
+                        <option value="Concise">Concise (Fast Read)</option>
+                        <option value="Detailed">Detailed (High Context)</option>
+                      </select>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </div>
 
-            <div className="space-y-3">
-              <button
-                onClick={() => {
-                  generateCoverLetter();
-                  setIsOpen(true);
-                }}
-                disabled={isGeneratingCL}
-                className="relative overflow-hidden group/btn flex items-center justify-center gap-4 w-full py-6 rounded-full text-[12px] font-black uppercase tracking-[0.2em] bg-slate-950 text-white hover:scale-[1.02] transition-all duration-300 active:scale-95 disabled:opacity-70 shadow-xl shadow-slate-950/20"
-              >
-                {isGeneratingCL ? (
-                  <><Loader2 className="w-5 h-5 animate-spin" /> Writing...</>
-                ) : coverLetter ? (
-                  <><Mail className="w-5 h-5" /> Regenerate Letter</>
-                ) : (
-                  <><Mail className="w-5 h-5" /> Synthesize Letter</>
-                )}
-              </button>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Voice Tone</label>
+                    <div className="flex gap-2">
+                      {["Modern", "Professional", "Aggressive"].map(t => (
+                        <button 
+                          key={t} 
+                          onClick={() => setTone(t as "Professional" | "Modern" | "Aggressive")}
+                          className={`flex-1 py-2 rounded-xl text-[10px] font-black tracking-widest uppercase transition-all ${tone === t ? 'bg-slate-950 text-white shadow-lg shadow-slate-950/20' : 'bg-slate-50 text-slate-400 border border-slate-100'}`}
+                        >
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-              {coverLetter && (
-                <div className="flex items-center gap-2 pt-2">
-                  <button 
-                    onClick={() => handleDownloadCL('pdf')}
-                    className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-slate-50 border border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-100 transition-all"
+                  <button
+                    onClick={() => {
+                      generateCoverLetter();
+                      setIsOpen(true);
+                    }}
+                    disabled={isGeneratingCL}
+                    className="relative overflow-hidden group/btn flex items-center justify-center gap-4 w-full py-6 rounded-full text-[12px] font-black uppercase tracking-[0.2em] bg-slate-950 text-white hover:scale-[1.02] transition-all duration-300 active:scale-95 disabled:opacity-70 shadow-xl shadow-slate-950/20"
                   >
-                    <Download size={12} /> PDF
+                    {isGeneratingCL ? (
+                      <><Loader2 className="w-5 h-5 animate-spin" /> Writing...</>
+                    ) : coverLetter ? (
+                      <><Mail className="w-5 h-5" /> Regenerate Letter</>
+                    ) : (
+                      <><Mail className="w-5 h-5" /> Synthesize Letter</>
+                    )}
                   </button>
+
                   <button 
-                    onClick={() => handleDownloadCL('doc')}
-                    className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-slate-50 border border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-100 transition-all"
+                    onClick={() => setClSettingsActive(false)}
+                    className="w-full text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-colors"
                   >
-                    <Download size={12} /> DOC
+                    Close Settings
                   </button>
                 </div>
               )}
             </div>
+
+            {coverLetter && (
+              <div className="flex items-center gap-2 pt-2">
+                <button 
+                  onClick={() => handleDownloadCL('pdf')}
+                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-slate-50 border border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-100 transition-all"
+                >
+                  <Download size={12} /> PDF
+                </button>
+                <button 
+                  onClick={() => handleDownloadCL('doc')}
+                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-slate-50 border border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-100 transition-all"
+                >
+                  <Download size={12} /> DOC
+                </button>
+              </div>
+            )}
           </motion.div>
         </div>
       </div>
