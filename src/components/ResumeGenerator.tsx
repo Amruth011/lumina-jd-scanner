@@ -86,8 +86,9 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName, forceTab }: Re
   const [lineSpacing, setLineSpacing] = useState<1.0 | 1.15 | 1.4>(1.15);
   const [marginSize, setMarginSize] = useState<0.5 | 1.0>(1.0);
   const [baseFontSize, setBaseFontSize] = useState(11);
-  const [sectionOrder, setSectionOrder] = useState<string[]>(['EDUCATION', 'EXPERIENCE', 'PROJECTS', 'PRODUCTS', 'LEADERSHIP', 'SKILLS', 'AWARDS', 'CERTIFICATIONS']);
+  const [sectionOrder, setSectionOrder] = useState<string[]>(['SUMMARY', 'EDUCATION', 'EXPERIENCE', 'PROJECTS', 'PRODUCTS', 'LEADERSHIP', 'SKILLS', 'AWARDS', 'CERTIFICATIONS']);
   const [visibleSections, setVisibleSections] = useState<Record<string, boolean>>({
+    'SUMMARY': true,
     'EDUCATION': true,
     'EXPERIENCE': true,
     'PROJECTS': true,
@@ -275,6 +276,7 @@ Candidate Profile: ${JSON.stringify(vaultItems.slice(0, 15).map(v => ({ title: v
     - EXPERIENCE: Only for formal employment, internships, and fellowships. (e.g., 'Data Science Intern').
     - PROJECTS: Technical builds, open-source contributions, or academic projects. (e.g., 'Kannada Book AI Agent').
     - PRODUCTS: Startups, SaaS products, or ventures founded by the user. (e.g., 'Lumina').
+    - NO HALLUCINATIONS: Do NOT create fake professional experience from certifications or projects. If the user has only 1 job in their profile, show ONLY that 1 job in EXPERIENCE. 
     - DO NOT mix these categories. If an item is a project, it MUST stay in PROJECTS. If it is a startup, it MUST stay in PRODUCTS.
     - DO NOT include certifications/awards in any other section. Keep them in AWARDS or CERTIFICATIONS. (CRITICAL: 'AI Engineer for Data Scientists Associate' or anything from 'DataCamp' is a CERTIFICATION, NOT experience).
 - CUSTOM STRUCTURE MANDATE:
@@ -725,6 +727,17 @@ Return ONLY a JSON object with this exact structure:
         };
 
         if (editableResume) {
+          // --- SUMMARY ---
+          if (editableResume.professional_summary) {
+            drawSectionHeader("SUMMARY");
+            pdf.setTextColor(0, 0, 0);
+            pdf.setFont("helvetica", "normal");
+            pdf.setFontSize(10);
+            const lines = pdf.splitTextToSize(editableResume.professional_summary, pageWidth - (margin * 2));
+            pdf.text(lines, margin, y);
+            y += (lines.length * 4.5) + 4;
+          }
+
           // --- EDUCATION ---
           if (editableResume.education?.length) {
             drawSectionHeader("EDUCATION");

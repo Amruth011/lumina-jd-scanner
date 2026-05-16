@@ -502,6 +502,18 @@ export const ResumePreview = ({
 
                     {/* Body */}
                     <div className="space-y-6">
+                      {/* Summary Section */}
+                      {localResume.professional_summary && (
+                        <section className="space-y-2">
+                          <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
+                            <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.meta }}>Professional Summary</h4>
+                          </div>
+                          <p className="text-[#1E2A3A]/90 leading-relaxed" style={{ fontSize: fontSizes.body }}>
+                            {localResume.professional_summary}
+                          </p>
+                        </section>
+                      )}
+
                       {/* Education First */}
                       <section className="space-y-2">
                         <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
