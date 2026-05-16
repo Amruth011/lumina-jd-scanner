@@ -54,6 +54,11 @@ interface ResumePreviewProps {
   headlineFontSize: number;
   subHeadlineFontSize: number;
   bodyFontSize: number;
+  fontFamily: string;
+  coverLetter: string | null;
+  isGeneratingCL: boolean;
+  onGenerateCL: () => void;
+  onDownloadCL: (format: 'pdf' | 'doc') => void;
 }
 
 export const ResumePreview = ({ 
@@ -187,6 +192,9 @@ export const ResumePreview = ({
     body: `${bodyFontSize}px`,
     meta: `${bodyFontSize}px`,
   };
+
+  const marginSize = 0.5;
+  const lineSpacing = 1.4;
 
   const getHtmlFont = (font: string) => {
     switch(font) {
