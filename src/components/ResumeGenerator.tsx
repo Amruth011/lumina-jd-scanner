@@ -704,52 +704,53 @@ Return ONLY a JSON object with this exact structure:
 
       // Header: Ultra-clean center aligned
       addText(editableHeader.fullName.toUpperCase(), nameFontSize, true, [0, 0, 0], "center");
-      y += 1.2;
+      y += 2.5; // Increased spacing after name
+      
       const contactLines = [
         editableHeader.location,
         editableHeader.phone,
-        editableHeader.email.toLowerCase(),
-        editableHeader.portfolio
-      ].filter(Boolean).join("  •  ");
-      addText(contactLines, bodyFontSize * 0.85, false, [80, 80, 80], "center");
+        editableHeader.email.toLowerCase()
+      ].filter(Boolean).join("  |  ");
+      addText(contactLines, bodyFontSize * 0.9, false, [0, 0, 0], "center");
       
       const linkItems = [
-        { label: editableHeader.linkedin ? editableHeader.linkedin.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '').toUpperCase() : "LINKEDIN", url: formatUrl(editableHeader.linkedin) },
-        { label: editableHeader.github ? editableHeader.github.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '').toUpperCase() : "GITHUB", url: formatUrl(editableHeader.github) },
-        { label: editableHeader.portfolio ? editableHeader.portfolio.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '').toUpperCase() : "PORTFOLIO", url: formatUrl(editableHeader.portfolio) }
-      ].filter(item => item.url);
+        { label: editableHeader.linkedin ? "LINKEDIN" : "", url: formatUrl(editableHeader.linkedin) },
+        { label: editableHeader.github ? "GITHUB" : "", url: formatUrl(editableHeader.github) },
+        { label: editableHeader.portfolio ? "PORTFOLIO" : "", url: formatUrl(editableHeader.portfolio) }
+      ].filter(item => item.label && item.url);
 
       if (linkItems.length > 0) {
-        y += 0.6;
-        const totalWidth = linkItems.reduce((acc, item) => acc + pdf.getTextWidth(item.label) + 10, 0) - 10;
+        y += 4.5; // Increased spacing for links
+        const totalWidth = linkItems.reduce((acc, item) => acc + pdf.getTextWidth(item.label) + 15, 0) - 15;
         let currentX = (pageWidth - totalWidth) / 2;
         
         linkItems.forEach((item, idx) => {
+          pdf.setFont(currentFont, "normal");
           pdf.setFontSize(bodyFontSize * 0.85);
-          pdf.setTextColor(0, 102, 204);
+          pdf.setTextColor(0, 0, 0); // Strictly black links
           pdf.text(item.label, currentX, y);
           // Add invisible link
           pdf.link(currentX, y - 3, pdf.getTextWidth(item.label), 5, { url: item.url });
-          currentX += pdf.getTextWidth(item.label) + 10;
+          currentX += pdf.getTextWidth(item.label) + 15;
         });
-        y += 2.0;
+        y += 5.0; // Clear gap after header links
       }
-      y += 3.5;
+      y += 2.0;
 
         // --- HEADER ---
-        const navyBlue: [number, number, number] = [0, 71, 171];
+        const deepBlack: [number, number, number] = [0, 0, 0];
 
         const drawSectionHeader = (title: string) => {
-          y += 2;
-          pdf.setTextColor(...navyBlue);
+          y += 6; // Increased gap before section
+          pdf.setTextColor(...deepBlack);
           pdf.setFont(currentFont, "bold");
           pdf.setFontSize(headlineFontSize);
           pdf.text(title.toUpperCase(), margin, y);
-          y += 1.5;
-          pdf.setDrawColor(...navyBlue);
+          y += 2.2; // Spacing before line
+          pdf.setDrawColor(0, 0, 0); // Black line for sections
           pdf.setLineWidth(0.4);
           pdf.line(margin, y, pageWidth - margin, y);
-          y += 5;
+          y += 7; // Gap after section header
         };
 
         if (editableResume) {
@@ -761,7 +762,7 @@ Return ONLY a JSON object with this exact structure:
             pdf.setFontSize(bodyFontSize);
             const lines = pdf.splitTextToSize(editableResume.professional_summary, pageWidth - (margin * 2));
             pdf.text(lines, margin, y);
-            y += (lines.length * 4.5) + 4;
+            y += (lines.length * 5.0) + 6;
           }
 
           // --- EDUCATION ---
@@ -824,9 +825,9 @@ Return ONLY a JSON object with this exact structure:
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
                 const lines = pdf.splitTextToSize(`• ${cleanBullet}`, pageWidth - (margin * 2) - 4);
                 pdf.text(lines, margin + 4, y);
-                y += (lines.length * 4.5);
+                y += (lines.length * 5.2);
               });
-              y += 2;
+              y += 3;
             });
           }
 
@@ -855,9 +856,9 @@ Return ONLY a JSON object with this exact structure:
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
                 const lines = pdf.splitTextToSize(`• ${cleanBullet}`, pageWidth - (margin * 2) - 4);
                 pdf.text(lines, margin + 4, y);
-                y += (lines.length * 4.5);
+                y += (lines.length * 5.2);
               });
-              y += 2;
+              y += 3;
             });
           }
 
@@ -886,9 +887,9 @@ Return ONLY a JSON object with this exact structure:
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
                 const lines = pdf.splitTextToSize(`• ${cleanBullet}`, pageWidth - (margin * 2) - 4);
                 pdf.text(lines, margin + 4, y);
-                y += (lines.length * 4.5);
+                y += (lines.length * 5.2);
               });
-              y += 2;
+              y += 3;
             });
           }
 
@@ -911,9 +912,9 @@ Return ONLY a JSON object with this exact structure:
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
                 const lines = pdf.splitTextToSize(`• ${cleanBullet}`, pageWidth - (margin * 2) - 4);
                 pdf.text(lines, margin + 4, y);
-                y += (lines.length * 4.5);
+                y += (lines.length * 5.2);
               });
-              y += 2;
+              y += 3;
             });
           }
 
@@ -930,7 +931,7 @@ Return ONLY a JSON object with this exact structure:
               const skillsText = skills?.trim() || "";
               const lines = pdf.splitTextToSize(skillsText, pageWidth - margin - (margin + pdf.getTextWidth(`${category?.trim()}: `)));
               pdf.text(lines, margin + pdf.getTextWidth(`${category?.trim()}: `), y);
-              y += (lines.length * 4.5) + 1;
+              y += (lines.length * 5.2) + 2;
             });
           }
 

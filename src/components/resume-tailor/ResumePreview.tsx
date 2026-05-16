@@ -286,10 +286,10 @@ export const ResumePreview = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5 }}
-            className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-start h-full w-full"
+            className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start h-[calc(100vh-280px)]"
           >
-            {/* ── LEFT PANEL: EDITORS ── */}
-            <div className="lg:col-span-4 xl:col-span-3 2xl:col-span-3 space-y-6">
+            {/* ── LEFT PANEL: EDITORS (MAX WIDE) ── */}
+            <div className="lg:col-span-6 xl:col-span-5 2xl:col-span-4 space-y-8 h-full overflow-y-auto custom-scrollbar pr-4">
               <CollapsibleSection 
                 title="Profile Identity" 
                 icon={User} 
@@ -496,8 +496,8 @@ export const ResumePreview = ({
               </CollapsibleSection>
             </div>
 
-            {/* ── RIGHT PANEL: PREVIEW ── */}
-            <div className="lg:col-span-8 xl:col-span-9 2xl:col-span-9 flex justify-center h-full">
+            {/* ── RIGHT PANEL: PREVIEW (MOVED RIGHT) ── */}
+            <div className="lg:col-span-6 xl:col-span-7 2xl:col-span-8 flex justify-center h-full pl-8 sm:pl-16">
               <div className="w-full flex-1 perspective-2000 h-full overflow-y-auto custom-scrollbar rounded-[2.5rem] shadow-inner bg-slate-100/50 p-6 sm:p-10 border border-white/40">
                 <motion.div 
                   ref={resumeRef}
@@ -518,7 +518,7 @@ export const ResumePreview = ({
                   <div className="space-y-8">
                     {/* Header */}
                     <div className="text-center space-y-2 mb-8">
-                      <h1 className="font-bold tracking-tight uppercase !font-inherit" style={{ fontSize: `${nameFontSize}px`, color: '#0047AB', fontFamily: 'inherit' }}>
+                      <h1 className="font-bold tracking-tight uppercase !font-inherit" style={{ fontSize: `${nameFontSize}px`, color: '#1E2A3A', fontFamily: 'inherit' }}>
                         {localHeader.fullName || "Your Name"}
                       </h1>
                       <div className="flex flex-wrap justify-center items-center gap-x-2 text-[#1E2A3A] font-medium !font-inherit" style={{ fontSize: fontSizes.meta }}>
