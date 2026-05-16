@@ -82,7 +82,7 @@ export const ResumePreview = ({
   
   // ── UI Logic State ──
   const [openSection, setOpenSection] = useState<string | null>("profile");
-  const [showVaultPicker, setShowVaultPicker] = useState<{ section: 'experience' | 'projects' | 'education' | 'certifications', index?: number } | null>(null);
+  const [showVaultPicker, setShowVaultPicker] = useState<{ section: 'experience' | 'projects' | 'products' | 'education' | 'certifications', index?: number } | null>(null);
   const [activeTab, setActiveTab] = useState<'resume' | 'cover-letter'>(initialTab || 'resume');
   
   const resumeRef = useRef<HTMLDivElement>(null);
@@ -120,7 +120,7 @@ export const ResumePreview = ({
     setLocalResume(prev => ({ ...prev, experience: newExp }));
   };
 
-  const updateBullet = (section: 'experience' | 'projects', sectionIndex: number, bulletIndex: number, value: string) => {
+  const updateBullet = (section: 'experience' | 'projects' | 'products', sectionIndex: number, bulletIndex: number, value: string) => {
     const newSections = [...(localResume[section] || [])];
     const newBullets = [...(newSections[sectionIndex].bullets || [])];
     newBullets[bulletIndex] = value;
@@ -128,14 +128,14 @@ export const ResumePreview = ({
     setLocalResume(prev => ({ ...prev, [section]: newSections }));
   };
 
-  const addBullet = (section: 'experience' | 'projects', sectionIndex: number) => {
+  const addBullet = (section: 'experience' | 'projects' | 'products', sectionIndex: number) => {
     const newSections = [...(localResume[section] || [])];
     const newBullets = [...(newSections[sectionIndex].bullets || []), "New strategic impact metric..."];
     newSections[sectionIndex] = { ...newSections[sectionIndex], bullets: newBullets };
     setLocalResume(prev => ({ ...prev, [section]: newSections }));
   };
 
-  const removeBullet = (section: 'experience' | 'projects', sectionIndex: number, bulletIndex: number) => {
+  const removeBullet = (section: 'experience' | 'projects' | 'products', sectionIndex: number, bulletIndex: number) => {
     const newSections = [...(localResume[section] || [])];
     const newBullets = (newSections[sectionIndex].bullets || []).filter((_, i) => i !== bulletIndex);
     newSections[sectionIndex] = { ...newSections[sectionIndex], bullets: newBullets };
@@ -158,6 +158,14 @@ export const ResumePreview = ({
         bullets: item.bullets && item.bullets.length > 0 ? item.bullets : ["• Quantifying project outcomes..."] 
       }];
       setLocalResume({ ...localResume, projects: newItems });
+    } else if (showVaultPicker?.section === 'products') {
+      const products = localResume.products || [];
+      const newItems = [...products, { 
+        heading: item.organization ? `${item.title} @ ${item.organization}` : item.title, 
+        content: item.description, 
+        bullets: item.bullets && item.bullets.length > 0 ? item.bullets : ["• Quantifying startup growth..."] 
+      }];
+      setLocalResume({ ...localResume, products: newItems });
     } else if (showVaultPicker?.section === 'education') {
       const education = localResume.education || [];
       const eduEntry = item.organization ? `${item.title} - ${item.organization}` : item.title;
@@ -502,40 +510,44 @@ export const ResumePreview = ({
                   <div className="space-y-8">
                     {/* Header */}
                     <div className="text-center space-y-2 mb-8">
-                      <h1 className="font-bold tracking-tight uppercase" style={{ fontSize: fontSizes.name, color: '#0047AB' }}>
+                      <h1 className="font-bold tracking-tight uppercase !font-inherit" style={{ fontSize: `${nameFontSize}px`, color: '#0047AB' }}>
                         {localHeader.fullName || "Your Name"}
                       </h1>
                       <div className="flex flex-wrap justify-center items-center gap-x-2 text-[#1E2A3A] font-medium" style={{ fontSize: fontSizes.meta }}>
-                        {localHeader.location && <span>{localHeader.location}</span>}
+                        {localHeader.location && (
+                          <div className="flex items-center gap-2">
+                            <span>{localHeader.location}</span>
+                            <span className="opacity-20">|</span>
+                          </div>
+                        )}
                         {localHeader.email && (
-                          <>
-                            {localHeader.location && <span className="opacity-20">|</span>}
+                          <div className="flex items-center gap-2">
                             <span>{localHeader.email.toLowerCase()}</span>
-                          </>
+                            <span className="opacity-20">|</span>
+                          </div>
                         )}
                         {localHeader.linkedin && (
-                          <>
-                            <span className="opacity-20">|</span>
+                          <div className="flex items-center gap-2">
                             <span>{localHeader.linkedin.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '')}</span>
-                          </>
+                            <span className="opacity-20">|</span>
+                          </div>
                         )}
                         {localHeader.phone && (
-                          <>
-                            <span className="opacity-20">|</span>
+                          <div className="flex items-center gap-2">
                             <span>{localHeader.phone}</span>
-                          </>
+                            <span className="opacity-20">|</span>
+                          </div>
                         )}
                         {localHeader.github && (
-                          <>
-                            <span className="opacity-20">|</span>
+                          <div className="flex items-center gap-2">
                             <span>{localHeader.github.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '')}</span>
-                          </>
+                            {localHeader.portfolio && <span className="opacity-20">|</span>}
+                          </div>
                         )}
                         {localHeader.portfolio && (
-                          <>
-                            <span className="opacity-20">|</span>
+                          <div className="flex items-center gap-2">
                             <span>{localHeader.portfolio.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '')}</span>
-                          </>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -546,7 +558,7 @@ export const ResumePreview = ({
                       {localResume.professional_summary && (
                         <section className="space-y-2">
                           <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
-                            <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.header }}>Professional Summary</h4>
+                            <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: `${headlineFontSize}px`, fontFamily: 'inherit' }}>Professional Summary</h4>
                           </div>
                           <p className="text-[#1E2A3A]/90 leading-relaxed" style={{ fontSize: fontSizes.body }}>
                             {localResume.professional_summary}
@@ -557,7 +569,7 @@ export const ResumePreview = ({
                       {/* Education First */}
                       <section className="space-y-2">
                         <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
-                          <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.header }}>Education</h4>
+                          <h4 className="font-bold uppercase tracking-widest !font-inherit" style={{ fontSize: `${headlineFontSize}px` }}>Education</h4>
                         </div>
                         <div className="space-y-4">
                           {(localResume.education || []).map((edu, i) => {
@@ -578,7 +590,7 @@ export const ResumePreview = ({
                                 </div>
                                 <div className="flex justify-between items-baseline italic" style={{ fontSize: `calc(${fontSizes.body} - 1px)` }}>
                                   <span>{degree} {metadata && `| ${metadata}`}</span>
-                                  <span className="text-[11px] not-italic">{localHeader.location || "Gainesville, FL"}</span>
+                                  <span className="text-[11px] not-italic">{localHeader.location || ""}</span>
                                 </div>
                               </div>
                             );
@@ -588,9 +600,9 @@ export const ResumePreview = ({
 
                       {/* Experience */}
                       <section className="space-y-2">
-                        <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
-                          <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.header }}>Experience</h4>
-                        </div>
+                         <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
+                           <h4 className="font-bold uppercase tracking-widest !font-inherit" style={{ fontSize: `${headlineFontSize}px` }}>Experience</h4>
+                         </div>
                         <div className="space-y-5">
                           {(localResume.experience || []).map((exp, expIdx) => {
                             const parts = exp.heading.split('@');
@@ -625,7 +637,7 @@ export const ResumePreview = ({
                       {(localResume.products && localResume.products.length > 0) && (
                         <section className="space-y-2">
                           <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
-                            <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.header }}>Products & Ventures</h4>
+                            <h4 className="font-bold uppercase tracking-widest !font-inherit" style={{ fontSize: `${headlineFontSize}px` }}>Products & Ventures</h4>
                           </div>
                           <div className="space-y-4">
                             {localResume.products?.map((prod, prodIdx) => {
@@ -654,7 +666,7 @@ export const ResumePreview = ({
                       {(localResume.projects && localResume.projects.length > 0) && (
                         <section className="space-y-2">
                           <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
-                            <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.header }}>Projects</h4>
+                            <h4 className="font-bold uppercase tracking-widest !font-inherit" style={{ fontSize: `${headlineFontSize}px` }}>Projects</h4>
                           </div>
                           <div className="space-y-4">
                             {localResume.projects?.map((proj, projIdx) => {
@@ -683,7 +695,7 @@ export const ResumePreview = ({
                       {(localResume.leadership && localResume.leadership.length > 0) && (
                         <section className="space-y-2">
                           <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
-                            <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.header }}>Leadership</h4>
+                            <h4 className="font-bold uppercase tracking-widest !font-inherit" style={{ fontSize: `${headlineFontSize}px` }}>Leadership</h4>
                           </div>
                           <div className="space-y-4">
                             {localResume.leadership?.map((lead, idx) => (
@@ -708,7 +720,7 @@ export const ResumePreview = ({
                       {/* Skills */}
                       <section className="space-y-2">
                         <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
-                          <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.header }}>Skills</h4>
+                          <h4 className="font-bold uppercase tracking-widest !font-inherit" style={{ fontSize: `${headlineFontSize}px` }}>Skills</h4>
                         </div>
                         <div className="space-y-1">
                           {(localResume.skills_section || []).map((skillLine, i) => {
@@ -726,7 +738,7 @@ export const ResumePreview = ({
                       {(localResume.certifications && localResume.certifications.length > 0) && (
                         <section className="space-y-2">
                           <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
-                            <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.header }}>Certifications</h4>
+                            <h4 className="font-bold uppercase tracking-widest !font-inherit" style={{ fontSize: `${headlineFontSize}px` }}>Certifications</h4>
                           </div>
                           <div className="space-y-1">
                             {localResume.certifications?.map((cert, i) => (

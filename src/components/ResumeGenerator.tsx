@@ -279,7 +279,7 @@ Your goal is to synthesize a high-impact, ATS-optimized resume in the precise "A
 ### CONTEXT:
 Job Target: ${jdTitle} at ${companyName || "this company"}
 Target Skills: ${jdSkills.map(s => s.skill).join(", ")}
-Candidate Profile: ${JSON.stringify(vaultItems.slice(0, 15).map(v => ({ title: v.title, org: v.organization, desc: v.description, bullets: v.bullets })), null, 2)}
+Candidate Profile: ${JSON.stringify(vaultItems.slice(0, 15).map(v => ({ type: v.type, title: v.title, org: v.organization, desc: v.description, bullets: v.bullets })), null, 2)}
 
 ### CORE MANDATE:
 - Quantify EVERYTHING. Use metrics (%, $, time, scale) in every bullet.
@@ -486,6 +486,8 @@ Return ONLY a JSON object with this exact structure:
 
       const hydratedData = {
         ...structData,
+        experience: structData.experience || [],
+        products: structData.products || [],
         projects: structData.projects || [],
         leadership: structData.leadership || [],
         certifications: structData.certifications || [],
@@ -1246,24 +1248,27 @@ Return ONLY a JSON object with this exact structure:
                     </div>
                   </div>
 
-                  <div className="space-y-4 bg-slate-50/50 p-6 rounded-[2rem] border border-slate-100">
-                    <h4 className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Granular Font Scaling (pt)</h4>
-                    <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-4 bg-slate-900/[0.03] p-6 rounded-[2.5rem] border border-slate-100 shadow-inner">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Typography Scale (pt)</h4>
+                      <div className="h-px flex-1 bg-slate-100 ml-4" />
+                    </div>
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                       <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-500">Name Size</label>
-                        <input type="number" value={nameFontSize} onChange={e => setNameFontSize(Number(e.target.value))} className="w-full bg-white border border-slate-100 rounded-xl px-4 py-2 text-xs font-bold" />
+                        <label className="text-[10px] font-black uppercase text-slate-400">Name</label>
+                        <input type="number" min="14" max="48" value={nameFontSize} onChange={e => setNameFontSize(Number(e.target.value))} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-black shadow-sm" />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-500">Headlines</label>
-                        <input type="number" value={headlineFontSize} onChange={e => setHeadlineFontSize(Number(e.target.value))} className="w-full bg-white border border-slate-100 rounded-xl px-4 py-2 text-xs font-bold" />
+                        <label className="text-[10px] font-black uppercase text-slate-400">Headlines</label>
+                        <input type="number" min="8" max="24" value={headlineFontSize} onChange={e => setHeadlineFontSize(Number(e.target.value))} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-black shadow-sm" />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-500">Sub-Headings</label>
-                        <input type="number" value={subHeadlineFontSize} onChange={e => setSubHeadlineFontSize(Number(e.target.value))} className="w-full bg-white border border-slate-100 rounded-xl px-4 py-2 text-xs font-bold" />
+                        <label className="text-[10px] font-black uppercase text-slate-400">Sub-Headers</label>
+                        <input type="number" min="8" max="20" value={subHeadlineFontSize} onChange={e => setSubHeadlineFontSize(Number(e.target.value))} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-black shadow-sm" />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-500">Body Text</label>
-                        <input type="number" value={bodyFontSize} onChange={e => setBodyFontSize(Number(e.target.value))} className="w-full bg-white border border-slate-100 rounded-xl px-4 py-2 text-xs font-bold" />
+                        <label className="text-[10px] font-black uppercase text-slate-400">Body</label>
+                        <input type="number" min="7" max="14" value={bodyFontSize} onChange={e => setBodyFontSize(Number(e.target.value))} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-black shadow-sm" />
                       </div>
                     </div>
                   </div>
