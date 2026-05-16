@@ -1258,17 +1258,121 @@ RETURN ONLY VALID JSON:
           </div>
         </div>
 
-        <button
-          onClick={executeTacticalSynthesis}
-          disabled={isGenerating}
-          className="relative overflow-hidden group/btn flex items-center gap-5 px-14 py-7 rounded-full text-[13px] font-black uppercase tracking-[0.3em] bg-lumina-teal text-white hover:scale-110 transition-all duration-500 active:scale-95 disabled:opacity-70"
-        >
-          {isGenerating ? (
-            <><Loader2 className="w-6 h-6 animate-spin" /> Synthesizing Intelligence...</>
-          ) : (
-            <><Sparkles className="w-6 h-6" /> Generate Tactical Resume</>
-          )}
-        </button>
+        {/* ── ACTION SUITE: DUAL ENGINES ── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full mt-12">
+          {/* 1. Resume Blueprint Engine */}
+          <motion.div 
+            whileHover={{ y: -5 }}
+            className="glass-panel p-10 rounded-[3.5rem] border-foreground/5 bg-white shadow-2xl shadow-slate-200/50 flex flex-col justify-between space-y-8 relative overflow-hidden group"
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-lumina-teal/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-lumina-teal/10 transition-colors" />
+            
+            <div className="space-y-6 relative z-10">
+              <div className="w-14 h-14 rounded-2xl bg-lumina-teal/10 flex items-center justify-center text-lumina-teal">
+                <FileText size={28} />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-2xl font-serif italic text-slate-900">Resume Blueprint</h3>
+                <p className="text-[13px] text-slate-500 font-medium leading-relaxed">
+                  Synthesize a high-fidelity, ATS-hardened resume blueprint tailored to the {jdTitle || 'selected'} role.
+                </p>
+              </div>
+              
+              {resume && (
+                <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 w-fit px-3 py-1 rounded-full border border-emerald-100">
+                  <CheckCircle2 size={12} />
+                  <span className="text-[10px] font-black uppercase tracking-widest">Blueprint Ready</span>
+                </div>
+              )}
+            </div>
+
+            <button
+              onClick={executeTacticalSynthesis}
+              disabled={isGenerating}
+              className="relative overflow-hidden group/btn flex items-center justify-center gap-4 w-full py-6 rounded-full text-[12px] font-black uppercase tracking-[0.2em] bg-lumina-teal text-white hover:scale-[1.02] transition-all duration-300 active:scale-95 disabled:opacity-70 shadow-xl shadow-teal-500/20"
+            >
+              {isGenerating ? (
+                <><Loader2 className="w-5 h-5 animate-spin" /> Processing...</>
+              ) : resume ? (
+                <><Wand2 className="w-5 h-5" /> Regenerate Blueprint</>
+              ) : (
+                <><Sparkles className="w-5 h-5" /> Generate Blueprint</>
+              )}
+            </button>
+          </motion.div>
+
+          {/* 2. Cover Letter Synthesis */}
+          <motion.div 
+            whileHover={{ y: -5 }}
+            className={`glass-panel p-10 rounded-[3.5rem] border-foreground/5 bg-white shadow-2xl shadow-slate-200/50 flex flex-col justify-between space-y-8 relative overflow-hidden group ${!resume ? 'opacity-50' : ''}`}
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-slate-900/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-slate-900/10 transition-colors" />
+
+            <div className="space-y-6 relative z-10">
+              <div className="w-14 h-14 rounded-2xl bg-slate-900/5 flex items-center justify-center text-slate-900">
+                <Mail size={28} />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-2xl font-serif italic text-slate-900">Cover Letter</h3>
+                <p className="text-[13px] text-slate-500 font-medium leading-relaxed">
+                  Generate a humanized, narrative-driven cover letter that bridges your blueprint with the JD.
+                </p>
+              </div>
+
+              {coverLetter && (
+                <div className="flex items-center gap-2 text-blue-600 bg-blue-50 w-fit px-3 py-1 rounded-full border border-blue-100">
+                  <CheckCircle2 size={12} />
+                  <span className="text-[10px] font-black uppercase tracking-widest">Letter Synthesized</span>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              {!resume && (
+                <p className="text-[10px] text-center font-bold text-amber-600 uppercase tracking-widest mb-2 italic">
+                  Generate a resume blueprint first
+                </p>
+              )}
+              <button
+                onClick={() => {
+                  if (!resume) {
+                    toast.info("Please generate a resume blueprint first to provide context for the cover letter.");
+                    return;
+                  }
+                  generateCoverLetter();
+                  setIsOpen(true);
+                }}
+                disabled={isGeneratingCL || !resume}
+                className="relative overflow-hidden group/btn flex items-center justify-center gap-4 w-full py-6 rounded-full text-[12px] font-black uppercase tracking-[0.2em] bg-slate-950 text-white hover:scale-[1.02] transition-all duration-300 active:scale-95 disabled:opacity-70 shadow-xl shadow-slate-950/20"
+              >
+                {isGeneratingCL ? (
+                  <><Loader2 className="w-5 h-5 animate-spin" /> Writing...</>
+                ) : coverLetter ? (
+                  <><Mail className="w-5 h-5" /> Regenerate Letter</>
+                ) : (
+                  <><Mail className="w-5 h-5" /> Synthesize Letter</>
+                )}
+              </button>
+
+              {coverLetter && (
+                <div className="flex items-center gap-2 pt-2">
+                  <button 
+                    onClick={() => handleDownloadCL('pdf')}
+                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-50 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-100 transition-all"
+                  >
+                    <Download size={12} /> PDF
+                  </button>
+                  <button 
+                    onClick={() => handleDownloadCL('doc')}
+                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-50 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-100 transition-all"
+                  >
+                    <Download size={12} /> DOC
+                  </button>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        </div>
       </div>
 
       <AnimatePresence mode="wait">
