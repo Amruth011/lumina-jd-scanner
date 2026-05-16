@@ -978,12 +978,29 @@ RETURN JSON FORMAT ONLY:
               <h3 className="text-xs font-black uppercase tracking-[0.3em] text-foreground/70">Academic Pedigree</h3>
               <div className="h-px w-32 bg-gradient-to-r from-white/10 to-transparent" />
             </div>
-            <button
-              onClick={() => setEditingItem({ type: 'education', bullets: [], skills: [], title: '', organization: '', period: '', description: '' })}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
-            >
-              <Plus size={14} /> Add Degree
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={async () => {
+                  if (confirm("CLEAR EDUCATION: This will permanently delete ALL academic entries. Proceed?")) {
+                    const { error } = await supabase.from("master_vault").delete().eq("user_id", user?.id).eq("type", "education");
+                    if (error) toast.error("Failed to clear education.");
+                    else {
+                      fetchData();
+                      toast.success("Academic pedigree cleared.");
+                    }
+                  }
+                }}
+                className="text-[9px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 transition-colors"
+              >
+                Clear Education
+              </button>
+              <button
+                onClick={() => setEditingItem({ type: 'education', bullets: [], skills: [], title: '', organization: '', period: '', description: '' })}
+                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
+              >
+                <Plus size={14} /> Add Degree
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1016,7 +1033,24 @@ RETURN JSON FORMAT ONLY:
                 <Code size={18} className="text-primary" />
                 <h3 className="text-xs font-black uppercase tracking-[0.3em] text-foreground/70">Projects</h3>
               </div>
-              <button onClick={() => setEditingItem({ type: 'project', bullets: [], skills: [], title: '', organization: '', period: '', description: '' })} className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all"><Plus size={20} /></button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={async () => {
+                    if (confirm("CLEAR PROJECTS: This will permanently delete ALL technical projects. Proceed?")) {
+                      const { error } = await supabase.from("master_vault").delete().eq("user_id", user?.id).eq("type", "project");
+                      if (error) toast.error("Failed to clear projects.");
+                      else {
+                        fetchData();
+                        toast.success("Technical projects cleared.");
+                      }
+                    }
+                  }}
+                  className="text-[9px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 transition-colors"
+                >
+                  Clear
+                </button>
+                <button onClick={() => setEditingItem({ type: 'project', bullets: [], skills: [], title: '', organization: '', period: '', description: '' })} className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all"><Plus size={20} /></button>
+              </div>
             </div>
             <div className="space-y-4">
               {items.filter(item => item.type === 'project').map(item => (
@@ -1040,7 +1074,24 @@ RETURN JSON FORMAT ONLY:
                 <Award size={18} className="text-primary" />
                 <h3 className="text-xs font-black uppercase tracking-[0.3em] text-foreground/70">Credentials</h3>
               </div>
-              <button onClick={() => setEditingItem({ type: 'certification', bullets: [], skills: [], title: '', organization: '', period: '', description: '' })} className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all"><Plus size={20} /></button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={async () => {
+                    if (confirm("CLEAR CREDENTIALS: This will permanently delete ALL certifications and awards. Proceed?")) {
+                      const { error } = await supabase.from("master_vault").delete().eq("user_id", user?.id).eq("type", "certification");
+                      if (error) toast.error("Failed to clear credentials.");
+                      else {
+                        fetchData();
+                        toast.success("Credentials cleared.");
+                      }
+                    }
+                  }}
+                  className="text-[9px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 transition-colors"
+                >
+                  Clear
+                </button>
+                <button onClick={() => setEditingItem({ type: 'certification', bullets: [], skills: [], title: '', organization: '', period: '', description: '' })} className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all"><Plus size={20} /></button>
+              </div>
             </div>
             <div className="space-y-4">
               {items.filter(item => item.type === 'certification').map(item => (
