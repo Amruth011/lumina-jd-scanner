@@ -86,6 +86,16 @@ export const ResumeGenerator = ({ jdTitle, jdSkills, companyName, forceTab }: Re
   const [lineSpacing, setLineSpacing] = useState<1.0 | 1.15 | 1.4>(1.15);
   const [marginSize, setMarginSize] = useState<0.5 | 1.0>(1.0);
   const [baseFontSize, setBaseFontSize] = useState(11);
+  const [sectionOrder, setSectionOrder] = useState<string[]>(['EDUCATION', 'EXPERIENCE', 'PROJECTS', 'LEADERSHIP', 'SKILLS', 'AWARDS', 'CERTIFICATIONS']);
+  const [visibleSections, setVisibleSections] = useState<Record<string, boolean>>({
+    'EDUCATION': true,
+    'EXPERIENCE': true,
+    'PROJECTS': true,
+    'LEADERSHIP': true,
+    'SKILLS': true,
+    'AWARDS': true,
+    'CERTIFICATIONS': true
+  });
 
   const formatUrl = (url: string) => {
     if (!url) return "";
@@ -263,7 +273,9 @@ Candidate Profile: ${JSON.stringify(vaultItems.slice(0, 15).map(v => ({ title: v
 - SECTION INTEGRITY: 
     - DO NOT include personal/side projects in the EXPERIENCE section. Keep them in PROJECTS.
     - DO NOT include certifications/awards in the LEADERSHIP section. Keep them in AWARDS or CERTIFICATIONS.
-- The structure MUST follow the order: EDUCATION, EXPERIENCE, PROJECTS, LEADERSHIP, SKILLS, AWARDS.
+- CUSTOM STRUCTURE MANDATE:
+    - You MUST follow this exact section sequence and only include these sections: ${sectionOrder.filter(s => visibleSections[s]).join(', ')}.
+    - If a section is not in this list, omit it completely.
 
 ### SCHEMA REQUIREMENTS:
 1. EDUCATION: Must include School, Degree, GPA, Date, and Location.
@@ -1176,6 +1188,51 @@ Return ONLY a JSON object with this exact structure:
                       >
                         {[2, 3, 4, 5].map(n => <option key={n} value={n}>{n} Bullets</option>)}
                       </select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Section Architecture & Sequence</label>
+                    <div className="space-y-2 bg-slate-50/50 p-4 rounded-[2rem] border border-slate-100">
+                      {sectionOrder.map((section, index) => (
+                        <div key={section} className="flex items-center justify-between group/sec bg-white p-3 rounded-xl border border-slate-100 hover:border-lumina-teal/30 transition-all shadow-sm">
+                          <div className="flex items-center gap-3">
+                            <button 
+                              onClick={() => {
+                                setVisibleSections(prev => ({ ...prev, [section]: !prev[section] }));
+                              }}
+                              className={`w-5 h-5 rounded-md flex items-center justify-center transition-all ${visibleSections[section] ? 'bg-lumina-teal text-white' : 'bg-slate-200 text-slate-400'}`}
+                            >
+                              <CheckCircle2 size={12} className={visibleSections[section] ? 'opacity-100' : 'opacity-0'} />
+                            </button>
+                            <span className={`text-[10px] font-black uppercase tracking-widest ${visibleSections[section] ? 'text-slate-700' : 'text-slate-300 line-through'}`}>{section}</span>
+                          </div>
+                          <div className="flex items-center gap-1 opacity-0 group-hover/sec:opacity-100 transition-opacity">
+                            <button 
+                              disabled={index === 0}
+                              onClick={() => {
+                                const newOrder = [...sectionOrder];
+                                [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
+                                setSectionOrder(newOrder);
+                              }}
+                              className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 disabled:opacity-20"
+                            >
+                              <Plus size={12} className="rotate-180" style={{ transform: 'rotate(180deg) scaleY(-1)' }} />
+                            </button>
+                            <button 
+                              disabled={index === sectionOrder.length - 1}
+                              onClick={() => {
+                                const newOrder = [...sectionOrder];
+                                [newOrder[index + 1], newOrder[index]] = [newOrder[index], newOrder[index + 1]];
+                                setSectionOrder(newOrder);
+                              }}
+                              className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 disabled:opacity-20"
+                            >
+                              <Plus size={12} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
 
