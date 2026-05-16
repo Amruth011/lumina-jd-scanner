@@ -1216,7 +1216,38 @@ Return ONLY a JSON object with this exact structure:
                 </button>
               ) : (
                 <div className="space-y-6 pt-4 border-t border-slate-100 animate-in fade-in slide-in-from-top-4 duration-500">
-                  <div className="grid grid-cols-2 gap-4">
+                  {/* Promoted Font Scaling Section */}
+                  <div className="space-y-4 p-6 rounded-[2.5rem] bg-lumina-teal/5 border border-lumina-teal/20 shadow-sm">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-8 h-8 rounded-full bg-lumina-teal/10 flex items-center justify-center">
+                        <Type className="w-4 h-4 text-lumina-teal" />
+                      </div>
+                      <div>
+                        <label className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900 block">Resume Typography Scale</label>
+                        <p className="text-[8px] text-slate-500 font-bold uppercase tracking-widest">Adjust point sizes for maximum scanability</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-[8px] font-black uppercase text-slate-400 ml-1">Name (pt)</label>
+                        <input type="number" min="14" max="48" value={nameFontSize} onChange={e => setNameFontSize(Number(e.target.value))} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-xs font-black shadow-sm focus:ring-2 ring-lumina-teal/20 transition-all outline-none" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[8px] font-black uppercase text-slate-400 ml-1">Headlines (pt)</label>
+                        <input type="number" min="8" max="24" value={headlineFontSize} onChange={e => setHeadlineFontSize(Number(e.target.value))} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-xs font-black shadow-sm focus:ring-2 ring-lumina-teal/20 transition-all outline-none" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[8px] font-black uppercase text-slate-400 ml-1">Sub-Headers (pt)</label>
+                        <input type="number" min="8" max="20" value={subHeadlineFontSize} onChange={e => setSubHeadlineFontSize(Number(e.target.value))} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-xs font-black shadow-sm focus:ring-2 ring-lumina-teal/20 transition-all outline-none" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[8px] font-black uppercase text-slate-400 ml-1">Body (pt)</label>
+                        <input type="number" min="7" max="14" value={bodyFontSize} onChange={e => setBodyFontSize(Number(e.target.value))} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-xs font-black shadow-sm focus:ring-2 ring-lumina-teal/20 transition-all outline-none" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Strategy Tone</label>
                       <select 
@@ -1230,7 +1261,7 @@ Return ONLY a JSON object with this exact structure:
                       </select>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Typography</label>
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Global Font</label>
                       <select 
                         value={fontFamily} 
                         onChange={(e) => setFontFamily(e.target.value as "Inter" | "Roboto" | "Merriweather" | "Arial")}
@@ -1241,28 +1272,6 @@ Return ONLY a JSON object with this exact structure:
                         <option value="Merriweather">Merriweather (Serif)</option>
                         <option value="Arial">Arial (Standard)</option>
                       </select>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4 border-t border-b border-slate-100 py-6">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 block mb-2">Granular Font Scaling (pt)</label>
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                      <div className="space-y-2">
-                        <label className="text-[8px] font-black uppercase text-slate-400 ml-1">Name</label>
-                        <input type="number" min="14" max="48" value={nameFontSize} onChange={e => setNameFontSize(Number(e.target.value))} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-black shadow-sm focus:ring-2 ring-lumina-teal/20 transition-all outline-none" />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-[8px] font-black uppercase text-slate-400 ml-1">Headlines</label>
-                        <input type="number" min="8" max="24" value={headlineFontSize} onChange={e => setHeadlineFontSize(Number(e.target.value))} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-black shadow-sm focus:ring-2 ring-lumina-teal/20 transition-all outline-none" />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-[8px] font-black uppercase text-slate-400 ml-1">Sub-Headers</label>
-                        <input type="number" min="8" max="20" value={subHeadlineFontSize} onChange={e => setSubHeadlineFontSize(Number(e.target.value))} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-black shadow-sm focus:ring-2 ring-lumina-teal/20 transition-all outline-none" />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-[8px] font-black uppercase text-slate-400 ml-1">Body</label>
-                        <input type="number" min="7" max="14" value={bodyFontSize} onChange={e => setBodyFontSize(Number(e.target.value))} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-black shadow-sm focus:ring-2 ring-lumina-teal/20 transition-all outline-none" />
-                      </div>
                     </div>
                   </div>
 

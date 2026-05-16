@@ -32,7 +32,7 @@ const SYNONYM_MAP: Record<string, string[]> = {
   "typescript": ["ts"],
   "python": ["python3", "python programming", "python programming language"],
   "python programming language": ["python", "python3", "python programming"],
-  "data modeling": ["data modelling", "data analysis", "statistical modelling", "statistical modeling", "predictive analytics", "feature engineering"],
+  "data modeling": ["data modelling", "data analysis", "statistical modelling", "statistical modeling", "predictive analytics", "feature engineering", "schema design"],
   "data analysis": ["data analytics", "eda", "exploratory data analysis", "data science", "data insights", "cohort analysis", "statistical modelling"],
   "analytical skills": ["analytical", "data analysis", "analysis", "eda", "exploratory data analysis", "insights", "analytical thinking", "problem solving", "problem-solving"],
   "problem-solving skills": ["problem solving", "problem-solving", "troubleshooting", "debugging", "solutioning", "critical thinking", "analytical"],
@@ -43,7 +43,6 @@ const SYNONYM_MAP: Record<string, string[]> = {
   "machine learning": ["ml", "predictive analytics", "xgboost", "scikit-learn", "random forest", "deep learning"],
   "statistical modeling": ["statistical modelling", "statistics", "statistical analysis", "regression analysis", "hypothesis testing", "bayesian", "frequentist", "statistical methods"],
   "data management": ["data modeling", "data governance", "data pipelines", "data pipeline", "sql", "mysql", "postgresql", "database management", "data ingestion", "data warehousing"],
-  "data modeling": ["data modelling", "data analysis", "statistical modelling", "statistical modeling", "predictive analytics", "feature engineering", "schema design"],
   "cybersecurity": ["cyber security", "infosec", "information security", "pentest", "penetration testing"],
 };
 
