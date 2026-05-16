@@ -227,7 +227,7 @@ export interface ATSVerdict {
   tips: string[];
 }
 // ── NEW: Master Vault types ──
-export type VaultItemType = 'professional' | 'project' | 'product' | 'education' | 'certification';
+export type VaultItemType = 'professional' | 'project' | 'product' | 'education' | 'certification' | 'leadership' | 'award';
 
 export interface VaultItem {
   id: string;

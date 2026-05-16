@@ -37,6 +37,18 @@ const getFieldLabels = (type?: VaultItemType) => {
       periodStr: "Date Issued / Expiration", periodEx: "e.g. Issued Oct 2023 - Valid till 2026",
       descStr: "Credential Details & Skills", descEx: "Enter Credential ID, skills validated, or link..."
     };
+    case 'leadership': return {
+      titleStr: "Role / Impact", titleEx: "e.g. Lead Volunteer",
+      orgStr: "Organization / Community", orgEx: "e.g. Tech For Good",
+      periodStr: "Service Timeline", periodEx: "e.g. Jun 2022 - Present",
+      descStr: "Leadership Contribution", descEx: "Detail your impact, team size, and specific initiatives led..."
+    };
+    case 'award': return {
+      titleStr: "Award / Honor Name", titleEx: "e.g. Hackathon Winner",
+      orgStr: "Awarding Body", orgEx: "e.g. Google Cloud",
+      periodStr: "Recognition Date", periodEx: "e.g. Mar 2024",
+      descStr: "Achievement Context", descEx: "Describe the selection criteria, competitive landscape, and why you won..."
+    };
     case 'professional': default: return {
       titleStr: "Title / Designation", titleEx: "e.g. Lead Product Designer",
       orgStr: "Organization / Brand", orgEx: "e.g. OpenAI",
@@ -1143,6 +1155,90 @@ RETURN JSON FORMAT ONLY:
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {items.filter(item => item.type === 'certification').map(item => (
+              <div key={item.id} className="premium-card p-6 flex justify-between items-center group">
+                <div>
+                  <h5 className="font-display font-bold text-base">{item.title}</h5>
+                  <p className="text-[10px] text-muted-foreground uppercase">{item.organization}</p>
+                </div>
+                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                  <button onClick={() => setEditingItem(item)} className="text-muted-foreground hover:text-primary"><Edit3 size={14} /></button>
+                  <button onClick={() => handleDeleteItem(item.id)} className="text-muted-foreground hover:text-red-500"><Trash2 size={14} /></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── SECTION: LEADERSHIP ── */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between pl-4">
+            <div className="flex items-center gap-4">
+              <User size={18} className="text-primary" />
+              <h3 className="text-xs font-black uppercase tracking-[0.3em] text-foreground/70">Leadership & Impact</h3>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={async () => {
+                  if (confirm("CLEAR LEADERSHIP: This will permanently delete ALL leadership entries. Proceed?")) {
+                    const { error } = await supabase.from("master_vault").delete().eq("user_id", user?.id).eq("type", "leadership");
+                    if (error) toast.error("Failed to clear leadership.");
+                    else {
+                      fetchData();
+                      toast.success("Leadership entries cleared.");
+                    }
+                  }
+                }}
+                className="text-[9px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 transition-colors"
+              >
+                Clear
+              </button>
+              <button onClick={() => setEditingItem({ type: 'leadership', bullets: [], skills: [], title: '', organization: '', period: '', description: '' })} className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all"><Plus size={20} /></button>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {items.filter(item => item.type === 'leadership').map(item => (
+              <div key={item.id} className="premium-card p-6 flex justify-between items-center group">
+                <div>
+                  <h5 className="font-display font-bold text-base">{item.title}</h5>
+                  <p className="text-[10px] text-muted-foreground uppercase">{item.organization}</p>
+                </div>
+                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                  <button onClick={() => setEditingItem(item)} className="text-muted-foreground hover:text-primary"><Edit3 size={14} /></button>
+                  <button onClick={() => handleDeleteItem(item.id)} className="text-muted-foreground hover:text-red-500"><Trash2 size={14} /></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── SECTION: AWARDS ── */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between pl-4">
+            <div className="flex items-center gap-4">
+              <Sparkles size={18} className="text-primary" />
+              <h3 className="text-xs font-black uppercase tracking-[0.3em] text-foreground/70">Honors & Awards</h3>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={async () => {
+                  if (confirm("CLEAR AWARDS: This will permanently delete ALL award entries. Proceed?")) {
+                    const { error } = await supabase.from("master_vault").delete().eq("user_id", user?.id).eq("type", "award");
+                    if (error) toast.error("Failed to clear awards.");
+                    else {
+                      fetchData();
+                      toast.success("Award entries cleared.");
+                    }
+                  }
+                }}
+                className="text-[9px] font-black uppercase tracking-widest text-red-500/40 hover:text-red-500 transition-colors"
+              >
+                Clear
+              </button>
+              <button onClick={() => setEditingItem({ type: 'award', bullets: [], skills: [], title: '', organization: '', period: '', description: '' })} className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all"><Plus size={20} /></button>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {items.filter(item => item.type === 'award').map(item => (
               <div key={item.id} className="premium-card p-6 flex justify-between items-center group">
                 <div>
                   <h5 className="font-display font-bold text-base">{item.title}</h5>
