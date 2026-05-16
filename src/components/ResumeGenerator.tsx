@@ -276,7 +276,7 @@ Candidate Profile: ${JSON.stringify(vaultItems.slice(0, 15).map(v => ({ title: v
     - PROJECTS: Technical builds, open-source contributions, or academic projects. (e.g., 'Kannada Book AI Agent').
     - PRODUCTS: Startups, SaaS products, or ventures founded by the user. (e.g., 'Lumina').
     - DO NOT mix these categories. If an item is a project, it MUST stay in PROJECTS. If it is a startup, it MUST stay in PRODUCTS.
-    - DO NOT include certifications/awards in any other section. Keep them in AWARDS or CERTIFICATIONS.
+    - DO NOT include certifications/awards in any other section. Keep them in AWARDS or CERTIFICATIONS. (CRITICAL: 'AI Engineer for Data Scientists Associate' or anything from 'DataCamp' is a CERTIFICATION, NOT experience).
 - CUSTOM STRUCTURE MANDATE:
     - You MUST follow this exact section sequence and only include these sections: ${sectionOrder.filter(s => visibleSections[s]).join(', ')}.
     - If a section is not in this list, omit it completely.
@@ -875,6 +875,19 @@ Return ONLY a JSON object with this exact structure:
               const skillsText = skills?.trim() || "";
               const lines = pdf.splitTextToSize(skillsText, pageWidth - margin - (margin + pdf.getTextWidth(`${category?.trim()}: `)));
               pdf.text(lines, margin + pdf.getTextWidth(`${category?.trim()}: `), y);
+              y += (lines.length * 4.5) + 1;
+            });
+          }
+
+          // --- CERTIFICATIONS ---
+          if (editableResume.certifications?.length) {
+            drawSectionHeader("CERTIFICATIONS");
+            editableResume.certifications.forEach(cert => {
+              pdf.setTextColor(0, 0, 0);
+              pdf.setFont("helvetica", "normal");
+              pdf.setFontSize(10);
+              const lines = pdf.splitTextToSize(`• ${cert}`, pageWidth - (margin * 2));
+              pdf.text(lines, margin, y);
               y += (lines.length * 4.5) + 1;
             });
           }

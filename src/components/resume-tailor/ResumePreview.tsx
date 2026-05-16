@@ -670,6 +670,22 @@ export const ResumePreview = ({
                         </div>
                       </section>
 
+                      {/* Certifications */}
+                      {(localResume.certifications && localResume.certifications.length > 0) && (
+                        <section className="space-y-2">
+                          <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
+                            <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.meta }}>Certifications</h4>
+                          </div>
+                          <div className="space-y-1">
+                            {localResume.certifications?.map((cert, i) => (
+                              <p key={i} className="text-[#1E2A3A]/90 leading-tight" style={{ fontSize: fontSizes.body }}>
+                                • {cert}
+                              </p>
+                            ))}
+                          </div>
+                        </section>
+                      )}
+
                       {/* Awards */}
                       {(localResume.awards && localResume.awards.length > 0) && (
                         <section className="space-y-2">
