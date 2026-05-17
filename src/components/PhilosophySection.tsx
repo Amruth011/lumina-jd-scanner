@@ -1,5 +1,9 @@
 import { motion } from "framer-motion";
 
+/**
+ * PhilosophySection renders the high-level match explanation and applicant
+ * strategic philosophy block.
+ */
 export const PhilosophySection = () => {
   return (
     <section className="bg-transparent py-28 md:py-40 px-6 overflow-hidden">
