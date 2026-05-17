@@ -39,14 +39,20 @@ const FeatureCard = ({ feature, index }: { feature: Feature, index: number }) =>
   const tiltRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (tiltRef.current) {
-      VanillaTilt.init(tiltRef.current, {
+    const el = tiltRef.current;
+    if (el) {
+      VanillaTilt.init(el, {
         max: 8,
         speed: 400,
         glare: true,
         "max-glare": 0.2,
       });
     }
+    return () => {
+      if (el && (el as { vanillaTilt?: { destroy: () => void } }).vanillaTilt) {
+        (el as { vanillaTilt?: { destroy: () => void } }).vanillaTilt!.destroy();
+      }
+    };
   }, []);
 
   return (
