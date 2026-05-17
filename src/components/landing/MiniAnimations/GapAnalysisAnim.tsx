@@ -5,7 +5,8 @@ export const GapAnalysisAnim = () => {
   const [active, setActive] = useState(false);
 
   useEffect(() => {
-    setActive(true);
+    const timer = setTimeout(() => setActive(true), 100);
+    return () => clearTimeout(timer);
   }, []);
 
   const skills = [
