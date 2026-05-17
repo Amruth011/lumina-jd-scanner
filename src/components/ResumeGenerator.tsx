@@ -284,12 +284,12 @@ Candidate Profile: ${JSON.stringify(vaultItems.slice(0, 15).map(v => ({ type: v.
 ### CORE MANDATE:
 - Quantify EVERYTHING. Use metrics (%, $, time, scale) in every bullet.
 - Use strong action verbs (Spearheaded, Orchestrated, Engineered).
-- DATE FORMAT: Use 3-letter month abbreviations ONLY (e.g., "Jan 2024", "May 2027", "Aug 2023 – Present").
-- SECTION DENSITY MANDATE:
-    - PROFESSIONAL SUMMARY: Exactly ${summaryLines} high-impact sentences.
-    - EXPERIENCE BULLETS: Exactly ${experienceBullets} bullets per role.
-    - PROJECT BULLETS: Exactly ${projectLines} bullets per project.
-    - PRODUCT/STARTUP BULLETS: Exactly ${productLines} bullets per product.
+- DATE FORMAT: Use 3-letter month abbreviations ONLY (e.g., "Jan 2024", "May 2027", "Aug 2023 – Present"- SECTION DENSITY & DYNAMIC EXPANSION MANDATES (CRITICAL):
+    - PROFESSIONAL SUMMARY: You MUST synthesize a high-impact professional summary of EXACTLY ${summaryLines} sentences. Do NOT use the placeholder text "High-density strategic overview" under any circumstances. You must compose it dynamically based on the Candidate Profile's experience and target skills.
+    - EXPERIENCE BULLETS: Every single role in EXPERIENCE must have EXACTLY ${experienceBullets} bullet points. If the Candidate Profile's entry has fewer than ${experienceBullets} bullets, you MUST expand, elaborate, or split them to generate exactly ${experienceBullets} quantified, metric-driven bullet points.
+    - PROJECT BULLETS: Every single project in PROJECTS must have EXACTLY ${projectLines} bullet points. Expand or elaborate to generate exactly ${projectLines} metric-driven bullet points.
+    - PRODUCT/STARTUP BULLETS: Every single product in PRODUCTS must have EXACTLY ${productLines} bullet points. Expand or elaborate to generate exactly ${productLines} metric-driven bullet points.
+    - SUMMARY LENGTH: Ensure the professional summary is EXACTLY ${summaryLines} sentences long.
 - SECTION INTEGRITY & CLASSIFICATION (CRITICAL): 
     - EXPERIENCE: Only for formal employment, internships, and fellowships. (e.g., 'Data Science Intern').
     - PROJECTS: Technical builds, open-source contributions, or academic projects. (e.g., 'Kannada Book AI Agent').
@@ -299,13 +299,12 @@ Candidate Profile: ${JSON.stringify(vaultItems.slice(0, 15).map(v => ({ type: v.
     - DO NOT invent additional entries to "fill space". 
     - DO NOT mix these categories. If an item is a project, it MUST stay in PROJECTS. If it is a startup, it MUST stay in PRODUCTS.
     - DO NOT include certifications/awards in any other section. Keep them in AWARDS or CERTIFICATIONS. (CRITICAL: 'AI Engineer for Data Scientists Associate' or anything from 'DataCamp' is a CERTIFICATION, NOT experience).
-    - SUMMARY: Must be EXACTLY ${summaryLines} lines long. Each line must be a high-impact, data-driven sentence.
     - SKILLS: Must be ONLY keywords and technical terms. NO sentences or descriptive text. Format as "Category: Skill1, Skill2, Skill3".
 - CUSTOM STRUCTURE MANDATE:
     - You MUST follow this exact section sequence: SUMMARY → EDUCATION → EXPERIENCE → PRODUCTS → PROJECTS → LEADERSHIP → SKILLS → AWARDS → CERTIFICATIONS.
     - ONLY include sections that are TRUE in this list: ${sectionOrder.filter(s => visibleSections[s]).join(', ')}.
     - If a section like 'LEADERSHIP' or 'AWARDS' is NOT in this list, you MUST OMIT IT from the JSON response entirely.
-
+ 
 ### SCHEMA REQUIREMENTS:
 1. EDUCATION: Must include School, Degree, GPA, Date, and Location.
 2. EXPERIENCE: Professional roles with quantified impact.
@@ -314,37 +313,37 @@ Candidate Profile: ${JSON.stringify(vaultItems.slice(0, 15).map(v => ({ type: v.
 5. LEADERSHIP: Non-work impact or community roles.
 6. SKILLS: Categorized (e.g., "Languages: Python, Go").
 7. AWARDS: Competitive wins or recognition.
-
-Return ONLY a JSON object with this exact structure:
+ 
+Return ONLY a JSON object with this exact structure (note the bracketed dynamic instructions):
 {
-  "professional_summary": "High-density strategic overview",
+  "professional_summary": "[Synthesize a highly tailored professional summary of EXACTLY ${summaryLines} sentences based on target skills and top profile highlights. Do NOT output this instruction text.]",
   "skills_section": ["Languages: ...", "Frameworks: ..."],
   "experience": [
     {
       "heading": "Job Title @ Company - City, State",
       "content": "Jan 2024 – Present",
-      "bullets": ["Action verb + Task + Result [Metric]"]
+      "bullets": ["[Synthesize quantified, metric-driven Bullet 1]", "[Synthesize quantified, metric-driven Bullet 2]", "...continue up to exactly ${experienceBullets} bullets"]
     }
   ],
   "products": [
     {
       "heading": "Product/Startup Name @ Venture Status - City, State",
       "content": "Jan 2023 – Present",
-      "bullets": ["Traction metric + Value proposition"]
+      "bullets": ["[Synthesize traction metric Bullet 1]", "...continue up to exactly ${productLines} bullets"]
     }
   ],
   "projects": [
     {
       "heading": "Project Name - Tech Stack",
       "content": "Feb 2023 – May 2023",
-      "bullets": ["Achievement with [Metric]"]
+      "bullets": ["[Synthesize technical achievement Bullet 1]", "...continue up to exactly ${projectLines} bullets"]
     }
   ],
   "leadership": [
     {
       "heading": "Role @ Organization",
       "content": "Sep 2022 – Dec 2023",
-      "bullets": ["Leadership achievement"]
+      "bullets": ["[Leadership achievement Bullet 1]", "...continue up to exactly ${experienceBullets} bullets"]
     }
   ],
   "education": ["Degree @ University - City, State | Expected May 2027 | GPA: X.X"],
@@ -803,8 +802,7 @@ Return ONLY a JSON object with this exact structure:
             pdf.setTextColor(0, 0, 0);
             pdf.setFont(currentFont, "normal");
             pdf.setFontSize(bodyFontSize);
-            const limitedSummary = limitSummarySentences(editableResume.professional_summary, summaryLines);
-            const lines = pdf.splitTextToSize(limitedSummary, contentWidth);
+            const lines = pdf.splitTextToSize(editableResume.professional_summary, contentWidth);
             lines.forEach((line: string) => {
               checkPageBreak(getLineHeight(bodyFontSize, 1.25));
               pdf.text(line, margin, y);
@@ -892,7 +890,7 @@ Return ONLY a JSON object with this exact structure:
               pdf.text(locText, pageWidth - margin, y, { align: "right" });
               y += getLineHeight(bodyFontSize, 1.25);
 
-              limitBullets(exp.bullets, experienceBullets).forEach(bullet => {
+              (exp.bullets || []).forEach(bullet => {
                 pdf.setFont(currentFont, "normal");
                 pdf.setFontSize(bodyFontSize);
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
@@ -952,7 +950,7 @@ Return ONLY a JSON object with this exact structure:
               pdf.text(contentText, pageWidth - margin, y, { align: "right" });
               y += getLineHeight(subHeadlineFontSize, 1.25);
 
-              limitBullets(prod.bullets, productLines).forEach(bullet => {
+              (prod.bullets || []).forEach(bullet => {
                 pdf.setFont(currentFont, "normal");
                 pdf.setFontSize(bodyFontSize);
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
@@ -1022,7 +1020,7 @@ Return ONLY a JSON object with this exact structure:
               }
               y += getLineHeight(subHeadlineFontSize, 1.25);
 
-              limitBullets(proj.bullets, projectLines).forEach(bullet => {
+              (proj.bullets || []).forEach(bullet => {
                 pdf.setFont(currentFont, "normal");
                 pdf.setFontSize(bodyFontSize);
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
@@ -1066,7 +1064,7 @@ Return ONLY a JSON object with this exact structure:
               }
               y += getLineHeight(subHeadlineFontSize, 1.25);
 
-              limitBullets(lead.bullets, experienceBullets).forEach(bullet => {
+              (lead.bullets || []).forEach(bullet => {
                 pdf.setFont(currentFont, "normal");
                 pdf.setFontSize(bodyFontSize);
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();

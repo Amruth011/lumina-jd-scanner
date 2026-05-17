@@ -655,7 +655,7 @@ export const ResumePreview = ({
                             <h4 className="font-bold uppercase tracking-widest !font-inherit" style={{ fontSize: `${headlineFontSize}px`, fontFamily: 'inherit' }}>Professional Summary</h4>
                           </div>
                           <p className="text-[#1E2A3A]/90 leading-relaxed !font-inherit text-left" style={{ fontSize: fontSizes.body, fontFamily: 'inherit', textAlign: 'left', margin: 0, padding: 0 }}>
-                            {limitSummarySentences(localResume.professional_summary, summaryLines)}
+                            {localResume.professional_summary}
                           </p>
                         </section>
                       )}
@@ -715,7 +715,7 @@ export const ResumePreview = ({
                                   <span className="flex-shrink-0 text-right ml-4 text-[11px] not-italic !font-inherit" style={{ fontFamily: 'inherit' }}>{location}</span>
                                 </div>
                                 <ul className="list-disc ml-5 space-y-0.5 pt-0.5 !font-inherit" style={{ fontFamily: 'inherit', margin: 0, padding: 0 }}>
-                                  {limitBullets(exp.bullets, experienceBullets).map((bullet, bullIdx) => (
+                                  {(exp.bullets || []).map((bullet, bullIdx) => (
                                     <li key={bullIdx} className="text-[#1E2A3A]/90 leading-tight !font-inherit text-left" style={{ fontSize: fontSizes.body, fontFamily: 'inherit', textAlign: 'left', margin: 0, padding: 0 }}>
                                       {bullet.replace(/^[•\s*-]+/, '').trim()}
                                     </li>
@@ -745,7 +745,7 @@ export const ResumePreview = ({
                                     <span className="flex-shrink-0 text-right ml-4 text-[11px] font-normal !font-inherit" style={{ fontFamily: 'inherit' }}>{prod.content || "Operational"}</span>
                                   </div>
                                   <ul className="list-disc ml-5 space-y-0.5 !font-inherit" style={{ fontFamily: 'inherit', margin: 0, padding: 0 }}>
-                                    {limitBullets(prod.bullets, productLines).map((bullet, bullIdx) => (
+                                    {(prod.bullets || []).map((bullet, bullIdx) => (
                                       <li key={bullIdx} className="text-[#1E2A3A]/90 leading-tight !font-inherit text-left" style={{ fontSize: fontSizes.body, fontFamily: 'inherit', textAlign: 'left', margin: 0, padding: 0 }}>
                                         {bullet.replace(/^[•\s*-]+/, '').trim()}
                                       </li>
@@ -792,7 +792,7 @@ export const ResumePreview = ({
                                     )}
                                   </div>
                                   <ul className="list-disc ml-5 space-y-0.5 !font-inherit" style={{ fontFamily: 'inherit', margin: 0, padding: 0 }}>
-                                    {limitBullets(proj.bullets, projectLines).map((bullet, bullIdx) => (
+                                    {(proj.bullets || []).map((bullet, bullIdx) => (
                                       <li key={bullIdx} className="text-[#1E2A3A]/90 leading-tight !font-inherit text-left" style={{ fontSize: fontSizes.body, fontFamily: 'inherit', textAlign: 'left', margin: 0, padding: 0 }}>
                                         {bullet.replace(/^[•\s*-]+/, '').trim()}
                                       </li>
@@ -819,7 +819,7 @@ export const ResumePreview = ({
                                   <span className="flex-shrink-0 text-right ml-4 text-[11px] font-normal !font-inherit" style={{ fontFamily: 'inherit' }}>{lead.content || "Date – Present"}</span>
                                 </div>
                                 <ul className="list-disc ml-5 space-y-0.5 !font-inherit" style={{ fontFamily: 'inherit', margin: 0, padding: 0 }}>
-                                  {limitBullets(lead.bullets, experienceBullets).map((bullet, bullIdx) => (
+                                  {(lead.bullets || []).map((bullet, bullIdx) => (
                                     <li key={bullIdx} className="text-[#1E2A3A]/90 leading-tight !font-inherit text-left" style={{ fontSize: fontSizes.body, fontFamily: 'inherit', textAlign: 'left', margin: 0, padding: 0 }}>
                                       {bullet.replace(/^[•\s*-]+/, '').trim()}
                                     </li>
