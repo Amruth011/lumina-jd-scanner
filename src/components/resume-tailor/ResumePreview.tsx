@@ -65,17 +65,45 @@ interface ResumePreviewProps {
   productLines?: number;
 }
 
-const limitSummarySentences = (summaryText: string, maxSentences: number): string => {
+const limitSummarySentences = (summaryText: string, maxLines: number): string => {
   if (!summaryText) return "";
   const sentences = summaryText.split(/\.\s+/).filter(Boolean);
-  const sliced = sentences.slice(0, maxSentences);
-  if (sliced.length === 0) return "";
-  return sliced.join(". ") + (sliced.length > 0 && !sliced[sliced.length - 1].endsWith(".") ? "." : "");
+  let currentLines = 0;
+  const allowedSentences: string[] = [];
+  for (const sentence of sentences) {
+    const cleanSentence = sentence.trim() + (sentence.endsWith(".") ? "" : ".");
+    const approxLines = Math.ceil(cleanSentence.length / 105);
+    if (currentLines + approxLines <= maxLines) {
+      allowedSentences.push(cleanSentence);
+      currentLines += approxLines;
+    } else if (allowedSentences.length === 0) {
+      allowedSentences.push(cleanSentence);
+      break;
+    } else {
+      break;
+    }
+  }
+  return allowedSentences.join(" ");
 };
 
-const limitBullets = (bullets: string[], maxBullets: number): string[] => {
+const limitBullets = (bullets: string[], maxLines: number): string[] => {
   if (!bullets) return [];
-  return bullets.slice(0, maxBullets);
+  let currentLines = 0;
+  const allowedBullets: string[] = [];
+  for (const bullet of bullets) {
+    const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
+    const approxLines = Math.ceil(cleanBullet.length / 100);
+    if (currentLines + approxLines <= maxLines) {
+      allowedBullets.push(bullet);
+      currentLines += approxLines;
+    } else if (allowedBullets.length === 0) {
+      allowedBullets.push(bullet);
+      break;
+    } else {
+      break;
+    }
+  }
+  return allowedBullets;
 };
 
 export const ResumePreview = ({ 
@@ -425,16 +453,50 @@ export const ResumePreview = ({
                         newProjects[idx] = { ...newProjects[idx], heading: e.target.value };
                         setLocalResume({ ...localResume, projects: newProjects });
                       }} className="w-full bg-transparent font-bold text-sm outline-none border-b border-transparent focus:border-lumina-teal/20" />
-                      <input 
-                        value={proj.content || ""} 
-                        onChange={(e) => {
-                          const newProjects = [...(localResume.projects || [])];
-                          newProjects[idx] = { ...newProjects[idx], content: e.target.value };
-                          setLocalResume({ ...localResume, projects: newProjects });
-                        }} 
-                        className="w-full bg-slate-100/50 rounded-lg px-3 py-1.5 text-[11px] font-body outline-none border border-slate-200/30 focus:border-lumina-teal/20" 
-                        placeholder="Dates, GitHub, or Live Link (e.g., Feb 2023 - May 2023)" 
-                      />
+                       <div className="flex gap-2">
+                        <select 
+                          value={
+                            proj.content?.includes("github.com") 
+                              ? "github" 
+                              : (proj.content?.startsWith("http") || proj.content?.includes(".com") || proj.content?.includes(".io") || proj.content?.includes(".live") || proj.content?.includes(".dev") || proj.content?.includes(".me"))
+                                ? "live" 
+                                : "dates"
+                          }
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            const newProjects = [...(localResume.projects || [])];
+                            if (val === "dates") {
+                              newProjects[idx] = { ...newProjects[idx], content: "Feb 2023 - May 2023" };
+                            } else if (val === "github") {
+                              newProjects[idx] = { ...newProjects[idx], content: "github.com/username/project" };
+                            } else {
+                              newProjects[idx] = { ...newProjects[idx], content: "project.live" };
+                            }
+                            setLocalResume({ ...localResume, projects: newProjects });
+                          }}
+                          className="bg-slate-100 rounded-lg px-2 py-1.5 text-[10px] font-bold outline-none border border-slate-200/30 focus:ring-1 ring-lumina-teal/20"
+                        >
+                          <option value="dates">Dates</option>
+                          <option value="github">GitHub</option>
+                          <option value="live">Live Link</option>
+                        </select>
+                        <input 
+                          value={proj.content || ""} 
+                          onChange={(e) => {
+                            const newProjects = [...(localResume.projects || [])];
+                            newProjects[idx] = { ...newProjects[idx], content: e.target.value };
+                            setLocalResume({ ...localResume, projects: newProjects });
+                          }} 
+                          className="flex-1 bg-slate-100/50 rounded-lg px-3 py-1.5 text-[11px] font-body outline-none border border-slate-200/30 focus:border-lumina-teal/20" 
+                          placeholder={
+                            proj.content?.includes("github.com") 
+                              ? "github.com/username/repo" 
+                              : (proj.content?.startsWith("http") || proj.content?.includes(".com") || proj.content?.includes(".io"))
+                                ? "project.live"
+                                : "e.g., Feb 2023 - May 2023"
+                          }
+                        />
+                      </div>
                       <div className="space-y-2">
                         {proj.bullets?.map((bullet, bullIdx) => (
                           <div key={bullIdx} className="flex gap-2 items-start group/bull">
@@ -550,6 +612,7 @@ export const ResumePreview = ({
                     width: '100%', 
                     maxWidth: '850px',
                     minHeight: '297mm',
+                    height: `${pageCount * 297}mm`,
                     padding: `${marginSize}in`,
                     lineHeight: lineSpacing,
                     fontSize: fontSizes.body,
@@ -728,7 +791,23 @@ export const ResumePreview = ({
                                 <div key={projIdx} className="space-y-0.5 !font-inherit" style={{ fontFamily: 'inherit', margin: 0, padding: 0 }}>
                                   <div className="flex justify-between items-baseline font-bold !font-inherit" style={{ fontSize: fontSizes.subHeader, fontFamily: 'inherit' }}>
                                     <span className="!font-inherit" style={{ fontFamily: 'inherit' }}>{title?.trim()} <span className="font-normal opacity-60 !font-inherit" style={{ fontFamily: 'inherit' }}>| {stack?.trim()}</span></span>
-                                    <span className="text-[11px] font-normal !font-inherit" style={{ fontFamily: 'inherit' }}>{proj.content || "Ongoing"}</span>
+                                    {proj.content ? (
+                                      (proj.content.includes("github.com") || proj.content.includes(".com") || proj.content.includes(".io") || proj.content.includes(".live") || proj.content.includes(".dev") || proj.content.startsWith("http")) ? (
+                                        <a 
+                                          href={proj.content.startsWith("http") ? proj.content : `https://${proj.content}`}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-[11px] font-normal !font-inherit text-lumina-teal hover:underline transition-all"
+                                          style={{ fontFamily: 'inherit' }}
+                                        >
+                                          {proj.content}
+                                        </a>
+                                      ) : (
+                                        <span className="text-[11px] font-normal !font-inherit" style={{ fontFamily: 'inherit' }}>{proj.content}</span>
+                                      )
+                                    ) : (
+                                      <span className="text-[11px] font-normal !font-inherit" style={{ fontFamily: 'inherit' }}>Ongoing</span>
+                                    )}
                                   </div>
                                   <ul className="list-disc ml-5 space-y-0.5 !font-inherit" style={{ fontFamily: 'inherit', margin: 0, padding: 0 }}>
                                     {limitBullets(proj.bullets, projectLines).map((bullet, bullIdx) => (

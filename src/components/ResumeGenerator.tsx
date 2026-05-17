@@ -742,17 +742,45 @@ Return ONLY a JSON object with this exact structure:
         // --- HEADER ---
         const deepBlack: [number, number, number] = [0, 0, 0];
 
-        const limitSummarySentences = (summaryText: string, maxSentences: number): string => {
+        const limitSummarySentences = (summaryText: string, maxLines: number): string => {
           if (!summaryText) return "";
           const sentences = summaryText.split(/\.\s+/).filter(Boolean);
-          const sliced = sentences.slice(0, maxSentences);
-          if (sliced.length === 0) return "";
-          return sliced.join(". ") + (sliced.length > 0 && !sliced[sliced.length - 1].endsWith(".") ? "." : "");
+          let currentLines = 0;
+          const allowedSentences: string[] = [];
+          for (const sentence of sentences) {
+            const cleanSentence = sentence.trim() + (sentence.endsWith(".") ? "" : ".");
+            const approxLines = Math.ceil(cleanSentence.length / 105);
+            if (currentLines + approxLines <= maxLines) {
+              allowedSentences.push(cleanSentence);
+              currentLines += approxLines;
+            } else if (allowedSentences.length === 0) {
+              allowedSentences.push(cleanSentence);
+              break;
+            } else {
+              break;
+            }
+          }
+          return allowedSentences.join(" ");
         };
 
-        const limitBullets = (bullets: string[], maxBullets: number): string[] => {
+        const limitBullets = (bullets: string[], maxLines: number): string[] => {
           if (!bullets) return [];
-          return bullets.slice(0, maxBullets);
+          let currentLines = 0;
+          const allowedBullets: string[] = [];
+          for (const bullet of bullets) {
+            const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
+            const approxLines = Math.ceil(cleanBullet.length / 100);
+            if (currentLines + approxLines <= maxLines) {
+              allowedBullets.push(bullet);
+              currentLines += approxLines;
+            } else if (allowedBullets.length === 0) {
+              allowedBullets.push(bullet);
+              break;
+            } else {
+              break;
+            }
+          }
+          return allowedBullets;
         };
 
         const checkPageBreak = (neededHeight: number) => {
@@ -927,7 +955,17 @@ Return ONLY a JSON object with this exact structure:
 
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize - 1);
-              pdf.text(proj.content || "", pageWidth - margin, y, { align: "right" });
+              if (proj.content) {
+                pdf.text(proj.content, pageWidth - margin, y, { align: "right" });
+                if (proj.content.includes("github.com") || proj.content.includes(".com") || proj.content.includes(".io") || proj.content.includes(".live") || proj.content.includes(".dev") || proj.content.startsWith("http")) {
+                  let linkUrl = proj.content.trim();
+                  if (!linkUrl.startsWith("http")) {
+                    linkUrl = "https://" + linkUrl;
+                  }
+                  const textWidth = pdf.getTextWidth(proj.content);
+                  pdf.link(pageWidth - margin - textWidth, y - 3, textWidth, 4, { url: linkUrl });
+                }
+              }
               y += 3.0;
 
               limitBullets(proj.bullets, projectLines).forEach(bullet => {
