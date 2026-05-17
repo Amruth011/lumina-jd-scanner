@@ -2,6 +2,9 @@ import { motion } from "framer-motion";
 
 const BAR_COUNT = 48;
 
+/**
+ * SoundWave renders an elegant visual animated audio wave bar representation.
+ */
 const SoundWave = () => {
   const bars = Array.from({ length: BAR_COUNT }, (_, i) => {
     const center = BAR_COUNT / 2;
