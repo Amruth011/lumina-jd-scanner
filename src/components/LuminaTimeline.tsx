@@ -30,7 +30,7 @@ export const LuminaTimeline = ({ data }: LuminaTimelineProps) => {
           className="relative"
         >
           {/* Node */}
-          <div className="absolute -left-[33px] top-1.5 w-4 h-4 rounded-full bg-background border-2 border-primary shadow-[0_0_10px_rgba(var(--primary-rgb),0.3)] z-10" />
+          <div className="absolute -left-[33px] top-1.5 w-4 h-4 rounded-full bg-background border-2 border-primary shadow-[0_0_10px_rgba(16,185,129,0.3)] z-10" />
           
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-4">
