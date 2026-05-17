@@ -1,6 +1,13 @@
 import jsPDF from "jspdf";
 import type { DecodeResult, ResumeGapResult } from "@/types/jd";
 
+/**
+ * Generates a unified PDF intelligence report containing JD Decoding metrics
+ * and matching candidate profile alignment analysis.
+ * 
+ * @param jdResults The decoded job description schema containing score, flags, and verdict
+ * @param resumeResults Optional candidate resume gap-analysis feedback
+ */
 export const generateUnifiedReport = (jdResults: DecodeResult, resumeResults?: ResumeGapResult | null) => {
   const doc = new jsPDF("p", "mm", "a4");
   const pageWidth = doc.internal.pageSize.getWidth();
