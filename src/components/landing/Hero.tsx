@@ -69,9 +69,14 @@ export const Hero = () => {
         </motion.div>
 
         {/* Headline */}
-        <h1 className="text-6xl md:text-[110px] font-serif italic font-bold text-lumina-navy leading-[0.95] tracking-tight max-w-5xl mx-auto">
+        <motion.h1 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, type: "spring", stiffness: 80 }}
+          className="text-6xl md:text-[110px] font-serif italic font-bold text-lumina-navy leading-[0.95] tracking-tight max-w-5xl mx-auto"
+        >
           Land in the <span className="text-lumina-teal">top 0.1%</span>
-        </h1>
+        </motion.h1>
 
         {/* Subheadline */}
         <motion.p
