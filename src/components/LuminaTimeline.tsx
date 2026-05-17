@@ -12,6 +12,9 @@ interface LuminaTimelineProps {
   data: TimelineEntry[];
 }
 
+/**
+ * LuminaTimeline displays task milestone maps sequentially using custom timelines.
+ */
 export const LuminaTimeline = ({ data }: LuminaTimelineProps) => {
   if (!data || data.length === 0) return null;
 
