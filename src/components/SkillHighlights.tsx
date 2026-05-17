@@ -28,6 +28,20 @@ const SkillProgressBar = ({ skill, importance, color }: { skill: string, importa
   </div>
 );
 
+const getCategoryIcon = (category: string) => {
+  const catLower = category.toLowerCase();
+  if (catLower.includes("ai") || catLower.includes("gen") || catLower.includes("llm") || catLower.includes("model")) {
+    return <Sparkles size={12} className="text-primary" />;
+  }
+  if (catLower.includes("found") || catLower.includes("core") || catLower.includes("architect") || catLower.includes("engineer")) {
+    return <Brain size={12} className="text-primary" />;
+  }
+  if (catLower.includes("infra") || catLower.includes("cloud") || catLower.includes("security") || catLower.includes("devops") || catLower.includes("system")) {
+    return <ShieldCheck size={12} className="text-primary" />;
+  }
+  return <Target size={12} className="text-primary" />;
+};
+
 export const SkillHighlights = ({ 
   skills, 
   results, 
@@ -69,10 +83,7 @@ export const SkillHighlights = ({
             {Object.entries(groupedRequired).map(([category, categorySkills]) => (
               <div key={category} className="space-y-4">
                 <div className="px-4 py-2 rounded-full bg-primary/5 border border-primary/10 w-fit flex items-center gap-2">
-                    {category.toLowerCase().includes("ai") || category.toLowerCase().includes("gen") ? <Sparkles size={12} className="text-primary" /> : 
-                     category.toLowerCase().includes("found") || category.toLowerCase().includes("core") ? <Brain size={12} className="text-primary" /> : 
-                     category.toLowerCase().includes("infra") || category.toLowerCase().includes("cloud") || category.toLowerCase().includes("security") ? <ShieldCheck size={12} className="text-primary" /> :
-                     <Target size={12} className="text-primary" />}
+                    {getCategoryIcon(category)}
                     <span className="text-[10px] font-black uppercase text-primary tracking-widest">{category}</span>
                 </div>
                 <div className="space-y-4">
