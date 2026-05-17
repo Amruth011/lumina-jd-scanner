@@ -3,11 +3,16 @@ import React from 'react';
 interface LuminaLogoProps {
   className?: string;
   size?: number;
+  onClick?: () => void;
 }
 
-export const LuminaLogo = ({ className = "", size = 120 }: LuminaLogoProps) => {
+export const LuminaLogo = ({ className = "", size = 120, onClick }: LuminaLogoProps) => {
   return (
-    <div className={`flex items-center ${className}`} style={{ width: size }}>
+    <div 
+      className={`flex items-center ${onClick ? "cursor-pointer" : ""} ${className}`} 
+      style={{ width: size }}
+      onClick={onClick}
+    >
       <img 
         src="/logo.png" 
         alt="Lumina Logo" 
