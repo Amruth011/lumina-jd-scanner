@@ -10,7 +10,8 @@ export const ResumeBulletGenerator = ({ bullets }: ResumeBulletGeneratorProps) =
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const copyToClipboard = (text: string, index: number) => {
-    navigator.clipboard.writeText(text);
+    const cleanedText = text.replace(/\*\*/g, "");
+    navigator.clipboard.writeText(cleanedText);
     setCopiedIndex(index);
     setTimeout(() => setCopiedIndex(null), 2000);
   };
