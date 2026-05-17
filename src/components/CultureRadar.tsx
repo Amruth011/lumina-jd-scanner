@@ -7,6 +7,10 @@ interface CultureRadarProps {
   radar?: CompanyDeepDive["culture_radar"];
 }
 
+/**
+ * CultureRadar presents a granular break-down of company work environment,
+ * innovation index, and organizational archetypes.
+ */
 export const CultureRadar = ({ radar }: CultureRadarProps) => {
   if (!radar) return null;
 
