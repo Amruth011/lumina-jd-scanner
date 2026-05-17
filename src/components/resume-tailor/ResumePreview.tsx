@@ -59,7 +59,24 @@ interface ResumePreviewProps {
   isGeneratingCL: boolean;
   onGenerateCL: () => void;
   onDownloadCL: (format: 'pdf' | 'doc') => void;
+  summaryLines?: number;
+  experienceBullets?: number;
+  projectLines?: number;
+  productLines?: number;
 }
+
+const limitSummarySentences = (summaryText: string, maxSentences: number): string => {
+  if (!summaryText) return "";
+  const sentences = summaryText.split(/\.\s+/).filter(Boolean);
+  const sliced = sentences.slice(0, maxSentences);
+  if (sliced.length === 0) return "";
+  return sliced.join(". ") + (sliced.length > 0 && !sliced[sliced.length - 1].endsWith(".") ? "." : "");
+};
+
+const limitBullets = (bullets: string[], maxBullets: number): string[] => {
+  if (!bullets) return [];
+  return bullets.slice(0, maxBullets);
+};
 
 export const ResumePreview = ({ 
   resume, 
@@ -79,7 +96,11 @@ export const ResumePreview = ({
   nameFontSize,
   headlineFontSize,
   subHeadlineFontSize,
-  bodyFontSize
+  bodyFontSize,
+  summaryLines = 3,
+  experienceBullets = 3,
+  projectLines = 3,
+  productLines = 3
 }: ResumePreviewProps) => {
   // ── Core Data State ──
   const [localResume, setLocalResume] = useState<GeneratedResume>(resume);
@@ -581,15 +602,15 @@ export const ResumePreview = ({
                     </div>
 
                     {/* Body */}
-                    <div className="space-y-3">
+                    <div className="flex flex-col" style={{ gap: '0.5px' }}>
                       {/* Summary Section */}
                       {localResume.professional_summary && (
                         <section className="space-y-1">
                           <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
                             <h4 className="font-bold uppercase tracking-widest !font-inherit" style={{ fontSize: `${headlineFontSize}px`, fontFamily: 'inherit' }}>Professional Summary</h4>
                           </div>
-                          <p className="text-[#1E2A3A]/90 leading-relaxed !font-inherit" style={{ fontSize: fontSizes.body, fontFamily: 'inherit' }}>
-                            {localResume.professional_summary}
+                          <p className="text-[#1E2A3A]/90 leading-relaxed !font-inherit text-justify" style={{ fontSize: fontSizes.body, fontFamily: 'inherit', textAlign: 'justify', margin: 0, padding: 0 }}>
+                            {limitSummarySentences(localResume.professional_summary, summaryLines)}
                           </p>
                         </section>
                       )}
@@ -599,7 +620,7 @@ export const ResumePreview = ({
                         <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
                           <h4 className="font-bold uppercase tracking-widest !font-inherit" style={{ fontSize: `${headlineFontSize}px`, fontFamily: 'inherit' }}>Education</h4>
                         </div>
-                        <div className="space-y-2">
+                        <div className="flex flex-col" style={{ gap: '0.5px' }}>
                           {(localResume.education || []).map((edu, i) => {
                             const parts = edu.split('|');
                             const mainInfo = parts[0].split('@');
@@ -611,7 +632,7 @@ export const ResumePreview = ({
                             // Template: University Name [Right: Date]
                             // B.S. Degree | GPA [Right: Location]
                             return (
-                              <div key={i} className="space-y-1 !font-inherit" style={{ fontFamily: 'inherit' }}>
+                              <div key={i} className="space-y-0.5 !font-inherit" style={{ fontFamily: 'inherit', margin: 0, padding: 0 }}>
                                 <div className="flex justify-between items-baseline font-bold !font-inherit" style={{ fontSize: fontSizes.body, fontFamily: 'inherit' }}>
                                   <span className="!font-inherit" style={{ fontFamily: 'inherit' }}>{school}</span>
                                   <span className="text-[11px] !font-inherit" style={{ fontFamily: 'inherit' }}>May 2027</span>
@@ -631,7 +652,7 @@ export const ResumePreview = ({
                         <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
                           <h4 className="font-bold uppercase tracking-widest !font-inherit" style={{ fontSize: `${headlineFontSize}px`, fontFamily: 'inherit' }}>Experience</h4>
                         </div>
-                        <div className="space-y-2.5">
+                        <div className="flex flex-col" style={{ gap: '1px' }}>
                           {(localResume.experience || []).map((exp, expIdx) => {
                             const parts = exp.heading.split('@');
                             const role = parts[0]?.trim() || "Role";
@@ -639,7 +660,7 @@ export const ResumePreview = ({
                             const location = parts[1]?.split('-')[1]?.trim() || localHeader.location;
                             
                             return (
-                              <div key={expIdx} className="space-y-1 !font-inherit" style={{ fontFamily: 'inherit' }}>
+                              <div key={expIdx} className="space-y-0.5 !font-inherit" style={{ fontFamily: 'inherit', margin: 0, padding: 0 }}>
                                 <div className="flex justify-between items-baseline font-bold !font-inherit" style={{ fontSize: fontSizes.subHeader, fontFamily: 'inherit' }}>
                                   <span className="!font-inherit" style={{ fontFamily: 'inherit' }}>{role}</span>
                                   <span className="text-[11px] !font-inherit" style={{ fontFamily: 'inherit' }}>{exp.content || "Date – Present"}</span>
@@ -648,9 +669,9 @@ export const ResumePreview = ({
                                   <span className="!font-inherit" style={{ fontFamily: 'inherit' }}>{org}</span>
                                   <span className="text-[11px] not-italic !font-inherit" style={{ fontFamily: 'inherit' }}>{location}</span>
                                 </div>
-                                <ul className="list-disc ml-5 space-y-1 pt-0.5 !font-inherit" style={{ fontFamily: 'inherit' }}>
-                                  {exp.bullets?.map((bullet, bullIdx) => (
-                                    <li key={bullIdx} className="text-[#1E2A3A]/90 leading-tight !font-inherit" style={{ fontSize: fontSizes.body, fontFamily: 'inherit' }}>
+                                <ul className="list-disc ml-5 space-y-0.5 pt-0.5 !font-inherit" style={{ fontFamily: 'inherit', margin: 0, padding: 0 }}>
+                                  {limitBullets(exp.bullets, experienceBullets).map((bullet, bullIdx) => (
+                                    <li key={bullIdx} className="text-[#1E2A3A]/90 leading-tight !font-inherit text-justify" style={{ fontSize: fontSizes.body, fontFamily: 'inherit', textAlign: 'justify', margin: 0, padding: 0 }}>
                                       {bullet.replace(/^[•\s*-]+/, '').trim()}
                                     </li>
                                   ))}
@@ -667,20 +688,20 @@ export const ResumePreview = ({
                           <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
                             <h4 className="font-bold uppercase tracking-widest !font-inherit" style={{ fontSize: `${headlineFontSize}px`, fontFamily: 'inherit' }}>Products & Ventures</h4>
                           </div>
-                          <div className="space-y-2">
+                          <div className="flex flex-col" style={{ gap: '1px' }}>
                             {localResume.products?.map((prod, prodIdx) => {
                               const headingParts = prod.heading.split(/\s*[-–—]\s*/);
                               const title = headingParts[0];
                               const status = headingParts.slice(1).join(" | ");
                               return (
-                                <div key={prodIdx} className="space-y-1 !font-inherit" style={{ fontFamily: 'inherit' }}>
+                                <div key={prodIdx} className="space-y-0.5 !font-inherit" style={{ fontFamily: 'inherit', margin: 0, padding: 0 }}>
                                   <div className="flex justify-between items-baseline font-bold !font-inherit" style={{ fontSize: fontSizes.subHeader, fontFamily: 'inherit' }}>
                                     <span className="!font-inherit" style={{ fontFamily: 'inherit' }}>{title?.trim()} <span className="font-normal opacity-60 !font-inherit" style={{ fontFamily: 'inherit' }}>| {status?.trim()}</span></span>
                                     <span className="text-[11px] font-normal !font-inherit" style={{ fontFamily: 'inherit' }}>{prod.content || "Operational"}</span>
                                   </div>
-                                  <ul className="list-disc ml-5 space-y-1 !font-inherit" style={{ fontFamily: 'inherit' }}>
-                                    {prod.bullets?.map((bullet, bullIdx) => (
-                                      <li key={bullIdx} className="text-[#1E2A3A]/90 leading-tight !font-inherit" style={{ fontSize: fontSizes.body, fontFamily: 'inherit' }}>
+                                  <ul className="list-disc ml-5 space-y-0.5 !font-inherit" style={{ fontFamily: 'inherit', margin: 0, padding: 0 }}>
+                                    {limitBullets(prod.bullets, productLines).map((bullet, bullIdx) => (
+                                      <li key={bullIdx} className="text-[#1E2A3A]/90 leading-tight !font-inherit text-justify" style={{ fontSize: fontSizes.body, fontFamily: 'inherit', textAlign: 'justify', margin: 0, padding: 0 }}>
                                         {bullet.replace(/^[•\s*-]+/, '').trim()}
                                       </li>
                                     ))}
@@ -698,20 +719,20 @@ export const ResumePreview = ({
                           <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
                             <h4 className="font-bold uppercase tracking-widest !font-inherit" style={{ fontSize: `${headlineFontSize}px`, fontFamily: 'inherit' }}>Projects</h4>
                           </div>
-                          <div className="space-y-2">
+                          <div className="flex flex-col" style={{ gap: '1px' }}>
                             {localResume.projects?.map((proj, projIdx) => {
                               const headingParts = proj.heading.split(/\s*[-–—]\s*/);
                               const title = headingParts[0];
                               const stack = headingParts.slice(1).join(" | ");
                               return (
-                                <div key={projIdx} className="space-y-1 !font-inherit" style={{ fontFamily: 'inherit' }}>
+                                <div key={projIdx} className="space-y-0.5 !font-inherit" style={{ fontFamily: 'inherit', margin: 0, padding: 0 }}>
                                   <div className="flex justify-between items-baseline font-bold !font-inherit" style={{ fontSize: fontSizes.subHeader, fontFamily: 'inherit' }}>
                                     <span className="!font-inherit" style={{ fontFamily: 'inherit' }}>{title?.trim()} <span className="font-normal opacity-60 !font-inherit" style={{ fontFamily: 'inherit' }}>| {stack?.trim()}</span></span>
                                     <span className="text-[11px] font-normal !font-inherit" style={{ fontFamily: 'inherit' }}>{proj.content || "Ongoing"}</span>
                                   </div>
-                                  <ul className="list-disc ml-5 space-y-1 !font-inherit" style={{ fontFamily: 'inherit' }}>
-                                    {proj.bullets?.map((bullet, bullIdx) => (
-                                      <li key={bullIdx} className="text-[#1E2A3A]/90 leading-tight !font-inherit" style={{ fontSize: fontSizes.body, fontFamily: 'inherit' }}>
+                                  <ul className="list-disc ml-5 space-y-0.5 !font-inherit" style={{ fontFamily: 'inherit', margin: 0, padding: 0 }}>
+                                    {limitBullets(proj.bullets, projectLines).map((bullet, bullIdx) => (
+                                      <li key={bullIdx} className="text-[#1E2A3A]/90 leading-tight !font-inherit text-justify" style={{ fontSize: fontSizes.body, fontFamily: 'inherit', textAlign: 'justify', margin: 0, padding: 0 }}>
                                         {bullet.replace(/^[•\s*-]+/, '').trim()}
                                       </li>
                                     ))}
@@ -729,16 +750,16 @@ export const ResumePreview = ({
                           <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
                             <h4 className="font-bold uppercase tracking-widest !font-inherit" style={{ fontSize: `${headlineFontSize}px`, fontFamily: 'inherit' }}>Leadership</h4>
                           </div>
-                          <div className="space-y-2">
+                          <div className="flex flex-col" style={{ gap: '1px' }}>
                             {localResume.leadership?.map((lead, idx) => (
-                              <div key={idx} className="space-y-1 !font-inherit" style={{ fontFamily: 'inherit' }}>
+                              <div key={idx} className="space-y-0.5 !font-inherit" style={{ fontFamily: 'inherit', margin: 0, padding: 0 }}>
                                 <div className="flex justify-between items-baseline font-bold !font-inherit" style={{ fontSize: fontSizes.subHeader, fontFamily: 'inherit' }}>
                                   <span className="!font-inherit" style={{ fontFamily: 'inherit' }}>{lead.heading}</span>
                                   <span className="text-[11px] font-normal !font-inherit" style={{ fontFamily: 'inherit' }}>{lead.content || "Date – Present"}</span>
                                 </div>
-                                <ul className="list-disc ml-5 space-y-1 !font-inherit" style={{ fontFamily: 'inherit' }}>
-                                  {lead.bullets?.map((bullet, bullIdx) => (
-                                    <li key={bullIdx} className="text-[#1E2A3A]/90 leading-tight !font-inherit" style={{ fontSize: fontSizes.body, fontFamily: 'inherit' }}>
+                                <ul className="list-disc ml-5 space-y-0.5 !font-inherit" style={{ fontFamily: 'inherit', margin: 0, padding: 0 }}>
+                                  {limitBullets(lead.bullets, experienceBullets).map((bullet, bullIdx) => (
+                                    <li key={bullIdx} className="text-[#1E2A3A]/90 leading-tight !font-inherit text-justify" style={{ fontSize: fontSizes.body, fontFamily: 'inherit', textAlign: 'justify', margin: 0, padding: 0 }}>
                                       {bullet.replace(/^[•\s*-]+/, '').trim()}
                                     </li>
                                   ))}
@@ -754,11 +775,11 @@ export const ResumePreview = ({
                         <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
                           <h4 className="font-bold uppercase tracking-widest !font-inherit" style={{ fontSize: `${headlineFontSize}px`, fontFamily: 'inherit' }}>Skills</h4>
                         </div>
-                        <div className="space-y-0.5 !font-inherit" style={{ fontFamily: 'inherit' }}>
+                        <div className="flex flex-col !font-inherit" style={{ fontFamily: 'inherit', gap: '0.5px' }}>
                           {(localResume.skills_section || []).map((skillLine, i) => {
                             const [category, skills] = skillLine.split(':');
                             return (
-                              <p key={i} className="text-[#1E2A3A]/90 leading-tight !font-inherit" style={{ fontSize: fontSizes.body, fontFamily: 'inherit' }}>
+                              <p key={i} className="text-[#1E2A3A]/90 leading-tight !font-inherit text-justify" style={{ fontSize: fontSizes.body, fontFamily: 'inherit', textAlign: 'justify', margin: 0, padding: 0 }}>
                                 <span className="font-bold !font-inherit" style={{ fontFamily: 'inherit' }}>{category?.trim()}:</span> {skills?.trim()}
                               </p>
                             );
@@ -772,9 +793,9 @@ export const ResumePreview = ({
                           <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
                             <h4 className="font-bold uppercase tracking-widest !font-inherit" style={{ fontSize: `${headlineFontSize}px`, fontFamily: 'inherit' }}>Certifications</h4>
                           </div>
-                          <div className="space-y-1 !font-inherit" style={{ fontFamily: 'inherit' }}>
+                          <div className="flex flex-col !font-inherit" style={{ fontFamily: 'inherit', gap: '0.5px' }}>
                             {localResume.certifications?.map((cert, i) => (
-                              <p key={i} className="text-[#1E2A3A]/90 leading-tight !font-inherit" style={{ fontSize: fontSizes.body, fontFamily: 'inherit' }}>
+                              <p key={i} className="text-[#1E2A3A]/90 leading-tight !font-inherit text-justify" style={{ fontSize: fontSizes.body, fontFamily: 'inherit', textAlign: 'justify', margin: 0, padding: 0 }}>
                                 • {cert}
                               </p>
                             ))}
@@ -788,9 +809,9 @@ export const ResumePreview = ({
                           <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
                             <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.header }}>Awards</h4>
                           </div>
-                          <div className="space-y-1">
+                          <div className="flex flex-col" style={{ gap: '0.5px' }}>
                             {localResume.awards?.map((award, i) => (
-                              <p key={i} className="text-[#1E2A3A]/90 leading-tight" style={{ fontSize: fontSizes.body }}>
+                              <p key={i} className="text-[#1E2A3A]/90 leading-tight text-justify" style={{ fontSize: fontSizes.body, textAlign: 'justify', margin: 0, padding: 0 }}>
                                 • {award}
                               </p>
                             ))}

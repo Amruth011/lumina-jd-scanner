@@ -742,6 +742,19 @@ Return ONLY a JSON object with this exact structure:
         // --- HEADER ---
         const deepBlack: [number, number, number] = [0, 0, 0];
 
+        const limitSummarySentences = (summaryText: string, maxSentences: number): string => {
+          if (!summaryText) return "";
+          const sentences = summaryText.split(/\.\s+/).filter(Boolean);
+          const sliced = sentences.slice(0, maxSentences);
+          if (sliced.length === 0) return "";
+          return sliced.join(". ") + (sliced.length > 0 && !sliced[sliced.length - 1].endsWith(".") ? "." : "");
+        };
+
+        const limitBullets = (bullets: string[], maxBullets: number): string[] => {
+          if (!bullets) return [];
+          return bullets.slice(0, maxBullets);
+        };
+
         const checkPageBreak = (neededHeight: number) => {
           if (y + neededHeight > 280) {
             pdf.addPage();
@@ -750,17 +763,17 @@ Return ONLY a JSON object with this exact structure:
         };
 
         const drawSectionHeader = (title: string) => {
-          checkPageBreak(20); // Prevent lonely section header at bottom of page
-          y += 3; // Gap before section
+          checkPageBreak(15);
+          y += 1.5;
           pdf.setTextColor(...deepBlack);
           pdf.setFont(currentFont, "bold");
           pdf.setFontSize(headlineFontSize);
           pdf.text(title.toUpperCase(), margin, y);
-          y += 1.8; // Spacing before line
-          pdf.setDrawColor(0, 0, 0); // Black line for sections
+          y += 1.0;
+          pdf.setDrawColor(0, 0, 0);
           pdf.setLineWidth(0.4);
           pdf.line(margin, y, pageWidth - margin, y);
-          y += 2.5; // Gap after section header
+          y += 1.5;
         };
 
         if (editableResume) {
@@ -771,16 +784,17 @@ Return ONLY a JSON object with this exact structure:
             pdf.setTextColor(0, 0, 0);
             pdf.setFont(currentFont, "normal");
             pdf.setFontSize(bodyFontSize);
-            const lines = pdf.splitTextToSize(editableResume.professional_summary, pageWidth - (margin * 2));
-            pdf.text(lines, margin, y);
-            y += (lines.length * 4.6) + 2;
+            const limitedSummary = limitSummarySentences(editableResume.professional_summary, summaryLines);
+            const lines = pdf.splitTextToSize(limitedSummary, pageWidth - (margin * 2));
+            pdf.text(limitedSummary, margin, y, { align: "justify", maxWidth: pageWidth - (margin * 2) });
+            y += (lines.length * 4.2) + 0.5;
           }
 
           // --- EDUCATION ---
           if (editableResume.education?.length) {
             drawSectionHeader("EDUCATION");
             editableResume.education.forEach(edu => {
-              checkPageBreak(12);
+              checkPageBreak(10);
               const parts = edu.split('|');
               const mainInfo = parts[0].split('@');
               const school = mainInfo[1]?.trim() || "University";
@@ -794,14 +808,14 @@ Return ONLY a JSON object with this exact structure:
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize - 1);
               pdf.text("May 2027", pageWidth - margin, y, { align: "right" });
-              y += 3.8;
+              y += 3.4;
               pdf.setFont(currentFont, "italic");
               pdf.setFontSize(bodyFontSize);
               pdf.text(`${degree} ${metadata && `| ${metadata}`}`, margin, y);
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize - 1);
               pdf.text(editableHeader.location || "Gainesville, FL", pageWidth - margin, y, { align: "right" });
-              y += 3.8;
+              y += 3.4;
             });
           }
 
@@ -809,7 +823,7 @@ Return ONLY a JSON object with this exact structure:
           if (editableResume.experience?.length) {
             drawSectionHeader("EXPERIENCE");
             editableResume.experience.forEach(exp => {
-              checkPageBreak(15);
+              checkPageBreak(12);
               const parts = exp.heading.split('@');
               const role = parts[0]?.trim() || "Role";
               const orgParts = parts[1]?.split('-') || [];
@@ -823,25 +837,26 @@ Return ONLY a JSON object with this exact structure:
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize - 1);
               pdf.text(exp.content || "Date – Present", pageWidth - margin, y, { align: "right" });
-              y += 3.8;
+              y += 3.4;
               pdf.setFont(currentFont, "italic");
               pdf.setFontSize(bodyFontSize);
               pdf.text(org, margin, y);
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize - 1);
               pdf.text(loc || "", pageWidth - margin, y, { align: "right" });
-              y += 3.2;
+              y += 3.0;
 
-              exp.bullets?.forEach(bullet => {
+              limitBullets(exp.bullets, experienceBullets).forEach(bullet => {
                 checkPageBreak(5);
                 pdf.setFont(currentFont, "normal");
                 pdf.setFontSize(bodyFontSize);
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
-                const lines = pdf.splitTextToSize(`• ${cleanBullet}`, pageWidth - (margin * 2) - 4);
-                pdf.text(lines, margin + 4, y);
-                y += (lines.length * 4.6);
+                const lines = pdf.splitTextToSize(cleanBullet, pageWidth - (margin * 2) - 4);
+                pdf.text("•", margin + 1.5, y);
+                pdf.text(cleanBullet, margin + 4, y, { align: "justify", maxWidth: pageWidth - (margin * 2) - 4 });
+                y += (lines.length * 4.2);
               });
-              y += 1.2;
+              y += 0.8;
             });
           }
 
@@ -849,9 +864,8 @@ Return ONLY a JSON object with this exact structure:
           if (editableResume.products?.length) {
             drawSectionHeader("PRODUCTS & VENTURES");
             editableResume.products.forEach(prod => {
-              checkPageBreak(15);
+              checkPageBreak(12);
               
-              // Robustly split on any dash (hyphen, en-dash, em-dash)
               const headingParts = prod.heading.split(/\s*[-–—]\s*/);
               const title = headingParts[0]?.trim() || "Product";
               const status = headingParts.slice(1).join(" | ")?.trim();
@@ -861,7 +875,6 @@ Return ONLY a JSON object with this exact structure:
               pdf.setFontSize(subHeadlineFontSize);
               pdf.text(title, margin, y);
               
-              // Measure exact bold width before changing font!
               const titleWidth = pdf.getTextWidth(title);
 
               if (status) {
@@ -873,18 +886,19 @@ Return ONLY a JSON object with this exact structure:
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize - 1);
               pdf.text(prod.content || "Operational", pageWidth - margin, y, { align: "right" });
-              y += 3.2;
+              y += 3.0;
 
-              prod.bullets?.forEach(bullet => {
+              limitBullets(prod.bullets, productLines).forEach(bullet => {
                 checkPageBreak(5);
                 pdf.setFont(currentFont, "normal");
                 pdf.setFontSize(bodyFontSize);
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
-                const lines = pdf.splitTextToSize(`• ${cleanBullet}`, pageWidth - (margin * 2) - 4);
-                pdf.text(lines, margin + 4, y);
-                y += (lines.length * 4.6);
+                const lines = pdf.splitTextToSize(cleanBullet, pageWidth - (margin * 2) - 4);
+                pdf.text("•", margin + 1.5, y);
+                pdf.text(cleanBullet, margin + 4, y, { align: "justify", maxWidth: pageWidth - (margin * 2) - 4 });
+                y += (lines.length * 4.2);
               });
-              y += 1.2;
+              y += 0.8;
             });
           }
 
@@ -892,9 +906,8 @@ Return ONLY a JSON object with this exact structure:
           if (editableResume.projects?.length) {
             drawSectionHeader("PROJECTS");
             editableResume.projects.forEach(proj => {
-              checkPageBreak(15);
+              checkPageBreak(12);
               
-              // Robustly split on any dash (hyphen, en-dash, em-dash)
               const headingParts = proj.heading.split(/\s*[-–—]\s*/);
               const title = headingParts[0]?.trim() || "Project";
               const stack = headingParts.slice(1).join(" | ")?.trim();
@@ -904,7 +917,6 @@ Return ONLY a JSON object with this exact structure:
               pdf.setFontSize(subHeadlineFontSize);
               pdf.text(title, margin, y);
               
-              // Measure exact bold width before changing font!
               const titleWidth = pdf.getTextWidth(title);
 
               if (stack) {
@@ -916,18 +928,19 @@ Return ONLY a JSON object with this exact structure:
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize - 1);
               pdf.text(proj.content || "", pageWidth - margin, y, { align: "right" });
-              y += 3.2;
+              y += 3.0;
 
-              proj.bullets?.forEach(bullet => {
+              limitBullets(proj.bullets, projectLines).forEach(bullet => {
                 checkPageBreak(5);
                 pdf.setFont(currentFont, "normal");
                 pdf.setFontSize(bodyFontSize);
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
-                const lines = pdf.splitTextToSize(`• ${cleanBullet}`, pageWidth - (margin * 2) - 4);
-                pdf.text(lines, margin + 4, y);
-                y += (lines.length * 4.6);
+                const lines = pdf.splitTextToSize(cleanBullet, pageWidth - (margin * 2) - 4);
+                pdf.text("•", margin + 1.5, y);
+                pdf.text(cleanBullet, margin + 4, y, { align: "justify", maxWidth: pageWidth - (margin * 2) - 4 });
+                y += (lines.length * 4.2);
               });
-              y += 1.2;
+              y += 0.8;
             });
           }
 
@@ -935,7 +948,7 @@ Return ONLY a JSON object with this exact structure:
           if (editableResume.leadership?.length) {
             drawSectionHeader("LEADERSHIP");
             editableResume.leadership.forEach(lead => {
-              checkPageBreak(15);
+              checkPageBreak(12);
               pdf.setTextColor(0, 0, 0);
               pdf.setFont(currentFont, "bold");
               pdf.setFontSize(subHeadlineFontSize);
@@ -943,18 +956,19 @@ Return ONLY a JSON object with this exact structure:
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize - 1);
               pdf.text(lead.content || "", pageWidth - margin, y, { align: "right" });
-              y += 3.2;
+              y += 3.0;
 
-              lead.bullets?.forEach(bullet => {
+              limitBullets(lead.bullets, experienceBullets).forEach(bullet => {
                 checkPageBreak(5);
                 pdf.setFont(currentFont, "normal");
                 pdf.setFontSize(bodyFontSize);
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
-                const lines = pdf.splitTextToSize(`• ${cleanBullet}`, pageWidth - (margin * 2) - 4);
-                pdf.text(lines, margin + 4, y);
-                y += (lines.length * 4.6);
+                const lines = pdf.splitTextToSize(cleanBullet, pageWidth - (margin * 2) - 4);
+                pdf.text("•", margin + 1.5, y);
+                pdf.text(cleanBullet, margin + 4, y, { align: "justify", maxWidth: pageWidth - (margin * 2) - 4 });
+                y += (lines.length * 4.2);
               });
-              y += 1.2;
+              y += 0.8;
             });
           }
 
@@ -970,15 +984,14 @@ Return ONLY a JSON object with this exact structure:
               pdf.setFontSize(bodyFontSize);
               pdf.text(categoryText, margin, y);
               
-              // Measure exact bold width before changing font!
               const categoryWidth = pdf.getTextWidth(categoryText + " ");
 
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize);
               const skillsText = skills?.trim() || "";
               const lines = pdf.splitTextToSize(skillsText, pageWidth - margin - (margin + categoryWidth));
-              pdf.text(lines, margin + categoryWidth, y);
-              y += (lines.length * 4.6) + 0.6;
+              pdf.text(skillsText, margin + categoryWidth, y, { align: "justify", maxWidth: pageWidth - margin - (margin + categoryWidth) });
+              y += (lines.length * 4.2) + 0.4;
             });
           }
 
@@ -990,9 +1003,11 @@ Return ONLY a JSON object with this exact structure:
               pdf.setTextColor(0, 0, 0);
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize);
-              const lines = pdf.splitTextToSize(`• ${cert}`, pageWidth - (margin * 2));
-              pdf.text(lines, margin, y);
-              y += (lines.length * 4.5);
+              const cleanCert = cert.replace(/^[•\s*-]+/, '').trim();
+              const lines = pdf.splitTextToSize(cleanCert, pageWidth - (margin * 2) - 4);
+              pdf.text("•", margin + 1.5, y);
+              pdf.text(cleanCert, margin + 4, y, { align: "justify", maxWidth: pageWidth - (margin * 2) - 4 });
+              y += (lines.length * 4.2);
             });
           }
         }
@@ -1727,6 +1742,10 @@ Return ONLY a JSON object with this exact structure:
               headlineFontSize={headlineFontSize}
               subHeadlineFontSize={subHeadlineFontSize}
               bodyFontSize={bodyFontSize}
+              summaryLines={summaryLines}
+              experienceBullets={experienceBullets}
+              projectLines={projectLines}
+              productLines={productLines}
             />
 
             <div className="flex justify-center pb-20">
