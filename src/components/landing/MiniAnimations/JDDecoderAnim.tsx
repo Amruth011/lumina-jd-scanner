@@ -30,7 +30,7 @@ export const JDDecoderAnim = () => {
             fontSize: '10px', 
             paddingLeft: '8px',
             color: activeIndex === i ? 'black' : 'white',
-            fontFamily: 'JetBrains Mono'
+            fontFamily: "'JetBrains Mono', Courier, monospace"
           }}>
             {word}
           </span>
