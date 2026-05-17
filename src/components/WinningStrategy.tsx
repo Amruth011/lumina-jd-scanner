@@ -6,6 +6,10 @@ interface WinningStrategyProps {
   steps: WinningStep[];
 }
 
+/**
+ * WinningStrategy renders the customized elite career planning protocols
+ * based on job desc requirements.
+ */
 export const WinningStrategy = ({ steps }: WinningStrategyProps) => {
   return (
     <motion.div
