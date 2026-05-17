@@ -37,8 +37,8 @@ export const JourneyNode: React.FC<JourneyNodeProps> = ({
   });
 
   useEffect(() => {
-    if (isActive && !hasActivated) {
-      setHasActivated(true);
+    if (isActive) {
+      if (!hasActivated) setHasActivated(true);
       
       // Flash effect
       if (lightRef.current) {
@@ -50,7 +50,7 @@ export const JourneyNode: React.FC<JourneyNodeProps> = ({
           ease: "power2.out"
         });
       }
-
+ 
       // Emissive burst
       if (platformRef.current) {
         const material = platformRef.current.material as THREE.MeshStandardMaterial;
@@ -60,8 +60,17 @@ export const JourneyNode: React.FC<JourneyNodeProps> = ({
           ease: "power2.out"
         });
       }
+    } else {
+      if (platformRef.current) {
+        const material = platformRef.current.material as THREE.MeshStandardMaterial;
+        gsap.to(material, {
+          emissiveIntensity: 0.3,
+          duration: 0.6,
+          ease: "power2.out"
+        });
+      }
     }
-  }, [isActive, hasActivated, isSpecial]);
+  }, [isActive, isSpecial]);
 
   useFrame((state) => {
     const p = progressRef.current;
