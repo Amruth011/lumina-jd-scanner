@@ -7,6 +7,10 @@ interface BiasDetectorProps {
   bias?: DecodeResult["deep_dive"]["bias_analysis"];
 }
 
+/**
+ * BiasDetector evaluates linguistic patterns and inclusivity scores of
+ * job description listings.
+ */
 export const BiasDetector = ({ bias }: BiasDetectorProps) => {
   if (!bias) return null;
 
