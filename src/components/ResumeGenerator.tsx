@@ -833,7 +833,7 @@ Return ONLY a JSON object with this exact structure:
             pdf.setFontSize(bodyFontSize);
             const limitedSummary = limitSummarySentences(editableResume.professional_summary, summaryLines);
             const lines = pdf.splitTextToSize(limitedSummary, contentWidth);
-            pdf.text(limitedSummary, margin, y, { align: "justify", maxWidth: contentWidth });
+            pdf.text(limitedSummary, margin, y, { align: "left", maxWidth: contentWidth });
             y += (lines.length * getLineHeight(bodyFontSize, 1.2)) + 0.5;
           }
 
@@ -923,7 +923,7 @@ Return ONLY a JSON object with this exact structure:
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
                 const lines = pdf.splitTextToSize(cleanBullet, contentWidth - 4);
                 pdf.text("•", margin + 1.5, y);
-                pdf.text(cleanBullet, margin + 4, y, { align: "justify", maxWidth: contentWidth - 4 });
+                pdf.text(cleanBullet, margin + 4, y, { align: "left", maxWidth: contentWidth - 4 });
                 y += (lines.length * getLineHeight(bodyFontSize, 1.2));
               });
               y += getLineHeight(bodyFontSize, 0.4);
@@ -976,7 +976,7 @@ Return ONLY a JSON object with this exact structure:
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
                 const lines = pdf.splitTextToSize(cleanBullet, contentWidth - 4);
                 pdf.text("•", margin + 1.5, y);
-                pdf.text(cleanBullet, margin + 4, y, { align: "justify", maxWidth: contentWidth - 4 });
+                pdf.text(cleanBullet, margin + 4, y, { align: "left", maxWidth: contentWidth - 4 });
                 y += (lines.length * getLineHeight(bodyFontSize, 1.2));
               });
               y += getLineHeight(bodyFontSize, 0.4);
@@ -1039,7 +1039,7 @@ Return ONLY a JSON object with this exact structure:
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
                 const lines = pdf.splitTextToSize(cleanBullet, contentWidth - 4);
                 pdf.text("•", margin + 1.5, y);
-                pdf.text(cleanBullet, margin + 4, y, { align: "justify", maxWidth: contentWidth - 4 });
+                pdf.text(cleanBullet, margin + 4, y, { align: "left", maxWidth: contentWidth - 4 });
                 y += (lines.length * getLineHeight(bodyFontSize, 1.2));
               });
               y += getLineHeight(bodyFontSize, 0.4);
@@ -1076,7 +1076,7 @@ Return ONLY a JSON object with this exact structure:
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
                 const lines = pdf.splitTextToSize(cleanBullet, contentWidth - 4);
                 pdf.text("•", margin + 1.5, y);
-                pdf.text(cleanBullet, margin + 4, y, { align: "justify", maxWidth: contentWidth - 4 });
+                pdf.text(cleanBullet, margin + 4, y, { align: "left", maxWidth: contentWidth - 4 });
                 y += (lines.length * getLineHeight(bodyFontSize, 1.2));
               });
               y += getLineHeight(bodyFontSize, 0.4);
@@ -1137,7 +1137,7 @@ Return ONLY a JSON object with this exact structure:
                 pdf.setFontSize(bodyFontSize);
                 const skillsText = skills?.trim() || "";
                 const lines = pdf.splitTextToSize(skillsText, contentWidth - categoryWidth);
-                pdf.text(skillsText, margin + categoryWidth, y, { align: "justify", maxWidth: contentWidth - categoryWidth });
+                pdf.text(skillsText, margin + categoryWidth, y, { align: "left", maxWidth: contentWidth - categoryWidth });
                 y += (lines.length * getLineHeight(bodyFontSize, 1.2)) + 0.4;
               } else {
                 parts.forEach((part, idx) => {
@@ -1180,7 +1180,7 @@ Return ONLY a JSON object with this exact structure:
               const cleanCert = cert.replace(/^[•\s*-]+/, '').trim();
               const lines = pdf.splitTextToSize(cleanCert, contentWidth - 4);
               pdf.text("•", margin + 1.5, y);
-              pdf.text(cleanCert, margin + 4, y, { align: "justify", maxWidth: contentWidth - 4 });
+              pdf.text(cleanCert, margin + 4, y, { align: "left", maxWidth: contentWidth - 4 });
               y += (lines.length * getLineHeight(bodyFontSize, 1.2));
             });
           }
