@@ -678,7 +678,7 @@ Return ONLY a JSON object with this exact structure:
     try {
       // SILICON VALLEY MODERN: High-legibility Sans-Serif (Helvetica/Arial)
       const pdf = new jsPDF("p", "mm", "a4");
-      const margin = 15;
+      const margin = 10; // 1cm margin all side
       let y = margin;
       const pageWidth = pdf.internal.pageSize.getWidth();
       const contentWidth = pageWidth - margin * 2;
@@ -696,13 +696,26 @@ Return ONLY a JSON object with this exact structure:
         return ptToMm(fontSizePt) * multiplier;
       };
 
+      // Truncate text to fit a specific width in jsPDF
+      const truncateText = (text: string, maxWidth: number, fontSize: number, isBold = false): string => {
+        pdf.setFont(currentFont, isBold ? "bold" : "normal");
+        pdf.setFontSize(fontSize);
+        if (pdf.getTextWidth(text) <= maxWidth) return text;
+        
+        let truncated = text;
+        while (truncated.length > 0 && pdf.getTextWidth(truncated + "...") > maxWidth) {
+          truncated = truncated.slice(0, -1);
+        }
+        return truncated + "...";
+      };
+
       const addText = (text: string, size: number, isBold = false, color: number[] = [0, 0, 0], align: "left" | "center" = "left") => {
         pdf.setFont(currentFont, isBold ? "bold" : "normal");
         pdf.setFontSize(size);
         pdf.setTextColor(color[0], color[1], color[2]);
         const lines = pdf.splitTextToSize(text, contentWidth);
         lines.forEach((line: string) => {
-          if (y > 280) { pdf.addPage(); y = margin; }
+          if (y > 287) { pdf.addPage(); y = margin; }
           const xPos = align === "center" ? (pageWidth - pdf.getTextWidth(line)) / 2 : margin;
           pdf.text(line, xPos, y);
           y += getLineHeight(size, 1.2);
@@ -790,7 +803,7 @@ Return ONLY a JSON object with this exact structure:
         };
 
         const checkPageBreak = (neededHeight: number) => {
-          if (y + neededHeight > 280) {
+          if (y + neededHeight > 287) {
             pdf.addPage();
             y = margin;
           }
@@ -819,8 +832,8 @@ Return ONLY a JSON object with this exact structure:
             pdf.setFont(currentFont, "normal");
             pdf.setFontSize(bodyFontSize);
             const limitedSummary = limitSummarySentences(editableResume.professional_summary, summaryLines);
-            const lines = pdf.splitTextToSize(limitedSummary, pageWidth - (margin * 2));
-            pdf.text(limitedSummary, margin, y, { align: "justify", maxWidth: pageWidth - (margin * 2) });
+            const lines = pdf.splitTextToSize(limitedSummary, contentWidth);
+            pdf.text(limitedSummary, margin, y, { align: "justify", maxWidth: contentWidth });
             y += (lines.length * getLineHeight(bodyFontSize, 1.2)) + 0.5;
           }
 
@@ -835,20 +848,32 @@ Return ONLY a JSON object with this exact structure:
               const degree = mainInfo[0]?.trim() || "Degree";
               const metadata = parts.slice(1).join(' | ');
 
+              const dateText = "May 2027";
+              const dateWidth = pdf.getTextWidth(dateText);
+              const maxSchoolWidth = contentWidth - dateWidth - 6;
+              const cleanSchool = truncateText(school, maxSchoolWidth, subHeadlineFontSize, true);
+
               pdf.setTextColor(0, 0, 0);
               pdf.setFont(currentFont, "bold");
               pdf.setFontSize(subHeadlineFontSize);
-              pdf.text(school, margin, y);
+              pdf.text(cleanSchool, margin, y);
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize - 1);
-              pdf.text("May 2027", pageWidth - margin, y, { align: "right" });
+              pdf.text(dateText, pageWidth - margin, y, { align: "right" });
               y += getLineHeight(subHeadlineFontSize, 1.25);
+
+              const locText = editableHeader.location || "Gainesville, FL";
+              const locWidth = pdf.getTextWidth(locText);
+              const maxDegreeWidth = contentWidth - locWidth - 6;
+              const fullDegree = `${degree}${metadata ? ` | ${metadata}` : ""}`;
+              const cleanDegree = truncateText(fullDegree, maxDegreeWidth, bodyFontSize, false);
+
               pdf.setFont(currentFont, "italic");
               pdf.setFontSize(bodyFontSize);
-              pdf.text(`${degree} ${metadata && `| ${metadata}`}`, margin, y);
+              pdf.text(cleanDegree, margin, y);
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize - 1);
-              pdf.text(editableHeader.location || "Gainesville, FL", pageWidth - margin, y, { align: "right" });
+              pdf.text(locText, pageWidth - margin, y, { align: "right" });
               y += getLineHeight(bodyFontSize, 1.3);
             });
           }
@@ -864,20 +889,31 @@ Return ONLY a JSON object with this exact structure:
               const org = orgParts[0]?.trim() || "Organization";
               const loc = orgParts[1]?.trim() || editableHeader.location;
 
+              const dateText = exp.content || "Date – Present";
+              const dateWidth = pdf.getTextWidth(dateText);
+              const maxRoleWidth = contentWidth - dateWidth - 6;
+              const cleanRole = truncateText(role, maxRoleWidth, subHeadlineFontSize, true);
+
               pdf.setTextColor(0, 0, 0);
               pdf.setFont(currentFont, "bold");
               pdf.setFontSize(subHeadlineFontSize);
-              pdf.text(role, margin, y);
+              pdf.text(cleanRole, margin, y);
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize - 1);
-              pdf.text(exp.content || "Date – Present", pageWidth - margin, y, { align: "right" });
+              pdf.text(dateText, pageWidth - margin, y, { align: "right" });
               y += getLineHeight(subHeadlineFontSize, 1.25);
+
+              const locText = loc || "";
+              const locWidth = pdf.getTextWidth(locText);
+              const maxOrgWidth = contentWidth - locWidth - 6;
+              const cleanOrg = truncateText(org, maxOrgWidth, bodyFontSize, false);
+
               pdf.setFont(currentFont, "italic");
               pdf.setFontSize(bodyFontSize);
-              pdf.text(org, margin, y);
+              pdf.text(cleanOrg, margin, y);
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize - 1);
-              pdf.text(loc || "", pageWidth - margin, y, { align: "right" });
+              pdf.text(locText, pageWidth - margin, y, { align: "right" });
               y += getLineHeight(bodyFontSize, 1.25);
 
               limitBullets(exp.bullets, experienceBullets).forEach(bullet => {
@@ -885,9 +921,9 @@ Return ONLY a JSON object with this exact structure:
                 pdf.setFont(currentFont, "normal");
                 pdf.setFontSize(bodyFontSize);
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
-                const lines = pdf.splitTextToSize(cleanBullet, pageWidth - (margin * 2) - 4);
+                const lines = pdf.splitTextToSize(cleanBullet, contentWidth - 4);
                 pdf.text("•", margin + 1.5, y);
-                pdf.text(cleanBullet, margin + 4, y, { align: "justify", maxWidth: pageWidth - (margin * 2) - 4 });
+                pdf.text(cleanBullet, margin + 4, y, { align: "justify", maxWidth: contentWidth - 4 });
                 y += (lines.length * getLineHeight(bodyFontSize, 1.2));
               });
               y += getLineHeight(bodyFontSize, 0.4);
@@ -904,22 +940,33 @@ Return ONLY a JSON object with this exact structure:
               const title = headingParts[0]?.trim() || "Product";
               const status = headingParts.slice(1).join(" | ")?.trim();
 
+              const contentText = prod.content || "Operational";
+              const contentWidthVal = pdf.getTextWidth(contentText);
+              
               pdf.setTextColor(0, 0, 0);
               pdf.setFont(currentFont, "bold");
               pdf.setFontSize(subHeadlineFontSize);
-              pdf.text(title, margin, y);
               
+              const maxTitleStackWidth = contentWidth - contentWidthVal - 6;
               const titleWidth = pdf.getTextWidth(title);
-
-              if (status) {
-                pdf.setFont(currentFont, "normal");
-                pdf.setFontSize(bodyFontSize);
-                pdf.text(` | ${status}`, margin + titleWidth + 2, y);
+              
+              if (titleWidth > maxTitleStackWidth) {
+                const cleanTitle = truncateText(title, maxTitleStackWidth, subHeadlineFontSize, true);
+                pdf.text(cleanTitle, margin, y);
+              } else {
+                pdf.text(title, margin, y);
+                if (status) {
+                  const maxStatusWidth = maxTitleStackWidth - titleWidth - 2;
+                  const cleanStatus = truncateText(` | ${status}`, maxStatusWidth, bodyFontSize, false);
+                  pdf.setFont(currentFont, "normal");
+                  pdf.setFontSize(bodyFontSize);
+                  pdf.text(cleanStatus, margin + titleWidth + 2, y);
+                }
               }
 
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize - 1);
-              pdf.text(prod.content || "Operational", pageWidth - margin, y, { align: "right" });
+              pdf.text(contentText, pageWidth - margin, y, { align: "right" });
               y += getLineHeight(subHeadlineFontSize, 1.25);
 
               limitBullets(prod.bullets, productLines).forEach(bullet => {
@@ -927,9 +974,9 @@ Return ONLY a JSON object with this exact structure:
                 pdf.setFont(currentFont, "normal");
                 pdf.setFontSize(bodyFontSize);
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
-                const lines = pdf.splitTextToSize(cleanBullet, pageWidth - (margin * 2) - 4);
+                const lines = pdf.splitTextToSize(cleanBullet, contentWidth - 4);
                 pdf.text("•", margin + 1.5, y);
-                pdf.text(cleanBullet, margin + 4, y, { align: "justify", maxWidth: pageWidth - (margin * 2) - 4 });
+                pdf.text(cleanBullet, margin + 4, y, { align: "justify", maxWidth: contentWidth - 4 });
                 y += (lines.length * getLineHeight(bodyFontSize, 1.2));
               });
               y += getLineHeight(bodyFontSize, 0.4);
@@ -946,29 +993,40 @@ Return ONLY a JSON object with this exact structure:
               const title = headingParts[0]?.trim() || "Project";
               const stack = headingParts.slice(1).join(" | ")?.trim();
 
+              const dateText = proj.content || "";
+              const dateWidth = dateText ? pdf.getTextWidth(dateText) : 0;
+              
               pdf.setTextColor(0, 0, 0);
               pdf.setFont(currentFont, "bold");
               pdf.setFontSize(subHeadlineFontSize);
-              pdf.text(title, margin, y);
               
+              const maxTitleStackWidth = contentWidth - dateWidth - 6;
               const titleWidth = pdf.getTextWidth(title);
-
-              if (stack) {
-                pdf.setFont(currentFont, "normal");
-                pdf.setFontSize(bodyFontSize);
-                pdf.text(` | ${stack}`, margin + titleWidth + 2, y);
+              
+              if (titleWidth > maxTitleStackWidth) {
+                const cleanTitle = truncateText(title, maxTitleStackWidth, subHeadlineFontSize, true);
+                pdf.text(cleanTitle, margin, y);
+              } else {
+                pdf.text(title, margin, y);
+                if (stack) {
+                  const maxStackWidth = maxTitleStackWidth - titleWidth - 2;
+                  const cleanStack = truncateText(` | ${stack}`, maxStackWidth, bodyFontSize, false);
+                  pdf.setFont(currentFont, "normal");
+                  pdf.setFontSize(bodyFontSize);
+                  pdf.text(cleanStack, margin + titleWidth + 2, y);
+                }
               }
 
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize - 1);
-              if (proj.content) {
-                pdf.text(proj.content, pageWidth - margin, y, { align: "right" });
-                if (proj.content.includes("github.com") || proj.content.includes(".com") || proj.content.includes(".io") || proj.content.includes(".live") || proj.content.includes(".dev") || proj.content.startsWith("http")) {
-                  let linkUrl = proj.content.trim();
+              if (dateText) {
+                pdf.text(dateText, pageWidth - margin, y, { align: "right" });
+                if (dateText.includes("github.com") || dateText.includes(".com") || dateText.includes(".io") || dateText.includes(".live") || dateText.includes(".dev") || dateText.startsWith("http")) {
+                  let linkUrl = dateText.trim();
                   if (!linkUrl.startsWith("http")) {
                     linkUrl = "https://" + linkUrl;
                   }
-                  const textWidth = pdf.getTextWidth(proj.content);
+                  const textWidth = pdf.getTextWidth(dateText);
                   pdf.link(pageWidth - margin - textWidth, y - 3, textWidth, 4, { url: linkUrl });
                 }
               }
@@ -979,9 +1037,9 @@ Return ONLY a JSON object with this exact structure:
                 pdf.setFont(currentFont, "normal");
                 pdf.setFontSize(bodyFontSize);
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
-                const lines = pdf.splitTextToSize(cleanBullet, pageWidth - (margin * 2) - 4);
+                const lines = pdf.splitTextToSize(cleanBullet, contentWidth - 4);
                 pdf.text("•", margin + 1.5, y);
-                pdf.text(cleanBullet, margin + 4, y, { align: "justify", maxWidth: pageWidth - (margin * 2) - 4 });
+                pdf.text(cleanBullet, margin + 4, y, { align: "justify", maxWidth: contentWidth - 4 });
                 y += (lines.length * getLineHeight(bodyFontSize, 1.2));
               });
               y += getLineHeight(bodyFontSize, 0.4);
@@ -993,13 +1051,22 @@ Return ONLY a JSON object with this exact structure:
             drawSectionHeader("LEADERSHIP");
             editableResume.leadership.forEach(lead => {
               checkPageBreak(12);
+              
+              const dateText = lead.content || "";
+              const dateWidth = dateText ? pdf.getTextWidth(dateText) : 0;
+              const maxHeadingWidth = contentWidth - dateWidth - 6;
+              const cleanHeading = truncateText(lead.heading, maxHeadingWidth, subHeadlineFontSize, true);
+
               pdf.setTextColor(0, 0, 0);
               pdf.setFont(currentFont, "bold");
               pdf.setFontSize(subHeadlineFontSize);
-              pdf.text(lead.heading, margin, y);
+              pdf.text(cleanHeading, margin, y);
+              
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize - 1);
-              pdf.text(lead.content || "", pageWidth - margin, y, { align: "right" });
+              if (dateText) {
+                pdf.text(dateText, pageWidth - margin, y, { align: "right" });
+              }
               y += getLineHeight(subHeadlineFontSize, 1.25);
 
               limitBullets(lead.bullets, experienceBullets).forEach(bullet => {
@@ -1007,9 +1074,9 @@ Return ONLY a JSON object with this exact structure:
                 pdf.setFont(currentFont, "normal");
                 pdf.setFontSize(bodyFontSize);
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
-                const lines = pdf.splitTextToSize(cleanBullet, pageWidth - (margin * 2) - 4);
+                const lines = pdf.splitTextToSize(cleanBullet, contentWidth - 4);
                 pdf.text("•", margin + 1.5, y);
-                pdf.text(cleanBullet, margin + 4, y, { align: "justify", maxWidth: pageWidth - (margin * 2) - 4 });
+                pdf.text(cleanBullet, margin + 4, y, { align: "justify", maxWidth: contentWidth - 4 });
                 y += (lines.length * getLineHeight(bodyFontSize, 1.2));
               });
               y += getLineHeight(bodyFontSize, 0.4);
@@ -1019,23 +1086,86 @@ Return ONLY a JSON object with this exact structure:
           // --- SKILLS ---
           if (editableResume.skills_section?.length) {
             drawSectionHeader("SKILLS");
-            editableResume.skills_section.forEach(skillLine => {
-              checkPageBreak(6);
-              const [category, skills] = skillLine.split(':');
-              const categoryText = `${category?.trim() || "Category"}:`;
-              pdf.setTextColor(0, 0, 0);
-              pdf.setFont(currentFont, "bold");
-              pdf.setFontSize(bodyFontSize);
-              pdf.text(categoryText, margin, y);
+            
+            // Group skills side-by-side to reduce vertical space footprint
+            const skillLinesToProcess = [...editableResume.skills_section];
+            let currentLineText = "";
+            const processedLines: string[] = [];
+            
+            for (let i = 0; i < skillLinesToProcess.length; i++) {
+              const skillLine = skillLinesToProcess[i];
+              const parts = skillLine.split(':');
+              const category = parts[0]?.trim() || "";
+              const skills = parts[1]?.trim() || "";
               
-              const categoryWidth = pdf.getTextWidth(categoryText + " ");
+              if (!category) continue;
+              const formattedItem = `${category}: ${skills}`;
+              
+              if (!currentLineText) {
+                currentLineText = formattedItem;
+              } else {
+                const testLine = `${currentLineText}   |   ${formattedItem}`;
+                if (pdf.getTextWidth(testLine) < contentWidth) {
+                  currentLineText = testLine;
+                } else {
+                  processedLines.push(currentLineText);
+                  currentLineText = formattedItem;
+                }
+              }
+            }
+            if (currentLineText) {
+              processedLines.push(currentLineText);
+            }
 
-              pdf.setFont(currentFont, "normal");
-              pdf.setFontSize(bodyFontSize);
-              const skillsText = skills?.trim() || "";
-              const lines = pdf.splitTextToSize(skillsText, pageWidth - margin - (margin + categoryWidth));
-              pdf.text(skillsText, margin + categoryWidth, y, { align: "justify", maxWidth: pageWidth - margin - (margin + categoryWidth) });
-              y += (lines.length * getLineHeight(bodyFontSize, 1.2)) + 0.4;
+            processedLines.forEach(lineText => {
+              checkPageBreak(6);
+              const parts = lineText.split('   |   ');
+              let currentX = margin;
+              
+              if (parts.length === 1) {
+                const part = parts[0];
+                const [category, skills] = part.split(':');
+                const categoryText = `${category?.trim() || ""}: `;
+                
+                pdf.setTextColor(0, 0, 0);
+                pdf.setFont(currentFont, "bold");
+                pdf.setFontSize(bodyFontSize);
+                pdf.text(categoryText, margin, y);
+                
+                const categoryWidth = pdf.getTextWidth(categoryText);
+                pdf.setFont(currentFont, "normal");
+                pdf.setFontSize(bodyFontSize);
+                const skillsText = skills?.trim() || "";
+                const lines = pdf.splitTextToSize(skillsText, contentWidth - categoryWidth);
+                pdf.text(skillsText, margin + categoryWidth, y, { align: "justify", maxWidth: contentWidth - categoryWidth });
+                y += (lines.length * getLineHeight(bodyFontSize, 1.2)) + 0.4;
+              } else {
+                parts.forEach((part, idx) => {
+                  if (idx > 0) {
+                    pdf.setFont(currentFont, "normal");
+                    pdf.setFontSize(bodyFontSize);
+                    pdf.setTextColor(120, 120, 120);
+                    pdf.text("   |   ", currentX, y);
+                    currentX += pdf.getTextWidth("   |   ");
+                  }
+                  
+                  const [category, skills] = part.split(':');
+                  const categoryText = `${category?.trim() || ""}: `;
+                  
+                  pdf.setTextColor(0, 0, 0);
+                  pdf.setFont(currentFont, "bold");
+                  pdf.setFontSize(bodyFontSize);
+                  pdf.text(categoryText, currentX, y);
+                  currentX += pdf.getTextWidth(categoryText);
+                  
+                  pdf.setFont(currentFont, "normal");
+                  pdf.setFontSize(bodyFontSize);
+                  const skillsText = skills?.trim() || "";
+                  pdf.text(skillsText, currentX, y);
+                  currentX += pdf.getTextWidth(skillsText);
+                });
+                y += getLineHeight(bodyFontSize, 1.2) + 0.4;
+              }
             });
           }
 
@@ -1048,9 +1178,9 @@ Return ONLY a JSON object with this exact structure:
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize);
               const cleanCert = cert.replace(/^[•\s*-]+/, '').trim();
-              const lines = pdf.splitTextToSize(cleanCert, pageWidth - (margin * 2) - 4);
+              const lines = pdf.splitTextToSize(cleanCert, contentWidth - 4);
               pdf.text("•", margin + 1.5, y);
-              pdf.text(cleanCert, margin + 4, y, { align: "justify", maxWidth: pageWidth - (margin * 2) - 4 });
+              pdf.text(cleanCert, margin + 4, y, { align: "justify", maxWidth: contentWidth - 4 });
               y += (lines.length * getLineHeight(bodyFontSize, 1.2));
             });
           }
