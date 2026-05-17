@@ -669,7 +669,9 @@ export const ResumePreview = ({
                           </div>
                           <div className="space-y-2">
                             {localResume.products?.map((prod, prodIdx) => {
-                              const [title, status] = prod.heading.split('-');
+                              const headingParts = prod.heading.split(/\s*[-–—]\s*/);
+                              const title = headingParts[0];
+                              const status = headingParts.slice(1).join(" | ");
                               return (
                                 <div key={prodIdx} className="space-y-1 !font-inherit" style={{ fontFamily: 'inherit' }}>
                                   <div className="flex justify-between items-baseline font-bold !font-inherit" style={{ fontSize: fontSizes.subHeader, fontFamily: 'inherit' }}>
@@ -698,7 +700,9 @@ export const ResumePreview = ({
                           </div>
                           <div className="space-y-2">
                             {localResume.projects?.map((proj, projIdx) => {
-                              const [title, stack] = proj.heading.split('-');
+                              const headingParts = proj.heading.split(/\s*[-–—]\s*/);
+                              const title = headingParts[0];
+                              const stack = headingParts.slice(1).join(" | ");
                               return (
                                 <div key={projIdx} className="space-y-1 !font-inherit" style={{ fontFamily: 'inherit' }}>
                                   <div className="flex justify-between items-baseline font-bold !font-inherit" style={{ fontSize: fontSizes.subHeader, fontFamily: 'inherit' }}>

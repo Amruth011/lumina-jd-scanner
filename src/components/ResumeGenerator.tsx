@@ -750,7 +750,7 @@ Return ONLY a JSON object with this exact structure:
         };
 
         const drawSectionHeader = (title: string) => {
-          checkPageBreak(10);
+          checkPageBreak(20); // Prevent lonely section header at bottom of page
           y += 3; // Gap before section
           pdf.setTextColor(...deepBlack);
           pdf.setFont(currentFont, "bold");
@@ -780,7 +780,7 @@ Return ONLY a JSON object with this exact structure:
           if (editableResume.education?.length) {
             drawSectionHeader("EDUCATION");
             editableResume.education.forEach(edu => {
-              checkPageBreak(10);
+              checkPageBreak(12);
               const parts = edu.split('|');
               const mainInfo = parts[0].split('@');
               const school = mainInfo[1]?.trim() || "University";
@@ -809,7 +809,7 @@ Return ONLY a JSON object with this exact structure:
           if (editableResume.experience?.length) {
             drawSectionHeader("EXPERIENCE");
             editableResume.experience.forEach(exp => {
-              checkPageBreak(10);
+              checkPageBreak(15);
               const parts = exp.heading.split('@');
               const role = parts[0]?.trim() || "Role";
               const orgParts = parts[1]?.split('-') || [];
@@ -849,17 +849,27 @@ Return ONLY a JSON object with this exact structure:
           if (editableResume.products?.length) {
             drawSectionHeader("PRODUCTS & VENTURES");
             editableResume.products.forEach(prod => {
-              checkPageBreak(10);
-              const [title, status] = prod.heading.split('-');
+              checkPageBreak(15);
+              
+              // Robustly split on any dash (hyphen, en-dash, em-dash)
+              const headingParts = prod.heading.split(/\s*[-–—]\s*/);
+              const title = headingParts[0]?.trim() || "Product";
+              const status = headingParts.slice(1).join(" | ")?.trim();
+
               pdf.setTextColor(0, 0, 0);
               pdf.setFont(currentFont, "bold");
               pdf.setFontSize(subHeadlineFontSize);
-              pdf.text(title?.trim() || "Product", margin, y);
+              pdf.text(title, margin, y);
+              
+              // Measure exact bold width before changing font!
+              const titleWidth = pdf.getTextWidth(title);
+
               if (status) {
                 pdf.setFont(currentFont, "normal");
                 pdf.setFontSize(bodyFontSize);
-                pdf.text(` | ${status.trim()}`, margin + pdf.getTextWidth(title?.trim() || "Product"), y);
+                pdf.text(` | ${status}`, margin + titleWidth, y);
               }
+
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize - 1);
               pdf.text(prod.content || "Operational", pageWidth - margin, y, { align: "right" });
@@ -882,17 +892,27 @@ Return ONLY a JSON object with this exact structure:
           if (editableResume.projects?.length) {
             drawSectionHeader("PROJECTS");
             editableResume.projects.forEach(proj => {
-              checkPageBreak(10);
-              const [title, stack] = proj.heading.split('-');
+              checkPageBreak(15);
+              
+              // Robustly split on any dash (hyphen, en-dash, em-dash)
+              const headingParts = proj.heading.split(/\s*[-–—]\s*/);
+              const title = headingParts[0]?.trim() || "Project";
+              const stack = headingParts.slice(1).join(" | ")?.trim();
+
               pdf.setTextColor(0, 0, 0);
               pdf.setFont(currentFont, "bold");
               pdf.setFontSize(subHeadlineFontSize);
-              pdf.text(title?.trim() || "Project", margin, y);
+              pdf.text(title, margin, y);
+              
+              // Measure exact bold width before changing font!
+              const titleWidth = pdf.getTextWidth(title);
+
               if (stack) {
                 pdf.setFont(currentFont, "normal");
                 pdf.setFontSize(bodyFontSize);
-                pdf.text(` | ${stack.trim()}`, margin + pdf.getTextWidth(title?.trim() || "Project"), y);
+                pdf.text(` | ${stack}`, margin + titleWidth, y);
               }
+
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize - 1);
               pdf.text(proj.content || "", pageWidth - margin, y, { align: "right" });
@@ -915,7 +935,7 @@ Return ONLY a JSON object with this exact structure:
           if (editableResume.leadership?.length) {
             drawSectionHeader("LEADERSHIP");
             editableResume.leadership.forEach(lead => {
-              checkPageBreak(10);
+              checkPageBreak(15);
               pdf.setTextColor(0, 0, 0);
               pdf.setFont(currentFont, "bold");
               pdf.setFontSize(subHeadlineFontSize);
@@ -944,14 +964,20 @@ Return ONLY a JSON object with this exact structure:
             editableResume.skills_section.forEach(skillLine => {
               checkPageBreak(6);
               const [category, skills] = skillLine.split(':');
+              const categoryText = `${category?.trim() || "Category"}:`;
               pdf.setTextColor(0, 0, 0);
               pdf.setFont(currentFont, "bold");
               pdf.setFontSize(bodyFontSize);
-              pdf.text(`${category?.trim() || "Category"}:`, margin, y);
+              pdf.text(categoryText, margin, y);
+              
+              // Measure exact bold width before changing font!
+              const categoryWidth = pdf.getTextWidth(categoryText + " ");
+
               pdf.setFont(currentFont, "normal");
+              pdf.setFontSize(bodyFontSize);
               const skillsText = skills?.trim() || "";
-              const lines = pdf.splitTextToSize(skillsText, pageWidth - margin - (margin + pdf.getTextWidth(`${category?.trim()}: `)));
-              pdf.text(lines, margin + pdf.getTextWidth(`${category?.trim()}: `), y);
+              const lines = pdf.splitTextToSize(skillsText, pageWidth - margin - (margin + categoryWidth));
+              pdf.text(lines, margin + categoryWidth, y);
               y += (lines.length * 4.6) + 0.6;
             });
           }
