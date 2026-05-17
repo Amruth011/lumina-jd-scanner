@@ -1,6 +1,10 @@
 import { motion } from "framer-motion";
 import { FileText, Upload, Trophy } from "lucide-react";
 
+/**
+ * HowItWorksSection outlines the visual 3-step blueprint for scanning, matching,
+ * and planning candidate career growth.
+ */
 const steps = [
   {
     icon: FileText,
