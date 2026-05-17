@@ -44,7 +44,7 @@ export const GlobalNavbar = ({ activeTab, onTabChange }: GlobalNavbarProps) => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-[100] px-6 py-2 w-full pointer-events-none">
-      <div className="h-[50px] rounded-full max-w-5xl mx-auto px-0 py-0 flex items-center justify-between pointer-events-auto relative overflow-hidden">
+      <div className="h-[50px] rounded-full max-w-5xl mx-auto px-0 py-0 flex items-center justify-between pointer-events-auto relative overflow-visible">
         {/* The Brand Pill Backdrop */}
         <div className="absolute inset-0 rounded-full bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border/10 -z-10" />
         
