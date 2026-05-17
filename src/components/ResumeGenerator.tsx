@@ -761,45 +761,18 @@ Return ONLY a JSON object with this exact structure:
         // --- HEADER ---
         const deepBlack: [number, number, number] = [0, 0, 0];
 
-        const limitSummarySentences = (summaryText: string, maxLines: number): string => {
+        const limitSummarySentences = (summaryText: string, maxSentences: number): string => {
           if (!summaryText) return "";
           const sentences = summaryText.split(/\.\s+/).filter(Boolean);
-          let currentLines = 0;
-          const allowedSentences: string[] = [];
-          for (const sentence of sentences) {
-            const cleanSentence = sentence.trim() + (sentence.endsWith(".") ? "" : ".");
-            const approxLines = Math.ceil(cleanSentence.length / 105);
-            if (currentLines + approxLines <= maxLines) {
-              allowedSentences.push(cleanSentence);
-              currentLines += approxLines;
-            } else if (allowedSentences.length === 0) {
-              allowedSentences.push(cleanSentence);
-              break;
-            } else {
-              break;
-            }
-          }
-          return allowedSentences.join(" ");
+          return sentences
+            .slice(0, maxSentences)
+            .map(s => s.trim() + (s.trim().endsWith(".") ? "" : "."))
+            .join(" ");
         };
 
-        const limitBullets = (bullets: string[], maxLines: number): string[] => {
+        const limitBullets = (bullets: string[], maxBullets: number): string[] => {
           if (!bullets) return [];
-          let currentLines = 0;
-          const allowedBullets: string[] = [];
-          for (const bullet of bullets) {
-            const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
-            const approxLines = Math.ceil(cleanBullet.length / 100);
-            if (currentLines + approxLines <= maxLines) {
-              allowedBullets.push(bullet);
-              currentLines += approxLines;
-            } else if (allowedBullets.length === 0) {
-              allowedBullets.push(bullet);
-              break;
-            } else {
-              break;
-            }
-          }
-          return allowedBullets;
+          return bullets.slice(0, maxBullets);
         };
 
         const checkPageBreak = (neededHeight: number) => {
