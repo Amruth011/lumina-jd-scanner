@@ -88,7 +88,7 @@ export const SkillHighlights = ({
                 </div>
                 <div className="space-y-4">
                   {categorySkills.map((skill, idx) => (
-                    <SkillProgressBar key={idx} skill={skill?.skill || "Technical Skill"} importance={skill?.importance || 80} color="var(--primary)" />
+                    <SkillProgressBar key={idx} skill={skill?.skill || "Technical Skill"} importance={skill?.importance || 80} color="#10B981" />
                   ))}
                 </div>
               </div>
