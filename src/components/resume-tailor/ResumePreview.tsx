@@ -63,47 +63,24 @@ interface ResumePreviewProps {
   experienceBullets?: number;
   projectLines?: number;
   productLines?: number;
+  marginSize?: number;
+  lineSpacing?: number;
 }
 
-const limitSummarySentences = (summaryText: string, maxLines: number): string => {
+const limitSummarySentences = (summaryText: string, maxSentences: number): string => {
   if (!summaryText) return "";
   const sentences = summaryText.split(/\.\s+/).filter(Boolean);
-  let currentLines = 0;
-  const allowedSentences: string[] = [];
-  for (const sentence of sentences) {
-    const cleanSentence = sentence.trim() + (sentence.endsWith(".") ? "" : ".");
-    const approxLines = Math.ceil(cleanSentence.length / 105);
-    if (currentLines + approxLines <= maxLines) {
-      allowedSentences.push(cleanSentence);
-      currentLines += approxLines;
-    } else if (allowedSentences.length === 0) {
-      allowedSentences.push(cleanSentence);
-      break;
-    } else {
-      break;
-    }
-  }
-  return allowedSentences.join(" ");
+  const limited = sentences.slice(0, maxSentences).map(s => {
+    const clean = s.trim();
+    if (!clean) return "";
+    return clean + (clean.endsWith(".") ? "" : ".");
+  }).filter(Boolean);
+  return limited.join(" ");
 };
 
-const limitBullets = (bullets: string[], maxLines: number): string[] => {
+const limitBullets = (bullets: string[], maxBullets: number): string[] => {
   if (!bullets) return [];
-  let currentLines = 0;
-  const allowedBullets: string[] = [];
-  for (const bullet of bullets) {
-    const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
-    const approxLines = Math.ceil(cleanBullet.length / 100);
-    if (currentLines + approxLines <= maxLines) {
-      allowedBullets.push(bullet);
-      currentLines += approxLines;
-    } else if (allowedBullets.length === 0) {
-      allowedBullets.push(bullet);
-      break;
-    } else {
-      break;
-    }
-  }
-  return allowedBullets;
+  return bullets.slice(0, maxBullets);
 };
 
 export const ResumePreview = ({ 
@@ -128,7 +105,9 @@ export const ResumePreview = ({
   summaryLines = 3,
   experienceBullets = 3,
   projectLines = 3,
-  productLines = 3
+  productLines = 3,
+  marginSize = 1.0,
+  lineSpacing = 1.15
 }: ResumePreviewProps) => {
   // ── Core Data State ──
   const [localResume, setLocalResume] = useState<GeneratedResume>(resume);
@@ -242,8 +221,7 @@ export const ResumePreview = ({
     meta: `${bodyFontSize}px`,
   };
 
-  const marginSize = 0.5;
-  const lineSpacing = 1.4;
+
 
   const getHtmlFont = (font: string) => {
     switch(font) {
@@ -607,12 +585,12 @@ export const ResumePreview = ({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.5 }}
-                  className="relative bg-white border border-[#1E2A3A]/5 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.12)] mx-auto overflow-hidden"
+                  className="relative bg-white border border-[#1E2A3A]/5 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.12)] mx-auto"
                   style={{ 
                     width: '100%', 
                     maxWidth: '850px',
                     minHeight: '297mm',
-                    height: `${pageCount * 297}mm`,
+                    height: 'auto',
                     padding: `${marginSize}in`,
                     lineHeight: lineSpacing,
                     fontSize: fontSizes.body,
@@ -902,8 +880,8 @@ export const ResumePreview = ({
 
                   {/* Dynamic Page Breaks */}
                   {pageCount > 1 && Array.from({ length: pageCount - 1 }).map((_, i) => (
-                    <div key={i} className="absolute left-0 right-0 h-px border-t border-dashed border-[#1E2A3A]/10 flex items-center justify-center pointer-events-none" style={{ top: `${(i + 1) * 100 / pageCount}%` }}>
-                      <span className="bg-white px-4 text-[8px] font-black uppercase tracking-widest text-red-500/80">Crossed 1 Page — Continued On Next Page</span>
+                    <div key={i} className="absolute left-0 right-0 h-px border-t border-dashed border-[#1E2A3A]/10 flex items-center justify-center pointer-events-none animate-pulse" style={{ top: `${(i + 1) * 297}mm` }}>
+                      <span className="bg-white px-4 text-[8px] font-black uppercase tracking-widest text-red-500/80">Crossed Page {i + 1} — Continued On Next Page</span>
                     </div>
                   ))}
                 </motion.div>

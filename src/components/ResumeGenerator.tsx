@@ -1784,6 +1784,8 @@ Return ONLY a JSON object with this exact structure:
               experienceBullets={experienceBullets}
               projectLines={projectLines}
               productLines={productLines}
+              marginSize={marginSize}
+              lineSpacing={lineSpacing}
             />
 
             <div className="flex justify-center pb-20">

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { useLocation } from "react-router-dom";
 const GlobalNavbar = lazy(() => import("@/components/GlobalNavbar").then(m => ({ default: m.GlobalNavbar })));
 const ScannerView = lazy(() => import("@/components/ScannerView").then(m => ({ default: m.ScannerView })));
@@ -6,7 +6,6 @@ const WelcomeScreen = lazy(() => import("@/components/onboarding/WelcomeScreen")
 const TooltipTour = lazy(() => import("@/components/onboarding/TooltipTour").then(m => ({ default: m.TooltipTour })));
 const HistoryPanel = lazy(() => import("@/components/dashboard/HistoryPanel").then(m => ({ default: m.HistoryPanel })));
 
-import { lazy, Suspense } from "react";
 import type { Tab } from "@/types/tabs";
 
 const Dashboard = () => {
