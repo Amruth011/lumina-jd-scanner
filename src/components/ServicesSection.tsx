@@ -1,6 +1,10 @@
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 
+/**
+ * ServicesSection renders layout cards summarizing the visual match scoring,
+ * gap radar, and strategizer trackers.
+ */
 const services = [
   {
     tag: "AI Analysis",
