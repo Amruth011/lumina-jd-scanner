@@ -73,7 +73,7 @@ const StepCard = ({
           borderColor: markerBorderColor,
           backgroundColor: markerBgColor,
           scale: markerScale,
-          boxShadow: useTransform(scrollYProgress, [stepStart - 0.05, stepStart], ["none", "0 0 20px rgba(16,185,129,0.4)"])
+          boxShadow: useTransform(scrollYProgress, [stepStart - 0.05, stepStart], ["0px 0px 0px rgba(16,185,129,0)", "0px 0px 20px rgba(16,185,129,0.4)"])
         }}
       >
         <motion.div style={{ opacity: useTransform(scrollYProgress, [stepStart - 0.05, stepStart], [0, 1]), color: iconColor }}>
