@@ -21,7 +21,7 @@ serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    const { model: requestedModel, messages, temperature, response_format } = await req.json();
+    const { model: requestedModel, messages, temperature, response_format, max_tokens } = await req.json();
 
     const groqKey = Deno.env.get("GROQ_API_KEY")?.trim();
     if (!groqKey) {
@@ -55,6 +55,7 @@ serve(async (req: Request) => {
             messages,
             temperature: temperature ?? 0.3,
             response_format,
+            max_tokens: max_tokens ?? 4000,
           }),
         });
 

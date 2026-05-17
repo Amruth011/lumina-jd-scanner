@@ -364,6 +364,16 @@ export const ResumePreview = ({
                         newProducts[idx] = { ...newProducts[idx], heading: e.target.value };
                         setLocalResume({ ...localResume, products: newProducts });
                       }} className="w-full bg-transparent font-bold text-sm outline-none border-b border-transparent focus:border-lumina-teal/20" />
+                      <input 
+                        value={prod.content || ""} 
+                        onChange={(e) => {
+                          const newProducts = [...(localResume.products || [])];
+                          newProducts[idx] = { ...newProducts[idx], content: e.target.value };
+                          setLocalResume({ ...localResume, products: newProducts });
+                        }} 
+                        className="w-full bg-slate-100/50 rounded-lg px-3 py-1.5 text-[11px] font-body outline-none border border-slate-200/30 focus:border-lumina-teal/20" 
+                        placeholder="Dates or Link (e.g., Jan 2023 - Present)" 
+                      />
                       <div className="space-y-2">
                         {prod.bullets?.map((bullet, bullIdx) => (
                           <div key={bullIdx} className="flex gap-2 items-start group/bull">
@@ -394,6 +404,16 @@ export const ResumePreview = ({
                         newProjects[idx] = { ...newProjects[idx], heading: e.target.value };
                         setLocalResume({ ...localResume, projects: newProjects });
                       }} className="w-full bg-transparent font-bold text-sm outline-none border-b border-transparent focus:border-lumina-teal/20" />
+                      <input 
+                        value={proj.content || ""} 
+                        onChange={(e) => {
+                          const newProjects = [...(localResume.projects || [])];
+                          newProjects[idx] = { ...newProjects[idx], content: e.target.value };
+                          setLocalResume({ ...localResume, projects: newProjects });
+                        }} 
+                        className="w-full bg-slate-100/50 rounded-lg px-3 py-1.5 text-[11px] font-body outline-none border border-slate-200/30 focus:border-lumina-teal/20" 
+                        placeholder="Dates, GitHub, or Live Link (e.g., Feb 2023 - May 2023)" 
+                      />
                       <div className="space-y-2">
                         {proj.bullets?.map((bullet, bullIdx) => (
                           <div key={bullIdx} className="flex gap-2 items-start group/bull">
@@ -515,9 +535,9 @@ export const ResumePreview = ({
                     fontFamily: getHtmlFont(fontFamily)
                   }}
                 >
-                  <div className="space-y-8">
+                  <div className="space-y-4">
                     {/* Header */}
-                    <div className="text-center space-y-2 mb-8">
+                    <div className="text-center space-y-2 mb-3">
                       <h1 className="font-bold tracking-tight uppercase !font-inherit" style={{ fontSize: `${nameFontSize}px`, color: '#1E2A3A', fontFamily: 'inherit' }}>
                         {localHeader.fullName || "Your Name"}
                       </h1>
@@ -564,7 +584,7 @@ export const ResumePreview = ({
                     <div className="space-y-3">
                       {/* Summary Section */}
                       {localResume.professional_summary && (
-                        <section className="space-y-2">
+                        <section className="space-y-1">
                           <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
                             <h4 className="font-bold uppercase tracking-widest !font-inherit" style={{ fontSize: `${headlineFontSize}px`, fontFamily: 'inherit' }}>Professional Summary</h4>
                           </div>
@@ -575,11 +595,11 @@ export const ResumePreview = ({
                       )}
 
                       {/* Education First */}
-                      <section className="space-y-2">
+                      <section className="space-y-1">
                         <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
                           <h4 className="font-bold uppercase tracking-widest !font-inherit" style={{ fontSize: `${headlineFontSize}px`, fontFamily: 'inherit' }}>Education</h4>
                         </div>
-                        <div className="space-y-4">
+                        <div className="space-y-2">
                           {(localResume.education || []).map((edu, i) => {
                             const parts = edu.split('|');
                             const mainInfo = parts[0].split('@');
@@ -607,11 +627,11 @@ export const ResumePreview = ({
                       </section>
 
                       {/* Experience */}
-                      <section className="space-y-2">
+                      <section className="space-y-1">
                         <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
                           <h4 className="font-bold uppercase tracking-widest !font-inherit" style={{ fontSize: `${headlineFontSize}px`, fontFamily: 'inherit' }}>Experience</h4>
                         </div>
-                        <div className="space-y-5">
+                        <div className="space-y-2.5">
                           {(localResume.experience || []).map((exp, expIdx) => {
                             const parts = exp.heading.split('@');
                             const role = parts[0]?.trim() || "Role";
@@ -628,7 +648,7 @@ export const ResumePreview = ({
                                   <span className="!font-inherit" style={{ fontFamily: 'inherit' }}>{org}</span>
                                   <span className="text-[11px] not-italic !font-inherit" style={{ fontFamily: 'inherit' }}>{location}</span>
                                 </div>
-                                <ul className="list-disc ml-5 space-y-1 pt-1 !font-inherit" style={{ fontFamily: 'inherit' }}>
+                                <ul className="list-disc ml-5 space-y-1 pt-0.5 !font-inherit" style={{ fontFamily: 'inherit' }}>
                                   {exp.bullets?.map((bullet, bullIdx) => (
                                     <li key={bullIdx} className="text-[#1E2A3A]/90 leading-tight !font-inherit" style={{ fontSize: fontSizes.body, fontFamily: 'inherit' }}>
                                       {bullet.replace(/^[•\s*-]+/, '').trim()}
@@ -643,11 +663,11 @@ export const ResumePreview = ({
 
                       {/* Products / Startups */}
                       {(localResume.products && localResume.products.length > 0) && (
-                        <section className="space-y-2">
+                        <section className="space-y-1">
                           <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
                             <h4 className="font-bold uppercase tracking-widest !font-inherit" style={{ fontSize: `${headlineFontSize}px`, fontFamily: 'inherit' }}>Products & Ventures</h4>
                           </div>
-                          <div className="space-y-4">
+                          <div className="space-y-2">
                             {localResume.products?.map((prod, prodIdx) => {
                               const [title, status] = prod.heading.split('-');
                               return (
@@ -672,11 +692,11 @@ export const ResumePreview = ({
 
                       {/* Projects */}
                       {(localResume.projects && localResume.projects.length > 0) && (
-                        <section className="space-y-2">
+                        <section className="space-y-1">
                           <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
                             <h4 className="font-bold uppercase tracking-widest !font-inherit" style={{ fontSize: `${headlineFontSize}px`, fontFamily: 'inherit' }}>Projects</h4>
                           </div>
-                          <div className="space-y-4">
+                          <div className="space-y-2">
                             {localResume.projects?.map((proj, projIdx) => {
                               const [title, stack] = proj.heading.split('-');
                               return (
@@ -701,11 +721,11 @@ export const ResumePreview = ({
 
                       {/* Leadership */}
                       {(localResume.leadership && localResume.leadership.length > 0) && (
-                        <section className="space-y-2">
+                        <section className="space-y-1">
                           <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
                             <h4 className="font-bold uppercase tracking-widest !font-inherit" style={{ fontSize: `${headlineFontSize}px`, fontFamily: 'inherit' }}>Leadership</h4>
                           </div>
-                          <div className="space-y-4">
+                          <div className="space-y-2">
                             {localResume.leadership?.map((lead, idx) => (
                               <div key={idx} className="space-y-1 !font-inherit" style={{ fontFamily: 'inherit' }}>
                                 <div className="flex justify-between items-baseline font-bold !font-inherit" style={{ fontSize: fontSizes.subHeader, fontFamily: 'inherit' }}>
@@ -726,11 +746,11 @@ export const ResumePreview = ({
                       )}
 
                       {/* Skills */}
-                      <section className="space-y-2">
+                      <section className="space-y-1">
                         <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
                           <h4 className="font-bold uppercase tracking-widest !font-inherit" style={{ fontSize: `${headlineFontSize}px`, fontFamily: 'inherit' }}>Skills</h4>
                         </div>
-                        <div className="space-y-1 !font-inherit" style={{ fontFamily: 'inherit' }}>
+                        <div className="space-y-0.5 !font-inherit" style={{ fontFamily: 'inherit' }}>
                           {(localResume.skills_section || []).map((skillLine, i) => {
                             const [category, skills] = skillLine.split(':');
                             return (
@@ -744,7 +764,7 @@ export const ResumePreview = ({
 
                       {/* Certifications */}
                       {(localResume.certifications && localResume.certifications.length > 0) && (
-                        <section className="space-y-2">
+                        <section className="space-y-1">
                           <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
                             <h4 className="font-bold uppercase tracking-widest !font-inherit" style={{ fontSize: `${headlineFontSize}px`, fontFamily: 'inherit' }}>Certifications</h4>
                           </div>
@@ -760,7 +780,7 @@ export const ResumePreview = ({
 
                       {/* Awards */}
                       {(localResume.awards && localResume.awards.length > 0) && (
-                        <section className="space-y-2">
+                        <section className="space-y-1">
                           <div className="flex items-center gap-3 text-[#1E2A3A] border-b border-[#1E2A3A] pb-0.5">
                             <h4 className="font-bold uppercase tracking-widest" style={{ fontSize: fontSizes.header }}>Awards</h4>
                           </div>

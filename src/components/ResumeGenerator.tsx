@@ -355,10 +355,10 @@ Return ONLY a JSON object with this exact structure:
       const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
       let resultText = "";
       const models = [
-        "llama-3.1-8b-instant",       // High reliability, fast
-        "llama-3.3-70b-versatile",    // High intelligence
+        "llama-3.3-70b-versatile",    // High intelligence (Standard / Primary)
         "llama-3.1-70b-versatile",    // Fallback intelligence
-        "mixtral-8x7b-32768"          // Secondary fallback
+        "mixtral-8x7b-32768",         // Secondary fallback
+        "llama-3.1-8b-instant"        // Instant baseline fallback
       ];
       let lastError = "";
 
@@ -374,7 +374,8 @@ Return ONLY a JSON object with this exact structure:
               model: model,
               messages: [{ role: "user", content: prompt }],
               temperature: 0.3,
-              response_format: { type: "json_object" }
+              response_format: { type: "json_object" },
+              max_tokens: 4000
             }
           });
 
@@ -389,7 +390,8 @@ Return ONLY a JSON object with this exact structure:
                   model: model,
                   messages: [{ role: "user", content: prompt }],
                   temperature: 0.3,
-                  response_format: { type: "json_object" }
+                  response_format: { type: "json_object" },
+                  max_tokens: 4000
                 })
               });
               
@@ -748,17 +750,17 @@ Return ONLY a JSON object with this exact structure:
         };
 
         const drawSectionHeader = (title: string) => {
-          checkPageBreak(12);
-          y += 4; // Gap before section
+          checkPageBreak(10);
+          y += 3; // Gap before section
           pdf.setTextColor(...deepBlack);
           pdf.setFont(currentFont, "bold");
           pdf.setFontSize(headlineFontSize);
           pdf.text(title.toUpperCase(), margin, y);
-          y += 2.2; // Spacing before line
+          y += 1.8; // Spacing before line
           pdf.setDrawColor(0, 0, 0); // Black line for sections
           pdf.setLineWidth(0.4);
           pdf.line(margin, y, pageWidth - margin, y);
-          y += 4; // Gap after section header
+          y += 2.5; // Gap after section header
         };
 
         if (editableResume) {
@@ -771,14 +773,14 @@ Return ONLY a JSON object with this exact structure:
             pdf.setFontSize(bodyFontSize);
             const lines = pdf.splitTextToSize(editableResume.professional_summary, pageWidth - (margin * 2));
             pdf.text(lines, margin, y);
-            y += (lines.length * 5.0) + 4;
+            y += (lines.length * 4.6) + 2;
           }
 
           // --- EDUCATION ---
           if (editableResume.education?.length) {
             drawSectionHeader("EDUCATION");
             editableResume.education.forEach(edu => {
-              checkPageBreak(12);
+              checkPageBreak(10);
               const parts = edu.split('|');
               const mainInfo = parts[0].split('@');
               const school = mainInfo[1]?.trim() || "University";
@@ -792,14 +794,14 @@ Return ONLY a JSON object with this exact structure:
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize - 1);
               pdf.text("May 2027", pageWidth - margin, y, { align: "right" });
-              y += 4.5;
+              y += 3.8;
               pdf.setFont(currentFont, "italic");
               pdf.setFontSize(bodyFontSize);
               pdf.text(`${degree} ${metadata && `| ${metadata}`}`, margin, y);
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize - 1);
               pdf.text(editableHeader.location || "Gainesville, FL", pageWidth - margin, y, { align: "right" });
-              y += 5;
+              y += 3.8;
             });
           }
 
@@ -807,7 +809,7 @@ Return ONLY a JSON object with this exact structure:
           if (editableResume.experience?.length) {
             drawSectionHeader("EXPERIENCE");
             editableResume.experience.forEach(exp => {
-              checkPageBreak(12);
+              checkPageBreak(10);
               const parts = exp.heading.split('@');
               const role = parts[0]?.trim() || "Role";
               const orgParts = parts[1]?.split('-') || [];
@@ -821,25 +823,25 @@ Return ONLY a JSON object with this exact structure:
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize - 1);
               pdf.text(exp.content || "Date – Present", pageWidth - margin, y, { align: "right" });
-              y += 4.5;
+              y += 3.8;
               pdf.setFont(currentFont, "italic");
               pdf.setFontSize(bodyFontSize);
               pdf.text(org, margin, y);
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize - 1);
               pdf.text(loc || "", pageWidth - margin, y, { align: "right" });
-              y += 4;
+              y += 3.2;
 
               exp.bullets?.forEach(bullet => {
-                checkPageBreak(6);
+                checkPageBreak(5);
                 pdf.setFont(currentFont, "normal");
                 pdf.setFontSize(bodyFontSize);
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
                 const lines = pdf.splitTextToSize(`• ${cleanBullet}`, pageWidth - (margin * 2) - 4);
                 pdf.text(lines, margin + 4, y);
-                y += (lines.length * 5.2);
+                y += (lines.length * 4.6);
               });
-              y += 2;
+              y += 1.2;
             });
           }
 
@@ -847,7 +849,7 @@ Return ONLY a JSON object with this exact structure:
           if (editableResume.products?.length) {
             drawSectionHeader("PRODUCTS & VENTURES");
             editableResume.products.forEach(prod => {
-              checkPageBreak(12);
+              checkPageBreak(10);
               const [title, status] = prod.heading.split('-');
               pdf.setTextColor(0, 0, 0);
               pdf.setFont(currentFont, "bold");
@@ -861,18 +863,18 @@ Return ONLY a JSON object with this exact structure:
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize - 1);
               pdf.text(prod.content || "Operational", pageWidth - margin, y, { align: "right" });
-              y += 4;
+              y += 3.2;
 
               prod.bullets?.forEach(bullet => {
-                checkPageBreak(6);
+                checkPageBreak(5);
                 pdf.setFont(currentFont, "normal");
                 pdf.setFontSize(bodyFontSize);
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
                 const lines = pdf.splitTextToSize(`• ${cleanBullet}`, pageWidth - (margin * 2) - 4);
                 pdf.text(lines, margin + 4, y);
-                y += (lines.length * 5.2);
+                y += (lines.length * 4.6);
               });
-              y += 2;
+              y += 1.2;
             });
           }
 
@@ -880,7 +882,7 @@ Return ONLY a JSON object with this exact structure:
           if (editableResume.projects?.length) {
             drawSectionHeader("PROJECTS");
             editableResume.projects.forEach(proj => {
-              checkPageBreak(12);
+              checkPageBreak(10);
               const [title, stack] = proj.heading.split('-');
               pdf.setTextColor(0, 0, 0);
               pdf.setFont(currentFont, "bold");
@@ -894,18 +896,18 @@ Return ONLY a JSON object with this exact structure:
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize - 1);
               pdf.text(proj.content || "", pageWidth - margin, y, { align: "right" });
-              y += 4;
+              y += 3.2;
 
               proj.bullets?.forEach(bullet => {
-                checkPageBreak(6);
+                checkPageBreak(5);
                 pdf.setFont(currentFont, "normal");
                 pdf.setFontSize(bodyFontSize);
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
                 const lines = pdf.splitTextToSize(`• ${cleanBullet}`, pageWidth - (margin * 2) - 4);
                 pdf.text(lines, margin + 4, y);
-                y += (lines.length * 5.2);
+                y += (lines.length * 4.6);
               });
-              y += 2;
+              y += 1.2;
             });
           }
 
@@ -913,7 +915,7 @@ Return ONLY a JSON object with this exact structure:
           if (editableResume.leadership?.length) {
             drawSectionHeader("LEADERSHIP");
             editableResume.leadership.forEach(lead => {
-              checkPageBreak(12);
+              checkPageBreak(10);
               pdf.setTextColor(0, 0, 0);
               pdf.setFont(currentFont, "bold");
               pdf.setFontSize(subHeadlineFontSize);
@@ -921,18 +923,18 @@ Return ONLY a JSON object with this exact structure:
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize - 1);
               pdf.text(lead.content || "", pageWidth - margin, y, { align: "right" });
-              y += 4;
+              y += 3.2;
 
               lead.bullets?.forEach(bullet => {
-                checkPageBreak(6);
+                checkPageBreak(5);
                 pdf.setFont(currentFont, "normal");
                 pdf.setFontSize(bodyFontSize);
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
                 const lines = pdf.splitTextToSize(`• ${cleanBullet}`, pageWidth - (margin * 2) - 4);
                 pdf.text(lines, margin + 4, y);
-                y += (lines.length * 5.2);
+                y += (lines.length * 4.6);
               });
-              y += 2;
+              y += 1.2;
             });
           }
 
@@ -940,7 +942,7 @@ Return ONLY a JSON object with this exact structure:
           if (editableResume.skills_section?.length) {
             drawSectionHeader("SKILLS");
             editableResume.skills_section.forEach(skillLine => {
-              checkPageBreak(8);
+              checkPageBreak(6);
               const [category, skills] = skillLine.split(':');
               pdf.setTextColor(0, 0, 0);
               pdf.setFont(currentFont, "bold");
@@ -950,7 +952,7 @@ Return ONLY a JSON object with this exact structure:
               const skillsText = skills?.trim() || "";
               const lines = pdf.splitTextToSize(skillsText, pageWidth - margin - (margin + pdf.getTextWidth(`${category?.trim()}: `)));
               pdf.text(lines, margin + pdf.getTextWidth(`${category?.trim()}: `), y);
-              y += (lines.length * 5.2) + 1;
+              y += (lines.length * 4.6) + 0.6;
             });
           }
 
