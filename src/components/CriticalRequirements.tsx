@@ -12,24 +12,28 @@ const sectionConfig = {
     title: "Education",
     chipStyle: "bg-accent-amber/10 text-accent-amber border-accent-amber/20",
     iconColor: "text-accent-amber",
+    bgColor: "bg-accent-amber",
   },
   experience: {
     icon: Clock,
     title: "Experience",
     chipStyle: "bg-accent-blue/10 text-accent-blue border-accent-blue/20",
     iconColor: "text-accent-blue",
+    bgColor: "bg-accent-blue",
   },
   soft_skills: {
     icon: Users,
     title: "Soft Skills",
     chipStyle: "bg-accent-emerald/10 text-accent-emerald border-accent-emerald/20",
     iconColor: "text-accent-emerald",
+    bgColor: "bg-accent-emerald",
   },
   agreements: {
     icon: AlertTriangle,
     title: "Agreements & Conditions",
     chipStyle: "bg-accent-red/10 text-accent-red border-accent-red/20",
     iconColor: "text-accent-red",
+    bgColor: "bg-accent-red",
   },
 };
 
@@ -74,7 +78,7 @@ export const CriticalRequirements = ({ requirements }: CriticalRequirementsProps
               className="space-y-3"
             >
               <div className="flex items-center gap-2.5">
-                <div className={`w-1.5 h-1.5 rounded-full ${config.iconColor} opacity-50`} />
+                <div className={`w-1.5 h-1.5 rounded-full ${config.bgColor} opacity-50`} />
                 <span className="text-tag text-muted-foreground/40">{config.title}</span>
               </div>
               <div className="flex flex-wrap gap-2.5">
