@@ -69,7 +69,6 @@ export const scavengeSkills = (initialSkills: Skill[], results: DecodeResult | n
 
     if (potentialSources.length === 0) return finalSkills;
     
-    const requiredPatterns = ["essential", "required", "must have", "proficiency in", "solid understanding", "foundational knowledge", "must-to-have", "mandatory", "expected", "proficiency"];
     const optionalPatterns = ["optional", "beneficial", "nice to have", "good to have", "preferred", "plus", "advantage", "desired", "familiarity with", "familiarity"];
     
     const firstTwentyPercent = rawJd ? rawJd.substring(0, Math.floor(rawJd.length * 0.2)).toLowerCase() : "";
