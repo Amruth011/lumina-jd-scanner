@@ -125,6 +125,12 @@ export const ResumePreview = ({
   }, [resume, header]);
 
   useEffect(() => {
+    if (localResume !== resume || localHeader !== header) {
+      onUpdate(localResume, localHeader);
+    }
+  }, [localResume, localHeader, resume, header, onUpdate]);
+
+  useEffect(() => {
     if (resumeRef.current) {
       const height = resumeRef.current.scrollHeight;
       const a4HeightPx = (resumeRef.current.offsetWidth * 297) / 210;

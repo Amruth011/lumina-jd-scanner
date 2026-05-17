@@ -800,14 +800,17 @@ Return ONLY a JSON object with this exact structure:
           // --- SUMMARY ---
           if (editableResume.professional_summary) {
             drawSectionHeader("SUMMARY");
-            checkPageBreak(10);
             pdf.setTextColor(0, 0, 0);
             pdf.setFont(currentFont, "normal");
             pdf.setFontSize(bodyFontSize);
             const limitedSummary = limitSummarySentences(editableResume.professional_summary, summaryLines);
             const lines = pdf.splitTextToSize(limitedSummary, contentWidth);
-            pdf.text(limitedSummary, margin, y, { align: "left", maxWidth: contentWidth });
-            y += (lines.length * getLineHeight(bodyFontSize, 1.2)) + 0.5;
+            lines.forEach((line: string) => {
+              checkPageBreak(getLineHeight(bodyFontSize, 1.25));
+              pdf.text(line, margin, y);
+              y += getLineHeight(bodyFontSize, 1.2);
+            });
+            y += 0.5;
           }
 
           // --- EDUCATION ---
@@ -890,14 +893,21 @@ Return ONLY a JSON object with this exact structure:
               y += getLineHeight(bodyFontSize, 1.25);
 
               limitBullets(exp.bullets, experienceBullets).forEach(bullet => {
-                checkPageBreak(5);
                 pdf.setFont(currentFont, "normal");
                 pdf.setFontSize(bodyFontSize);
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
-                const lines = pdf.splitTextToSize(cleanBullet, contentWidth - 4);
+                const lines = pdf.splitTextToSize(cleanBullet, contentWidth - 4.5);
+                
+                // Draw the bullet point symbol
+                checkPageBreak(getLineHeight(bodyFontSize, 1.25));
                 pdf.text("•", margin + 1.5, y);
-                pdf.text(cleanBullet, margin + 4, y, { align: "left", maxWidth: contentWidth - 4 });
-                y += (lines.length * getLineHeight(bodyFontSize, 1.2));
+                
+                // Draw each line of the wrapped bullet text
+                lines.forEach((line: string) => {
+                  checkPageBreak(getLineHeight(bodyFontSize, 1.25));
+                  pdf.text(line, margin + 4.5, y);
+                  y += getLineHeight(bodyFontSize, 1.2);
+                });
               });
               y += getLineHeight(bodyFontSize, 0.4);
             });
@@ -943,14 +953,21 @@ Return ONLY a JSON object with this exact structure:
               y += getLineHeight(subHeadlineFontSize, 1.25);
 
               limitBullets(prod.bullets, productLines).forEach(bullet => {
-                checkPageBreak(5);
                 pdf.setFont(currentFont, "normal");
                 pdf.setFontSize(bodyFontSize);
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
-                const lines = pdf.splitTextToSize(cleanBullet, contentWidth - 4);
+                const lines = pdf.splitTextToSize(cleanBullet, contentWidth - 4.5);
+                
+                // Draw the bullet point symbol
+                checkPageBreak(getLineHeight(bodyFontSize, 1.25));
                 pdf.text("•", margin + 1.5, y);
-                pdf.text(cleanBullet, margin + 4, y, { align: "left", maxWidth: contentWidth - 4 });
-                y += (lines.length * getLineHeight(bodyFontSize, 1.2));
+                
+                // Draw each line of the wrapped bullet text
+                lines.forEach((line: string) => {
+                  checkPageBreak(getLineHeight(bodyFontSize, 1.25));
+                  pdf.text(line, margin + 4.5, y);
+                  y += getLineHeight(bodyFontSize, 1.2);
+                });
               });
               y += getLineHeight(bodyFontSize, 0.4);
             });
@@ -1006,14 +1023,21 @@ Return ONLY a JSON object with this exact structure:
               y += getLineHeight(subHeadlineFontSize, 1.25);
 
               limitBullets(proj.bullets, projectLines).forEach(bullet => {
-                checkPageBreak(5);
                 pdf.setFont(currentFont, "normal");
                 pdf.setFontSize(bodyFontSize);
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
-                const lines = pdf.splitTextToSize(cleanBullet, contentWidth - 4);
+                const lines = pdf.splitTextToSize(cleanBullet, contentWidth - 4.5);
+                
+                // Draw the bullet point symbol
+                checkPageBreak(getLineHeight(bodyFontSize, 1.25));
                 pdf.text("•", margin + 1.5, y);
-                pdf.text(cleanBullet, margin + 4, y, { align: "left", maxWidth: contentWidth - 4 });
-                y += (lines.length * getLineHeight(bodyFontSize, 1.2));
+                
+                // Draw each line of the wrapped bullet text
+                lines.forEach((line: string) => {
+                  checkPageBreak(getLineHeight(bodyFontSize, 1.25));
+                  pdf.text(line, margin + 4.5, y);
+                  y += getLineHeight(bodyFontSize, 1.2);
+                });
               });
               y += getLineHeight(bodyFontSize, 0.4);
             });
@@ -1043,14 +1067,21 @@ Return ONLY a JSON object with this exact structure:
               y += getLineHeight(subHeadlineFontSize, 1.25);
 
               limitBullets(lead.bullets, experienceBullets).forEach(bullet => {
-                checkPageBreak(5);
                 pdf.setFont(currentFont, "normal");
                 pdf.setFontSize(bodyFontSize);
                 const cleanBullet = bullet.replace(/^[•\s*-]+/, '').trim();
-                const lines = pdf.splitTextToSize(cleanBullet, contentWidth - 4);
+                const lines = pdf.splitTextToSize(cleanBullet, contentWidth - 4.5);
+                
+                // Draw the bullet point symbol
+                checkPageBreak(getLineHeight(bodyFontSize, 1.25));
                 pdf.text("•", margin + 1.5, y);
-                pdf.text(cleanBullet, margin + 4, y, { align: "left", maxWidth: contentWidth - 4 });
-                y += (lines.length * getLineHeight(bodyFontSize, 1.2));
+                
+                // Draw each line of the wrapped bullet text
+                lines.forEach((line: string) => {
+                  checkPageBreak(getLineHeight(bodyFontSize, 1.25));
+                  pdf.text(line, margin + 4.5, y);
+                  y += getLineHeight(bodyFontSize, 1.2);
+                });
               });
               y += getLineHeight(bodyFontSize, 0.4);
             });
@@ -1110,8 +1141,13 @@ Return ONLY a JSON object with this exact structure:
                 pdf.setFontSize(bodyFontSize);
                 const skillsText = skills?.trim() || "";
                 const lines = pdf.splitTextToSize(skillsText, contentWidth - categoryWidth);
-                pdf.text(skillsText, margin + categoryWidth, y, { align: "left", maxWidth: contentWidth - categoryWidth });
-                y += (lines.length * getLineHeight(bodyFontSize, 1.2)) + 0.4;
+                lines.forEach((line: string, lineIdx: number) => {
+                  checkPageBreak(getLineHeight(bodyFontSize, 1.25));
+                  const xPos = lineIdx === 0 ? margin + categoryWidth : margin;
+                  pdf.text(line, xPos, y);
+                  y += getLineHeight(bodyFontSize, 1.2);
+                });
+                y += 0.4;
               } else {
                 parts.forEach((part, idx) => {
                   if (idx > 0) {
@@ -1146,15 +1182,22 @@ Return ONLY a JSON object with this exact structure:
           if (editableResume.certifications?.length) {
             drawSectionHeader("CERTIFICATIONS");
             editableResume.certifications.forEach(cert => {
-              checkPageBreak(6);
               pdf.setTextColor(0, 0, 0);
               pdf.setFont(currentFont, "normal");
               pdf.setFontSize(bodyFontSize);
               const cleanCert = cert.replace(/^[•\s*-]+/, '').trim();
-              const lines = pdf.splitTextToSize(cleanCert, contentWidth - 4);
+              const lines = pdf.splitTextToSize(cleanCert, contentWidth - 4.5);
+              
+              // Draw the bullet point symbol
+              checkPageBreak(getLineHeight(bodyFontSize, 1.25));
               pdf.text("•", margin + 1.5, y);
-              pdf.text(cleanCert, margin + 4, y, { align: "left", maxWidth: contentWidth - 4 });
-              y += (lines.length * getLineHeight(bodyFontSize, 1.2));
+              
+              // Draw each line of the wrapped certification text
+              lines.forEach((line: string) => {
+                checkPageBreak(getLineHeight(bodyFontSize, 1.25));
+                pdf.text(line, margin + 4.5, y);
+                y += getLineHeight(bodyFontSize, 1.2);
+              });
             });
           }
         }
@@ -1867,7 +1910,7 @@ Return ONLY a JSON object with this exact structure:
           >
             {/* ── Unified Preview & Edit Experience ── */}
             <ResumePreview 
-              resume={resume}
+              resume={editableResume || resume}
               header={editableHeader}
               vaultItems={vaultItems}
               isGenerating={isGenerating}
