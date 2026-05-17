@@ -121,35 +121,37 @@ export const HowItWorks = () => {
   useEffect(() => {
     if (!containerRef.current || !visualsRef.current) return;
 
-    const sections = gsap.utils.toArray('.chapter-text') as HTMLElement[];
-    const visuals = gsap.utils.toArray('.chapter-visual') as HTMLElement[];
+    const ctx = gsap.context(() => {
+      const sections = gsap.utils.toArray('.chapter-text') as HTMLElement[];
+      const visuals = gsap.utils.toArray('.chapter-visual') as HTMLElement[];
 
-    // Initial state
-    gsap.set(visuals, { opacity: 0, scale: 0.9, y: 50 });
-    gsap.set(visuals[0], { opacity: 1, scale: 1, y: 0 });
+      // Initial state
+      gsap.set(visuals, { opacity: 0, scale: 0.9, y: 50 });
+      gsap.set(visuals[0], { opacity: 1, scale: 1, y: 0 });
 
-    sections.forEach((section, i) => {
-      ScrollTrigger.create({
-        trigger: section,
-        start: 'top center',
-        end: 'bottom center',
-        onEnter: () => {
-          visuals.forEach((v, idx) => {
-            if (idx === i) gsap.to(v, { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: "power2.out", overwrite: true });
-            else gsap.to(v, { opacity: 0, scale: 0.9, y: -20, duration: 0.4, overwrite: true });
-          });
-        },
-        onEnterBack: () => {
-          visuals.forEach((v, idx) => {
-            if (idx === i) gsap.to(v, { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: "power2.out", overwrite: true });
-            else gsap.to(v, { opacity: 0, scale: 0.9, y: 20, duration: 0.4, overwrite: true });
-          });
-        }
+      sections.forEach((section, i) => {
+        ScrollTrigger.create({
+          trigger: section,
+          start: 'top center',
+          end: 'bottom center',
+          onEnter: () => {
+            visuals.forEach((v, idx) => {
+              if (idx === i) gsap.to(v, { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: "power2.out", overwrite: true });
+              else gsap.to(v, { opacity: 0, scale: 0.9, y: -20, duration: 0.4, overwrite: true });
+            });
+          },
+          onEnterBack: () => {
+            visuals.forEach((v, idx) => {
+              if (idx === i) gsap.to(v, { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: "power2.out", overwrite: true });
+              else gsap.to(v, { opacity: 0, scale: 0.9, y: 20, duration: 0.4, overwrite: true });
+            });
+          }
+        });
       });
-    });
+    }, containerRef);
 
     return () => {
-      ScrollTrigger.getAll().forEach(t => t.kill());
+      ctx.revert();
     };
   }, []);
 
