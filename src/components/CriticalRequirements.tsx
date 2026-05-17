@@ -6,6 +6,10 @@ interface CriticalRequirementsProps {
   requirements: JdRequirements;
 }
 
+/**
+ * CriticalRequirements displays qualification credentials including education,
+ * years of experience, soft skills, and visa agreements dynamically as chips.
+ */
 const sectionConfig = {
   education: {
     icon: GraduationCap,
