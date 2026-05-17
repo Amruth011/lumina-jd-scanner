@@ -27,6 +27,7 @@ export const RecruiterLens = ({ insights }: RecruiterLensProps) => {
             key={idx}
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: idx * 0.1, duration: 0.6, ease: "easeOut" }}
             className="group relative h-full"
           >
             <div className="glass-panel p-6 lg:p-10 rounded-[2.5rem] border-white/5 h-full flex flex-col justify-between transition-all duration-700 hover:border-accent-blue/20 hover:bg-accent-blue/[0.03] bg-gradient-to-br from-white/[0.02] to-transparent">
