@@ -561,7 +561,7 @@ export const ResumePreview = ({
                     </div>
 
                     {/* Body */}
-                    <div className="space-y-6">
+                    <div className="space-y-3">
                       {/* Summary Section */}
                       {localResume.professional_summary && (
                         <section className="space-y-2">
@@ -779,7 +779,7 @@ export const ResumePreview = ({
                   {/* Dynamic Page Breaks */}
                   {pageCount > 1 && Array.from({ length: pageCount - 1 }).map((_, i) => (
                     <div key={i} className="absolute left-0 right-0 h-px border-t border-dashed border-[#1E2A3A]/10 flex items-center justify-center pointer-events-none" style={{ top: `${(i + 1) * 100 / pageCount}%` }}>
-                      <span className="bg-white px-4 text-[8px] font-black uppercase tracking-widest text-[#1E2A3A]/20">Page {i + 1} Cut</span>
+                      <span className="bg-white px-4 text-[8px] font-black uppercase tracking-widest text-red-500/80">Crossed 1 Page — Continued On Next Page</span>
                     </div>
                   ))}
                 </motion.div>
